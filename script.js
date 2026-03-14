@@ -1,5 +1,244 @@
 'use strict';
 
+// Уақытқа байланысты қолжетімділік және хабарламалар
+function checkTimeAccess() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  
+  // Уақытқа байланысты хабарлама анықтау
+  let timeMessage = '';
+  let isAccessAllowed = true;
+  
+  // Қолжетімділікті тексеру (таңғы 7:00 - кешкі 22:00)
+  if (hours >= 22 || hours < 7) {
+    isAccessAllowed = false;
+  }
+  
+  // Уақытқа байланысты хабарлама
+  if (hours >= 7 && hours < 12) {
+    timeMessage = '🌅 Қайырлы таң! Қазақстан уақыты ' + currentTime;
+  } else if (hours >= 12 && hours < 16) {
+    timeMessage = '☀️ Қайырлы күн! Қазақстан уақыты ' + currentTime;
+  } else if (hours >= 16 && hours < 22) {
+    timeMessage = '🌆 Қайырлы кеш! Қазақстан уақыты ' + currentTime;
+  } else if (hours >= 22 || hours < 7) {
+    timeMessage = '🌙 Қайырлы түн! Қазақстан уақыты ' + currentTime;
+  }
+  
+  return { isAccessAllowed, timeMessage };
+}
+
+// Уақыт баннерін қосу
+function addTimeBanner() {
+  const { isAccessAllowed, timeMessage } = checkTimeAccess();
+  
+  // Ескі баннерді өшіру
+  const oldBanner = document.getElementById('time-banner');
+  if (oldBanner) oldBanner.remove();
+  
+  // Жаңа баннер жасау
+  const banner = document.createElement('div');
+  banner.id = 'time-banner';
+  banner.className = 'time-banner';
+  banner.innerHTML = timeMessage;
+  
+  // Стильдерін қосу
+  banner.style.cssText = `
+    background: linear-gradient(135deg, var(--blue), var(--blue-h));
+    color: white;
+    text-align: center;
+    padding: 0.8rem;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+  `;
+  
+  // Баннерді body-дің басына қосу
+  document.body.insertBefore(banner, document.body.firstChild);
+  
+  return { isAccessAllowed, timeMessage };
+}
+
+// Қолжетімділікті тексеру және басқару
+function checkAndHandleAccess() {
+  const { isAccessAllowed, timeMessage } = addTimeBanner();
+  
+  if (!isAccessAllowed) {
+    // Барлық беттерді жасыру
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    
+    // Қолжетімсіздік бетін көрсету
+    let accessDeniedPage = document.getElementById('page-access-denied');
+    if (!accessDeniedPage) {
+      accessDeniedPage = document.createElement('div');
+      accessDeniedPage.id = 'page-access-denied';
+      accessDeniedPage.className = 'page active';
+      accessDeniedPage.innerHTML = `
+        <div class="access-denied-container">
+          <div class="access-denied-card">
+            <div class="moon-icon">🌙</div>
+            <h1 class="access-denied-title">Қолжетімділік шектелген</h1>
+            <p class="access-denied-message">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+            <div class="access-denied-time">${timeMessage}</div>
+            <div class="access-denied-schedule">
+              <div class="schedule-item available">
+                <span class="schedule-icon">✅</span>
+                <span>Қолжетімді: 07:00 - 22:00</span>
+              </div>
+              <div class="schedule-item unavailable">
+                <span class="schedule-icon">❌</span>
+                <span>Қолжетімсіз: 22:00 - 07:00</span>
+              </div>
+            </div>
+            <p class="access-denied-footer">Қайта келіңіз! 🌙</p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(accessDeniedPage);
+      
+      // Стильдерді қосу
+      const style = document.createElement('style');
+      style.textContent = `
+        .access-denied-container {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #0d1117 0%, #1a1f3c 100%);
+          padding: 1rem;
+        }
+        .access-denied-card {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 30px;
+          padding: 3rem 2.5rem;
+          max-width: 500px;
+          width: 100%;
+          text-align: center;
+          color: white;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          animation: fadeIn 0.5s ease;
+        }
+        .moon-icon {
+          font-size: 5rem;
+          margin-bottom: 1rem;
+          animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        .access-denied-title {
+          font-size: 2rem;
+          font-weight: 900;
+          margin-bottom: 1rem;
+          background: linear-gradient(135deg, #fff, #e0e0e0);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .access-denied-message {
+          font-size: 1.1rem;
+          margin-bottom: 1.5rem;
+          opacity: 0.9;
+        }
+        .access-denied-time {
+          background: rgba(255, 255, 255, 0.15);
+          padding: 1rem;
+          border-radius: 50px;
+          margin-bottom: 2rem;
+          font-size: 1.2rem;
+          font-weight: 700;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .access-denied-schedule {
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 20px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+        }
+        .schedule-item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 0.8rem;
+          border-radius: 12px;
+          margin-bottom: 0.5rem;
+        }
+        .schedule-item.available {
+          background: rgba(46, 204, 113, 0.2);
+        }
+        .schedule-item.unavailable {
+          background: rgba(231, 76, 60, 0.2);
+        }
+        .schedule-icon {
+          font-size: 1.3rem;
+        }
+        .access-denied-footer {
+          font-size: 1.2rem;
+          opacity: 0.8;
+          font-style: italic;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    return false;
+  }
+  return true;
+}
+
+// Уақытты үнемі тексеріп отыру
+function startTimeChecker() {
+  // Бірінші тексеру
+  if (!checkAndHandleAccess()) {
+    return false;
+  }
+  
+  // Әр минут сайын тексеру
+  setInterval(() => {
+    const { isAccessAllowed } = checkTimeAccess();
+    const currentPage = document.querySelector('.page.active')?.id;
+    
+    // Уақыт баннерін жаңарту
+    addTimeBanner();
+    
+    // Егер қолжетімсіз болса
+    if (!isAccessAllowed) {
+      // Барлық беттерді жасырып, қолжетімсіздік бетін көрсету
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      
+      let accessDeniedPage = document.getElementById('page-access-denied');
+      if (accessDeniedPage) {
+        accessDeniedPage.classList.add('active');
+      } else {
+        checkAndHandleAccess();
+      }
+    } else {
+      // Егер қолжетімді болса және қолжетімсіздік бетінде болсақ
+      const accessDeniedPage = document.getElementById('page-access-denied');
+      if (accessDeniedPage && accessDeniedPage.classList.contains('active')) {
+        // Логин бетіне қайта бағыттау
+        accessDeniedPage.classList.remove('active');
+        document.getElementById('page-login').classList.add('active');
+      }
+    }
+  }, 60000); // 1 минут
+  
+  return true;
+}
+
+// Негізгі QUESTIONS массиві (өзгеріссіз)
 const QUESTIONS = [
   {question:"Кодтағы қателерді анықтау процесі қалай аталады?",options:["Компиляция","Дебаггинг","Тестілеу","Орындау","Инсталляция"],correct:1},
   {question:"Синтаксистік қате дегеніміз не?",options:["Логикалық қате","Бағдарлама баяу жұмыс істеуі","Жазылу ережесінің бұзылуы","Дерекқор қатесі","Дизайн қатесі"],correct:2},
@@ -103,259 +342,306 @@ const QUESTIONS = [
   {question:"Бағдарламалық код сапасының негізгі көрсеткіші:",options:["Қатесіз жұмыс","Ұзындығы","Түсі","Форматы","Архив көлемі"],correct:0}
 ];
 
-let shuffled = [], curIdx = 0, score = 0;
-let timerID = null, timeLeft = 1800;
+let shuffled = [];
+let curIdx = 0;
+let score = 0;
+let timerID = null;
+let timeLeft = 1800;
 let eyeTimer = null;
-let isDark = false, isWarm = false, isLarge = false;
+let isDark = false;
+let isWarm = false;
+let isLarge = false;
 let toastT = null;
+let answeredCount = 0;
 
-document.addEventListener('DOMContentLoaded', function() {
-  lockContent();
-  
-  document.getElementById('pw-in').addEventListener('input', function() {
-    document.getElementById('pw-err').classList.add('hidden');
-  });
-  
-  document.getElementById('pw-in').addEventListener('keydown', function(event) {
-    if(event.key === 'Enter') checkPw();
-  });
-});
-
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+// Негізгі функциялар
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+function lockContent() {
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showToast('🚫 Мәтінді көшіруге болмайды');
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const ctrl = e.ctrlKey || e.metaKey;
+    if (ctrl && ['c','x','v','u','s','a'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+      showToast('🚫 Мәтінді көшіруге болмайды');
+      return false;
+    }
+    if (e.key === 'F12' || (ctrl && e.shiftKey && e.key.toLowerCase() === 'i')) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  ['copy', 'cut', 'paste'].forEach(ev => {
+    document.addEventListener(ev, (e) => {
+      e.preventDefault();
+      showToast('🚫 Мәтінді көшіруге болмайды');
+    });
+  });
+}
+
+// Бетті көрсету
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+// Пароль тексеру
 function checkPw() {
-  var v = document.getElementById('pw-in').value.trim();
-  if (v === '7777') {
+  const input = document.getElementById('pw-in');
+  const value = input.value.trim();
+  
+  if (value === '7777') {
     document.getElementById('pw-err').classList.add('hidden');
     showPage('page-home');
+    input.value = '';
   } else {
     document.getElementById('pw-err').classList.remove('hidden');
-    var w = document.getElementById('pw-wrap');
-    w.classList.add('shake');
-    setTimeout(function() { w.classList.remove('shake'); }, 400);
-    document.getElementById('pw-in').value = '';
-    document.getElementById('pw-in').focus();
+    document.getElementById('pw-wrap').classList.add('shake');
+    setTimeout(() => document.getElementById('pw-wrap').classList.remove('shake'), 400);
+    input.value = '';
+    input.focus();
   }
 }
 
+// Тестті бастау
 function startTest() {
-  shuffled = shuffle([...QUESTIONS]);
+  shuffled = shuffleArray([...QUESTIONS]);
   curIdx = 0;
   score = 0;
+  answeredCount = 0;
   timeLeft = 1800;
+  
   showPage('page-test');
-  renderQ();
+  renderQuestion();
   startTimer();
+  
   clearTimeout(eyeTimer);
-  eyeTimer = setTimeout(function() {
+  eyeTimer = setTimeout(() => {
     if (document.getElementById('page-test').classList.contains('active')) {
       document.getElementById('eye-banner').classList.remove('hidden');
     }
   }, 20 * 60 * 1000);
 }
 
-function renderQ() {
-  var q = shuffled[curIdx];
-  var total = shuffled.length;
-  var LTRS = ['A','B','C','D','E'];
-
-  document.getElementById('q-num').textContent = (curIdx + 1) + ' / ' + total;
-  document.getElementById('score-live').textContent = '✅ ' + score;
-  document.getElementById('q-lbl').textContent = 'Сұрақ ' + (curIdx + 1);
-  document.getElementById('q-text').textContent = q.question;
-  document.getElementById('prog-bar').style.width = ((curIdx + 1) / total * 100) + '%';
-
-  var order = shuffle([0,1,2,3,4]);
-  var cont = document.getElementById('q-opts');
-  cont.innerHTML = '';
-
-  order.forEach(function(origIdx, pos) {
-    var btn = document.createElement('button');
+// Сұрақты көрсету
+function renderQuestion() {
+  if (!shuffled.length || curIdx >= shuffled.length) return;
+  
+  const question = shuffled[curIdx];
+  const total = shuffled.length;
+  const letters = ['A', 'B', 'C', 'D', 'E'];
+  
+  document.getElementById('q-num').textContent = `${curIdx + 1} / ${total}`;
+  document.getElementById('score-live').textContent = `✅ ${score}`;
+  document.getElementById('q-lbl').textContent = `Сұрақ ${curIdx + 1}`;
+  document.getElementById('q-text').textContent = question.question;
+  
+  const progressPercent = (answeredCount / total) * 100;
+  document.getElementById('prog-bar').style.width = progressPercent + '%';
+  
+  const indices = shuffleArray([0, 1, 2, 3, 4]);
+  const container = document.getElementById('q-opts');
+  container.innerHTML = '';
+  
+  indices.forEach((origIdx, pos) => {
+    const btn = document.createElement('button');
     btn.className = 'opt';
     btn.dataset.orig = origIdx;
-    btn.innerHTML = '<span class="opt-L">' + LTRS[pos] + '</span><span>' + q.options[origIdx] + '</span>';
-    btn.addEventListener('click', function() { handleAnswer(btn, origIdx, q.correct); });
-    cont.appendChild(btn);
+    btn.innerHTML = `<span class="opt-L">${letters[pos]}</span><span>${question.options[origIdx]}</span>`;
+    btn.addEventListener('click', () => handleAnswer(btn, origIdx, question.correct));
+    container.appendChild(btn);
   });
-
-  var card = document.getElementById('q-card');
+  
+  // Анимацияны қалпына келтіру
+  const card = document.getElementById('q-card');
   card.style.animation = 'none';
-  void card.offsetWidth;
+  card.offsetHeight;
   card.style.animation = '';
 }
 
-function handleAnswer(btn, selIdx, corrIdx) {
-  var all = document.querySelectorAll('.opt');
-  all.forEach(function(b) { b.classList.add('locked'); });
-
-  var ok = (selIdx === corrIdx);
-  if (ok) {
+// Жауапты өңдеу
+function handleAnswer(btn, selectedIdx, correctIdx) {
+  const allOptions = document.querySelectorAll('.opt');
+  allOptions.forEach(opt => opt.classList.add('locked'));
+  
+  const isCorrect = selectedIdx === correctIdx;
+  
+  if (isCorrect) {
     btn.classList.add('correct');
     score++;
-    document.getElementById('score-live').textContent = '✅ ' + score;
+    document.getElementById('score-live').textContent = `✅ ${score}`;
   } else {
     btn.classList.add('wrong');
-    all.forEach(function(b) {
-      if (Number(b.dataset.orig) === corrIdx) b.classList.add('correct');
+    allOptions.forEach(opt => {
+      if (parseInt(opt.dataset.orig) === correctIdx) {
+        opt.classList.add('correct');
+      }
     });
   }
-
-  setTimeout(function() {
+  
+  answeredCount++;
+  
+  setTimeout(() => {
     curIdx++;
-    if (curIdx >= shuffled.length) finishTest(false);
-    else renderQ();
-  }, ok ? 1100 : 1700);
+    if (curIdx >= shuffled.length) {
+      finishTest(false);
+    } else {
+      renderQuestion();
+    }
+  }, isCorrect ? 1100 : 1700);
 }
 
+// Таймер
 function startTimer() {
   clearInterval(timerID);
   updateTimer();
-  timerID = setInterval(function() {
+  
+  timerID = setInterval(() => {
     timeLeft--;
     updateTimer();
-    if (timeLeft <= 0) { 
-      clearInterval(timerID); 
-      finishTest(true); 
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerID);
+      finishTest(true);
     }
   }, 1000);
 }
 
 function updateTimer() {
-  var mm = String(Math.floor(timeLeft / 60)).padStart(2, '0');
-  var ss = String(timeLeft % 60).padStart(2, '0');
-  var el = document.getElementById('timer');
-  el.textContent = '⏱ ' + mm + ':' + ss;
-  if (timeLeft <= 120) {
-    el.classList.add('danger');
-  } else {
-    el.classList.remove('danger');
-  }
+  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+  const seconds = String(timeLeft % 60).padStart(2, '0');
+  const timerEl = document.getElementById('timer');
+  
+  timerEl.textContent = `⏱ ${minutes}:${seconds}`;
+  timerEl.classList.toggle('danger', timeLeft <= 120);
 }
 
+// Тестті аяқтау
 function finishTest(timeout) {
   clearInterval(timerID);
   clearTimeout(eyeTimer);
-  var total = shuffled.length;
-  var wrong = total - score;
-  var pct = Math.round(score / total * 100);
-
+  
+  const total = shuffled.length;
+  const wrong = total - score;
+  const percentage = Math.round((score / total) * 100);
+  
   document.getElementById('rs-c').textContent = score;
   document.getElementById('rs-w').textContent = wrong;
   document.getElementById('rs-t').textContent = total;
-  document.getElementById('res-big').textContent = score + ' / ' + total;
-  document.getElementById('res-pct').textContent = pct + '%';
-  document.getElementById('res-title').textContent = timeout ? 'Уақыт бітті!' : resTitle(pct);
-  document.getElementById('res-emoji').textContent = resEmoji(pct, timeout);
-
+  document.getElementById('res-big').textContent = `${score} / ${total}`;
+  document.getElementById('res-pct').textContent = `${percentage}%`;
+  document.getElementById('res-title').textContent = timeout ? 'Уақыт бітті!' : getResultTitle(percentage);
+  document.getElementById('res-emoji').textContent = getResultEmoji(percentage, timeout);
+  
   showPage('page-result');
-  setTimeout(function() {
-    document.getElementById('res-prog').style.width = pct + '%';
+  
+  setTimeout(() => {
+    document.getElementById('res-prog').style.width = percentage + '%';
   }, 100);
 }
 
-function resTitle(p) {
-  if (p >= 90) return 'Тамаша нәтиже! 🎉';
-  if (p >= 70) return 'Жақсы нәтиже!';
-  if (p >= 50) return 'Орташа нәтиже';
+function getResultTitle(percentage) {
+  if (percentage >= 90) return 'Тамаша нәтиже! 🎉';
+  if (percentage >= 70) return 'Жақсы нәтиже!';
+  if (percentage >= 50) return 'Орташа нәтиже';
   return 'Қайта оқып, тапсырыңыз';
 }
 
-function resEmoji(p, t) {
-  if (t) return '⏰';
-  if (p >= 90) return '🏆';
-  if (p >= 70) return '🎯';
-  if (p >= 50) return '📚';
+function getResultEmoji(percentage, timeout) {
+  if (timeout) return '⏰';
+  if (percentage >= 90) return '🏆';
+  if (percentage >= 70) return '🎯';
+  if (percentage >= 50) return '📚';
   return '💪';
 }
 
 function retakeTest() { startTest(); }
-
-function goHome() {
-  clearInterval(timerID);
-  clearTimeout(eyeTimer);
-  showPage('page-home');
+function goHome() { 
+  clearInterval(timerID); 
+  clearTimeout(eyeTimer); 
+  showPage('page-home'); 
 }
 
+// Түс режимдері
 function toggleDark() {
   isDark = !isDark;
-  if (isDark) { 
-    isWarm = false; 
-    document.body.classList.remove('warm'); 
-    setOn('btn-warm', false); 
+  if (isDark) {
+    isWarm = false;
+    document.body.classList.remove('warm');
+    setButtonState('btn-warm', false);
   }
   document.body.classList.toggle('dark', isDark);
-  setOn('btn-dark', isDark);
+  setButtonState('btn-dark', isDark);
 }
 
 function toggleWarm() {
   isWarm = !isWarm;
-  if (isWarm) { 
-    isDark = false; 
-    document.body.classList.remove('dark'); 
-    setOn('btn-dark', false); 
+  if (isWarm) {
+    isDark = false;
+    document.body.classList.remove('dark');
+    setButtonState('btn-dark', false);
   }
   document.body.classList.toggle('warm', isWarm);
-  setOn('btn-warm', isWarm);
+  setButtonState('btn-warm', isWarm);
 }
 
 function toggleFont() {
   isLarge = !isLarge;
   document.body.classList.toggle('large', isLarge);
-  setOn('btn-font', isLarge);
+  setButtonState('btn-font', isLarge);
 }
 
-function setOn(id, on) {
-  document.getElementById(id).classList.toggle('on', on);
+function setButtonState(id, state) {
+  const btn = document.getElementById(id);
+  if (btn) btn.classList.toggle('on', state);
 }
 
-function shuffle(arr) {
-  for (var i = arr.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = arr[i]; 
-    arr[i] = arr[j]; 
-    arr[j] = t;
-  }
-  return arr;
-}
-
-function showToast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.remove('hidden');
-  clearTimeout(toastT);
-  toastT = setTimeout(function() { el.classList.add('hidden'); }, 2500);
-}
-
-function lockContent() {
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    showToast('🚫 Мәтінді көшіруге болмайды');
-  });
-
-  document.addEventListener('keydown', function(e) {
-    var ctrl = e.ctrlKey || e.metaKey;
-    if (ctrl && ['c','x','v','u','s','a'].indexOf(e.key.toLowerCase()) >= 0) {
-      e.preventDefault();
-      showToast('🚫 Мәтінді көшіруге болмайды');
-      return false;
+// Бет жүктелгенде
+document.addEventListener('DOMContentLoaded', function() {
+  lockContent();
+  
+  // Уақыт тексеруді бастау
+  const hasAccess = startTimeChecker();
+  
+  // Егер қолжетімді болса, логин бетіндегі подпискаларды қосу
+  if (hasAccess) {
+    const pwInput = document.getElementById('pw-in');
+    if (pwInput) {
+      pwInput.addEventListener('input', () => {
+        document.getElementById('pw-err').classList.add('hidden');
+      });
+      
+      pwInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkPw();
+      });
     }
-    if (e.key === 'F12') { e.preventDefault(); return false; }
-    if (ctrl && e.shiftKey && e.key.toLowerCase() === 'i') { e.preventDefault(); return false; }
-  });
+  }
+});
 
-  ['copy','cut','paste'].forEach(function(ev) {
-    document.addEventListener(ev, function(e) {
-      e.preventDefault();
-      showToast('🚫 Мәтінді көшіруге болмайды');
-    });
-  });
-
-  document.addEventListener('selectstart', function(e) {
-    if (e.target.closest('.q-text, .q-opts')) e.preventDefault();
-  });
-
-  document.addEventListener('dragstart', function(e) { e.preventDefault(); });
-}
+// Глобалдық функциялар
+window.checkPw = checkPw;
+window.startTest = startTest;
+window.toggleDark = toggleDark;
+window.toggleWarm = toggleWarm;
+window.toggleFont = toggleFont;
+window.retakeTest = retakeTest;
+window.goHome = goHome;
