@@ -23,10 +23,7 @@
     <h1 class="login-h">Тестке кіру</h1>
     <p class="login-sub">Паролді енгізіп, жалғастырыңыз</p>
     <div class="pw-wrap" id="pw-wrap">
-      <input id="pw-in" type="password" placeholder="• • • •" maxlength="10"
-        autocomplete="off"
-        oninput="document.getElementById('pw-err').classList.add('hidden')"
-        onkeydown="if(event.key==='Enter') checkPw()"/>
+      <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
       <button onclick="checkPw()">Кіру →</button>
     </div>
     <p id="pw-err" class="pw-err hidden">⚠️ Пароль қате, қайта енгізіңіз</p>
@@ -121,4 +118,4 @@
 <div id="toast" class="toast hidden"></div>
 <script src="script.js"></script>
 </body>
-        </html>
+          </html>
