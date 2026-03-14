@@ -1,13 +1,12 @@
 'use strict';
 
 // Уақытқа байланысты қолжетімділік және хабарламалар
-function checkTimeAccess() {
+function getTimeMessage() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
   const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   
-  // Уақытқа байланысты хабарлама анықтау
   let timeMessage = '';
   let isAccessAllowed = true;
   
@@ -17,7 +16,7 @@ function checkTimeAccess() {
   }
   
   // Уақытқа байланысты хабарлама
-  if (hours >= 5 && hours < 12) {
+  if (hours >= 7 && hours < 12) {
     timeMessage = '🌅 Қайырлы таң! Қазақстан уақыты ' + currentTime;
   } else if (hours >= 12 && hours < 18) {
     timeMessage = '☀️ Қайырлы күн! Қазақстан уақыты ' + currentTime;
@@ -27,12 +26,12 @@ function checkTimeAccess() {
     timeMessage = '🌙 Қайырлы түн! Қазақстан уақыты ' + currentTime;
   }
   
-  return { isAccessAllowed, timeMessage };
+  return { timeMessage, isAccessAllowed, hours, currentTime };
 }
 
 // Уақыт баннерін қосу
 function addTimeBanner() {
-  const { timeMessage } = checkTimeAccess();
+  const { timeMessage } = getTimeMessage();
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -41,19 +40,35 @@ function addTimeBanner() {
   // Жаңа баннер жасау
   const banner = document.createElement('div');
   banner.id = 'time-banner';
-  banner.className = 'time-banner';
   banner.textContent = timeMessage;
+  
+  // Баннерге стиль қосу
+  banner.style.cssText = `
+    background: linear-gradient(135deg, #3b5bdb, #2f4ac8);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  `;
   
   // Баннерді body-дің басына қосу
   document.body.insertBefore(banner, document.body.firstChild);
+  
+  // Барлық беттердің margin-ін түзету
+  document.querySelectorAll('.page').forEach(page => {
+    page.style.marginTop = '0';
+  });
 }
 
-// Қолжетімділікті тексеру және басқару
-function checkAndHandleAccess() {
-  const { isAccessAllowed, timeMessage } = checkTimeAccess();
-  
-  // Уақыт баннерін қосу
-  addTimeBanner();
+// Қолжетімділікті тексеру
+function checkAccess() {
+  const { isAccessAllowed, timeMessage, currentTime } = getTimeMessage();
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -65,64 +80,126 @@ function checkAndHandleAccess() {
       accessDeniedPage = document.createElement('div');
       accessDeniedPage.id = 'page-access-denied';
       accessDeniedPage.className = 'page active';
-      accessDeniedPage.innerHTML = `
-        <div class="access-denied-container">
-          <div class="access-denied-card">
-            <div class="moon-icon">🌙</div>
-            <h1>Қолжетімділік шектелген</h1>
-            <p>Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
-            <div class="access-denied-time">${timeMessage}</div>
-            <div>
-              <div>✅ Қолжетімді: 07:00 - 22:00</div>
-              <div>❌ Қолжетімсіз: 22:00 - 07:00</div>
-            </div>
-            <p>Қайта келіңіз! 🌙</p>
-          </div>
-        </div>
+      accessDeniedPage.style.cssText = `
+        display: flex !important;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0d1117, #1a1f3c);
+        padding: 20px;
       `;
+      
+      accessDeniedPage.innerHTML = `
+        <div style="
+          background: rgba(255,255,255,0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 30px;
+          padding: 40px;
+          max-width: 500px;
+          width: 100%;
+          text-align: center;
+          color: white;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+          animation: fadeIn 0.5s ease;
+        ">
+          <div style="font-size: 80px; margin-bottom: 20px; animation: float 3s infinite;">🌙</div>
+          <h1 style="font-size: 32px; margin-bottom: 20px;">Қолжетімділік шектелген</h1>
+          <p style="font-size: 18px; margin-bottom: 20px;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+          <div style="
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: bold;
+          ">${timeMessage}</div>
+          <div style="
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+          ">
+            <div style="
+              display: flex;
+              align-items: center;
+              gap: 15px;
+              padding: 10px;
+              background: rgba(46,204,113,0.2);
+              border-radius: 10px;
+              margin-bottom: 10px;
+            ">
+              <span style="font-size: 24px;">✅</span>
+              <span>Қолжетімді: 07:00 - 22:00</span>
+            </div>
+            <div style="
+              display: flex;
+              align-items: center;
+              gap: 15px;
+              padding: 10px;
+              background: rgba(231,76,60,0.2);
+              border-radius: 10px;
+            ">
+              <span style="font-size: 24px;">❌</span>
+              <span>Қолжетімсіз: 22:00 - 07:00</span>
+            </div>
+          </div>
+          <p style="font-size: 20px; font-style: italic;">Қайта келіңіз! 🌙</p>
+        </div>
+        <style>
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        </style>
+      `;
+      
       document.body.appendChild(accessDeniedPage);
     } else {
       accessDeniedPage.classList.add('active');
+      accessDeniedPage.style.display = 'flex';
     }
     return false;
   }
   return true;
 }
 
-// Уақытты үнемі тексеріп отыру
+// Уақытты тексеру
 function startTimeChecker() {
   // Бірінші тексеру
-  if (!checkAndHandleAccess()) {
+  if (!checkAccess()) {
     return false;
   }
   
   // Әр минут сайын тексеру
   setInterval(() => {
-    const { isAccessAllowed } = checkTimeAccess();
+    const { isAccessAllowed } = getTimeMessage();
     
     // Уақыт баннерін жаңарту
     addTimeBanner();
     
-    // Егер қолжетімсіз болса
     if (!isAccessAllowed) {
-      // Барлық беттерді жасырып, қолжетімсіздік бетін көрсету
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       
-      let accessDeniedPage = document.getElementById('page-access-denied');
+      const accessDeniedPage = document.getElementById('page-access-denied');
       if (accessDeniedPage) {
         accessDeniedPage.classList.add('active');
-      } else {
-        checkAndHandleAccess();
+        accessDeniedPage.style.display = 'flex';
       }
     } else {
-      // Егер қолжетімді болса және қолжетімсіздік бетінде болсақ
       const accessDeniedPage = document.getElementById('page-access-denied');
       if (accessDeniedPage && accessDeniedPage.classList.contains('active')) {
         accessDeniedPage.classList.remove('active');
+        accessDeniedPage.style.display = 'none';
         document.getElementById('page-login').classList.add('active');
       }
     }
-  }, 60000); // 1 минут
+  }, 60000);
   
   return true;
 }
@@ -242,7 +319,6 @@ let isLarge = false;
 let toastT = null;
 let answeredCount = 0;
 
-// Функциялар
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -501,13 +577,12 @@ function setButtonState(id, state) {
   if (btn) btn.classList.toggle('on', state);
 }
 
-// Бет жүктелгенде
 document.addEventListener('DOMContentLoaded', function() {
   // Уақыт баннерін қосу
   addTimeBanner();
   
   // Қолжетімділікті тексеру
-  const hasAccess = checkAndHandleAccess();
+  const hasAccess = checkAccess();
   
   if (hasAccess) {
     const pwInput = document.getElementById('pw-in');
@@ -521,15 +596,11 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     
-    // Контентті қорғау
     lockContent();
-    
-    // Уақыт тексеруді бастау
     startTimeChecker();
   }
 });
 
-// Глобалдық функциялар
 window.checkPw = checkPw;
 window.startTest = startTest;
 window.toggleDark = toggleDark;
