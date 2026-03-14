@@ -1,13 +1,15 @@
 'use strict';
 
 // Уақытқа байланысты қолжетімділік және хабарламалар
-function getTimeMessage() {
+function getTimeInfo() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
   const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   
   let timeMessage = '';
+  let greeting = '';
+  let icon = '';
   let isAccessAllowed = true;
   
   // Қолжетімділікті тексеру (таңғы 7:00 - кешкі 22:00)
@@ -17,21 +19,29 @@ function getTimeMessage() {
   
   // Уақытқа байланысты хабарлама
   if (hours >= 7 && hours < 12) {
-    timeMessage = '🌅 Қайырлы таң! Қазақстан уақыты ' + currentTime;
+    greeting = 'Қайырлы таң!';
+    icon = '🌅';
+    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   } else if (hours >= 12 && hours < 18) {
-    timeMessage = '☀️ Қайырлы күн! Қазақстан уақыты ' + currentTime;
+    greeting = 'Қайырлы күн!';
+    icon = '☀️';
+    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   } else if (hours >= 18 && hours < 22) {
-    timeMessage = '🌆 Қайырлы кеш! Қазақстан уақыты ' + currentTime;
+    greeting = 'Қайырлы кеш!';
+    icon = '🌆';
+    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   } else {
-    timeMessage = '🌙 Қайырлы түн! Қазақстан уақыты ' + currentTime;
+    greeting = 'Қайырлы түн!';
+    icon = '🌙';
+    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   }
   
-  return { timeMessage, isAccessAllowed, hours, currentTime };
+  return { timeMessage, greeting, icon, isAccessAllowed, hours, currentTime };
 }
 
 // Уақыт баннерін қосу
 function addTimeBanner() {
-  const { timeMessage } = getTimeMessage();
+  const { timeMessage } = getTimeInfo();
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -68,7 +78,7 @@ function addTimeBanner() {
 
 // Қолжетімділікті тексеру
 function checkAccess() {
-  const { isAccessAllowed, timeMessage, currentTime } = getTimeMessage();
+  const { isAccessAllowed, timeMessage, greeting, icon, currentTime } = getTimeInfo();
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -103,7 +113,7 @@ function checkAccess() {
           box-shadow: 0 20px 40px rgba(0,0,0,0.3);
           animation: fadeIn 0.5s ease;
         ">
-          <div style="font-size: 80px; margin-bottom: 20px; animation: float 3s infinite;">🌙</div>
+          <div style="font-size: 80px; margin-bottom: 20px; animation: float 3s infinite;">${icon}</div>
           <h1 style="font-size: 32px; margin-bottom: 20px;">Қолжетімділік шектелген</h1>
           <p style="font-size: 18px; margin-bottom: 20px;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
           <div style="
@@ -113,7 +123,7 @@ function checkAccess() {
             margin-bottom: 30px;
             font-size: 20px;
             font-weight: bold;
-          ">${timeMessage}</div>
+          ">${icon} ${greeting} Қазақстан уақыты ${currentTime}</div>
           <div style="
             background: rgba(0,0,0,0.3);
             border-radius: 20px;
@@ -145,7 +155,7 @@ function checkAccess() {
               <span>Қолжетімсіз: 22:00 - 07:00</span>
             </div>
           </div>
-          <p style="font-size: 20px; font-style: italic;">Қайта келіңіз! 🌙</p>
+          <p style="font-size: 20px; font-style: italic;">Қайта келіңіз! ${icon}</p>
         </div>
         <style>
           @keyframes float {
@@ -161,6 +171,55 @@ function checkAccess() {
       
       document.body.appendChild(accessDeniedPage);
     } else {
+      // Қолжетімсіздік бетін жаңарту
+      const deniedDiv = accessDeniedPage.querySelector('div');
+      if (deniedDiv) {
+        deniedDiv.innerHTML = `
+          <div style="font-size: 80px; margin-bottom: 20px; animation: float 3s infinite;">${icon}</div>
+          <h1 style="font-size: 32px; margin-bottom: 20px;">Қолжетімділік шектелген</h1>
+          <p style="font-size: 18px; margin-bottom: 20px;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+          <div style="
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 50px;
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: bold;
+          ">${icon} ${greeting} Қазақстан уақыты ${currentTime}</div>
+          <div style="
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+          ">
+            <div style="
+              display: flex;
+              align-items: center;
+              gap: 15px;
+              padding: 10px;
+              background: rgba(46,204,113,0.2);
+              border-radius: 10px;
+              margin-bottom: 10px;
+            ">
+              <span style="font-size: 24px;">✅</span>
+              <span>Қолжетімді: 07:00 - 22:00</span>
+            </div>
+            <div style="
+              display: flex;
+              align-items: center;
+              gap: 15px;
+              padding: 10px;
+              background: rgba(231,76,60,0.2);
+              border-radius: 10px;
+            ">
+              <span style="font-size: 24px;">❌</span>
+              <span>Қолжетімсіз: 22:00 - 07:00</span>
+            </div>
+          </div>
+          <p style="font-size: 20px; font-style: italic;">Қайта келіңіз! ${icon}</p>
+        `;
+      }
       accessDeniedPage.classList.add('active');
       accessDeniedPage.style.display = 'flex';
     }
@@ -178,7 +237,7 @@ function startTimeChecker() {
   
   // Әр минут сайын тексеру
   setInterval(() => {
-    const { isAccessAllowed } = getTimeMessage();
+    const { isAccessAllowed } = getTimeInfo();
     
     // Уақыт баннерін жаңарту
     addTimeBanner();
@@ -188,6 +247,8 @@ function startTimeChecker() {
       
       const accessDeniedPage = document.getElementById('page-access-denied');
       if (accessDeniedPage) {
+        // Қолжетімсіздік бетін жаңарту
+        checkAccess();
         accessDeniedPage.classList.add('active');
         accessDeniedPage.style.display = 'flex';
       }
