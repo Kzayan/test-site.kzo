@@ -17,13 +17,13 @@ function checkTimeAccess() {
   }
   
   // Уақытқа байланысты хабарлама
-  if (hours >= 7 && hours < 12) {
+  if (hours >= 5 && hours < 12) {
     timeMessage = '🌅 Қайырлы таң! Қазақстан уақыты ' + currentTime;
-  } else if (hours >= 12 && hours < 16) {
+  } else if (hours >= 12 && hours < 18) {
     timeMessage = '☀️ Қайырлы күн! Қазақстан уақыты ' + currentTime;
-  } else if (hours >= 16 && hours < 22) {
+  } else if (hours >= 18 && hours < 22) {
     timeMessage = '🌆 Қайырлы кеш! Қазақстан уақыты ' + currentTime;
-  } else if (hours >= 22 || hours < 7) {
+  } else {
     timeMessage = '🌙 Қайырлы түн! Қазақстан уақыты ' + currentTime;
   }
   
@@ -32,7 +32,7 @@ function checkTimeAccess() {
 
 // Уақыт баннерін қосу
 function addTimeBanner() {
-  const { isAccessAllowed, timeMessage } = checkTimeAccess();
+  const { timeMessage } = checkTimeAccess();
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -42,33 +42,18 @@ function addTimeBanner() {
   const banner = document.createElement('div');
   banner.id = 'time-banner';
   banner.className = 'time-banner';
-  banner.innerHTML = timeMessage;
-  
-  // Стильдерін қосу
-  banner.style.cssText = `
-    background: linear-gradient(135deg, var(--blue), var(--blue-h));
-    color: white;
-    text-align: center;
-    padding: 0.8rem;
-    font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    border-bottom: 2px solid rgba(255,255,255,0.2);
-  `;
+  banner.textContent = timeMessage;
   
   // Баннерді body-дің басына қосу
   document.body.insertBefore(banner, document.body.firstChild);
-  
-  return { isAccessAllowed, timeMessage };
 }
 
 // Қолжетімділікті тексеру және басқару
 function checkAndHandleAccess() {
-  const { isAccessAllowed, timeMessage } = addTimeBanner();
+  const { isAccessAllowed, timeMessage } = checkTimeAccess();
+  
+  // Уақыт баннерін қосу
+  addTimeBanner();
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -84,114 +69,20 @@ function checkAndHandleAccess() {
         <div class="access-denied-container">
           <div class="access-denied-card">
             <div class="moon-icon">🌙</div>
-            <h1 class="access-denied-title">Қолжетімділік шектелген</h1>
-            <p class="access-denied-message">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+            <h1>Қолжетімділік шектелген</h1>
+            <p>Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
             <div class="access-denied-time">${timeMessage}</div>
-            <div class="access-denied-schedule">
-              <div class="schedule-item available">
-                <span class="schedule-icon">✅</span>
-                <span>Қолжетімді: 07:00 - 22:00</span>
-              </div>
-              <div class="schedule-item unavailable">
-                <span class="schedule-icon">❌</span>
-                <span>Қолжетімсіз: 22:00 - 07:00</span>
-              </div>
+            <div>
+              <div>✅ Қолжетімді: 07:00 - 22:00</div>
+              <div>❌ Қолжетімсіз: 22:00 - 07:00</div>
             </div>
-            <p class="access-denied-footer">Қайта келіңіз! 🌙</p>
+            <p>Қайта келіңіз! 🌙</p>
           </div>
         </div>
       `;
       document.body.appendChild(accessDeniedPage);
-      
-      // Стильдерді қосу
-      const style = document.createElement('style');
-      style.textContent = `
-        .access-denied-container {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #0d1117 0%, #1a1f3c 100%);
-          padding: 1rem;
-        }
-        .access-denied-card {
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 30px;
-          padding: 3rem 2.5rem;
-          max-width: 500px;
-          width: 100%;
-          text-align: center;
-          color: white;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-          animation: fadeIn 0.5s ease;
-        }
-        .moon-icon {
-          font-size: 5rem;
-          margin-bottom: 1rem;
-          animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        .access-denied-title {
-          font-size: 2rem;
-          font-weight: 900;
-          margin-bottom: 1rem;
-          background: linear-gradient(135deg, #fff, #e0e0e0);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .access-denied-message {
-          font-size: 1.1rem;
-          margin-bottom: 1.5rem;
-          opacity: 0.9;
-        }
-        .access-denied-time {
-          background: rgba(255, 255, 255, 0.15);
-          padding: 1rem;
-          border-radius: 50px;
-          margin-bottom: 2rem;
-          font-size: 1.2rem;
-          font-weight: 700;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .access-denied-schedule {
-          background: rgba(0, 0, 0, 0.3);
-          border-radius: 20px;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-        }
-        .schedule-item {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 0.8rem;
-          border-radius: 12px;
-          margin-bottom: 0.5rem;
-        }
-        .schedule-item.available {
-          background: rgba(46, 204, 113, 0.2);
-        }
-        .schedule-item.unavailable {
-          background: rgba(231, 76, 60, 0.2);
-        }
-        .schedule-icon {
-          font-size: 1.3rem;
-        }
-        .access-denied-footer {
-          font-size: 1.2rem;
-          opacity: 0.8;
-          font-style: italic;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `;
-      document.head.appendChild(style);
+    } else {
+      accessDeniedPage.classList.add('active');
     }
     return false;
   }
@@ -208,7 +99,6 @@ function startTimeChecker() {
   // Әр минут сайын тексеру
   setInterval(() => {
     const { isAccessAllowed } = checkTimeAccess();
-    const currentPage = document.querySelector('.page.active')?.id;
     
     // Уақыт баннерін жаңарту
     addTimeBanner();
@@ -228,7 +118,6 @@ function startTimeChecker() {
       // Егер қолжетімді болса және қолжетімсіздік бетінде болсақ
       const accessDeniedPage = document.getElementById('page-access-denied');
       if (accessDeniedPage && accessDeniedPage.classList.contains('active')) {
-        // Логин бетіне қайта бағыттау
         accessDeniedPage.classList.remove('active');
         document.getElementById('page-login').classList.add('active');
       }
@@ -238,7 +127,6 @@ function startTimeChecker() {
   return true;
 }
 
-// Негізгі QUESTIONS массиві (өзгеріссіз)
 const QUESTIONS = [
   {question:"Кодтағы қателерді анықтау процесі қалай аталады?",options:["Компиляция","Дебаггинг","Тестілеу","Орындау","Инсталляция"],correct:1},
   {question:"Синтаксистік қате дегеніміз не?",options:["Логикалық қате","Бағдарлама баяу жұмыс істеуі","Жазылу ережесінің бұзылуы","Дерекқор қатесі","Дизайн қатесі"],correct:2},
@@ -354,7 +242,7 @@ let isLarge = false;
 let toastT = null;
 let answeredCount = 0;
 
-// Негізгі функциялар
+// Функциялар
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -398,13 +286,11 @@ function lockContent() {
   });
 }
 
-// Бетті көрсету
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(pageId).classList.add('active');
 }
 
-// Пароль тексеру
 function checkPw() {
   const input = document.getElementById('pw-in');
   const value = input.value.trim();
@@ -422,7 +308,6 @@ function checkPw() {
   }
 }
 
-// Тестті бастау
 function startTest() {
   shuffled = shuffleArray([...QUESTIONS]);
   curIdx = 0;
@@ -442,7 +327,6 @@ function startTest() {
   }, 20 * 60 * 1000);
 }
 
-// Сұрақты көрсету
 function renderQuestion() {
   if (!shuffled.length || curIdx >= shuffled.length) return;
   
@@ -471,14 +355,12 @@ function renderQuestion() {
     container.appendChild(btn);
   });
   
-  // Анимацияны қалпына келтіру
   const card = document.getElementById('q-card');
   card.style.animation = 'none';
   card.offsetHeight;
   card.style.animation = '';
 }
 
-// Жауапты өңдеу
 function handleAnswer(btn, selectedIdx, correctIdx) {
   const allOptions = document.querySelectorAll('.opt');
   allOptions.forEach(opt => opt.classList.add('locked'));
@@ -510,7 +392,6 @@ function handleAnswer(btn, selectedIdx, correctIdx) {
   }, isCorrect ? 1100 : 1700);
 }
 
-// Таймер
 function startTimer() {
   clearInterval(timerID);
   updateTimer();
@@ -532,10 +413,13 @@ function updateTimer() {
   const timerEl = document.getElementById('timer');
   
   timerEl.textContent = `⏱ ${minutes}:${seconds}`;
-  timerEl.classList.toggle('danger', timeLeft <= 120);
+  if (timeLeft <= 120) {
+    timerEl.classList.add('danger');
+  } else {
+    timerEl.classList.remove('danger');
+  }
 }
 
-// Тестті аяқтау
 function finishTest(timeout) {
   clearInterval(timerID);
   clearTimeout(eyeTimer);
@@ -574,14 +458,16 @@ function getResultEmoji(percentage, timeout) {
   return '💪';
 }
 
-function retakeTest() { startTest(); }
+function retakeTest() { 
+  startTest(); 
+}
+
 function goHome() { 
   clearInterval(timerID); 
   clearTimeout(eyeTimer); 
   showPage('page-home'); 
 }
 
-// Түс режимдері
 function toggleDark() {
   isDark = !isDark;
   if (isDark) {
@@ -617,12 +503,12 @@ function setButtonState(id, state) {
 
 // Бет жүктелгенде
 document.addEventListener('DOMContentLoaded', function() {
-  lockContent();
+  // Уақыт баннерін қосу
+  addTimeBanner();
   
-  // Уақыт тексеруді бастау
-  const hasAccess = startTimeChecker();
+  // Қолжетімділікті тексеру
+  const hasAccess = checkAndHandleAccess();
   
-  // Егер қолжетімді болса, логин бетіндегі подпискаларды қосу
   if (hasAccess) {
     const pwInput = document.getElementById('pw-in');
     if (pwInput) {
@@ -634,6 +520,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') checkPw();
       });
     }
+    
+    // Контентті қорғау
+    lockContent();
+    
+    // Уақыт тексеруді бастау
+    startTimeChecker();
   }
 });
 
