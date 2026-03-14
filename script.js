@@ -3,16 +3,18 @@
 // Қызылорда ауа райын алу функциясы
 async function getKyzylordaWeather() {
   try {
-    // Сіздің API кілтіңіз
+    // Сіздің нақты API кілтіңіз
     const API_KEY = '4c249f5920cb4d78b1d183152261403';
     
     const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=Kyzylorda&lang=kk&aqi=no`);
     
     if (!response.ok) {
+      console.log('API жауап коды:', response.status);
       throw new Error('Ауа райын алу мүмкін болмады');
     }
     
     const data = await response.json();
+    console.log('Ауа райы деректері:', data);
     
     return {
       temp: Math.round(data.current.temp_c),
@@ -40,10 +42,12 @@ function getTimeInfo() {
   let greeting = '';
   let icon = '';
   let isAccessAllowed = true;
+  let isNight = false;
   
   // Қолжетімділікті тексеру (таңғы 7:00 - кешкі 22:00)
   if (hours >= 22 || hours < 7) {
     isAccessAllowed = false;
+    isNight = true;
   }
   
   // Уақытқа байланысты хабарлама
@@ -61,15 +65,18 @@ function getTimeInfo() {
     icon = '🌙';
   }
   
-  return { greeting, icon, isAccessAllowed, hours, currentTime };
+  return { greeting, icon, isAccessAllowed, hours, currentTime, isNight };
 }
 
 // Уақыт баннерін қосу
 async function addTimeBanner() {
-  const { greeting, icon, currentTime } = getTimeInfo();
+  const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын алу
-  const weather = await getKyzylordaWeather();
+  // Ауа райын тек түнде ғана көрсету
+  let weather = null;
+  if (isNight) {
+    weather = await getKyzylordaWeather();
+  }
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -80,23 +87,24 @@ async function addTimeBanner() {
   banner.id = 'time-banner';
   
   let weatherHtml = '';
-  if (weather) {
+  if (isNight && weather) {
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-weight: 600;">🌍 Қызылорда</span>
+      <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+        <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
+        <span style="font-weight: 600;">Қызылорда</span>
         <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 24px; height: 24px;">
-        <span style="font-weight: 700;">${weather.temp}°C</span>
+        <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
         <span style="opacity: 0.9;">${weather.condition}</span>
-        <span>🌡️ ${weather.feelslike}°C</span>
+        <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
         <span>💧 ${weather.humidity}%</span>
         <span>🌬️ ${weather.wind} км/сағ</span>
       </div>
     `;
-  } else {
+  } else if (isNight && !weather) {
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span>🌍 Қызылорда</span>
-        <span>⏳ Жүктелуде...</span>
+      <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+        <span style="font-weight: 600;">🌙 Қызылорда</span>
+        <span>Ауа райы жүктелуде...</span>
       </div>
     `;
   }
@@ -104,7 +112,7 @@ async function addTimeBanner() {
   banner.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span>${icon}</span>
+        <span style="font-size: 20px;">${icon}</span>
         <span>${greeting}</span>
         <span style="opacity: 0.8;">${currentTime}</span>
       </div>
@@ -125,6 +133,7 @@ async function addTimeBanner() {
     width: 100%;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     border-bottom: 1px solid rgba(255,255,255,0.2);
+    font-family: 'Nunito', sans-serif;
   `;
   
   // Баннерді body-дің басына қосу
@@ -133,10 +142,13 @@ async function addTimeBanner() {
 
 // Қолжетімділікті тексеру
 async function checkAccess() {
-  const { isAccessAllowed, greeting, icon, currentTime } = getTimeInfo();
+  const { isAccessAllowed, greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын алу
-  const weather = await getKyzylordaWeather();
+  // Ауа райын тек түнде ғана алу
+  let weather = null;
+  if (isNight) {
+    weather = await getKyzylordaWeather();
+  }
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -155,10 +167,11 @@ async function checkAccess() {
         justify-content: center;
         background: linear-gradient(135deg, #0b1a2e, #1a2f3f);
         padding: 20px;
+        font-family: 'Nunito', sans-serif;
       `;
       
       let weatherDisplay = '';
-      if (weather) {
+      if (isNight && weather) {
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -168,14 +181,14 @@ async function checkAccess() {
             text-align: center;
             border: 1px solid rgba(255,255,255,0.2);
           ">
-            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌍 Қызылорда қаласында</div>
+            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
               <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
-              <div style="font-size: 36px; font-weight: 700;">${weather.temp}°C</div>
+              <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
               <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
             </div>
             <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
-              <div>🌡️ Сезіледі: ${weather.feelslike}°C</div>
+              <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
               <div>💧 Ылғалдылық: ${weather.humidity}%</div>
               <div>🌬️ Жел: ${weather.wind} км/сағ</div>
             </div>
@@ -256,7 +269,7 @@ function startTimeChecker() {
   setInterval(async () => {
     const { isAccessAllowed } = getTimeInfo();
     
-    // Уақыт баннерін жаңарту (ауа райымен)
+    // Уақыт баннерін жаңарту
     await addTimeBanner();
     
     if (!isAccessAllowed) {
@@ -655,7 +668,7 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу (ауа райымен)
+  // Уақыт баннерін қосу (тек түнде ауа райы көрсетіледі)
   addTimeBanner();
   
   // Қолжетімділікті тексеру
