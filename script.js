@@ -1,5 +1,35 @@
 'use strict';
 
+// Қызылорда ауа райын алу функциясы
+async function getKyzylordaWeather() {
+  try {
+    // Сіздің API кілтіңіз
+    const API_KEY = '4c249f5920cb4d78b1d183152261403';
+    
+    const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=Kyzylorda&lang=kk&aqi=no`);
+    
+    if (!response.ok) {
+      throw new Error('Ауа райын алу мүмкін болмады');
+    }
+    
+    const data = await response.json();
+    
+    return {
+      temp: Math.round(data.current.temp_c),
+      condition: data.current.condition.text,
+      icon: data.current.condition.icon,
+      wind: data.current.wind_kph,
+      feelslike: Math.round(data.current.feelslike_c),
+      humidity: data.current.humidity,
+      city: 'Қызылорда',
+      localtime: data.location.localtime.split(' ')[1]
+    };
+  } catch (error) {
+    console.log('Ауа райын алу мүмкін болмады:', error);
+    return null;
+  }
+}
+
 // Уақытқа байланысты қолжетімділік және хабарламалар
 function getTimeInfo() {
   const now = new Date();
@@ -7,7 +37,6 @@ function getTimeInfo() {
   const minutes = now.getMinutes();
   const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
   
-  let timeMessage = '';
   let greeting = '';
   let icon = '';
   let isAccessAllowed = true;
@@ -21,27 +50,26 @@ function getTimeInfo() {
   if (hours >= 7 && hours < 12) {
     greeting = 'Қайырлы таң!';
     icon = '🌅';
-    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   } else if (hours >= 12 && hours < 18) {
     greeting = 'Қайырлы күн!';
     icon = '☀️';
-    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   } else if (hours >= 18 && hours < 22) {
     greeting = 'Қайырлы кеш!';
     icon = '🌆';
-    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   } else {
     greeting = 'Қайырлы түн!';
     icon = '🌙';
-    timeMessage = `${icon} ${greeting} Қазақстан уақыты ${currentTime}`;
   }
   
-  return { timeMessage, greeting, icon, isAccessAllowed, hours, currentTime };
+  return { greeting, icon, isAccessAllowed, hours, currentTime };
 }
 
 // Уақыт баннерін қосу
-function addTimeBanner() {
-  const { timeMessage } = getTimeInfo();
+async function addTimeBanner() {
+  const { greeting, icon, currentTime } = getTimeInfo();
+  
+  // Ауа райын алу
+  const weather = await getKyzylordaWeather();
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -50,35 +78,65 @@ function addTimeBanner() {
   // Жаңа баннер жасау
   const banner = document.createElement('div');
   banner.id = 'time-banner';
-  banner.textContent = timeMessage;
+  
+  let weatherHtml = '';
+  if (weather) {
+    weatherHtml = `
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-weight: 600;">🌍 Қызылорда</span>
+        <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 24px; height: 24px;">
+        <span style="font-weight: 700;">${weather.temp}°C</span>
+        <span style="opacity: 0.9;">${weather.condition}</span>
+        <span>🌡️ ${weather.feelslike}°C</span>
+        <span>💧 ${weather.humidity}%</span>
+        <span>🌬️ ${weather.wind} км/сағ</span>
+      </div>
+    `;
+  } else {
+    weatherHtml = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span>🌍 Қызылорда</span>
+        <span>⏳ Жүктелуде...</span>
+      </div>
+    `;
+  }
+  
+  banner.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span>${icon}</span>
+        <span>${greeting}</span>
+        <span style="opacity: 0.8;">${currentTime}</span>
+      </div>
+      ${weatherHtml}
+    </div>
+  `;
   
   // Баннерге стиль қосу
   banner.style.cssText = `
-    background: linear-gradient(135deg, #3b5bdb, #2f4ac8);
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: white;
-    text-align: center;
-    padding: 10px;
-    font-weight: bold;
-    font-size: 16px;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 500;
     position: sticky;
     top: 0;
     z-index: 9999;
     width: 100%;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
   `;
   
   // Баннерді body-дің басына қосу
   document.body.insertBefore(banner, document.body.firstChild);
-  
-  // Барлық беттердің margin-ін түзету
-  document.querySelectorAll('.page').forEach(page => {
-    page.style.marginTop = '0';
-  });
 }
 
 // Қолжетімділікті тексеру
-function checkAccess() {
-  const { isAccessAllowed, timeMessage, greeting, icon, currentTime } = getTimeInfo();
+async function checkAccess() {
+  const { isAccessAllowed, greeting, icon, currentTime } = getTimeInfo();
+  
+  // Ауа райын алу
+  const weather = await getKyzylordaWeather();
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -95,133 +153,92 @@ function checkAccess() {
         min-height: 100vh;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #0d1117, #1a1f3c);
+        background: linear-gradient(135deg, #0b1a2e, #1a2f3f);
         padding: 20px;
       `;
       
+      let weatherDisplay = '';
+      if (weather) {
+        weatherDisplay = `
+          <div style="
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+          ">
+            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌍 Қызылорда қаласында</div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+              <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
+              <div style="font-size: 36px; font-weight: 700;">${weather.temp}°C</div>
+              <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
+              <div>🌡️ Сезіледі: ${weather.feelslike}°C</div>
+              <div>💧 Ылғалдылық: ${weather.humidity}%</div>
+              <div>🌬️ Жел: ${weather.wind} км/сағ</div>
+            </div>
+          </div>
+        `;
+      }
+      
       accessDeniedPage.innerHTML = `
         <div style="
-          background: rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.05);
           backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.2);
+          border: 1px solid rgba(255,255,255,0.15);
           border-radius: 30px;
           padding: 40px;
-          max-width: 500px;
+          max-width: 550px;
           width: 100%;
           text-align: center;
           color: white;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-          animation: fadeIn 0.5s ease;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         ">
-          <div style="font-size: 80px; margin-bottom: 20px; animation: float 3s infinite;">${icon}</div>
-          <h1 style="font-size: 32px; margin-bottom: 20px;">Қолжетімділік шектелген</h1>
-          <p style="font-size: 18px; margin-bottom: 20px;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+          <div style="font-size: 80px; margin-bottom: 20px;">${icon}</div>
+          <h1 style="font-size: 32px; margin-bottom: 15px;">Қолжетімділік шектелген</h1>
+          <p style="font-size: 16px; margin-bottom: 20px; opacity: 0.9;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+          
           <div style="
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.1);
             padding: 15px;
-            border-radius: 50px;
-            margin-bottom: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
             font-size: 20px;
-            font-weight: bold;
-          ">${icon} ${greeting} Қазақстан уақыты ${currentTime}</div>
+          ">
+            ${icon} ${greeting} Қазір ${currentTime}
+          </div>
+          
+          ${weatherDisplay}
+          
           <div style="
             background: rgba(0,0,0,0.3);
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 20px;
-            margin-bottom: 30px;
-            text-align: left;
+            margin-top: 20px;
           ">
-            <div style="
-              display: flex;
-              align-items: center;
-              gap: 15px;
-              padding: 10px;
-              background: rgba(46,204,113,0.2);
-              border-radius: 10px;
-              margin-bottom: 10px;
-            ">
+            <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(46,204,113,0.15); border-radius: 10px; margin-bottom: 10px;">
               <span style="font-size: 24px;">✅</span>
-              <span>Қолжетімді: 07:00 - 22:00</span>
+              <div style="text-align: left;">
+                <div style="font-weight: 600;">Қолжетімді</div>
+                <div style="opacity: 0.8;">07:00 - 22:00</div>
+              </div>
             </div>
-            <div style="
-              display: flex;
-              align-items: center;
-              gap: 15px;
-              padding: 10px;
-              background: rgba(231,76,60,0.2);
-              border-radius: 10px;
-            ">
+            <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(231,76,60,0.15); border-radius: 10px;">
               <span style="font-size: 24px;">❌</span>
-              <span>Қолжетімсіз: 22:00 - 07:00</span>
+              <div style="text-align: left;">
+                <div style="font-weight: 600;">Қолжетімсіз</div>
+                <div style="opacity: 0.8;">22:00 - 07:00</div>
+              </div>
             </div>
           </div>
-          <p style="font-size: 20px; font-style: italic;">Қайта келіңіз! ${icon}</p>
+          
+          <p style="font-size: 18px; margin-top: 25px; opacity: 0.8;">Қайта келіңіз! ${icon}</p>
         </div>
-        <style>
-          @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-          }
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-        </style>
       `;
       
       document.body.appendChild(accessDeniedPage);
-    } else {
-      // Қолжетімсіздік бетін жаңарту
-      const deniedDiv = accessDeniedPage.querySelector('div');
-      if (deniedDiv) {
-        deniedDiv.innerHTML = `
-          <div style="font-size: 80px; margin-bottom: 20px; animation: float 3s infinite;">${icon}</div>
-          <h1 style="font-size: 32px; margin-bottom: 20px;">Қолжетімділік шектелген</h1>
-          <p style="font-size: 18px; margin-bottom: 20px;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
-          <div style="
-            background: rgba(255,255,255,0.15);
-            padding: 15px;
-            border-radius: 50px;
-            margin-bottom: 30px;
-            font-size: 20px;
-            font-weight: bold;
-          ">${icon} ${greeting} Қазақстан уақыты ${currentTime}</div>
-          <div style="
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
-            text-align: left;
-          ">
-            <div style="
-              display: flex;
-              align-items: center;
-              gap: 15px;
-              padding: 10px;
-              background: rgba(46,204,113,0.2);
-              border-radius: 10px;
-              margin-bottom: 10px;
-            ">
-              <span style="font-size: 24px;">✅</span>
-              <span>Қолжетімді: 07:00 - 22:00</span>
-            </div>
-            <div style="
-              display: flex;
-              align-items: center;
-              gap: 15px;
-              padding: 10px;
-              background: rgba(231,76,60,0.2);
-              border-radius: 10px;
-            ">
-              <span style="font-size: 24px;">❌</span>
-              <span>Қолжетімсіз: 22:00 - 07:00</span>
-            </div>
-          </div>
-          <p style="font-size: 20px; font-style: italic;">Қайта келіңіз! ${icon}</p>
-        `;
-      }
-      accessDeniedPage.classList.add('active');
-      accessDeniedPage.style.display = 'flex';
     }
     return false;
   }
@@ -231,24 +248,23 @@ function checkAccess() {
 // Уақытты тексеру
 function startTimeChecker() {
   // Бірінші тексеру
-  if (!checkAccess()) {
-    return false;
-  }
+  setTimeout(() => {
+    checkAccess();
+  }, 1000);
   
-  // Әр минут сайын тексеру
-  setInterval(() => {
+  // Әр 5 минут сайын тексеру (ауа райы жаңарту)
+  setInterval(async () => {
     const { isAccessAllowed } = getTimeInfo();
     
-    // Уақыт баннерін жаңарту
-    addTimeBanner();
+    // Уақыт баннерін жаңарту (ауа райымен)
+    await addTimeBanner();
     
     if (!isAccessAllowed) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       
       const accessDeniedPage = document.getElementById('page-access-denied');
       if (accessDeniedPage) {
-        // Қолжетімсіздік бетін жаңарту
-        checkAccess();
+        await checkAccess();
         accessDeniedPage.classList.add('active');
         accessDeniedPage.style.display = 'flex';
       }
@@ -260,7 +276,7 @@ function startTimeChecker() {
         document.getElementById('page-login').classList.add('active');
       }
     }
-  }, 60000);
+  }, 300000); // 5 минут
   
   return true;
 }
@@ -639,27 +655,27 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу
+  // Уақыт баннерін қосу (ауа райымен)
   addTimeBanner();
   
   // Қолжетімділікті тексеру
-  const hasAccess = checkAccess();
+  setTimeout(() => {
+    checkAccess();
+  }, 1000);
   
-  if (hasAccess) {
-    const pwInput = document.getElementById('pw-in');
-    if (pwInput) {
-      pwInput.addEventListener('input', () => {
-        document.getElementById('pw-err').classList.add('hidden');
-      });
-      
-      pwInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') checkPw();
-      });
-    }
+  const pwInput = document.getElementById('pw-in');
+  if (pwInput) {
+    pwInput.addEventListener('input', () => {
+      document.getElementById('pw-err').classList.add('hidden');
+    });
     
-    lockContent();
-    startTimeChecker();
+    pwInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPw();
+    });
   }
+  
+  lockContent();
+  startTimeChecker();
 });
 
 window.checkPw = checkPw;
