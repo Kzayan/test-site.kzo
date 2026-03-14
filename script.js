@@ -103,16 +103,19 @@ const QUESTIONS = [
   {question:"Бағдарламалық код сапасының негізгі көрсеткіші:",options:["Қатесіз жұмыс","Ұзындығы","Түсі","Форматы","Архив көлемі"],correct:0}
 ];
 
-let shuffled = [], curIdx = 0, score = 0;
-let timerID = null, timeLeft = 1800;
-let eyeTimer = null;
-let isDark = false, isWarm = false, isLarge = false;
-let toastT = null;
+var answered = false;
+var shuffled = [], curIdx = 0, score = 0;
+var timerID = null, timeLeft = 1800;
+var eyeTimer = null;
+var isDark = false, isWarm = false, isLarge = false;
+var toastT = null;
 
 window.addEventListener('DOMContentLoaded', lockContent);
 
 function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.classList.remove('active');
+  });
   document.getElementById(id).classList.add('active');
 }
 
@@ -148,6 +151,8 @@ function startTest() {
 }
 
 function renderQ() {
+  answered = false;
+
   var q = shuffled[curIdx];
   var total = shuffled.length;
   var LTRS = ['A','B','C','D','E','F','G'];
@@ -165,9 +170,14 @@ function renderQ() {
   order.forEach(function(origIdx, pos) {
     var btn = document.createElement('button');
     btn.className = 'opt';
-    btn.dataset.orig = origIdx;
+    btn.dataset.orig = String(origIdx);
     btn.innerHTML = '<span class="opt-L">' + LTRS[pos] + '</span><span>' + q.options[origIdx] + '</span>';
-    btn.addEventListener('click', function() { handleAnswer(btn, origIdx, q.correct); });
+    btn.addEventListener('click', function() {
+      if (!answered) {
+        answered = true;
+        handleAnswer(origIdx, q.correct);
+      }
+    });
     cont.appendChild(btn);
   });
 
@@ -177,26 +187,38 @@ function renderQ() {
   card.style.animation = '';
 }
 
-function handleAnswer(btn, selIdx, corrIdx) {
+function handleAnswer(selIdx, corrIdx) {
   var all = document.querySelectorAll('.opt');
-  all.forEach(function(b) { b.classList.add('locked'); });
+
+  all.forEach(function(b) {
+    b.disabled = true;
+    b.style.pointerEvents = 'none';
+  });
 
   var ok = (selIdx === corrIdx);
+
+  all.forEach(function(b) {
+    var orig = Number(b.dataset.orig);
+    if (orig === selIdx) {
+      b.classList.add(ok ? 'correct' : 'wrong');
+    }
+    if (!ok && orig === corrIdx) {
+      b.classList.add('correct');
+    }
+  });
+
   if (ok) {
-    btn.classList.add('correct');
     score++;
     document.getElementById('score-live').textContent = '✅ ' + score;
-  } else {
-    btn.classList.add('wrong');
-    all.forEach(function(b) {
-      if (Number(b.dataset.orig) === corrIdx) b.classList.add('correct');
-    });
   }
 
   setTimeout(function() {
     curIdx++;
-    if (curIdx >= shuffled.length) finishTest(false);
-    else renderQ();
+    if (curIdx >= shuffled.length) {
+      finishTest(false);
+    } else {
+      renderQ();
+    }
   }, ok ? 1100 : 1700);
 }
 
@@ -206,7 +228,10 @@ function startTimer() {
   timerID = setInterval(function() {
     timeLeft--;
     updateTimer();
-    if (timeLeft <= 0) { clearInterval(timerID); finishTest(true); }
+    if (timeLeft <= 0) {
+      clearInterval(timerID);
+      finishTest(true);
+    }
   }, 1000);
 }
 
@@ -221,6 +246,7 @@ function updateTimer() {
 function finishTest(timeout) {
   clearInterval(timerID);
   clearTimeout(eyeTimer);
+
   var total = shuffled.length;
   var wrong = total - score;
   var pct = Math.round(score / total * 100);
@@ -234,6 +260,7 @@ function finishTest(timeout) {
   document.getElementById('res-emoji').textContent = resEmoji(pct, timeout);
 
   showPage('page-result');
+
   requestAnimationFrame(function() {
     requestAnimationFrame(function() {
       document.getElementById('res-prog').style.width = pct + '%';
@@ -266,14 +293,22 @@ function goHome() {
 
 function toggleDark() {
   isDark = !isDark;
-  if (isDark) { isWarm = false; document.body.classList.remove('warm'); setOn('btn-warm', false); }
+  if (isDark) {
+    isWarm = false;
+    document.body.classList.remove('warm');
+    setOn('btn-warm', false);
+  }
   document.body.classList.toggle('dark', isDark);
   setOn('btn-dark', isDark);
 }
 
 function toggleWarm() {
   isWarm = !isWarm;
-  if (isWarm) { isDark = false; document.body.classList.remove('dark'); setOn('btn-dark', false); }
+  if (isWarm) {
+    isDark = false;
+    document.body.classList.remove('dark');
+    setOn('btn-dark', false);
+  }
   document.body.classList.toggle('warm', isWarm);
   setOn('btn-warm', isWarm);
 }
@@ -285,13 +320,17 @@ function toggleFont() {
 }
 
 function setOn(id, on) {
-  document.querySelectorAll('#' + id).forEach(function(b) { b.classList.toggle('on', on); });
+  document.querySelectorAll('#' + id).forEach(function(b) {
+    b.classList.toggle('on', on);
+  });
 }
 
 function shuffle(arr) {
   for (var i = arr.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
-    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    var t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
   }
   return arr;
 }
@@ -333,4 +372,4 @@ function lockContent() {
   });
 
   document.addEventListener('dragstart', function(e) { e.preventDefault(); });
-   }
+}
