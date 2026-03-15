@@ -1,3 +1,4 @@
+```javascript
 // ============ ТЕХНИКАЛЫҚ ЖҰМЫСТАР ============
 // САЙТ ТОЛЫҒЫМЕН ЖАБЫҚ
 document.documentElement.innerHTML = `
@@ -12,6 +13,10 @@ document.documentElement.innerHTML = `
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
       body {
         background: #000;
@@ -45,8 +50,25 @@ document.documentElement.innerHTML = `
       <p>Сайтта техникалық жұмыстар жүргізілуде</p>
       <p>Ашылу уақыты: 07:00</p>
     </div>
+
+    <script>
+      // Мәтінді көшіруге тыйым салу
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('copy', e => e.preventDefault());
+      document.addEventListener('cut', e => e.preventDefault());
+      document.addEventListener('paste', e => e.preventDefault());
+      document.addEventListener('keydown', e => {
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'x' || e.key === 'v')) {
+          e.preventDefault();
+        }
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+          e.preventDefault();
+        }
+      });
+    </script>
   </body>
   </html>
 `;
 
 throw new Error('Техникалық жұмыстар');
+```
