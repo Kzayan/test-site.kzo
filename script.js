@@ -698,3 +698,113 @@ window.toggleWarm = toggleWarm;
 window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
+
+// ============ ҚАЙРАТ НҰРТАС - ОЛ СЕН ЕМЕС (жасырын YouTube аудио) ============
+let kairatPlayer = null;
+let isKairatPlaying = false;
+
+// YouTube API жүктеу
+function loadKairatYouTubeAPI() {
+  if (document.getElementById('kairat-youtube-api')) return;
+  
+  const tag = document.createElement('script');
+  tag.id = 'kairat-youtube-api';
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.body.appendChild(tag);
+}
+
+// YouTube API дайын болғанда
+window.onYouTubeIframeAPIReady = function() {
+  if (!kairatPlayer) {
+    kairatPlayer = new YT.Player('kairat-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: 'uZy0-fQOBj8',
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 1,
+        'playlist': 'uZy0-fQOBj8'
+      }
+    });
+  }
+};
+
+// Музыка контроллерін қосу
+function addKairatMusicControl() {
+  // Жасырын плеер қосу
+  if (!document.getElementById('kairat-youtube-player')) {
+    const playerDiv = document.createElement('div');
+    playerDiv.id = 'kairat-youtube-player';
+    playerDiv.style.display = 'none';
+    document.body.appendChild(playerDiv);
+  }
+  
+  // Контроллер бар ма?
+  if (document.getElementById('kairat-music-control')) return;
+  
+  const musicControl = document.createElement('div');
+  musicControl.id = 'kairat-music-control';
+  musicControl.innerHTML = `
+    <div style="
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      z-index: 9999;
+      background: linear-gradient(135deg, #8B0000, #4A0404);
+      border: 1px solid rgba(255,215,0,0.3);
+      border-radius: 50px;
+      padding: 8px 15px 8px 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s;
+    " onclick="toggleKairatMusic()">
+      <div style="
+        width: 35px;
+        height: 35px;
+        background: gold;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #8B0000;
+        font-size: 18px;
+        font-weight: bold;
+      " id="kairat-icon">▶️</div>
+      <div>
+        <div style="font-weight: 700; font-size: 13px;">Қайрат Нұртас</div>
+        <div style="font-size: 11px; opacity: 0.9;">Ол сен емес</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(musicControl);
+  
+  loadKairatYouTubeAPI();
+}
+
+// Музыканы басқару
+window.toggleKairatMusic = function() {
+  if (!kairatPlayer) return;
+  
+  if (isKairatPlaying) {
+    kairatPlayer.pauseVideo();
+    document.getElementById('kairat-icon').innerHTML = '▶️';
+  } else {
+    kairatPlayer.playVideo();
+    document.getElementById('kairat-icon').innerHTML = '⏸️';
+  }
+  
+  isKairatPlaying = !isKairatPlaying;
+};
+
+// Бет жүктелгеннен кейін 3 секундтан соң қосу
+setTimeout(addKairatMusicControl, 3000);
