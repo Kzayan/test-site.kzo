@@ -751,62 +751,130 @@ window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 
-// ============ 9 ГРАММ – ДЭНС (жасырын YouTube аудио) ============
+// ============ ЕКІ МУЗЫКА ҚАТАРЫНАН (YouTube плеер) ============
+let kairatPlayer = null;
 let densPlayer = null;
+let isKairatPlaying = false;
 let isDensPlaying = false;
+let currentPlaylist = ['uZy0-fQOBj8', '5KDZD86MWYU']; // Қайрат Нұртас, 9 Грамм
+let currentTrackIndex = 0;
+let playlistInterval = null;
 
 // YouTube API жүктеу
-function loadDensYouTubeAPI() {
-  if (document.getElementById('dens-youtube-api')) return;
+function loadMusicYouTubeAPI() {
+  if (document.getElementById('music-youtube-api')) return;
   
   const tag = document.createElement('script');
-  tag.id = 'dens-youtube-api';
+  tag.id = 'music-youtube-api';
   tag.src = 'https://www.youtube.com/iframe_api';
   document.body.appendChild(tag);
 }
 
 // YouTube API дайын болғанда
 window.onYouTubeIframeAPIReady = function() {
-  if (!densPlayer) {
-    densPlayer = new YT.Player('dens-youtube-player', {
+  if (!kairatPlayer) {
+    kairatPlayer = new YT.Player('kairat-youtube-player', {
       height: '0',
       width: '0',
-      videoId: '5KDZD86MWYU', // 9 Грамм – ДЭНС
+      videoId: currentPlaylist[0],
       playerVars: {
         'autoplay': 0,
         'controls': 0,
         'disablekb': 1,
         'enablejsapi': 1,
         'fs': 0,
-        'loop': 1,
-        'playlist': '5KDZD86MWYU'
+        'loop': 0
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+  
+  if (!densPlayer) {
+    densPlayer = new YT.Player('dens-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: currentPlaylist[1],
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 0
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
       }
     });
   }
 };
 
+// Плеер күйі өзгергенде
+function onPlayerStateChange(event) {
+  // Егер видео аяқталса (state = 0)
+  if (event.data === 0) {
+    // Келесі трекке өту
+    playNextTrack();
+  }
+}
+
+// Келесі тректі ойнату
+function playNextTrack() {
+  currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+  
+  // Барлық плеерлерді тоқтату
+  if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
+  if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
+  
+  // Жаңа тректі ойнату
+  if (currentTrackIndex === 0) {
+    if (kairatPlayer && kairatPlayer.playVideo) {
+      kairatPlayer.playVideo();
+      isKairatPlaying = true;
+      isDensPlaying = false;
+      updateMusicIcons();
+    }
+  } else {
+    if (densPlayer && densPlayer.playVideo) {
+      densPlayer.playVideo();
+      isDensPlaying = true;
+      isKairatPlaying = false;
+      updateMusicIcons();
+    }
+  }
+}
+
 // Музыка контроллерін қосу
-function addDensMusicControl() {
-  // Жасырын плеер қосу
+function addMusicControl() {
+  // Жасырын плеерлер қосу
+  if (!document.getElementById('kairat-youtube-player')) {
+    const playerDiv1 = document.createElement('div');
+    playerDiv1.id = 'kairat-youtube-player';
+    playerDiv1.style.display = 'none';
+    document.body.appendChild(playerDiv1);
+  }
+  
   if (!document.getElementById('dens-youtube-player')) {
-    const playerDiv = document.createElement('div');
-    playerDiv.id = 'dens-youtube-player';
-    playerDiv.style.display = 'none';
-    document.body.appendChild(playerDiv);
+    const playerDiv2 = document.createElement('div');
+    playerDiv2.id = 'dens-youtube-player';
+    playerDiv2.style.display = 'none';
+    document.body.appendChild(playerDiv2);
   }
   
   // Контроллер бар ма?
-  if (document.getElementById('dens-music-control')) return;
+  if (document.getElementById('music-control')) return;
   
   const musicControl = document.createElement('div');
-  musicControl.id = 'dens-music-control';
+  musicControl.id = 'music-control';
   musicControl.innerHTML = `
     <div style="
       position: fixed;
       bottom: 80px;
       right: 20px;
       z-index: 9999;
-      background: linear-gradient(135deg, #2C3E50, #3498DB);
+      background: linear-gradient(135deg, #8B0000, #4A0404);
       border: 1px solid rgba(255,215,0,0.3);
       border-radius: 50px;
       padding: 8px 15px 8px 8px;
@@ -819,44 +887,121 @@ function addDensMusicControl() {
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
       transition: all 0.3s;
-    " onclick="toggleDensMusic()">
+    " onclick="toggleMusic()">
       <div style="
         width: 35px;
         height: 35px;
-        background: #FFD700;
+        background: gold;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #2C3E50;
+        color: #8B0000;
         font-size: 18px;
         font-weight: bold;
-      " id="dens-icon">▶️</div>
+      " id="music-icon">▶️</div>
       <div>
-        <div style="font-weight: 700; font-size: 13px;">9 Грамм</div>
-        <div style="font-size: 11px; opacity: 0.9;">ДЭНС</div>
+        <div style="font-weight: 700; font-size: 13px;" id="music-title">Қайрат Нұртас</div>
+        <div style="font-size: 11px; opacity: 0.9;" id="music-subtitle">Ол сен емес</div>
       </div>
     </div>
   `;
   document.body.appendChild(musicControl);
   
-  loadDensYouTubeAPI();
+  loadMusicYouTubeAPI();
 }
 
 // Музыканы басқару
-window.toggleDensMusic = function() {
-  if (!densPlayer) return;
+window.toggleMusic = function() {
+  if (!kairatPlayer || !densPlayer) return;
   
-  if (isDensPlaying) {
-    densPlayer.pauseVideo();
-    document.getElementById('dens-icon').innerHTML = '▶️';
+  if (isKairatPlaying || isDensPlaying) {
+    // Тоқтату
+    if (kairatPlayer && kairatPlayer.pauseVideo) kairatPlayer.pauseVideo();
+    if (densPlayer && densPlayer.pauseVideo) densPlayer.pauseVideo();
+    isKairatPlaying = false;
+    isDensPlaying = false;
+    document.getElementById('music-icon').innerHTML = '▶️';
+    
+    // Интервалды тазалау
+    if (playlistInterval) {
+      clearInterval(playlistInterval);
+      playlistInterval = null;
+    }
   } else {
-    densPlayer.playVideo();
-    document.getElementById('dens-icon').innerHTML = '⏸️';
+    // Бастау - қай трек ойнап тұрғанын тексеру
+    if (currentTrackIndex === 0) {
+      kairatPlayer.playVideo();
+      isKairatPlaying = true;
+    } else {
+      densPlayer.playVideo();
+      isDensPlaying = true;
+    }
+    document.getElementById('music-icon').innerHTML = '⏸️';
+    
+    // Әр 3 секунд сайын трек атауын жаңарту
+    if (!playlistInterval) {
+      playlistInterval = setInterval(updateMusicInfo, 3000);
+    }
   }
+};
+
+// Музыка ақпаратын жаңарту
+function updateMusicInfo() {
+  const titleEl = document.getElementById('music-title');
+  const subtitleEl = document.getElementById('music-subtitle');
   
-  isDensPlaying = !isDensPlaying;
+  if (isKairatPlaying) {
+    titleEl.textContent = 'Қайрат Нұртас';
+    subtitleEl.textContent = 'Ол сен емес';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B0000, #4A0404)';
+  } else if (isDensPlaying) {
+    titleEl.textContent = '9 Грамм';
+    subtitleEl.textContent = 'ДЭНС';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #2C3E50, #3498DB)';
+  }
+}
+
+// Иконкаларды жаңарту
+function updateMusicIcons() {
+  if (isKairatPlaying || isDensPlaying) {
+    document.getElementById('music-icon').innerHTML = '⏸️';
+  } else {
+    document.getElementById('music-icon').innerHTML = '▶️';
+  }
+  updateMusicInfo();
+}
+
+// Келесі трекке қолмен өту
+window.nextTrack = function() {
+  playNextTrack();
+};
+
+// Алдыңғы трекке қолмен өту
+window.prevTrack = function() {
+  currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+  
+  // Барлық плеерлерді тоқтату
+  if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
+  if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
+  
+  // Жаңа тректі ойнату
+  if (currentTrackIndex === 0) {
+    if (kairatPlayer && kairatPlayer.playVideo) {
+      kairatPlayer.playVideo();
+      isKairatPlaying = true;
+      isDensPlaying = false;
+      updateMusicIcons();
+    }
+  } else {
+    if (densPlayer && densPlayer.playVideo) {
+      densPlayer.playVideo();
+      isDensPlaying = true;
+      isKairatPlaying = false;
+      updateMusicIcons();
+    }
+  }
 };
 
 // Бет жүктелгеннен кейін 3 секундтан соң қосу
-setTimeout(addDensMusicControl, 3000);
+setTimeout(addMusicControl, 3000);
