@@ -751,27 +751,27 @@ window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 
-// ============ ҚАЙРАТ НҰРТАС - ОЛ СЕН ЕМЕС (жасырын YouTube аудио) ============
-let kairatPlayer = null;
-let isKairatPlaying = false;
+// ============ 9 ГРАММ – ДЭНС (жасырын YouTube аудио) ============
+let densPlayer = null;
+let isDensPlaying = false;
 
 // YouTube API жүктеу
-function loadKairatYouTubeAPI() {
-  if (document.getElementById('kairat-youtube-api')) return;
+function loadDensYouTubeAPI() {
+  if (document.getElementById('dens-youtube-api')) return;
   
   const tag = document.createElement('script');
-  tag.id = 'kairat-youtube-api';
+  tag.id = 'dens-youtube-api';
   tag.src = 'https://www.youtube.com/iframe_api';
   document.body.appendChild(tag);
 }
 
 // YouTube API дайын болғанда
 window.onYouTubeIframeAPIReady = function() {
-  if (!kairatPlayer) {
-    kairatPlayer = new YT.Player('kairat-youtube-player', {
+  if (!densPlayer) {
+    densPlayer = new YT.Player('dens-youtube-player', {
       height: '0',
       width: '0',
-      videoId: 'uZy0-fQOBj8',
+      videoId: '5KDZD86MWYU', // 9 Грамм – ДЭНС
       playerVars: {
         'autoplay': 0,
         'controls': 0,
@@ -779,34 +779,34 @@ window.onYouTubeIframeAPIReady = function() {
         'enablejsapi': 1,
         'fs': 0,
         'loop': 1,
-        'playlist': 'uZy0-fQOBj8'
+        'playlist': '5KDZD86MWYU'
       }
     });
   }
 };
 
 // Музыка контроллерін қосу
-function addKairatMusicControl() {
+function addDensMusicControl() {
   // Жасырын плеер қосу
-  if (!document.getElementById('kairat-youtube-player')) {
+  if (!document.getElementById('dens-youtube-player')) {
     const playerDiv = document.createElement('div');
-    playerDiv.id = 'kairat-youtube-player';
+    playerDiv.id = 'dens-youtube-player';
     playerDiv.style.display = 'none';
     document.body.appendChild(playerDiv);
   }
   
   // Контроллер бар ма?
-  if (document.getElementById('kairat-music-control')) return;
+  if (document.getElementById('dens-music-control')) return;
   
   const musicControl = document.createElement('div');
-  musicControl.id = 'kairat-music-control';
+  musicControl.id = 'dens-music-control';
   musicControl.innerHTML = `
     <div style="
       position: fixed;
       bottom: 80px;
       right: 20px;
       z-index: 9999;
-      background: linear-gradient(135deg, #8B0000, #4A0404);
+      background: linear-gradient(135deg, #2C3E50, #3498DB);
       border: 1px solid rgba(255,215,0,0.3);
       border-radius: 50px;
       padding: 8px 15px 8px 8px;
@@ -819,44 +819,44 @@ function addKairatMusicControl() {
       font-family: 'Nunito', sans-serif;
       cursor: pointer;
       transition: all 0.3s;
-    " onclick="toggleKairatMusic()">
+    " onclick="toggleDensMusic()">
       <div style="
         width: 35px;
         height: 35px;
-        background: gold;
+        background: #FFD700;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #8B0000;
+        color: #2C3E50;
         font-size: 18px;
         font-weight: bold;
-      " id="kairat-icon">▶️</div>
+      " id="dens-icon">▶️</div>
       <div>
-        <div style="font-weight: 700; font-size: 13px;">Қайрат Нұртас</div>
-        <div style="font-size: 11px; opacity: 0.9;">Ол сен емес</div>
+        <div style="font-weight: 700; font-size: 13px;">9 Грамм</div>
+        <div style="font-size: 11px; opacity: 0.9;">ДЭНС</div>
       </div>
     </div>
   `;
   document.body.appendChild(musicControl);
   
-  loadKairatYouTubeAPI();
+  loadDensYouTubeAPI();
 }
 
 // Музыканы басқару
-window.toggleKairatMusic = function() {
-  if (!kairatPlayer) return;
+window.toggleDensMusic = function() {
+  if (!densPlayer) return;
   
-  if (isKairatPlaying) {
-    kairatPlayer.pauseVideo();
-    document.getElementById('kairat-icon').innerHTML = '▶️';
+  if (isDensPlaying) {
+    densPlayer.pauseVideo();
+    document.getElementById('dens-icon').innerHTML = '▶️';
   } else {
-    kairatPlayer.playVideo();
-    document.getElementById('kairat-icon').innerHTML = '⏸️';
+    densPlayer.playVideo();
+    document.getElementById('dens-icon').innerHTML = '⏸️';
   }
   
-  isKairatPlaying = !isKairatPlaying;
+  isDensPlaying = !isDensPlaying;
 };
 
 // Бет жүктелгеннен кейін 3 секундтан соң қосу
-setTimeout(addKairatMusicControl, 3000);
+setTimeout(addDensMusicControl, 3000);
