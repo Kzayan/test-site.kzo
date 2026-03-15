@@ -11,23 +11,19 @@ async function getKyzylordaWeather() {
   
   // Егер кэш әлі жаңа болса, соны қайтару
   if (cachedWeather && (now - lastWeatherFetch < WEATHER_FETCH_INTERVAL)) {
-    console.log('Ауа райы кэштен алынды');
     return cachedWeather;
   }
   
   try {
-    // Сіздің нақты API кілтіңіз
     const API_KEY = '4c249f5920cb4d78b1d183152261403';
     
     const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=Kyzylorda&lang=kk&aqi=no`);
     
     if (!response.ok) {
-      console.log('API жауап коды:', response.status);
       throw new Error('Ауа райын алу мүмкін болмады');
     }
     
     const data = await response.json();
-    console.log('Ауа райы деректері жаңартылды:', data);
     
     cachedWeather = {
       temp: Math.round(data.current.temp_c),
@@ -43,8 +39,7 @@ async function getKyzylordaWeather() {
     lastWeatherFetch = now;
     return cachedWeather;
   } catch (error) {
-    console.log('Ауа райын алу мүмкін болмады:', error);
-    return cachedWeather; // Қате болса, ескі кэшті қайтару
+    return cachedWeather;
   }
 }
 
@@ -61,13 +56,11 @@ function getTimeInfo() {
   let isAccessAllowed = true;
   let isNight = false;
   
-  // Қолжетімділікті тексеру (таңғы 7:00 - кешкі 22:00)
   if (hours >= 22 || hours < 7) {
     isAccessAllowed = false;
     isNight = true;
   }
   
-  // Уақытқа байланысты хабарлама
   if (hours >= 7 && hours < 12) {
     greeting = 'Қайырлы таң!';
     icon = '🌅';
@@ -85,29 +78,63 @@ function getTimeInfo() {
   return { greeting, icon, isAccessAllowed, hours, currentTime, isNight };
 }
 
-// Уақыт баннерін қосу
-async function addTimeBanner() {
+// Баннерді жаңарту
+async function updateTimeBanner() {
   const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын уақытқа байланысты көрсету
   let weather = null;
   if (isNight) {
     weather = await getKyzylordaWeather();
   }
   
-  // Ескі баннерді өшіру
+  const banner = document.getElementById('time-banner');
+  if (!banner) return;
+  
+  const greetingSpan = banner.querySelector('.greeting-text');
+  const timeSpan = banner.querySelector('.time-text');
+  const weatherDiv = banner.querySelector('.weather-info');
+  
+  if (greetingSpan) {
+    greetingSpan.innerHTML = `${icon} ${greeting}`;
+  }
+  
+  if (timeSpan) {
+    timeSpan.textContent = currentTime;
+  }
+  
+  if (weatherDiv && isNight && weather) {
+    weatherDiv.innerHTML = `
+      <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
+      <span>Қызылорда</span>
+      <img src="https:${weather.icon}" alt="icon" style="width: 24px; height: 24px;">
+      <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
+      <span style="opacity: 0.9;">${weather.condition}</span>
+      <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
+      <span>💧 ${weather.humidity}%</span>
+      <span>🌬️ ${weather.wind} км/сағ</span>
+    `;
+  }
+}
+
+// Уақыт баннерін қосу
+async function addTimeBanner() {
+  const { greeting, icon, currentTime, isNight } = getTimeInfo();
+  
+  let weather = null;
+  if (isNight) {
+    weather = await getKyzylordaWeather();
+  }
+  
   const oldBanner = document.getElementById('time-banner');
   if (oldBanner) oldBanner.remove();
   
-  // Жаңа баннер жасау
   const banner = document.createElement('div');
   banner.id = 'time-banner';
   
   let weatherHtml = '';
   if (isNight && weather) {
-    // Түнгі ауа райы (API арқылы)
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+      <div class="weather-info" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
         <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
         <span>Қызылорда</span>
         <img src="https:${weather.icon}" alt="icon" style="width: 24px; height: 24px;">
@@ -120,15 +147,14 @@ async function addTimeBanner() {
     `;
   } else if (isNight && !weather) {
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+      <div class="weather-info" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
         <span style="font-weight: 600;">🌙 Қызылорда</span>
         <span>Ауа райы жүктелуде...</span>
       </div>
     `;
   } else if (!isNight) {
-    // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (жай ғана мәтін түрінде)
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+      <div class="weather-info" style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
         <span style="font-weight: 600;">☀️ Қызылорда ауа райы</span>
         <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 30px; font-weight: 600;">
           Көру →
@@ -141,14 +167,13 @@ async function addTimeBanner() {
     <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="font-size: 20px;">${icon}</span>
-        <span>${greeting}</span>
-        <span style="opacity: 0.8; font-family: monospace;">${currentTime}</span>
+        <span class="greeting-text">${greeting}</span>
+        <span class="time-text" style="opacity: 0.8; font-family: monospace;">${currentTime}</span>
       </div>
       ${weatherHtml}
     </div>
   `;
   
-  // Баннерге стиль қосу
   banner.style.cssText = `
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: white;
@@ -164,48 +189,38 @@ async function addTimeBanner() {
     font-family: 'Nunito', sans-serif;
   `;
   
-  // Баннерді body-дің басына қосу
   if (document.body.firstChild) {
     document.body.insertBefore(banner, document.body.firstChild);
   } else {
     document.body.appendChild(banner);
   }
-  
-  console.log('Баннер қосылды, түн бе?', isNight, 'Уақыт:', currentTime);
 }
 
-// Уақытты автоматты түрде жаңарту функциясы
+// Уақытты автоматты түрде жаңарту
 function startRealTimeClock() {
-  // Бірінші рет қосу
   addTimeBanner();
-  
-  // Әр секунд сайын баннерді жаңарту
-  setInterval(async () => {
-    await addTimeBanner();
-  }, 1000);
+  setInterval(updateTimeBanner, 1000);
 }
 
-// Қолжетімділікті тексеру
-async function checkAccess() {
+// Қолжетімділікті тексеру және бетті жаңарту
+async function checkAccessAndUpdate() {
   const { isAccessAllowed, greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын тек түнде ғана алу
   let weather = null;
   if (isNight) {
     weather = await getKyzylordaWeather();
   }
   
+  const accessDeniedPage = document.getElementById('page-access-denied');
+  
   if (!isAccessAllowed) {
-    // Барлық беттерді жасыру
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     
-    // Қолжетімсіздік бетін көрсету
-    let accessDeniedPage = document.getElementById('page-access-denied');
     if (!accessDeniedPage) {
-      accessDeniedPage = document.createElement('div');
-      accessDeniedPage.id = 'page-access-denied';
-      accessDeniedPage.className = 'page active';
-      accessDeniedPage.style.cssText = `
+      const newPage = document.createElement('div');
+      newPage.id = 'page-access-denied';
+      newPage.className = 'page active';
+      newPage.style.cssText = `
         display: flex !important;
         min-height: 100vh;
         align-items: center;
@@ -217,7 +232,6 @@ async function checkAccess() {
       
       let weatherDisplay = '';
       if (isNight && weather) {
-        // Түнгі ауа райы (API)
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -241,7 +255,6 @@ async function checkAccess() {
           </div>
         `;
       } else if (!isNight) {
-        // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (сілтеме)
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -270,7 +283,7 @@ async function checkAccess() {
         `;
       }
       
-      accessDeniedPage.innerHTML = `
+      newPage.innerHTML = `
         <div style="
           background: rgba(255,255,255,0.05);
           backdrop-filter: blur(10px);
@@ -283,7 +296,7 @@ async function checkAccess() {
           color: white;
           box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         ">
-          <div style="font-size: 80px; margin-bottom: 20px;">${icon}</div>
+          <div style="font-size: 80px; margin-bottom: 20px;" id="access-icon">${icon}</div>
           <h1 style="font-size: 32px; margin-bottom: 15px;">Қолжетімділік шектелген</h1>
           <p style="font-size: 16px; margin-bottom: 20px; opacity: 0.9;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
           
@@ -293,11 +306,11 @@ async function checkAccess() {
             border-radius: 15px;
             margin-bottom: 20px;
             font-size: 20px;
-          ">
+          " id="access-time">
             ${icon} ${greeting} Қазір ${currentTime}
           </div>
           
-          ${weatherDisplay}
+          <div id="access-weather">${weatherDisplay}</div>
           
           <div style="
             background: rgba(0,0,0,0.3);
@@ -321,53 +334,59 @@ async function checkAccess() {
             </div>
           </div>
           
-          <p style="font-size: 18px; margin-top: 25px; opacity: 0.8;">Қайта келіңіз! ${icon}</p>
+          <p style="font-size: 18px; margin-top: 25px; opacity: 0.8;" id="access-footer">Қайта келіңіз! ${icon}</p>
         </div>
       `;
       
-      document.body.appendChild(accessDeniedPage);
+      document.body.appendChild(newPage);
     } else {
-      // Егер бет бар болса, уақыт пен ауа райын жаңарту
-      const timeDiv = accessDeniedPage.querySelector('div[style*="background: rgba(255,255,255,0.1); padding: 15px;"]');
-      if (timeDiv) {
-        timeDiv.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
-      }
+      accessDeniedPage.classList.add('active');
+      accessDeniedPage.style.display = 'flex';
       
-      const weatherDiv = accessDeniedPage.querySelector('div[style*="border-radius: 20px; padding: 25px;"]');
-      if (weatherDiv && isNight && weather) {
-        weatherDiv.innerHTML = `
-          <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
-          <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
-            <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
-            <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
-            <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
-          </div>
-          <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
-            <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
-            <div>💧 Ылғалдылық: ${weather.humidity}%</div>
-            <div>🌬️ Жел: ${weather.wind} км/сағ</div>
+      const iconEl = document.getElementById('access-icon');
+      const timeEl = document.getElementById('access-time');
+      const weatherEl = document.getElementById('access-weather');
+      const footerEl = document.getElementById('access-footer');
+      
+      if (iconEl) iconEl.textContent = icon;
+      if (timeEl) timeEl.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
+      if (footerEl) footerEl.innerHTML = `Қайта келіңіз! ${icon}`;
+      
+      if (weatherEl && isNight && weather) {
+        weatherEl.innerHTML = `
+          <div style="
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+          ">
+            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+              <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
+              <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
+              <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
+              <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
+              <div>💧 Ылғалдылық: ${weather.humidity}%</div>
+              <div>🌬️ Жел: ${weather.wind} км/сағ</div>
+            </div>
           </div>
         `;
       }
     }
     return false;
   }
+  
   return true;
 }
 
 // Уақытты тексеру
 function startTimeChecker() {
-  // Бірінші тексеру
-  setTimeout(() => {
-    checkAccess();
-  }, 1000);
-  
-  // Әр секунд сайын тексеру (уақыт жаңарту)
-  setInterval(async () => {
-    await checkAccess();
-  }, 1000);
-  
-  return true;
+  checkAccessAndUpdate();
+  setInterval(checkAccessAndUpdate, 1000);
 }
 
 const QUESTIONS = [
@@ -744,12 +763,10 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу (тек түнде ауа райы көрсетіледі)
   addTimeBanner();
   
-  // Қолжетімділікті тексеру
   setTimeout(() => {
-    checkAccess();
+    checkAccessAndUpdate();
   }, 1000);
   
   const pwInput = document.getElementById('pw-in');
@@ -765,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   lockContent();
   startTimeChecker();
-  startRealTimeClock(); // Уақытты автоматты түрде жаңарту
+  startRealTimeClock();
 });
 
 window.checkPw = checkPw;
@@ -779,8 +796,8 @@ window.goHome = goHome;
 // ============ ЖЕТІ МУЗЫКА (соңында Shiza - SHYM тікелей эфир) ============
 let kairatPlayer = null;
 let densPlayer = null;
-let shizaPlayer = null;        // 1950's Jazz нұсқасы
-let shizaLivePlayer = null;    // Тікелей эфир нұсқасы (жаңа)
+let shizaPlayer = null;
+let shizaLivePlayer = null;
 let kzoPlayer = null;
 let kzo2Player = null;
 let sharautPlayer = null;
@@ -793,18 +810,17 @@ let isKzo2Playing = false;
 let isSharautPlaying = false;
 
 let currentPlaylist = [
-    'XYIYpFZ59wU',      // 1. Shiza – SHYM (1950'S Jazz & Soul Version)
-    'uZy0-fQOBj8',      // 2. Қайрат Нұртас – Ол сен емес
-    '5KDZD86MWYU',      // 3. 9 Грамм – ДЭНС
-    'XwImCmmEDgA',      // 4. 6ellucci – KZO
-    'AH9zEI9Hx-0',      // 5. 6ELLUCCI & JUNIOR - KZO II
-    'FNKFpuoM1OY',      // 6. Guf & BALLER feat. V $ X V PRiNCE – Шараут
-    'cSxNzTebJyY'       // 7. Shiza – SHYM (ТІКЕЛЕЙ ЭФИР) - ЕҢ СОҢЫНДА
+    'XYIYpFZ59wU',
+    'uZy0-fQOBj8',
+    '5KDZD86MWYU',
+    'XwImCmmEDgA',
+    'AH9zEI9Hx-0',
+    'FNKFpuoM1OY',
+    'cSxNzTebJyY'
 ];
 let currentTrackIndex = 0;
 let playlistInterval = null;
 
-// YouTube API жүктеу
 function loadMusicYouTubeAPI() {
   if (document.getElementById('music-youtube-api')) return;
   
@@ -814,9 +830,7 @@ function loadMusicYouTubeAPI() {
   document.body.appendChild(tag);
 }
 
-// YouTube API дайын болғанда
 window.onYouTubeIframeAPIReady = function() {
-  // 1. Shiza (1950's Jazz) плеері
   if (!shizaPlayer) {
     shizaPlayer = new YT.Player('shiza-youtube-player', {
       height: '0',
@@ -836,7 +850,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
-  // 2. Қайрат плеері
   if (!kairatPlayer) {
     kairatPlayer = new YT.Player('kairat-youtube-player', {
       height: '0',
@@ -856,7 +869,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
-  // 3. 9 Грамм плеері
   if (!densPlayer) {
     densPlayer = new YT.Player('dens-youtube-player', {
       height: '0',
@@ -876,7 +888,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
-  // 4. KZO плеері
   if (!kzoPlayer) {
     kzoPlayer = new YT.Player('kzo-youtube-player', {
       height: '0',
@@ -896,7 +907,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
-  // 5. KZO II плеері
   if (!kzo2Player) {
     kzo2Player = new YT.Player('kzo2-youtube-player', {
       height: '0',
@@ -916,7 +926,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
-  // 6. Шараут плеері
   if (!sharautPlayer) {
     sharautPlayer = new YT.Player('sharaut-youtube-player', {
       height: '0',
@@ -936,7 +945,6 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
-  // 7. Shiza Live (тікелей эфир) плеері
   if (!shizaLivePlayer) {
     shizaLivePlayer = new YT.Player('shiza-live-youtube-player', {
       height: '0',
@@ -948,7 +956,7 @@ window.onYouTubeIframeAPIReady = function() {
         'disablekb': 1,
         'enablejsapi': 1,
         'fs': 0,
-        'loop': 1,        // Тікелей эфирді қайталау
+        'loop': 1,
         'playlist': currentPlaylist[6]
       },
       events: {
@@ -958,26 +966,17 @@ window.onYouTubeIframeAPIReady = function() {
   }
 };
 
-// Тікелей эфир плеерінің күйі өзгергенде
-function onLivePlayerStateChange(event) {
-  // Тікелей эфир үшін аяқталу оқиғасын өшіреміз
-  // Ол шексіз ойналады
-}
+function onLivePlayerStateChange(event) {}
 
-// Плеер күйі өзгергенде (қарапайым бейнелер үшін)
 function onPlayerStateChange(event) {
-  // Егер видео аяқталса (state = 0)
   if (event.data === 0) {
-    // Келесі трекке өту
     playNextTrack();
   }
 }
 
-// Келесі тректі ойнату
 function playNextTrack() {
   currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
   
-  // Барлық плеерлерді тоқтату
   if (shizaPlayer && shizaPlayer.stopVideo) shizaPlayer.stopVideo();
   if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
   if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
@@ -986,7 +985,6 @@ function playNextTrack() {
   if (sharautPlayer && sharautPlayer.stopVideo) sharautPlayer.stopVideo();
   if (shizaLivePlayer && shizaLivePlayer.stopVideo) shizaLivePlayer.stopVideo();
   
-  // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
     if (shizaPlayer && shizaPlayer.playVideo) {
       shizaPlayer.playVideo();
@@ -1074,9 +1072,7 @@ function playNextTrack() {
   }
 }
 
-// Музыка контроллерін қосу
 function addMusicControl() {
-  // Жасырын плеерлер қосу
   if (!document.getElementById('shiza-youtube-player')) {
     const playerDiv1 = document.createElement('div');
     playerDiv1.id = 'shiza-youtube-player';
@@ -1126,7 +1122,6 @@ function addMusicControl() {
     document.body.appendChild(playerDiv7);
   }
   
-  // Контроллер бар ма?
   if (document.getElementById('music-control')) return;
   
   const musicControl = document.createElement('div');
@@ -1174,12 +1169,10 @@ function addMusicControl() {
   loadMusicYouTubeAPI();
 }
 
-// Музыканы басқару
 window.toggleMusic = function() {
   if (!shizaPlayer || !kairatPlayer || !densPlayer || !kzoPlayer || !kzo2Player || !sharautPlayer || !shizaLivePlayer) return;
   
   if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying || isShizaLivePlaying) {
-    // Тоқтату
     if (shizaPlayer && shizaPlayer.pauseVideo) shizaPlayer.pauseVideo();
     if (kairatPlayer && kairatPlayer.pauseVideo) kairatPlayer.pauseVideo();
     if (densPlayer && densPlayer.pauseVideo) densPlayer.pauseVideo();
@@ -1196,13 +1189,11 @@ window.toggleMusic = function() {
     isShizaLivePlaying = false;
     document.getElementById('music-icon').innerHTML = '▶️';
     
-    // Интервалды тазалау
     if (playlistInterval) {
       clearInterval(playlistInterval);
       playlistInterval = null;
     }
   } else {
-    // Бастау - қай трек ойнап тұрғанын тексеру
     if (currentTrackIndex === 0) {
       shizaPlayer.playVideo();
       isShizaPlaying = true;
@@ -1227,14 +1218,12 @@ window.toggleMusic = function() {
     }
     document.getElementById('music-icon').innerHTML = '⏸️';
     
-    // Әр 3 секунд сайын трек атауын жаңарту
     if (!playlistInterval) {
       playlistInterval = setInterval(updateMusicInfo, 3000);
     }
   }
 };
 
-// Музыка ақпаратын жаңарту
 function updateMusicInfo() {
   const titleEl = document.getElementById('music-title');
   const subtitleEl = document.getElementById('music-subtitle');
@@ -1270,7 +1259,6 @@ function updateMusicInfo() {
   }
 }
 
-// Иконкаларды жаңарту
 function updateMusicIcons() {
   if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying || isShizaLivePlaying) {
     document.getElementById('music-icon').innerHTML = '⏸️';
@@ -1280,16 +1268,13 @@ function updateMusicIcons() {
   updateMusicInfo();
 }
 
-// Келесі трекке қолмен өту
 window.nextTrack = function() {
   playNextTrack();
 };
 
-// Алдыңғы трекке қолмен өту
 window.prevTrack = function() {
   currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
   
-  // Барлық плеерлерді тоқтату
   if (shizaPlayer && shizaPlayer.stopVideo) shizaPlayer.stopVideo();
   if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
   if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
@@ -1298,7 +1283,6 @@ window.prevTrack = function() {
   if (sharautPlayer && sharautPlayer.stopVideo) sharautPlayer.stopVideo();
   if (shizaLivePlayer && shizaLivePlayer.stopVideo) shizaLivePlayer.stopVideo();
   
-  // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
     if (shizaPlayer && shizaPlayer.playVideo) {
       shizaPlayer.playVideo();
@@ -1386,5 +1370,4 @@ window.prevTrack = function() {
   }
 };
 
-// Бет жүктелгеннен кейін 3 секундтан соң қосу
 setTimeout(addMusicControl, 3000);
