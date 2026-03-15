@@ -3,6 +3,7 @@
   const now = new Date();
   const hours = now.getHours();
   
+  // 22:00 - 07:00 аралығында сайт жабық
   if (hours >= 22 || hours < 7) {
     document.documentElement.innerHTML = `
       <!DOCTYPE html>
