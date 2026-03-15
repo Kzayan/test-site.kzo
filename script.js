@@ -37,8 +37,8 @@ function getTimeInfo() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
-  const seconds = now.getSeconds(); // Секунд қосылды
-  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`; // Секунд көрсетіледі
+  const seconds = now.getSeconds();
+  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   
   let greeting = '';
   let icon = '';
@@ -73,11 +73,8 @@ function getTimeInfo() {
 async function addTimeBanner() {
   const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын тек түнде ғана көрсету
-  let weather = null;
-  if (isNight) {
-    weather = await getKyzylordaWeather();
-  }
+  // Ауа райын әрқашан көрсету (күндіз де, түнде де)
+  let weather = await getKyzylordaWeather();
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -87,11 +84,14 @@ async function addTimeBanner() {
   const banner = document.createElement('div');
   banner.id = 'time-banner';
   
+  // Күндізгі немесе түнгі иконка
+  const timeIcon = isNight ? '🌙' : '☀️';
+  
   let weatherHtml = '';
-  if (isNight && weather) {
+  if (weather) {
     weatherHtml = `
       <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
-        <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
+        <span style="font-weight: 600;">${timeIcon} Ауа райы</span>
         <span style="font-weight: 600;">Қызылорда</span>
         <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 24px; height: 24px;">
         <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
@@ -101,10 +101,10 @@ async function addTimeBanner() {
         <span>🌬️ ${weather.wind} км/сағ</span>
       </div>
     `;
-  } else if (isNight && !weather) {
+  } else {
     weatherHtml = `
       <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
-        <span style="font-weight: 600;">🌙 Қызылорда</span>
+        <span style="font-weight: 600;">${timeIcon} Қызылорда</span>
         <span>Ауа райы жүктелуде...</span>
       </div>
     `;
@@ -152,11 +152,8 @@ function startRealTimeClock() {
 async function checkAccess() {
   const { isAccessAllowed, greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын тек түнде ғана алу
-  let weather = null;
-  if (isNight) {
-    weather = await getKyzylordaWeather();
-  }
+  // Ауа райын әрқашан алу
+  let weather = await getKyzylordaWeather();
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -179,7 +176,7 @@ async function checkAccess() {
       `;
       
       let weatherDisplay = '';
-      if (isNight && weather) {
+      if (weather) {
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -189,7 +186,7 @@ async function checkAccess() {
             text-align: center;
             border: 1px solid rgba(255,255,255,0.2);
           ">
-            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
+            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">${isNight ? '🌙' : '☀️'} Ауа райы - Қызылорда</div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
               <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
               <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
@@ -260,6 +257,12 @@ async function checkAccess() {
       `;
       
       document.body.appendChild(accessDeniedPage);
+    } else {
+      // Егер бет бар болса, уақыт пен ауа райын жаңарту
+      const timeDisplay = accessDeniedPage.querySelector('div[style*="background: rgba(255,255,255,0.1)"]');
+      if (timeDisplay) {
+        timeDisplay.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
+      }
     }
     return false;
   }
@@ -673,7 +676,7 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу (тек түнде ауа райы көрсетіледі)
+  // Уақыт баннерін қосу (ауа райы күндіз де көрінеді)
   addTimeBanner();
   
   // Қолжетімділікті тексеру
