@@ -3,17 +3,14 @@
 // Қызылорда ауа райын алу функциясы
 async function getKyzylordaWeather() {
   try {
-    // Сіздің нақты API кілтіңіз - бұл кілт дұрыс па?
+    // Сіздің нақты API кілтіңіз
     const API_KEY = '4c249f5920cb4d78b1d183152261403';
-    
-    console.log('Ауа райы деректері алынуда...');
     
     const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=Kyzylorda&lang=kk&aqi=no`);
     
     if (!response.ok) {
       console.log('API жауап коды:', response.status);
-      // Егер API жұмыс істемесе, тест деректерін қайтару
-      return getTestWeatherData();
+      throw new Error('Ауа райын алу мүмкін болмады');
     }
     
     const data = await response.json();
@@ -31,37 +28,8 @@ async function getKyzylordaWeather() {
     };
   } catch (error) {
     console.log('Ауа райын алу мүмкін болмады:', error);
-    // Қате кеткен жағдайда тест деректерін қайтару
-    return getTestWeatherData();
+    return null;
   }
-}
-
-// Тест режиміндегі ауа райы деректері (API жұмыс істемеген жағдайда)
-function getTestWeatherData() {
-  console.log('Тест режиміндегі ауа райы деректері қолданылуда');
-  
-  // Кездейсоқ температура (0-ден 30-ға дейін)
-  const randomTemp = Math.floor(Math.random() * 30);
-  const conditions = ['Ашық', 'Жартылай бұлтты', 'Бұлтты', 'Жаңбырлы', 'Қарлы'];
-  const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-  const icons = {
-    'Ашық': '//cdn.weatherapi.com/weather/64x64/day/113.png',
-    'Жартылай бұлтты': '//cdn.weatherapi.com/weather/64x64/day/116.png',
-    'Бұлтты': '//cdn.weatherapi.com/weather/64x64/day/119.png',
-    'Жаңбырлы': '//cdn.weatherapi.com/weather/64x64/day/296.png',
-    'Қарлы': '//cdn.weatherapi.com/weather/64x64/day/326.png'
-  };
-  
-  return {
-    temp: randomTemp,
-    condition: randomCondition,
-    icon: icons[randomCondition],
-    wind: Math.floor(Math.random() * 20) + 5,
-    feelslike: randomTemp - 2,
-    humidity: Math.floor(Math.random() * 50) + 30,
-    city: 'Қызылорда',
-    localtime: new Date().toLocaleTimeString('kk-KZ', { hour: '2-digit', minute: '2-digit' })
-  };
 }
 
 // Уақытқа байланысты қолжетімділік және хабарламалар
@@ -69,8 +37,8 @@ function getTimeInfo() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const seconds = now.getSeconds(); // Секунд қосылды
+  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`; // Секунд көрсетіледі
   
   let greeting = '';
   let icon = '';
@@ -105,8 +73,11 @@ function getTimeInfo() {
 async function addTimeBanner() {
   const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын әрқашан көрсету (күндіз де, түнде де)
-  let weather = await getKyzylordaWeather();
+  // Ауа райын тек түнде ғана көрсету
+  let weather = null;
+  if (isNight) {
+    weather = await getKyzylordaWeather();
+  }
   
   // Ескі баннерді өшіру
   const oldBanner = document.getElementById('time-banner');
@@ -116,16 +87,13 @@ async function addTimeBanner() {
   const banner = document.createElement('div');
   banner.id = 'time-banner';
   
-  // Күндізгі немесе түнгі иконка
-  const timeIcon = isNight ? '🌙' : '☀️';
-  
   let weatherHtml = '';
-  if (weather) {
+  if (isNight && weather) {
     weatherHtml = `
       <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
-        <span style="font-weight: 600;">${timeIcon} Ауа райы</span>
-        <span style="font-weight: 600;">${weather.city}</span>
-        <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 24px; height: 24px;" onerror="this.src='https://cdn.weatherapi.com/weather/64x64/day/113.png'">
+        <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
+        <span style="font-weight: 600;">Қызылорда</span>
+        <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 24px; height: 24px;">
         <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
         <span style="opacity: 0.9;">${weather.condition}</span>
         <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
@@ -133,11 +101,11 @@ async function addTimeBanner() {
         <span>🌬️ ${weather.wind} км/сағ</span>
       </div>
     `;
-  } else {
+  } else if (isNight && !weather) {
     weatherHtml = `
       <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
-        <span style="font-weight: 600;">${timeIcon} Қызылорда</span>
-        <span>☀️ +24°C Ашық</span>
+        <span style="font-weight: 600;">🌙 Қызылорда</span>
+        <span>Ауа райы жүктелуде...</span>
       </div>
     `;
   }
@@ -184,8 +152,11 @@ function startRealTimeClock() {
 async function checkAccess() {
   const { isAccessAllowed, greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын әрқашан алу
-  let weather = await getKyzylordaWeather();
+  // Ауа райын тек түнде ғана алу
+  let weather = null;
+  if (isNight) {
+    weather = await getKyzylordaWeather();
+  }
   
   if (!isAccessAllowed) {
     // Барлық беттерді жасыру
@@ -208,7 +179,7 @@ async function checkAccess() {
       `;
       
       let weatherDisplay = '';
-      if (weather) {
+      if (isNight && weather) {
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -218,9 +189,9 @@ async function checkAccess() {
             text-align: center;
             border: 1px solid rgba(255,255,255,0.2);
           ">
-            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">${isNight ? '🌙' : '☀️'} Ауа райы - ${weather.city}</div>
+            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
-              <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;" onerror="this.src='https://cdn.weatherapi.com/weather/64x64/day/113.png'">
+              <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
               <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
               <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
             </div>
@@ -289,12 +260,6 @@ async function checkAccess() {
       `;
       
       document.body.appendChild(accessDeniedPage);
-    } else {
-      // Егер бет бар болса, уақыт пен ауа райын жаңарту
-      const timeDisplay = accessDeniedPage.querySelector('div[style*="background: rgba(255,255,255,0.1)"]');
-      if (timeDisplay) {
-        timeDisplay.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
-      }
     }
     return false;
   }
@@ -708,7 +673,7 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу (ауа райы күндіз де көрінеді)
+  // Уақыт баннерін қосу (тек түнде ауа райы көрсетіледі)
   addTimeBanner();
   
   // Қолжетімділікті тексеру
