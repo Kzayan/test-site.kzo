@@ -1,7 +1,20 @@
 'use strict';
 
-// Қызылорда ауа райын алу функциясы
+// Глобалды айнымалылар
+let cachedWeather = null;
+let lastWeatherFetch = 0;
+const WEATHER_FETCH_INTERVAL = 5 * 60 * 1000; // 5 минут
+
+// Қызылорда ауа райын алу функциясы (кэшпен)
 async function getKyzylordaWeather() {
+  const now = Date.now();
+  
+  // Егер кэш әлі жаңа болса, соны қайтару
+  if (cachedWeather && (now - lastWeatherFetch < WEATHER_FETCH_INTERVAL)) {
+    console.log('Ауа райы кэштен алынды');
+    return cachedWeather;
+  }
+  
   try {
     // Сіздің нақты API кілтіңіз
     const API_KEY = '4c249f5920cb4d78b1d183152261403';
@@ -14,9 +27,9 @@ async function getKyzylordaWeather() {
     }
     
     const data = await response.json();
-    console.log('Ауа райы деректері:', data);
+    console.log('Ауа райы деректері жаңартылды:', data);
     
-    return {
+    cachedWeather = {
       temp: Math.round(data.current.temp_c),
       condition: data.current.condition.text,
       icon: data.current.condition.icon,
@@ -26,9 +39,12 @@ async function getKyzylordaWeather() {
       city: 'Қызылорда',
       localtime: data.location.localtime.split(' ')[1]
     };
+    
+    lastWeatherFetch = now;
+    return cachedWeather;
   } catch (error) {
     console.log('Ауа райын алу мүмкін болмады:', error);
-    return null;
+    return cachedWeather; // Қате болса, ескі кэшті қайтару
   }
 }
 
@@ -155,14 +171,18 @@ async function addTimeBanner() {
     document.body.appendChild(banner);
   }
   
-  console.log('Баннер қосылды, түн бе?', isNight);
+  console.log('Баннер қосылды, түн бе?', isNight, 'Уақыт:', currentTime);
 }
 
 // Уақытты автоматты түрде жаңарту функциясы
 function startRealTimeClock() {
+  // Бірінші рет қосу
+  addTimeBanner();
+  
+  // Әр секунд сайын баннерді жаңарту
   setInterval(async () => {
     await addTimeBanner();
-  }, 1000); // Әр секунд сайын жаңарту
+  }, 1000);
 }
 
 // Қолжетімділікті тексеру
@@ -306,6 +326,29 @@ async function checkAccess() {
       `;
       
       document.body.appendChild(accessDeniedPage);
+    } else {
+      // Егер бет бар болса, уақыт пен ауа райын жаңарту
+      const timeDiv = accessDeniedPage.querySelector('div[style*="background: rgba(255,255,255,0.1); padding: 15px;"]');
+      if (timeDiv) {
+        timeDiv.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
+      }
+      
+      const weatherDiv = accessDeniedPage.querySelector('div[style*="border-radius: 20px; padding: 25px;"]');
+      if (weatherDiv && isNight && weather) {
+        weatherDiv.innerHTML = `
+          <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
+            <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
+            <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
+            <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
+            <div>💧 Ылғалдылық: ${weather.humidity}%</div>
+            <div>🌬️ Жел: ${weather.wind} км/сағ</div>
+          </div>
+        `;
+      }
     }
     return false;
   }
@@ -319,28 +362,10 @@ function startTimeChecker() {
     checkAccess();
   }, 1000);
   
-  // Әр 5 минут сайын тексеру (ауа райы жаңарту)
+  // Әр секунд сайын тексеру (уақыт жаңарту)
   setInterval(async () => {
-    const { isAccessAllowed } = getTimeInfo();
-    
-    if (!isAccessAllowed) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      
-      const accessDeniedPage = document.getElementById('page-access-denied');
-      if (accessDeniedPage) {
-        await checkAccess();
-        accessDeniedPage.classList.add('active');
-        accessDeniedPage.style.display = 'flex';
-      }
-    } else {
-      const accessDeniedPage = document.getElementById('page-access-denied');
-      if (accessDeniedPage && accessDeniedPage.classList.contains('active')) {
-        accessDeniedPage.classList.remove('active');
-        accessDeniedPage.style.display = 'none';
-        document.getElementById('page-login').classList.add('active');
-      }
-    }
-  }, 300000); // 5 минут
+    await checkAccess();
+  }, 1000);
   
   return true;
 }
