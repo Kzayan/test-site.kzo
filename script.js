@@ -751,16 +751,18 @@ window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 
-// ============ АЛТЫ МУЗЫКА ҚАТАРЫНАН (толық тізім) ============
+// ============ ЖЕТІ МУЗЫКА (соңында Shiza - SHYM тікелей эфир) ============
 let kairatPlayer = null;
 let densPlayer = null;
-let shizaPlayer = null;
+let shizaPlayer = null;        // 1950's Jazz нұсқасы
+let shizaLivePlayer = null;    // Тікелей эфир нұсқасы (жаңа)
 let kzoPlayer = null;
 let kzo2Player = null;
 let sharautPlayer = null;
 let isKairatPlaying = false;
 let isDensPlaying = false;
 let isShizaPlaying = false;
+let isShizaLivePlaying = false;
 let isKzoPlaying = false;
 let isKzo2Playing = false;
 let isSharautPlaying = false;
@@ -770,8 +772,9 @@ let currentPlaylist = [
     'uZy0-fQOBj8',      // 2. Қайрат Нұртас – Ол сен емес
     '5KDZD86MWYU',      // 3. 9 Грамм – ДЭНС
     'XwImCmmEDgA',      // 4. 6ellucci – KZO
-    'AH9zEI9Hx-0',      // 5. 6ELLUCCI & JUNIOR (GHETTO DOGS) - KZO II
-    'FNKFpuoM1OY'       // 6. Guf & BALLER feat. V $ X V PRiNCE – Шараут
+    'AH9zEI9Hx-0',      // 5. 6ELLUCCI & JUNIOR - KZO II
+    'FNKFpuoM1OY',      // 6. Guf & BALLER feat. V $ X V PRiNCE – Шараут
+    'cSxNzTebJyY'       // 7. Shiza – SHYM (ТІКЕЛЕЙ ЭФИР) - ЕҢ СОҢЫНДА
 ];
 let currentTrackIndex = 0;
 let playlistInterval = null;
@@ -788,7 +791,7 @@ function loadMusicYouTubeAPI() {
 
 // YouTube API дайын болғанда
 window.onYouTubeIframeAPIReady = function() {
-  // 1. Shiza плеері
+  // 1. Shiza (1950's Jazz) плеері
   if (!shizaPlayer) {
     shizaPlayer = new YT.Player('shiza-youtube-player', {
       height: '0',
@@ -907,9 +910,36 @@ window.onYouTubeIframeAPIReady = function() {
       }
     });
   }
+  
+  // 7. Shiza Live (тікелей эфир) плеері
+  if (!shizaLivePlayer) {
+    shizaLivePlayer = new YT.Player('shiza-live-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: currentPlaylist[6],
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 1,        // Тікелей эфирді қайталау
+        'playlist': currentPlaylist[6]
+      },
+      events: {
+        'onStateChange': onLivePlayerStateChange
+      }
+    });
+  }
 };
 
-// Плеер күйі өзгергенде
+// Тікелей эфир плеерінің күйі өзгергенде
+function onLivePlayerStateChange(event) {
+  // Тікелей эфир үшін аяқталу оқиғасын өшіреміз
+  // Ол шексіз ойналады
+}
+
+// Плеер күйі өзгергенде (қарапайым бейнелер үшін)
 function onPlayerStateChange(event) {
   // Егер видео аяқталса (state = 0)
   if (event.data === 0) {
@@ -929,6 +959,7 @@ function playNextTrack() {
   if (kzoPlayer && kzoPlayer.stopVideo) kzoPlayer.stopVideo();
   if (kzo2Player && kzo2Player.stopVideo) kzo2Player.stopVideo();
   if (sharautPlayer && sharautPlayer.stopVideo) sharautPlayer.stopVideo();
+  if (shizaLivePlayer && shizaLivePlayer.stopVideo) shizaLivePlayer.stopVideo();
   
   // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
@@ -940,6 +971,7 @@ function playNextTrack() {
       isKzoPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 1) {
@@ -951,6 +983,7 @@ function playNextTrack() {
       isKzoPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 2) {
@@ -962,6 +995,7 @@ function playNextTrack() {
       isKzoPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 3) {
@@ -973,6 +1007,7 @@ function playNextTrack() {
       isDensPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 4) {
@@ -984,6 +1019,7 @@ function playNextTrack() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 5) {
@@ -995,6 +1031,19 @@ function playNextTrack() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
+      isShizaLivePlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 6) {
+    if (shizaLivePlayer && shizaLivePlayer.playVideo) {
+      shizaLivePlayer.playVideo();
+      isShizaLivePlaying = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
       updateMusicIcons();
     }
   }
@@ -1043,6 +1092,13 @@ function addMusicControl() {
     playerDiv6.id = 'sharaut-youtube-player';
     playerDiv6.style.display = 'none';
     document.body.appendChild(playerDiv6);
+  }
+  
+  if (!document.getElementById('shiza-live-youtube-player')) {
+    const playerDiv7 = document.createElement('div');
+    playerDiv7.id = 'shiza-live-youtube-player';
+    playerDiv7.style.display = 'none';
+    document.body.appendChild(playerDiv7);
   }
   
   // Контроллер бар ма?
@@ -1095,9 +1151,9 @@ function addMusicControl() {
 
 // Музыканы басқару
 window.toggleMusic = function() {
-  if (!shizaPlayer || !kairatPlayer || !densPlayer || !kzoPlayer || !kzo2Player || !sharautPlayer) return;
+  if (!shizaPlayer || !kairatPlayer || !densPlayer || !kzoPlayer || !kzo2Player || !sharautPlayer || !shizaLivePlayer) return;
   
-  if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying) {
+  if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying || isShizaLivePlaying) {
     // Тоқтату
     if (shizaPlayer && shizaPlayer.pauseVideo) shizaPlayer.pauseVideo();
     if (kairatPlayer && kairatPlayer.pauseVideo) kairatPlayer.pauseVideo();
@@ -1105,12 +1161,14 @@ window.toggleMusic = function() {
     if (kzoPlayer && kzoPlayer.pauseVideo) kzoPlayer.pauseVideo();
     if (kzo2Player && kzo2Player.pauseVideo) kzo2Player.pauseVideo();
     if (sharautPlayer && sharautPlayer.pauseVideo) sharautPlayer.pauseVideo();
+    if (shizaLivePlayer && shizaLivePlayer.pauseVideo) shizaLivePlayer.pauseVideo();
     isShizaPlaying = false;
     isKairatPlaying = false;
     isDensPlaying = false;
     isKzoPlaying = false;
     isKzo2Playing = false;
     isSharautPlaying = false;
+    isShizaLivePlaying = false;
     document.getElementById('music-icon').innerHTML = '▶️';
     
     // Интервалды тазалау
@@ -1138,6 +1196,9 @@ window.toggleMusic = function() {
     } else if (currentTrackIndex === 5) {
       sharautPlayer.playVideo();
       isSharautPlaying = true;
+    } else if (currentTrackIndex === 6) {
+      shizaLivePlayer.playVideo();
+      isShizaLivePlaying = true;
     }
     document.getElementById('music-icon').innerHTML = '⏸️';
     
@@ -1155,7 +1216,7 @@ function updateMusicInfo() {
   
   if (isShizaPlaying) {
     titleEl.textContent = 'Shiza';
-    subtitleEl.textContent = 'SHYM';
+    subtitleEl.textContent = 'SHYM (1950s Jazz)';
     document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8A2BE2, #4B0082)';
   } else if (isKairatPlaying) {
     titleEl.textContent = 'Қайрат Нұртас';
@@ -1177,12 +1238,16 @@ function updateMusicInfo() {
     titleEl.textContent = 'Guf & BALLER';
     subtitleEl.textContent = 'Шараут';
     document.getElementById('music-control').style.background = 'linear-gradient(135deg, #4B0082, #9400D3)';
+  } else if (isShizaLivePlaying) {
+    titleEl.textContent = 'Shiza';
+    subtitleEl.textContent = 'SHYM (LIVE)';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #FF4500, #8B0000)';
   }
 }
 
 // Иконкаларды жаңарту
 function updateMusicIcons() {
-  if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying) {
+  if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying || isShizaLivePlaying) {
     document.getElementById('music-icon').innerHTML = '⏸️';
   } else {
     document.getElementById('music-icon').innerHTML = '▶️';
@@ -1206,6 +1271,7 @@ window.prevTrack = function() {
   if (kzoPlayer && kzoPlayer.stopVideo) kzoPlayer.stopVideo();
   if (kzo2Player && kzo2Player.stopVideo) kzo2Player.stopVideo();
   if (sharautPlayer && sharautPlayer.stopVideo) sharautPlayer.stopVideo();
+  if (shizaLivePlayer && shizaLivePlayer.stopVideo) shizaLivePlayer.stopVideo();
   
   // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
@@ -1217,6 +1283,7 @@ window.prevTrack = function() {
       isKzoPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 1) {
@@ -1228,6 +1295,7 @@ window.prevTrack = function() {
       isKzoPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 2) {
@@ -1239,6 +1307,7 @@ window.prevTrack = function() {
       isKzoPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 3) {
@@ -1250,6 +1319,7 @@ window.prevTrack = function() {
       isDensPlaying = false;
       isKzo2Playing = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 4) {
@@ -1261,6 +1331,7 @@ window.prevTrack = function() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isSharautPlaying = false;
+      isShizaLivePlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 5) {
@@ -1272,6 +1343,19 @@ window.prevTrack = function() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
+      isShizaLivePlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 6) {
+    if (shizaLivePlayer && shizaLivePlayer.playVideo) {
+      shizaLivePlayer.playVideo();
+      isShizaLivePlaying = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
       updateMusicIcons();
     }
   }
