@@ -37,8 +37,8 @@ function getTimeInfo() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
-  const seconds = now.getSeconds(); // Секунд қосылды
-  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`; // Секунд көрсетіледі
+  const seconds = now.getSeconds();
+  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   
   let greeting = '';
   let icon = '';
@@ -73,7 +73,7 @@ function getTimeInfo() {
 async function addTimeBanner() {
   const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
-  // Ауа райын тек түнде ғана көрсету
+  // Ауа райын уақытқа байланысты көрсету
   let weather = null;
   if (isNight) {
     weather = await getKyzylordaWeather();
@@ -89,6 +89,7 @@ async function addTimeBanner() {
   
   let weatherHtml = '';
   if (isNight && weather) {
+    // Түнгі ауа райы (API арқылы)
     weatherHtml = `
       <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
         <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
@@ -106,6 +107,19 @@ async function addTimeBanner() {
       <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
         <span style="font-weight: 600;">🌙 Қызылорда</span>
         <span>Ауа райы жүктелуде...</span>
+      </div>
+    `;
+  } else if (!isNight) {
+    // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (Yandex)
+    weatherHtml = `
+      <div style="max-width:400px; margin-left: auto;">
+        <iframe 
+          src="https://yandex.ru/pogoda/kk/kyzylorda?lat=44.842544&lon=65.502563"
+          width="100%"
+          height="100"
+          style="border-radius:15px; border:none; background: rgba(255,255,255,0.1);"
+          title="Қызылорда ауа райы">
+        </iframe>
       </div>
     `;
   }
@@ -180,6 +194,7 @@ async function checkAccess() {
       
       let weatherDisplay = '';
       if (isNight && weather) {
+        // Түнгі ауа райы (API)
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -199,6 +214,29 @@ async function checkAccess() {
               <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
               <div>💧 Ылғалдылық: ${weather.humidity}%</div>
               <div>🌬️ Жел: ${weather.wind} км/сағ</div>
+            </div>
+          </div>
+        `;
+      } else if (!isNight) {
+        // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (Yandex)
+        weatherDisplay = `
+          <div style="
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+          ">
+            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">☀️ Қызылорда ауа райы</div>
+            <div style="max-width:400px; margin:0 auto;">
+              <iframe 
+                src="https://yandex.ru/pogoda/kk/kyzylorda?lat=44.842544&lon=65.502563"
+                width="100%"
+                height="400"
+                style="border-radius:15px; border:none;"
+                title="Қызылорда ауа райы">
+              </iframe>
             </div>
           </div>
         `;
