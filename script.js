@@ -751,7 +751,7 @@ window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 
-// ============ ҮШ МУЗЫКА ҚАТАРЫНАН (Shiza - SHYM бірінші) ============
+// ============ ҮШ МУЗЫКА ҚАТАРЫНАН (Shiza - SHYM дұрыс нұсқасы) ============
 let kairatPlayer = null;
 let densPlayer = null;
 let shizaPlayer = null;
@@ -759,9 +759,9 @@ let isKairatPlaying = false;
 let isDensPlaying = false;
 let isShizaPlaying = false;
 let currentPlaylist = [
-    'cSxNzTebJyY',      // Shiza – SHYM (БІРІНШІ)
-    'uZy0-fQOBj8',      // Қайрат Нұртас – Ол сен емес (ЕКІНШІ)
-    '5KDZD86MWYU'       // 9 Грамм – ДЭНС (ҮШІНШІ)
+    'XYIYpFZ59wU',      // Shiza – SHYM (1950'S Jazz & Soul Version) - ЖҰМЫС ІСТЕЙДІ
+    'uZy0-fQOBj8',      // Қайрат Нұртас – Ол сен емес
+    '5KDZD86MWYU'       // 9 Грамм – ДЭНС
 ];
 let currentTrackIndex = 0;
 let playlistInterval = null;
