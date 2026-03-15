@@ -751,12 +751,18 @@ window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 
-// ============ ЕКІ МУЗЫКА ҚАТАРЫНАН (YouTube плеер) ============
+// ============ ҮШ МУЗЫКА ҚАТАРЫНАН (Shiza - SHYM бірінші) ============
 let kairatPlayer = null;
 let densPlayer = null;
+let shizaPlayer = null;
 let isKairatPlaying = false;
 let isDensPlaying = false;
-let currentPlaylist = ['uZy0-fQOBj8', '5KDZD86MWYU']; // Қайрат Нұртас, 9 Грамм
+let isShizaPlaying = false;
+let currentPlaylist = [
+    'cSxNzTebJyY',      // Shiza – SHYM (БІРІНШІ)
+    'uZy0-fQOBj8',      // Қайрат Нұртас – Ол сен емес (ЕКІНШІ)
+    '5KDZD86MWYU'       // 9 Грамм – ДЭНС (ҮШІНШІ)
+];
 let currentTrackIndex = 0;
 let playlistInterval = null;
 
@@ -772,11 +778,30 @@ function loadMusicYouTubeAPI() {
 
 // YouTube API дайын болғанда
 window.onYouTubeIframeAPIReady = function() {
+  if (!shizaPlayer) {
+    shizaPlayer = new YT.Player('shiza-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: currentPlaylist[0],
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 0
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+  
   if (!kairatPlayer) {
     kairatPlayer = new YT.Player('kairat-youtube-player', {
       height: '0',
       width: '0',
-      videoId: currentPlaylist[0],
+      videoId: currentPlaylist[1],
       playerVars: {
         'autoplay': 0,
         'controls': 0,
@@ -795,7 +820,7 @@ window.onYouTubeIframeAPIReady = function() {
     densPlayer = new YT.Player('dens-youtube-player', {
       height: '0',
       width: '0',
-      videoId: currentPlaylist[1],
+      videoId: currentPlaylist[2],
       playerVars: {
         'autoplay': 0,
         'controls': 0,
@@ -825,14 +850,24 @@ function playNextTrack() {
   currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
   
   // Барлық плеерлерді тоқтату
+  if (shizaPlayer && shizaPlayer.stopVideo) shizaPlayer.stopVideo();
   if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
   if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
   
   // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
+    if (shizaPlayer && shizaPlayer.playVideo) {
+      shizaPlayer.playVideo();
+      isShizaPlaying = true;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 1) {
     if (kairatPlayer && kairatPlayer.playVideo) {
       kairatPlayer.playVideo();
       isKairatPlaying = true;
+      isShizaPlaying = false;
       isDensPlaying = false;
       updateMusicIcons();
     }
@@ -840,6 +875,7 @@ function playNextTrack() {
     if (densPlayer && densPlayer.playVideo) {
       densPlayer.playVideo();
       isDensPlaying = true;
+      isShizaPlaying = false;
       isKairatPlaying = false;
       updateMusicIcons();
     }
@@ -849,18 +885,25 @@ function playNextTrack() {
 // Музыка контроллерін қосу
 function addMusicControl() {
   // Жасырын плеерлер қосу
-  if (!document.getElementById('kairat-youtube-player')) {
+  if (!document.getElementById('shiza-youtube-player')) {
     const playerDiv1 = document.createElement('div');
-    playerDiv1.id = 'kairat-youtube-player';
+    playerDiv1.id = 'shiza-youtube-player';
     playerDiv1.style.display = 'none';
     document.body.appendChild(playerDiv1);
   }
   
-  if (!document.getElementById('dens-youtube-player')) {
+  if (!document.getElementById('kairat-youtube-player')) {
     const playerDiv2 = document.createElement('div');
-    playerDiv2.id = 'dens-youtube-player';
+    playerDiv2.id = 'kairat-youtube-player';
     playerDiv2.style.display = 'none';
     document.body.appendChild(playerDiv2);
+  }
+  
+  if (!document.getElementById('dens-youtube-player')) {
+    const playerDiv3 = document.createElement('div');
+    playerDiv3.id = 'dens-youtube-player';
+    playerDiv3.style.display = 'none';
+    document.body.appendChild(playerDiv3);
   }
   
   // Контроллер бар ма?
@@ -874,7 +917,7 @@ function addMusicControl() {
       bottom: 80px;
       right: 20px;
       z-index: 9999;
-      background: linear-gradient(135deg, #8B0000, #4A0404);
+      background: linear-gradient(135deg, #8A2BE2, #4B0082);
       border: 1px solid rgba(255,215,0,0.3);
       border-radius: 50px;
       padding: 8px 15px 8px 8px;
@@ -896,13 +939,13 @@ function addMusicControl() {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #8B0000;
+        color: #4B0082;
         font-size: 18px;
         font-weight: bold;
       " id="music-icon">▶️</div>
       <div>
-        <div style="font-weight: 700; font-size: 13px;" id="music-title">Қайрат Нұртас</div>
-        <div style="font-size: 11px; opacity: 0.9;" id="music-subtitle">Ол сен емес</div>
+        <div style="font-weight: 700; font-size: 13px;" id="music-title">Shiza</div>
+        <div style="font-size: 11px; opacity: 0.9;" id="music-subtitle">SHYM</div>
       </div>
     </div>
   `;
@@ -913,12 +956,14 @@ function addMusicControl() {
 
 // Музыканы басқару
 window.toggleMusic = function() {
-  if (!kairatPlayer || !densPlayer) return;
+  if (!shizaPlayer || !kairatPlayer || !densPlayer) return;
   
-  if (isKairatPlaying || isDensPlaying) {
+  if (isShizaPlaying || isKairatPlaying || isDensPlaying) {
     // Тоқтату
+    if (shizaPlayer && shizaPlayer.pauseVideo) shizaPlayer.pauseVideo();
     if (kairatPlayer && kairatPlayer.pauseVideo) kairatPlayer.pauseVideo();
     if (densPlayer && densPlayer.pauseVideo) densPlayer.pauseVideo();
+    isShizaPlaying = false;
     isKairatPlaying = false;
     isDensPlaying = false;
     document.getElementById('music-icon').innerHTML = '▶️';
@@ -931,6 +976,9 @@ window.toggleMusic = function() {
   } else {
     // Бастау - қай трек ойнап тұрғанын тексеру
     if (currentTrackIndex === 0) {
+      shizaPlayer.playVideo();
+      isShizaPlaying = true;
+    } else if (currentTrackIndex === 1) {
       kairatPlayer.playVideo();
       isKairatPlaying = true;
     } else {
@@ -951,7 +999,11 @@ function updateMusicInfo() {
   const titleEl = document.getElementById('music-title');
   const subtitleEl = document.getElementById('music-subtitle');
   
-  if (isKairatPlaying) {
+  if (isShizaPlaying) {
+    titleEl.textContent = 'Shiza';
+    subtitleEl.textContent = 'SHYM';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8A2BE2, #4B0082)';
+  } else if (isKairatPlaying) {
     titleEl.textContent = 'Қайрат Нұртас';
     subtitleEl.textContent = 'Ол сен емес';
     document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B0000, #4A0404)';
@@ -964,7 +1016,7 @@ function updateMusicInfo() {
 
 // Иконкаларды жаңарту
 function updateMusicIcons() {
-  if (isKairatPlaying || isDensPlaying) {
+  if (isShizaPlaying || isKairatPlaying || isDensPlaying) {
     document.getElementById('music-icon').innerHTML = '⏸️';
   } else {
     document.getElementById('music-icon').innerHTML = '▶️';
@@ -982,14 +1034,24 @@ window.prevTrack = function() {
   currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
   
   // Барлық плеерлерді тоқтату
+  if (shizaPlayer && shizaPlayer.stopVideo) shizaPlayer.stopVideo();
   if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
   if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
   
   // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
+    if (shizaPlayer && shizaPlayer.playVideo) {
+      shizaPlayer.playVideo();
+      isShizaPlaying = true;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 1) {
     if (kairatPlayer && kairatPlayer.playVideo) {
       kairatPlayer.playVideo();
       isKairatPlaying = true;
+      isShizaPlaying = false;
       isDensPlaying = false;
       updateMusicIcons();
     }
@@ -997,6 +1059,7 @@ window.prevTrack = function() {
     if (densPlayer && densPlayer.playVideo) {
       densPlayer.playVideo();
       isDensPlaying = true;
+      isShizaPlaying = false;
       isKairatPlaying = false;
       updateMusicIcons();
     }
