@@ -37,7 +37,8 @@ function getTimeInfo() {
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
-  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  const seconds = now.getSeconds(); // Секунд қосылды
+  const currentTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`; // Секунд көрсетіледі
   
   let greeting = '';
   let icon = '';
@@ -114,7 +115,7 @@ async function addTimeBanner() {
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="font-size: 20px;">${icon}</span>
         <span>${greeting}</span>
-        <span style="opacity: 0.8;">${currentTime}</span>
+        <span style="opacity: 0.8; font-family: monospace;">${currentTime}</span>
       </div>
       ${weatherHtml}
     </div>
@@ -138,6 +139,13 @@ async function addTimeBanner() {
   
   // Баннерді body-дің басына қосу
   document.body.insertBefore(banner, document.body.firstChild);
+}
+
+// Уақытты автоматты түрде жаңарту функциясы
+function startRealTimeClock() {
+  setInterval(async () => {
+    await addTimeBanner();
+  }, 1000); // Әр секунд сайын жаңарту
 }
 
 // Қолжетімділікті тексеру
@@ -268,9 +276,6 @@ function startTimeChecker() {
   // Әр 5 минут сайын тексеру (ауа райы жаңарту)
   setInterval(async () => {
     const { isAccessAllowed } = getTimeInfo();
-    
-    // Уақыт баннерін жаңарту
-    await addTimeBanner();
     
     if (!isAccessAllowed) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -689,6 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   lockContent();
   startTimeChecker();
+  startRealTimeClock(); // Уақытты автоматты түрде жаңарту
 });
 
 window.checkPw = checkPw;
