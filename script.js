@@ -751,17 +751,27 @@ window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 
-// ============ ҮШ МУЗЫКА ҚАТАРЫНАН (Shiza - SHYM дұрыс нұсқасы) ============
+// ============ АЛТЫ МУЗЫКА ҚАТАРЫНАН (толық тізім) ============
 let kairatPlayer = null;
 let densPlayer = null;
 let shizaPlayer = null;
+let kzoPlayer = null;
+let kzo2Player = null;
+let sharautPlayer = null;
 let isKairatPlaying = false;
 let isDensPlaying = false;
 let isShizaPlaying = false;
+let isKzoPlaying = false;
+let isKzo2Playing = false;
+let isSharautPlaying = false;
+
 let currentPlaylist = [
-    'XYIYpFZ59wU',      // Shiza – SHYM (1950'S Jazz & Soul Version) - ЖҰМЫС ІСТЕЙДІ
-    'uZy0-fQOBj8',      // Қайрат Нұртас – Ол сен емес
-    '5KDZD86MWYU'       // 9 Грамм – ДЭНС
+    'XYIYpFZ59wU',      // 1. Shiza – SHYM (1950'S Jazz & Soul Version)
+    'uZy0-fQOBj8',      // 2. Қайрат Нұртас – Ол сен емес
+    '5KDZD86MWYU',      // 3. 9 Грамм – ДЭНС
+    'XwImCmmEDgA',      // 4. 6ellucci – KZO
+    'AH9zEI9Hx-0',      // 5. 6ELLUCCI & JUNIOR (GHETTO DOGS) - KZO II
+    'FNKFpuoM1OY'       // 6. Guf & BALLER feat. V $ X V PRiNCE – Шараут
 ];
 let currentTrackIndex = 0;
 let playlistInterval = null;
@@ -778,6 +788,7 @@ function loadMusicYouTubeAPI() {
 
 // YouTube API дайын болғанда
 window.onYouTubeIframeAPIReady = function() {
+  // 1. Shiza плеері
   if (!shizaPlayer) {
     shizaPlayer = new YT.Player('shiza-youtube-player', {
       height: '0',
@@ -797,6 +808,7 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
+  // 2. Қайрат плеері
   if (!kairatPlayer) {
     kairatPlayer = new YT.Player('kairat-youtube-player', {
       height: '0',
@@ -816,11 +828,72 @@ window.onYouTubeIframeAPIReady = function() {
     });
   }
   
+  // 3. 9 Грамм плеері
   if (!densPlayer) {
     densPlayer = new YT.Player('dens-youtube-player', {
       height: '0',
       width: '0',
       videoId: currentPlaylist[2],
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 0
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+  
+  // 4. KZO плеері
+  if (!kzoPlayer) {
+    kzoPlayer = new YT.Player('kzo-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: currentPlaylist[3],
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 0
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+  
+  // 5. KZO II плеері
+  if (!kzo2Player) {
+    kzo2Player = new YT.Player('kzo2-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: currentPlaylist[4],
+      playerVars: {
+        'autoplay': 0,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'fs': 0,
+        'loop': 0
+      },
+      events: {
+        'onStateChange': onPlayerStateChange
+      }
+    });
+  }
+  
+  // 6. Шараут плеері
+  if (!sharautPlayer) {
+    sharautPlayer = new YT.Player('sharaut-youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: currentPlaylist[5],
       playerVars: {
         'autoplay': 0,
         'controls': 0,
@@ -853,6 +926,9 @@ function playNextTrack() {
   if (shizaPlayer && shizaPlayer.stopVideo) shizaPlayer.stopVideo();
   if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
   if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
+  if (kzoPlayer && kzoPlayer.stopVideo) kzoPlayer.stopVideo();
+  if (kzo2Player && kzo2Player.stopVideo) kzo2Player.stopVideo();
+  if (sharautPlayer && sharautPlayer.stopVideo) sharautPlayer.stopVideo();
   
   // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
@@ -861,6 +937,9 @@ function playNextTrack() {
       isShizaPlaying = true;
       isKairatPlaying = false;
       isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 1) {
@@ -869,14 +948,53 @@ function playNextTrack() {
       isKairatPlaying = true;
       isShizaPlaying = false;
       isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
       updateMusicIcons();
     }
-  } else {
+  } else if (currentTrackIndex === 2) {
     if (densPlayer && densPlayer.playVideo) {
       densPlayer.playVideo();
       isDensPlaying = true;
       isShizaPlaying = false;
       isKairatPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 3) {
+    if (kzoPlayer && kzoPlayer.playVideo) {
+      kzoPlayer.playVideo();
+      isKzoPlaying = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 4) {
+    if (kzo2Player && kzo2Player.playVideo) {
+      kzo2Player.playVideo();
+      isKzo2Playing = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzoPlaying = false;
+      isSharautPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 5) {
+    if (sharautPlayer && sharautPlayer.playVideo) {
+      sharautPlayer.playVideo();
+      isSharautPlaying = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
       updateMusicIcons();
     }
   }
@@ -904,6 +1022,27 @@ function addMusicControl() {
     playerDiv3.id = 'dens-youtube-player';
     playerDiv3.style.display = 'none';
     document.body.appendChild(playerDiv3);
+  }
+  
+  if (!document.getElementById('kzo-youtube-player')) {
+    const playerDiv4 = document.createElement('div');
+    playerDiv4.id = 'kzo-youtube-player';
+    playerDiv4.style.display = 'none';
+    document.body.appendChild(playerDiv4);
+  }
+  
+  if (!document.getElementById('kzo2-youtube-player')) {
+    const playerDiv5 = document.createElement('div');
+    playerDiv5.id = 'kzo2-youtube-player';
+    playerDiv5.style.display = 'none';
+    document.body.appendChild(playerDiv5);
+  }
+  
+  if (!document.getElementById('sharaut-youtube-player')) {
+    const playerDiv6 = document.createElement('div');
+    playerDiv6.id = 'sharaut-youtube-player';
+    playerDiv6.style.display = 'none';
+    document.body.appendChild(playerDiv6);
   }
   
   // Контроллер бар ма?
@@ -956,16 +1095,22 @@ function addMusicControl() {
 
 // Музыканы басқару
 window.toggleMusic = function() {
-  if (!shizaPlayer || !kairatPlayer || !densPlayer) return;
+  if (!shizaPlayer || !kairatPlayer || !densPlayer || !kzoPlayer || !kzo2Player || !sharautPlayer) return;
   
-  if (isShizaPlaying || isKairatPlaying || isDensPlaying) {
+  if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying) {
     // Тоқтату
     if (shizaPlayer && shizaPlayer.pauseVideo) shizaPlayer.pauseVideo();
     if (kairatPlayer && kairatPlayer.pauseVideo) kairatPlayer.pauseVideo();
     if (densPlayer && densPlayer.pauseVideo) densPlayer.pauseVideo();
+    if (kzoPlayer && kzoPlayer.pauseVideo) kzoPlayer.pauseVideo();
+    if (kzo2Player && kzo2Player.pauseVideo) kzo2Player.pauseVideo();
+    if (sharautPlayer && sharautPlayer.pauseVideo) sharautPlayer.pauseVideo();
     isShizaPlaying = false;
     isKairatPlaying = false;
     isDensPlaying = false;
+    isKzoPlaying = false;
+    isKzo2Playing = false;
+    isSharautPlaying = false;
     document.getElementById('music-icon').innerHTML = '▶️';
     
     // Интервалды тазалау
@@ -981,9 +1126,18 @@ window.toggleMusic = function() {
     } else if (currentTrackIndex === 1) {
       kairatPlayer.playVideo();
       isKairatPlaying = true;
-    } else {
+    } else if (currentTrackIndex === 2) {
       densPlayer.playVideo();
       isDensPlaying = true;
+    } else if (currentTrackIndex === 3) {
+      kzoPlayer.playVideo();
+      isKzoPlaying = true;
+    } else if (currentTrackIndex === 4) {
+      kzo2Player.playVideo();
+      isKzo2Playing = true;
+    } else if (currentTrackIndex === 5) {
+      sharautPlayer.playVideo();
+      isSharautPlaying = true;
     }
     document.getElementById('music-icon').innerHTML = '⏸️';
     
@@ -1011,12 +1165,24 @@ function updateMusicInfo() {
     titleEl.textContent = '9 Грамм';
     subtitleEl.textContent = 'ДЭНС';
     document.getElementById('music-control').style.background = 'linear-gradient(135deg, #2C3E50, #3498DB)';
+  } else if (isKzoPlaying) {
+    titleEl.textContent = '6ellucci';
+    subtitleEl.textContent = 'KZO';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #006400, #228B22)';
+  } else if (isKzo2Playing) {
+    titleEl.textContent = '6ELLUCCI & JUNIOR';
+    subtitleEl.textContent = 'KZO II';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B4513, #CD853F)';
+  } else if (isSharautPlaying) {
+    titleEl.textContent = 'Guf & BALLER';
+    subtitleEl.textContent = 'Шараут';
+    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #4B0082, #9400D3)';
   }
 }
 
 // Иконкаларды жаңарту
 function updateMusicIcons() {
-  if (isShizaPlaying || isKairatPlaying || isDensPlaying) {
+  if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying) {
     document.getElementById('music-icon').innerHTML = '⏸️';
   } else {
     document.getElementById('music-icon').innerHTML = '▶️';
@@ -1037,6 +1203,9 @@ window.prevTrack = function() {
   if (shizaPlayer && shizaPlayer.stopVideo) shizaPlayer.stopVideo();
   if (kairatPlayer && kairatPlayer.stopVideo) kairatPlayer.stopVideo();
   if (densPlayer && densPlayer.stopVideo) densPlayer.stopVideo();
+  if (kzoPlayer && kzoPlayer.stopVideo) kzoPlayer.stopVideo();
+  if (kzo2Player && kzo2Player.stopVideo) kzo2Player.stopVideo();
+  if (sharautPlayer && sharautPlayer.stopVideo) sharautPlayer.stopVideo();
   
   // Жаңа тректі ойнату
   if (currentTrackIndex === 0) {
@@ -1045,6 +1214,9 @@ window.prevTrack = function() {
       isShizaPlaying = true;
       isKairatPlaying = false;
       isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
       updateMusicIcons();
     }
   } else if (currentTrackIndex === 1) {
@@ -1053,14 +1225,53 @@ window.prevTrack = function() {
       isKairatPlaying = true;
       isShizaPlaying = false;
       isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
       updateMusicIcons();
     }
-  } else {
+  } else if (currentTrackIndex === 2) {
     if (densPlayer && densPlayer.playVideo) {
       densPlayer.playVideo();
       isDensPlaying = true;
       isShizaPlaying = false;
       isKairatPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 3) {
+    if (kzoPlayer && kzoPlayer.playVideo) {
+      kzoPlayer.playVideo();
+      isKzoPlaying = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzo2Playing = false;
+      isSharautPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 4) {
+    if (kzo2Player && kzo2Player.playVideo) {
+      kzo2Player.playVideo();
+      isKzo2Playing = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzoPlaying = false;
+      isSharautPlaying = false;
+      updateMusicIcons();
+    }
+  } else if (currentTrackIndex === 5) {
+    if (sharautPlayer && sharautPlayer.playVideo) {
+      sharautPlayer.playVideo();
+      isSharautPlaying = true;
+      isShizaPlaying = false;
+      isKairatPlaying = false;
+      isDensPlaying = false;
+      isKzoPlaying = false;
+      isKzo2Playing = false;
       updateMusicIcons();
     }
   }
