@@ -91,10 +91,10 @@ async function addTimeBanner() {
   if (isNight && weather) {
     // Түнгі ауа райы (API арқылы)
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
         <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
-        <span style="font-weight: 600;">Қызылорда</span>
-        <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 24px; height: 24px;">
+        <span>Қызылорда</span>
+        <img src="https:${weather.icon}" alt="icon" style="width: 24px; height: 24px;">
         <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
         <span style="opacity: 0.9;">${weather.condition}</span>
         <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
@@ -104,22 +104,19 @@ async function addTimeBanner() {
     `;
   } else if (isNight && !weather) {
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
         <span style="font-weight: 600;">🌙 Қызылорда</span>
         <span>Ауа райы жүктелуде...</span>
       </div>
     `;
   } else if (!isNight) {
-    // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (Yandex)
+    // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (жай ғана мәтін түрінде)
     weatherHtml = `
-      <div style="max-width:400px; margin-left: auto;">
-        <iframe 
-          src="https://yandex.ru/pogoda/kk/kyzylorda?lat=44.842544&lon=65.502563"
-          width="100%"
-          height="100"
-          style="border-radius:15px; border:none; background: rgba(255,255,255,0.1);"
-          title="Қызылорда ауа райы">
-        </iframe>
+      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+        <span style="font-weight: 600;">☀️ Қызылорда ауа райы</span>
+        <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 30px; font-weight: 600;">
+          Көру →
+        </a>
       </div>
     `;
   }
@@ -139,7 +136,7 @@ async function addTimeBanner() {
   banner.style.cssText = `
     background: linear-gradient(135deg, #1e3c72, #2a5298);
     color: white;
-    padding: 10px 0;
+    padding: 12px 0;
     font-size: 14px;
     font-weight: 500;
     position: sticky;
@@ -152,7 +149,13 @@ async function addTimeBanner() {
   `;
   
   // Баннерді body-дің басына қосу
-  document.body.insertBefore(banner, document.body.firstChild);
+  if (document.body.firstChild) {
+    document.body.insertBefore(banner, document.body.firstChild);
+  } else {
+    document.body.appendChild(banner);
+  }
+  
+  console.log('Баннер қосылды, түн бе?', isNight);
 }
 
 // Уақытты автоматты түрде жаңарту функциясы
@@ -218,7 +221,7 @@ async function checkAccess() {
           </div>
         `;
       } else if (!isNight) {
-        // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (Yandex)
+        // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (сілтеме)
         weatherDisplay = `
           <div style="
             background: rgba(255,255,255,0.1);
@@ -229,14 +232,19 @@ async function checkAccess() {
             border: 1px solid rgba(255,255,255,0.2);
           ">
             <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">☀️ Қызылорда ауа райы</div>
-            <div style="max-width:400px; margin:0 auto;">
-              <iframe 
-                src="https://yandex.ru/pogoda/kk/kyzylorda?lat=44.842544&lon=65.502563"
-                width="100%"
-                height="400"
-                style="border-radius:15px; border:none;"
-                title="Қызылорда ауа райы">
-              </iframe>
+            <div style="display: flex; justify-content: center;">
+              <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="
+                background: rgba(255,255,255,0.2);
+                color: white;
+                text-decoration: none;
+                padding: 15px 30px;
+                border-radius: 50px;
+                font-size: 18px;
+                font-weight: 600;
+                border: 1px solid rgba(255,255,255,0.3);
+              ">
+                Яндекс Погодада көру →
+              </a>
             </div>
           </div>
         `;
