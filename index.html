@@ -1,262 +1,121 @@
-
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестілеу жүйесі</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Nunito', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            color: white;
-        }
-        
-        /* Беттер */
-        .page {
-            display: none;
-            min-height: 100vh;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        /* Кіру беті */
-        #page-login {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .login-box {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 40px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-        
-        .pw-wrap {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .pw-wrap input {
-            flex: 1;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            color: white;
-            font-size: 24px;
-            text-align: center;
-        }
-        
-        .pw-wrap button {
-            padding: 15px 25px;
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* Басты бет */
-        .hero {
-            text-align: center;
-            padding: 50px 20px;
-        }
-        
-        h1 {
-            font-size: 48px;
-            margin: 20px 0;
-        }
-        
-        .test-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 40px 0;
-        }
-        
-        button {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        button:hover {
-            transform: translateY(-3px);
-        }
-        
-        .btn-errors {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        
-        .btn-micro {
-            background: linear-gradient(135deg, #ff7e5f, #feb47b);
-            color: white;
-        }
-        
-        .btn-test3 {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-        }
-        
-        .test-header {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .question-card {
-            background: white;
-            color: #333;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 800px;
-            margin: 40px auto;
-        }
-        
-        .options-grid {
-            display: grid;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .opt {
-            padding: 15px;
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        .result-card {
-            background: white;
-            color: #333;
-            border-radius: 30px;
-            padding: 50px;
-            max-width: 600px;
-            margin: 50px auto;
-            text-align: center;
-        }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Debugging Тесті | Ayan KZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-<!-- Кіру беті -->
 <div id="page-login" class="page active">
-    <div class="login-box">
-        <h1>🔐 Тестке кіру</h1>
-        <p>Паролді енгізіңіз (7777)</p>
-        <div class="pw-wrap">
-            <input type="password" id="pw-input" placeholder="****" maxlength="4">
-            <button onclick="checkPassword()">Кіру</button>
-        </div>
-        <p id="pw-error" class="hidden">Қате пароль!</p>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="login-box">
+    <div class="login-icon">
+      <div class="ring"></div>
+      <span class="lock">🔐</span>
     </div>
+    <h1 class="login-h">Тестке кіру</h1>
+    <p class="login-sub">Паролді енгізіп, жалғастырыңыз</p>
+    <div class="pw-wrap" id="pw-wrap">
+      <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
+      <button onclick="checkPw()">Кіру →</button>
+    </div>
+    <p id="pw-err" class="pw-err hidden">⚠️ Пароль қате, қайта енгізіңіз</p>
+  </div>
 </div>
 
-<!-- Басты бет -->
 <div id="page-home" class="page">
-    <div class="hero">
-        <h1>📚 Тестілеу жүйесі</h1>
-        <p>Үш түрлі тестіні тапсырыңыз</p>
-        
-        <!-- БАТЫРМАЛАР -->
-        <div class="test-buttons">
-            <button class="btn-errors" onclick="startErrorsTest()">📋 Қателер тесті</button>
-            <button class="btn-micro" onclick="startMicroTest()">🔧 Микропроцессор</button>
-            <button class="btn-test3" onclick="startTest3()">🗄️ 3 тест</button>
-        </div>
+  <header class="topbar">
+    <span class="logo">🧠 AyanTest</span>
+    <div class="tools">
+      <button class="tb" id="btn-dark" onclick="toggleDark()">🌙</button>
+      <button class="tb" id="btn-warm" onclick="toggleWarm()">☀️</button>
+      <button class="tb" id="btn-font" onclick="toggleFont()">Аа</button>
     </div>
+  </header>
+  <section class="hero">
+    <div class="badge">📘 Бағдарламалық қамтамасыз ету</div>
+    <h1 class="hero-title">Кодтағы ақауларды<br><em>жою тесті</em></h1>
+    <p class="hero-desc">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
+    <div class="pills">
+      <span class="pill">📋 100 сұрақ</span>
+      <span class="pill">⏱️ 30 минут</span>
+      <span class="pill">🎲 Кездейсоқ тәртіп</span>
+      <span class="pill">✅ Дереу нәтиже</span>
+    </div>
+    <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
+  </section>
+  <section class="feats">
+    <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
+    <div class="feat"><span class="feat-ico">🔀</span><strong>Кездейсоқ реттеу</strong><p>Әр тапсыру уникалды болады</p></div>
+    <div class="feat"><span class="feat-ico">👁️</span><strong>Көз қорғау</strong><p>Dark / жылы / үлкен шрифт режимдері</p></div>
+    <div class="feat"><span class="feat-ico">🛡️</span><strong>Қорғаныс</strong><p>Көшіру мен paste мүмкіндіксіз</p></div>
+  </section>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- Тест беті -->
 <div id="page-test" class="page">
-    <div class="test-header">
-        <span id="test-title">Тест</span>
-        <span id="timer">30:00</span>
+  <header class="test-hdr">
+    <div class="th1">
+      <span class="logo sm">🧠 AyanTest</span>
+      <div class="tools">
+        <button class="tb" onclick="toggleDark()">🌙</button>
+        <button class="tb" onclick="toggleWarm()">☀️</button>
+        <button class="tb" onclick="toggleFont()">Аа</button>
+      </div>
     </div>
-    <div id="question-card" class="question-card">
-        <h3 id="question-text">Сұрақ</h3>
-        <div id="options" class="options-grid"></div>
+    <div class="th2">
+      <span id="q-num" class="q-num">1 / 100</span>
+      <div id="timer" class="timer">⏱ 30:00</div>
+      <span id="score-live" class="score-live">✅ 0</span>
     </div>
+    <div class="prog-track">
+      <div id="prog-bar" class="prog-bar" style="width:0%"></div>
+    </div>
+  </header>
+  <main class="q-main">
+    <div id="q-card" class="q-card">
+      <p id="q-lbl" class="q-lbl">Сұрақ 1</p>
+      <h2 id="q-text" class="q-text">…</h2>
+      <div id="q-opts" class="q-opts"></div>
+    </div>
+  </main>
+  <div id="eye-banner" class="eye-banner hidden">
+    👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз
+    <button onclick="document.getElementById('eye-banner').classList.add('hidden')">✕</button>
+  </div>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- Нәтиже беті -->
 <div id="page-result" class="page">
-    <div class="result-card">
-        <h2 id="result-title">Нәтиже</h2>
-        <div id="result-score">0/0</div>
-        <button onclick="goHome()">Басты бет</button>
+  <div class="res-center">
+    <div class="res-card">
+      <div id="res-emoji" class="res-emoji">🏆</div>
+      <h1 id="res-title" class="res-title">Нәтиже</h1>
+      <div id="res-big" class="res-big">— / —</div>
+      <div id="res-pct" class="res-pct">—%</div>
+      <div class="res-stats">
+        <div class="rs rs-g"><span id="rs-c" class="rs-n">0</span><span class="rs-l">Дұрыс</span></div>
+        <div class="rs rs-r"><span id="rs-w" class="rs-n">0</span><span class="rs-l">Қате</span></div>
+        <div class="rs rs-b"><span id="rs-t" class="rs-n">0</span><span class="rs-l">Барлығы</span></div>
+      </div>
+      <div class="res-prog-track">
+        <div id="res-prog" class="res-prog-fill"></div>
+      </div>
+      <button class="btn-main" style="width:100%" onclick="retakeTest()">🔄 Қайта тапсыру</button>
+      <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
     </div>
+  </div>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<script>
-// Пароль тексеру
-function checkPassword() {
-    const input = document.getElementById('pw-input').value;
-    if (input === '7777') {
-        showPage('page-home');
-    } else {
-        document.getElementById('pw-error').classList.remove('hidden');
-    }
-}
-
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-}
-
-// Тест функциялары
-function startErrorsTest() {
-    alert('Қателер тесті басталды!');
-    showPage('page-test');
-}
-
-function startMicroTest() {
-    alert('Микропроцессор тесті басталды!');
-    showPage('page-test');
-}
-
-function startTest3() {
-    alert('3 тест басталды!');
-    showPage('page-test');
-}
-
-function goHome() {
-    showPage('page-home');
-}
-
-// Бастапқы бет
-showPage('page-login');
-</script>
-
+<div id="toast" class="toast hidden"></div>
+<script src="script.js"></script>
 </body>
 </html>
