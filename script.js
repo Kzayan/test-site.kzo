@@ -215,6 +215,39 @@ async function checkAccess() {
         font-family: 'Nunito', sans-serif;
       `;
       
+      // === ҚАДІР ТҮНІ ЖӘНЕ ДҰҒАЛАР (АЛТЫН ӘРІПТЕРМЕН) ===
+      const duaHtml = `
+        <div style="
+          margin-bottom: 30px;
+          padding: 20px;
+          background: rgba(0,0,0,0.3);
+          border-radius: 20px;
+          border: 1px solid rgba(255,215,0,0.3);
+          box-shadow: 0 0 30px rgba(255,215,0,0.2);
+        ">
+          <h2 style="
+            font-size: 36px;
+            font-weight: 800;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFA500, 0 0 20px #FF8C00;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+          ">✨ ҚАДІР ТҮНІ ✨</h2>
+          
+          <div style="margin: 25px 0;">
+            <div style="font-size: 28px; color: #FFD700; margin-bottom: 5px; text-shadow: 0 0 8px gold;">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي</div>
+            <div style="font-size: 18px; color: #F4A460; margin-bottom: 3px;">Аллаһуммә иннәкә афууун тухиббул-афуа фағфу анни.</div>
+            <div style="font-size: 16px; color: #DAA520; font-style: italic;">Уа, Алла! Сен өте кешірімдісің, кешіруді жақсы көресің. Мені кешіре гөр.</div>
+          </div>
+          
+          <div style="margin: 25px 0;">
+            <div style="font-size: 28px; color: #FFD700; margin-bottom: 5px; text-shadow: 0 0 8px gold;">أَسْتَغْفِرُ اللّٰهَ وَأَتُوبُ إِلَيْهِ</div>
+            <div style="font-size: 18px; color: #F4A460; margin-bottom: 3px;">Астағфируллаһ уа әтубу иләйһ</div>
+            <div style="font-size: 16px; color: #DAA520; font-style: italic;">Алладан кешірім сұраймын және Оған тәубе етемін.</div>
+          </div>
+        </div>
+      `;
+      
       let weatherDisplay = '';
       if (isNight && weather) {
         // Түнгі ауа райы (API)
@@ -277,7 +310,7 @@ async function checkAccess() {
           border: 1px solid rgba(255,255,255,0.15);
           border-radius: 30px;
           padding: 40px;
-          max-width: 550px;
+          max-width: 650px;
           width: 100%;
           text-align: center;
           color: white;
@@ -296,6 +329,8 @@ async function checkAccess() {
           ">
             ${icon} ${greeting} Қазір ${currentTime}
           </div>
+          
+          ${duaHtml}
           
           ${weatherDisplay}
           
@@ -1056,6 +1091,7 @@ function playNextTrack() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
+      isSharautPlaying = false;
       isShizaLivePlaying = false;
       updateMusicIcons();
     }
@@ -1368,6 +1404,7 @@ window.prevTrack = function() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
+      isSharautPlaying = false;
       isShizaLivePlaying = false;
       updateMusicIcons();
     }
