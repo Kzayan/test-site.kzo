@@ -85,8 +85,12 @@ function getTimeInfo() {
   return { greeting, icon, isAccessAllowed, hours, currentTime, isNight };
 }
 
-// Уақыт баннерін қосу
+// Уақыт баннерін қосу (тек бір рет)
 async function addTimeBanner() {
+  // Егер баннер бар болса, қайта жасамаймыз
+  const oldBanner = document.getElementById('time-banner');
+  if (oldBanner) return;
+  
   const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
   // Ауа райын уақытқа байланысты көрсету
@@ -94,10 +98,6 @@ async function addTimeBanner() {
   if (isNight) {
     weather = await getKyzylordaWeather();
   }
-  
-  // Ескі баннерді өшіру
-  const oldBanner = document.getElementById('time-banner');
-  if (oldBanner) oldBanner.remove();
   
   // Жаңа баннер жасау
   const banner = document.createElement('div');
@@ -142,9 +142,9 @@ async function addTimeBanner() {
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="font-size: 20px;">${icon}</span>
         <span>${greeting}</span>
-        <span style="opacity: 0.8; font-family: monospace;">${currentTime}</span>
+        <span style="opacity: 0.8; font-family: monospace;" id="time-banner-display">${currentTime}</span>
       </div>
-      ${weatherHtml}
+      <div id="weather-banner-content">${weatherHtml}</div>
     </div>
   `;
   
@@ -174,15 +174,71 @@ async function addTimeBanner() {
   console.log('Баннер қосылды, түн бе?', isNight, 'Уақыт:', currentTime);
 }
 
+// Уақытты жаңарту (тек сандарды)
+function updateTimeInBanner() {
+  const timeSpan = document.getElementById('time-banner-display');
+  if (!timeSpan) return;
+  
+  const { currentTime } = getTimeInfo();
+  timeSpan.textContent = currentTime;
+}
+
+// Ауа райын жаңарту (қажет болса)
+async function updateWeatherInBanner() {
+  const weatherDiv = document.getElementById('weather-banner-content');
+  if (!weatherDiv) return;
+  
+  const { isNight } = getTimeInfo();
+  
+  if (!isNight) {
+    // Күндізгі ауа райы сілтемесі
+    weatherDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+        <span style="font-weight: 600;">☀️ Қызылорда ауа райы</span>
+        <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 30px; font-weight: 600;">
+          Көру →
+        </a>
+      </div>
+    `;
+    return;
+  }
+  
+  // Түнде ауа райын жаңарту
+  const weather = await getKyzylordaWeather();
+  if (weather) {
+    weatherDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+        <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
+        <span>Қызылорда</span>
+        <img src="https:${weather.icon}" alt="icon" style="width: 24px; height: 24px;">
+        <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
+        <span style="opacity: 0.9;">${weather.condition}</span>
+        <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
+        <span>💧 ${weather.humidity}%</span>
+        <span>🌬️ ${weather.wind} км/сағ</span>
+      </div>
+    `;
+  } else {
+    weatherDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+        <span style="font-weight: 600;">🌙 Қызылорда</span>
+        <span>Ауа райы жүктелуде...</span>
+      </div>
+    `;
+  }
+}
+
 // Уақытты автоматты түрде жаңарту функциясы
 function startRealTimeClock() {
-  // Бірінші рет қосу
-  addTimeBanner();
-  
-  // Әр секунд сайын баннерді жаңарту
-  setInterval(async () => {
-    await addTimeBanner();
-  }, 1000);
+  // Бірінші рет баннерді құру
+  addTimeBanner().then(() => {
+    // Әр секунд сайын уақытты жаңарту
+    setInterval(updateTimeInBanner, 1000);
+    // Ауа райын әр 5 минут сайын жаңарту
+    setInterval(() => {
+      updateWeatherInBanner();
+    }, WEATHER_FETCH_INTERVAL);
+  });
 }
 
 // Қолжетімділікті тексеру
@@ -326,7 +382,7 @@ async function checkAccess() {
             border-radius: 15px;
             margin-bottom: 20px;
             font-size: 20px;
-          ">
+          " id="access-time-display">
             ${icon} ${greeting} Қазір ${currentTime}
           </div>
           
@@ -363,7 +419,7 @@ async function checkAccess() {
       document.body.appendChild(accessDeniedPage);
     } else {
       // Егер бет бар болса, уақыт пен ауа райын жаңарту
-      const timeDiv = accessDeniedPage.querySelector('div[style*="background: rgba(255,255,255,0.1); padding: 15px;"]');
+      const timeDiv = document.getElementById('access-time-display');
       if (timeDiv) {
         timeDiv.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
       }
@@ -779,12 +835,25 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу (тек түнде ауа райы көрсетіледі)
+  // Уақыт баннерін қосу (тек бір рет)
   addTimeBanner();
+  
+  // Әр секунд сайын уақытты жаңарту
+  setInterval(updateTimeInBanner, 1000);
+  
+  // Ауа райын әр 5 минут сайын жаңарту
+  setInterval(() => {
+    updateWeatherInBanner();
+  }, WEATHER_FETCH_INTERVAL);
   
   // Қолжетімділікті тексеру
   setTimeout(() => {
     checkAccess();
+  }, 1000);
+  
+  // Қолжетімділікті әр секунд сайын тексеру
+  setInterval(async () => {
+    await checkAccess();
   }, 1000);
   
   const pwInput = document.getElementById('pw-in');
@@ -799,8 +868,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   lockContent();
-  startTimeChecker();
-  startRealTimeClock(); // Уақытты автоматты түрде жаңарту
 });
 
 window.checkPw = checkPw;
