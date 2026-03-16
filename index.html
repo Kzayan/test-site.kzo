@@ -1,3 +1,6 @@
+Жарайды, тек HTML ғана. Міне, толық код:
+
+```html
 <!DOCTYPE html>
 <html lang="kk">
 <head>
@@ -8,6 +11,72 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<style>
+/* Telegram байланысы - стильдері қосылды */
+.telegram-link {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  animation: slideUp 0.5s ease;
+}
+.telegram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0088cc, #0077b5);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.telegram-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 136, 204, 0.5);
+  background: linear-gradient(135deg, #0077b5, #0066a0);
+}
+.tg-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .telegram-link {
+    bottom: 15px;
+    left: 15px;
+  }
+  .telegram-badge {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .tg-icon {
+    font-size: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .telegram-badge span:last-child {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -115,7 +184,16 @@
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
+<!-- Telegram бот сілтемесі -->
+<div class="telegram-link">
+  <a href="http://t.me/Kzayan_bot/test" target="_blank" class="telegram-badge">
+    <span class="tg-icon">✈️</span>
+    <span>telegram арқылы тесттен қауіпсіз өтіңіз</span>
+  </a>
+</div>
+
 <div id="toast" class="toast hidden"></div>
 <script src="script.js"></script>
 </body>
 </html>
+```
