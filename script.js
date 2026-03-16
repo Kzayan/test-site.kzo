@@ -9,7 +9,6 @@ const WEATHER_FETCH_INTERVAL = 5 * 60 * 1000; // 5 минут
 async function getKyzylordaWeather() {
   const now = Date.now();
   
-  // Егер кэш әлі жаңа болса, соны қайтару
   if (cachedWeather && (now - lastWeatherFetch < WEATHER_FETCH_INTERVAL)) {
     return cachedWeather;
   }
@@ -78,7 +77,7 @@ function getTimeInfo() {
   return { greeting, icon, isAccessAllowed, hours, currentTime, isNight };
 }
 
-// Баннерді жаңарту
+// Уақыт баннерін жаңарту
 async function updateTimeBanner() {
   const { greeting, icon, currentTime, isNight } = getTimeInfo();
   
@@ -112,6 +111,13 @@ async function updateTimeBanner() {
       <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
       <span>💧 ${weather.humidity}%</span>
       <span>🌬️ ${weather.wind} км/сағ</span>
+    `;
+  } else if (weatherDiv && !isNight) {
+    weatherDiv.innerHTML = `
+      <span style="font-weight: 600;">☀️ Қызылорда ауа райы</span>
+      <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 30px; font-weight: 600;">
+        Көру →
+      </a>
     `;
   }
 }
@@ -389,6 +395,7 @@ function startTimeChecker() {
   setInterval(checkAccessAndUpdate, 1000);
 }
 
+// ============ БІРІНШІ ТЕСТІ: Қателерді анықтау (75 сұрақ) ============
 const QUESTIONS = [
   {question:"Кодтағы қателерді анықтау процесі қалай аталады?",options:["Компиляция","Дебаггинг","Тестілеу","Орындау","Инсталляция"],correct:1},
   {question:"Синтаксистік қате дегеніміз не?",options:["Логикалық қате","Бағдарлама баяу жұмыс істеуі","Жазылу ережесінің бұзылуы","Дерекқор қатесі","Дизайн қатесі"],correct:2},
@@ -492,11 +499,118 @@ const QUESTIONS = [
   {question:"Бағдарламалық код сапасының негізгі көрсеткіші:",options:["Қатесіз жұмыс","Ұзындығы","Түсі","Форматы","Архив көлемі"],correct:0}
 ];
 
-let shuffled = [];
+// ============ ЕКІНШІ ТЕСТІ: Микропроцессор (80+ сұрақ) ============
+const MICRO_QUESTIONS = [
+  {question:"Микропроцессор дегеніміз:",options:["Мәліметтерді ұзақ сақтайтын құрылғы","Ақпаратты енгізу құрылғысы","Бағдарламаны орындайтын орталық есептеу құрылғысы","Шығару құрылғысы","Қуат көзі"],correct:2},
+  {question:"Микропроцессордың негізгі бөлігі:",options:["Монитор","Пернетақта","Арифметикалық-логикалық құрылғы","Принтер","Сканер"],correct:2},
+  {question:"Тактілік жиілік нені анықтайды?",options:["Жад көлемін","Командалардың орындалу жылдамдығын","Порт санын","Қуат көзін","Экран өлшемін"],correct:1},
+  {question:"Разрядтылық дегеніміз:",options:["Бір уақытта өңделетін бит саны","Жад түрі","Порт саны","Қуат мөлшері","Температура"],correct:0},
+  {question:"Кэш-жадтың қызметі:",options:["Мәліметтерді басып шығару","Уақытша сақтау және жылдам қолжеткізу","Қуатты арттыру","Интернетке қосу","Дыбыс өңдеу"],correct:1},
+  {question:"Басқару құрылғысы:",options:["Командаларды үйлестіреді","Дыбыс шығарады","Графика өңдейді","Қуат береді","Мәлімет сақтайды"],correct:0},
+  {question:"ALU орындайды:",options:["Дыбыс жазу","Арифметикалық және логикалық операциялар","Интернет қосу","Қуат бөлу","Сурет салу"],correct:1},
+  {question:"Көпядролы процессор артықшылығы:",options:["Бағасы төмен","Бірнеше процесті қатар орындау","Түсі жақсы","Салмағы аз","Корпусы кіші"],correct:1},
+  {question:"Техпроцесс анықтайды:",options:["Транзистор өлшемін","Экран сапасын","Перне санын","Монитор көлемін","Қуат кабелін"],correct:0},
+  {question:"Регистрлер қызметі:",options:["Уақытша мәлімет сақтау","Сурет шығару","Қуат беру","Дыбыс жазу","Интернет қосу"],correct:0},
+  {question:"Шина (Bus) дегеніміз:",options:["Мәлімет алмасу жолы","Қуат көзі","Корпус бөлігі","Салқындатқыш","Экран"],correct:0},
+  {question:"Адрестік шина қызметі:",options:["Мәлімет сақтау","Жад адресін беру","Дыбыс беру","Қуат тарату","Графика шығару"],correct:1},
+  {question:"Деректер шинасы:",options:["Қуат береді","Мәлімет тасымалдайды","Температура өлшейді","Салқындатады","Интернет қосады"],correct:1},
+  {question:"Басқару шинасы:",options:["Сигналдарды басқарады","Мәлімет сақтайды","Қуат береді","Сурет шығарады","Дыбыс шығарады"],correct:0},
+  {question:"CISC архитектурасы сипатталады:",options:["Қарапайым командалар","Күрделі командалар жиыны","Жадсыз","Портсыз","Қуатсыз"],correct:1},
+  {question:"RISC архитектурасы ерекшелігі:",options:["Ұзақ командалар","Қарапайым және жылдам командалар","Портсыз","Қуатсыз","Жадсыз"],correct:1},
+  {question:"Interrupt дегеніміз:",options:["Қайта жүктеу","Процесті уақытша тоқтату сигналы","Қуат өшіру","Салқындату","Монитор қосу"],correct:1},
+  {question:"Конвейерлеу дегеніміз:",options:["Командаларды кезең-кезеңмен орындау","Қуатты арттыру","Сурет өңдеу","Дыбыс жазу","Интернет қосу"],correct:0},
+  {question:"Кэштің деңгейлері:",options:["L1, L2, L3","A, B, C","1,2","X,Y","I,O"],correct:0},
+  {question:"SoC дегеніміз:",options:["Бір чиптегі жүйе","Қуат көзі","Монитор","Пернетақта","Салқындатқыш"],correct:0},
+  {question:"Талаптарды анықтаудың бірінші кезеңі:",options:["Бағдарлама жазу","Мәселені талдау","Монтаж","Сату","Қаптау"],correct:1},
+  {question:"Функционалдық талап:",options:["Орындайтын операциялар","Түс","Салмақ","Қорап","Баға"],correct:0},
+  {question:"Функционалдық емес талап:",options:["Жылдамдық","Қосу","Азайту","Көбейту","Бөлу"],correct:0},
+  {question:"Сенімділік көрсеткіші:",options:["Қате ықтималдығы","Түс","Қаптама","Кабель","Перне"],correct:0},
+  {question:"Энергия тиімділігі:",options:["Қуатты аз тұтыну","Түс","Монитор","Қорап","Салмақ"],correct:0},
+  {question:"Нақты уақыт жүйесінде маңызды:",options:["Дизайн","Уақытында жауап беру","Түс","Салмақ","Баға"],correct:1},
+  {question:"Верификация дегеніміз:",options:["Талапқа сәйкестікті тексеру","Сату","Қаптау","Монтаж","Түсті өзгерту"],correct:0},
+  {question:"Валидация дегеніміз:",options:["Пайдаланушы талабына сәйкестік","Монтаж","Қаптау","Сату","Түс"],correct:0},
+  {question:"Масштабталу:",options:["Кеңейту мүмкіндігі","Түс","Қорап","Кабель","Салмақ"],correct:0},
+  {question:"Интерфейс талабы:",options:["Қосылу порттары","Түс","Қаптама","Баға","Монтаж"],correct:0},
+  {question:"Стандартқа сәйкестік:",options:["ISO талаптары","Түс","Салмақ","Қаптама","Монтаж"],correct:0},
+  {question:"Қауіпсіздік талабы:",options:["Қорғаныс механизмі","Түс","Салмақ","Қорап","Кабель"],correct:0},
+  {question:"Қуат шектеулі жүйе:",options:["Смартфон","Сервер","Суперкомпьютер","Жұмыс станциясы","ДК"],correct:0},
+  {question:"Микроконтроллер қолданылуы:",options:["Автоматика","Монитор","Принтер","Кабель","Қорап"],correct:0},
+  {question:"Тестілеу мақсаты:",options:["Қателерді табу","Сату","Қаптау","Түс","Монтаж"],correct:0},
+  {question:"Құжаттандыру:",options:["Бақылау үшін қажет","Түс үшін","Салмақ үшін","Қорап үшін","Кабель үшін"],correct:0},
+  {question:"Өнімділік көрсеткіші:",options:["Жиілік","Түс","Қорап","Кабель","Монитор"],correct:0},
+  {question:"Температуралық режим:",options:["Жұмыс тұрақтылығы үшін","Түс үшін","Салмақ үшін","Қаптама","Кабель"],correct:0},
+  {question:"Жылу тарату жүйесі қажет:",options:["Температураны тұрақтандыру","Түс","Монитор","Перне","Қаптама"],correct:0},
+  {question:"Өнім сапасы анықталады:",options:["Талаптарға сәйкестікпен","Түспен","Салмақпен","Қаптамамен","Монтажбен"],correct:0},
+  {question:"Алгоритм дегеніміз:",options:["Командалар тізбегі","Түс","Қорап","Кабель","Монитор"],correct:0},
+  {question:"Алгоритм қасиеті:",options:["Анықтылық","Түс","Салмақ","Қаптама","Монитор"],correct:0},
+  {question:"Сызықтық алгоритм:",options:["Командалар ретімен орындалады","Түс арқылы","Кабель арқылы","Қорап арқылы","Монитор арқылы"],correct:0},
+  {question:"Тармақталған алгоритм:",options:["Шарт арқылы","Түс арқылы","Салмақ арқылы","Қаптама","Монитор"],correct:0},
+  {question:"Циклдік алгоритм:",options:["Қайталау","Түс","Салмақ","Қаптама","Монитор"],correct:0},
+  {question:"if операторы:",options:["Шарт тексеру","Шығару","Енгізу","Тоқтату","Бастау"],correct:0},
+  {question:"for операторы:",options:["Қайталау","Тоқтату","Шығару","Енгізу","Бастау"],correct:0},
+  {question:"Блок-схемада ромб:",options:["Шарт","Бастау","Соңы","Мәлімет","Процесс"],correct:0},
+  {question:"Псевдокод:",options:["Алгоритмнің қарапайым жазбасы","Түс","Салмақ","Қаптама","Монитор"],correct:0},
+  {question:"FSM дегеніміз:",options:["Ақырлы автомат","Қорап","Кабель","Монитор","Түс"],correct:0},
+  {question:"Таймер қолдану:",options:["Уақытты бақылау","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Watchdog таймер:",options:["Жүйені қайта іске қосу","Дыбыс шығару","Сурет салу","Қуат беру","Мәлімет сақтау"],correct:0},
+  {question:"Приоритет:",options:["Маңыздылық деңгейі","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Scheduler:",options:["Процестерді жоспарлаушы","Түс","Қорап","Кабель","Монитор"],correct:0},
+  {question:"Semaphore:",options:["Синхронизация құралы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Deadlock:",options:["Өзара бұғатталу","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Multithreading:",options:["Көп ағынды орындау","Түс","Қорап","Кабель","Монитор"],correct:0},
+  {question:"DMA:",options:["Жадқа тікелей қолжеткізу","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Bootloader:",options:["Бастапқы жүктеу бағдарламасы","Түс","Қорап","Кабель","Монитор"],correct:0},
+  {question:"Firmware:",options:["Құрылғының ішкі бағдарламасы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"ARM архитектурасы жатады:",options:["RISC","CISC","GPU","DSP","FPGA"],correct:0},
+  {question:"x86 архитектурасы:",options:["CISC","RISC","GPU","ASIC","SoC"],correct:0},
+  {question:"Overclocking:",options:["Жиілікті арттыру","Түс өзгерту","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Throttling:",options:["Қызғанда жиілікті азайту","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"ECC жад:",options:["Қателерді түзету","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"GPIO:",options:["Жалпы мақсаттағы енгізу/шығару","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"UART:",options:["Тізбекті байланыс","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"SPI:",options:["Синхронды интерфейс","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"I2C:",options:["Екі сымды интерфейс","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"RTOS:",options:["Нақты уақыт ОЖ","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Latency:",options:["Кідіріс уақыты","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Throughput:",options:["Өткізу қабілеті","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Benchmark:",options:["Өнімділік сынағы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Cache miss:",options:["Кэштен табылмау","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Branch prediction:",options:["Тармақты болжау","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Virtualization:",options:["Виртуалды машинаны қолдау","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Hyper-threading:",options:["Логикалық ядро технологиясы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Power management:",options:["Қуатты басқару","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Sleep mode:",options:["Энергия үнемдеу режимі","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Reset сигналы:",options:["Қайта іске қосу","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Clock generator:",options:["Такт генераторы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Embedded system:",options:["Енгізілген жүйе","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"ASIC:",options:["Арнайы мақсаттағы микросхема","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"FPGA:",options:["Бағдарламаланатын логикалық матрица","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Конвейердің артықшылығы:",options:["Өнімділікті арттыру","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Жүйелік сағат:",options:["Такт сигналы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Адрес кеңістігі:",options:["Қолжетімді жад көлемі","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Жүктеу процесі:",options:["Инициализация","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Қауіпсіз жүктеу (Secure boot):",options:["Қорғалған іске қосу","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Жүйелік үзіліс:",options:["Interrupt","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Драйвер:",options:["Құрылғыны басқару бағдарламасы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Процесс:",options:["Орындаудағы бағдарлама","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Жіп (Thread):",options:["Процестің бөлігі","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Жүйелік қате:",options:["Fault","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Қалпына келтіру механизмі:",options:["Reset","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Оптимизация:",options:["Тиімділікті арттыру","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Порт:",options:["Қосылу интерфейсі","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Сигнал:",options:["Басқару импульсі","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Деректер типі:",options:["Мәлімет форматы","Түс","Қаптама","Салмақ","Монитор"],correct:0},
+  {question:"Жүйелік талдау мақсаты:",options:["Талаптарды дұрыс анықтау","Түс таңдау","Қаптама жасау","Салмақ өлшеу","Монитор таңдау"],correct:0}
+];
+
+// ============ ТЕСТІЛЕРГЕ ОРТАҚ ФУНКЦИЯЛАР ============
+let currentTestType = 'errors'; // 'errors' немесе 'micro'
+let shuffledErrors = [];
+let shuffledMicro = [];
 let curIdx = 0;
 let score = 0;
 let timerID = null;
-let timeLeft = 1800;
+let timeLeft = 1800; // 30 минут
 let eyeTimer = null;
 let isDark = false;
 let isWarm = false;
@@ -569,13 +683,36 @@ function checkPw() {
   }
 }
 
-function startTest() {
-  shuffled = shuffleArray([...QUESTIONS]);
+function startErrorsTest() {
+  currentTestType = 'errors';
+  shuffledErrors = shuffleArray([...QUESTIONS]);
   curIdx = 0;
   score = 0;
   answeredCount = 0;
   timeLeft = 1800;
   
+  document.getElementById('test-title').textContent = 'Қателерді анықтау тесті';
+  showPage('page-test');
+  renderQuestion();
+  startTimer();
+  
+  clearTimeout(eyeTimer);
+  eyeTimer = setTimeout(() => {
+    if (document.getElementById('page-test').classList.contains('active')) {
+      document.getElementById('eye-banner').classList.remove('hidden');
+    }
+  }, 20 * 60 * 1000);
+}
+
+function startMicroTest() {
+  currentTestType = 'micro';
+  shuffledMicro = shuffleArray([...MICRO_QUESTIONS]);
+  curIdx = 0;
+  score = 0;
+  answeredCount = 0;
+  timeLeft = 1800;
+  
+  document.getElementById('test-title').textContent = 'Микропроцессор тесті';
   showPage('page-test');
   renderQuestion();
   startTimer();
@@ -589,10 +726,12 @@ function startTest() {
 }
 
 function renderQuestion() {
-  if (!shuffled.length || curIdx >= shuffled.length) return;
+  let questions = currentTestType === 'errors' ? shuffledErrors : shuffledMicro;
   
-  const question = shuffled[curIdx];
-  const total = shuffled.length;
+  if (!questions.length || curIdx >= questions.length) return;
+  
+  const question = questions[curIdx];
+  const total = questions.length;
   const letters = ['A', 'B', 'C', 'D', 'E'];
   
   document.getElementById('q-num').textContent = `${curIdx + 1} / ${total}`;
@@ -645,7 +784,8 @@ function handleAnswer(btn, selectedIdx, correctIdx) {
   
   setTimeout(() => {
     curIdx++;
-    if (curIdx >= shuffled.length) {
+    let questions = currentTestType === 'errors' ? shuffledErrors : shuffledMicro;
+    if (curIdx >= questions.length) {
       finishTest(false);
     } else {
       renderQuestion();
@@ -685,7 +825,8 @@ function finishTest(timeout) {
   clearInterval(timerID);
   clearTimeout(eyeTimer);
   
-  const total = shuffled.length;
+  let questions = currentTestType === 'errors' ? shuffledErrors : shuffledMicro;
+  const total = questions.length;
   const wrong = total - score;
   const percentage = Math.round((score / total) * 100);
   
@@ -719,8 +860,12 @@ function getResultEmoji(percentage, timeout) {
   return '💪';
 }
 
-function retakeTest() { 
-  startTest(); 
+function retakeTest() {
+  if (currentTestType === 'errors') {
+    startErrorsTest();
+  } else {
+    startMicroTest();
+  }
 }
 
 function goHome() { 
@@ -786,7 +931,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.checkPw = checkPw;
-window.startTest = startTest;
+window.startErrorsTest = startErrorsTest;
+window.startMicroTest = startMicroTest;
 window.toggleDark = toggleDark;
 window.toggleWarm = toggleWarm;
 window.toggleFont = toggleFont;
