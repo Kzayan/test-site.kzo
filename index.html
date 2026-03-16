@@ -8,6 +8,46 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<style>
+    /* Қосымша стильдер - тест батырмалары үшін */
+    .test-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 30px 0 20px;
+    }
+    
+    .btn-main {
+        padding: 15px 40px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+        min-width: 200px;
+    }
+    
+    .btn-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-main.micro {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    }
+    
+    .btn-main.test3 {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+    }
+    
+    .btn-main.errors {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+</style>
 </head>
 <body>
 
@@ -49,7 +89,15 @@
       <span class="pill">🎲 Кездейсоқ тәртіп</span>
       <span class="pill">✅ Дереу нәтиже</span>
     </div>
-    <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
+    
+    <!-- === ТҮЗЕТІЛГЕН БӨЛІМ: ҮШ БАТЫРМА === -->
+    <div class="test-buttons">
+      <button class="btn-main errors" onclick="startErrorsTest()">📋 Қателер тесті</button>
+      <button class="btn-main micro" onclick="startMicroTest()">🔧 Микропроцессор</button>
+      <button class="btn-main test3" onclick="startTest3()">🗄️ 3 тест</button>
+    </div>
+    <!-- === ТҮЗЕТУ АЯҚТАЛДЫ === -->
+    
   </section>
   <section class="feats">
     <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
@@ -118,4 +166,4 @@
 <div id="toast" class="toast hidden"></div>
 <script src="script.js"></script>
 </body>
-          </html>
+</html>
