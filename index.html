@@ -7,41 +7,425 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css"/>
 <style>
-/* Instagram байланысы - стильдері қосылды */
-.instagram-link {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 9999;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Nunito', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #1a1e2c 0%, #2d1f3a 100%);
+  overflow-x: hidden;
+}
+
+.page {
+  display: none;
+  min-height: 100vh;
+  position: relative;
+}
+
+.page.active {
+  display: block;
+}
+
+/* Login Page */
+#page-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
   animation: slideUp 0.5s ease;
 }
-.instagram-badge {
+
+.login-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+}
+
+.ring {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 3px solid #667eea;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.lock {
+  font-size: 40px;
+  line-height: 60px;
+}
+
+.login-h {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.login-sub {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.pw-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.pw-wrap input {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+
+.pw-wrap input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.pw-wrap button {
+  padding: 0 25px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.pw-wrap button:hover {
+  transform: translateY(-2px);
+}
+
+.pw-err {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Chat Container */
+.chat-container {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 380px;
+  height: 600px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 10000;
+  animation: slideUp 0.5s ease;
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.chat-header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header h3 {
+  font-size: 18px;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+.chat-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.chat-login {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chat-login input {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.chat-login button {
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  max-width: 80%;
+  padding: 10px 15px;
+  border-radius: 15px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.message-own {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-bottom-right-radius: 5px;
+}
+
+.message-other {
+  align-self: flex-start;
+  background: #f0f0f0;
+  color: #333;
+  border-bottom-left-radius: 5px;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 12px;
+}
+
+.message-own .message-header {
+  color: rgba(255,255,255,0.8);
+}
+
+.message-other .message-header {
+  color: #666;
+}
+
+.message-author {
+  font-weight: 700;
+}
+
+.message-time {
+  font-size: 10px;
+}
+
+.message-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 10px;
+  margin-top: 5px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.message-image:hover {
+  transform: scale(1.05);
+}
+
+.chat-input-area {
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: white;
+}
+
+.chat-input-area input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.file-label {
+  cursor: pointer;
+  font-size: 24px;
+  transition: transform 0.3s;
+}
+
+.file-label:hover {
+  transform: scale(1.1);
+}
+
+.file-label input {
+  display: none;
+}
+
+.chat-send {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.chat-send:hover {
+  transform: scale(1.1);
+}
+
+/* Online Users */
+.online-users {
+  background: #f8f9fa;
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.user-badge {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.user-badge::before {
+  content: "●";
+  color: #4ade80;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+/* Image Modal */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  cursor: pointer;
+}
+
+.image-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+}
+
+/* Instagram және Telegram сілтемелері */
+.instagram-link, .telegram-link {
+  position: fixed;
+  bottom: 20px;
+  z-index: 9999;
+  animation: slideUp 0.5s ease;
+}
+
+.instagram-link {
+  left: 20px;
+}
+
+.telegram-link {
+  right: 20px;
+}
+
+.instagram-badge, .telegram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: white;
   padding: 12px 20px;
   border-radius: 50px;
   text-decoration: none;
   font-weight: 600;
   font-size: 14px;
-  box-shadow: 0 4px 15px rgba(131, 58, 180, 0.4);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255,255,255,0.2);
 }
-.instagram-badge:hover {
+
+.instagram-badge {
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+.telegram-badge {
+  background: linear-gradient(135deg, #0088cc, #229ED9);
+}
+
+.instagram-badge:hover, .telegram-badge:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(253, 29, 29, 0.5);
-  background: linear-gradient(135deg, #fcb045, #fd1d1d, #833ab4);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
-.ig-icon {
-  font-size: 20px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  z-index: 30000;
+  animation: slideUp 0.3s ease;
 }
+
+/* Animations */
 @keyframes slideUp {
   from {
     transform: translateY(100px);
@@ -52,80 +436,38 @@
     opacity: 1;
   }
 }
-@media (max-width: 768px) {
-  .instagram-link {
-    bottom: 15px;
-    left: 15px;
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
   }
-  .instagram-badge {
-    padding: 10px 16px;
-    font-size: 13px;
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
   }
-  .ig-icon {
-    font-size: 18px;
-  }
-}
-@media (max-width: 480px) {
-  .instagram-badge span:last-child {
-    max-width: 180px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-/* Telegram бот стилі */
-.telegram-link {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-  animation: slideUp 0.5s ease 0.2s both;
-}
-.telegram-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #0088cc, #229ED9);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.telegram-badge:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 136, 204, 0.6);
-  background: linear-gradient(135deg, #229ED9, #0088cc);
-}
-.tg-icon {
-  font-size: 20px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-}
+/* Responsive */
 @media (max-width: 768px) {
-  .telegram-link {
-    bottom: 15px;
-    right: 15px;
+  .chat-container {
+    width: 90%;
+    height: 500px;
+    right: 5%;
+    bottom: 80px;
   }
-  .telegram-badge {
+  
+  .instagram-link, .telegram-link {
+    bottom: 15px;
+  }
+  
+  .instagram-badge, .telegram-badge {
     padding: 10px 16px;
     font-size: 13px;
-  }
-  .tg-icon {
-    font-size: 18px;
-  }
-}
-@media (max-width: 480px) {
-  .telegram-badge span:last-child {
-    max-width: 180px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 </style>
@@ -133,9 +475,6 @@
 <body>
 
 <div id="page-login" class="page active">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
   <div class="login-box">
     <div class="login-icon">
       <div class="ring"></div>
@@ -143,7 +482,7 @@
     </div>
     <h1 class="login-h">Тестке кіру</h1>
     <p class="login-sub">Паролді енгізіп, жалғастырыңыз</p>
-    <div class="pw-wrap" id="pw-wrap">
+    <div class="pw-wrap">
       <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
       <button onclick="checkPw()">Кіру →</button>
     </div>
@@ -152,88 +491,63 @@
 </div>
 
 <div id="page-home" class="page">
-  <header class="topbar">
-    <span class="logo">🧠 AyanTest</span>
+  <header class="topbar" style="background: rgba(255,255,255,0.1); padding: 20px; display: flex; justify-content: space-between;">
+    <span class="logo" style="color: white;">🧠 AyanTest</span>
     <div class="tools">
-      <button class="tb" id="btn-dark" onclick="toggleDark()">🌙</button>
-      <button class="tb" id="btn-warm" onclick="toggleWarm()">☀️</button>
-      <button class="tb" id="btn-font" onclick="toggleFont()">Аа</button>
+      <button class="tb" onclick="toggleDark()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">🌙</button>
+      <button class="tb" onclick="toggleWarm()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">☀️</button>
+      <button class="tb" onclick="toggleFont()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">Аа</button>
     </div>
   </header>
-  <section class="hero">
-    <div class="badge">📘 Бағдарламалық қамтамасыз ету</div>
-    <h1 class="hero-title">Кодтағы ақауларды<br><em>жою тесті</em></h1>
-    <p class="hero-desc">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
-    <div class="pills">
-      <span class="pill">📋 100 сұрақ</span>
-      <span class="pill">⏱️ 30 минут</span>
-      <span class="pill">🎲 Кездейсоқ тәртіп</span>
-      <span class="pill">✅ Дереу нәтиже</span>
+  <section class="hero" style="text-align: center; padding: 50px 20px; color: white;">
+    <div class="badge" style="background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 16px; border-radius: 50px;">📘 Бағдарламалық қамтамасыз ету</div>
+    <h1 class="hero-title" style="font-size: 48px; margin: 20px 0;">Кодтағы ақауларды<br><em>жою тесті</em></h1>
+    <p class="hero-desc" style="font-size: 18px; margin-bottom: 30px;">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
+    <div class="pills" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+      <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">📋 100 сұрақ</span>
+      <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">⏱️ 30 минут</span>
+      <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">🎲 Кездейсоқ тәртіп</span>
+      <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">✅ Дереу нәтиже</span>
     </div>
-    <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
+    <button class="btn-main" onclick="startTest()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; cursor: pointer;">▶ Тестті бастау</button>
   </section>
-  <section class="feats">
-    <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
-    <div class="feat"><span class="feat-ico">🔀</span><strong>Кездейсоқ реттеу</strong><p>Әр тапсыру уникалды болады</p></div>
-    <div class="feat"><span class="feat-ico">👁️</span><strong>Көз қорғау</strong><p>Dark / жылы / үлкен шрифт режимдері</p></div>
-    <div class="feat"><span class="feat-ico">🛡️</span><strong>Қорғаныс</strong><p>Көшіру мен paste мүмкіндіксіз</p></div>
-  </section>
-  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
+  <footer class="footer" style="text-align: center; color: white; padding: 20px;">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
 <div id="page-test" class="page">
-  <header class="test-hdr">
-    <div class="th1">
-      <span class="logo sm">🧠 AyanTest</span>
+  <header class="test-hdr" style="background: white; padding: 15px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span class="logo">🧠 AyanTest</span>
       <div class="tools">
         <button class="tb" onclick="toggleDark()">🌙</button>
         <button class="tb" onclick="toggleWarm()">☀️</button>
         <button class="tb" onclick="toggleFont()">Аа</button>
       </div>
     </div>
-    <div class="th2">
-      <span id="q-num" class="q-num">1 / 100</span>
-      <div id="timer" class="timer">⏱ 30:00</div>
-      <span id="score-live" class="score-live">✅ 0</span>
-    </div>
-    <div class="prog-track">
-      <div id="prog-bar" class="prog-bar" style="width:0%"></div>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+      <span id="q-num">1 / 100</span>
+      <div id="timer">⏱ 30:00</div>
+      <span id="score-live">✅ 0</span>
     </div>
   </header>
-  <main class="q-main">
-    <div id="q-card" class="q-card">
-      <p id="q-lbl" class="q-lbl">Сұрақ 1</p>
-      <h2 id="q-text" class="q-text">…</h2>
-      <div id="q-opts" class="q-opts"></div>
+  <main style="padding: 20px;">
+    <div class="q-card" style="background: white; padding: 30px; border-radius: 15px;">
+      <h2 id="q-text">Сұрақ мәтіні</h2>
+      <div id="q-opts" class="q-opts" style="margin-top: 20px;"></div>
     </div>
   </main>
-  <div id="eye-banner" class="eye-banner hidden">
-    👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз
-    <button onclick="document.getElementById('eye-banner').classList.add('hidden')">✕</button>
-  </div>
-  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
+  <footer class="footer" style="text-align: center; padding: 20px;">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
 <div id="page-result" class="page">
-  <div class="res-center">
-    <div class="res-card">
-      <div id="res-emoji" class="res-emoji">🏆</div>
-      <h1 id="res-title" class="res-title">Нәтиже</h1>
-      <div id="res-big" class="res-big">— / —</div>
-      <div id="res-pct" class="res-pct">—%</div>
-      <div class="res-stats">
-        <div class="rs rs-g"><span id="rs-c" class="rs-n">0</span><span class="rs-l">Дұрыс</span></div>
-        <div class="rs rs-r"><span id="rs-w" class="rs-n">0</span><span class="rs-l">Қате</span></div>
-        <div class="rs rs-b"><span id="rs-t" class="rs-n">0</span><span class="rs-l">Барлығы</span></div>
-      </div>
-      <div class="res-prog-track">
-        <div id="res-prog" class="res-prog-fill"></div>
-      </div>
-      <button class="btn-main" style="width:100%" onclick="retakeTest()">🔄 Қайта тапсыру</button>
+  <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div class="res-card" style="background: white; padding: 40px; border-radius: 20px; text-align: center;">
+      <h1 id="res-title">Нәтиже</h1>
+      <div id="res-big" style="font-size: 48px; margin: 20px 0;">— / —</div>
+      <button class="btn-main" onclick="retakeTest()">🔄 Қайта тапсыру</button>
       <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
     </div>
   </div>
-  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
 <!-- Instagram парақшасына сілтеме -->
@@ -252,7 +566,302 @@
   </a>
 </div>
 
+<!-- Чат контейнері -->
+<div class="chat-container" id="chatContainer">
+  <div class="chat-header">
+    <h3>💬 Жалпы чат</h3>
+    <button class="chat-close" onclick="toggleChat()">×</button>
+  </div>
+  
+  <div id="onlineUsers" class="online-users hidden"></div>
+  
+  <div id="chatLogin" class="chat-login">
+    <input type="text" id="userName" placeholder="Атыңызды енгізіңіз" maxlength="30">
+    <button onclick="joinChat()">Чатқа кіру</button>
+  </div>
+  
+  <div id="chatMessages" class="chat-messages hidden"></div>
+  
+  <div id="chatInput" class="chat-input-area hidden">
+    <input type="text" id="messageInput" placeholder="Хабарлама жазыңыз..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <label class="file-label">
+      📎
+      <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
+    </label>
+    <button class="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- Суретті үлкейту модалы -->
+<div id="imageModal" class="image-modal hidden" onclick="closeImageModal()">
+  <img id="modalImage" src="" alt="Үлкейтілген сурет">
+</div>
+
 <div id="toast" class="toast hidden"></div>
-<script src="script.js"></script>
+
+<script>
+// Чат функционалы
+let currentUser = null;
+let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+let onlineUsers = JSON.parse(localStorage.getItem('onlineUsers')) || [];
+
+function toggleChat() {
+  const chat = document.getElementById('chatContainer');
+  chat.style.display = chat.style.display === 'none' ? 'flex' : 'none';
+}
+
+function joinChat() {
+  const nameInput = document.getElementById('userName');
+  const name = nameInput.value.trim();
+  
+  if (!name) {
+    showToast('Атыңызды енгізіңіз');
+    return;
+  }
+  
+  // Аты бұрыннан бар ма тексеру
+  if (onlineUsers.includes(name)) {
+    showToast('Бұл ат бос емес, басқа ат таңдаңыз');
+    return;
+  }
+  
+  currentUser = name;
+  
+  // Пайдаланушыны онлайн тізімге қосу
+  onlineUsers.push(name);
+  localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+  
+  document.getElementById('chatLogin').classList.add('hidden');
+  document.getElementById('chatMessages').classList.remove('hidden');
+  document.getElementById('chatInput').classList.remove('hidden');
+  document.getElementById('onlineUsers').classList.remove('hidden');
+  
+  // Онлайн пайдаланушыларды көрсету
+  updateOnlineUsers();
+  
+  // Жүйелік хабарлама
+  const systemMessage = {
+    author: '🔔 Жүйе',
+    text: `${name} чатқа қосылды`,
+    timestamp: Date.now(),
+    system: true
+  };
+  
+  messages.push(systemMessage);
+  localStorage.setItem('chatMessages', JSON.stringify(messages));
+  
+  loadMessages();
+  showToast('Чатқа қош келдіңіз!');
+}
+
+function updateOnlineUsers() {
+  const container = document.getElementById('onlineUsers');
+  container.innerHTML = '';
+  
+  onlineUsers.forEach(user => {
+    const badge = document.createElement('span');
+    badge.className = 'user-badge';
+    badge.textContent = user;
+    container.appendChild(badge);
+  });
+}
+
+function loadMessages() {
+  const messagesContainer = document.getElementById('chatMessages');
+  messagesContainer.innerHTML = '';
+  
+  // Хабарламаларды уақыты бойынша сұрыптау
+  messages.sort((a, b) => a.timestamp - b.timestamp).forEach(msg => {
+    displayMessage(msg);
+  });
+  
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function displayMessage(msg) {
+  const messagesContainer = document.getElementById('chatMessages');
+  const messageDiv = document.createElement('div');
+  
+  const isOwn = msg.author === currentUser;
+  const isSystem = msg.system;
+  
+  if (isSystem) {
+    messageDiv.className = 'message message-other';
+    messageDiv.style.background = '#fff3cd';
+    messageDiv.style.color = '#856404';
+    messageDiv.style.alignSelf = 'center';
+    messageDiv.style.maxWidth = '90%';
+    messageDiv.style.fontStyle = 'italic';
+  } else {
+    messageDiv.className = `message ${isOwn ? 'message-own' : 'message-other'}`;
+  }
+  
+  const time = new Date(msg.timestamp).toLocaleTimeString('kk-KZ', { hour: '2-digit', minute: '2-digit' });
+  
+  let content = `
+    <div class="message-header">
+      <span class="message-author">${escapeHtml(msg.author)}</span>
+      <span class="message-time">${time}</span>
+    </div>
+  `;
+  
+  if (msg.text) {
+    content += `<div>${escapeHtml(msg.text)}</div>`;
+  }
+  
+  if (msg.image) {
+    content += `<img src="${msg.image}" class="message-image" onclick="openImageModal('${msg.image}')" alt="Сурет">`;
+  }
+  
+  messageDiv.innerHTML = content;
+  messagesContainer.appendChild(messageDiv);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function sendMessage() {
+  if (!currentUser) return;
+  
+  const input = document.getElementById('messageInput');
+  const text = input.value.trim();
+  
+  if (text) {
+    const message = {
+      author: currentUser,
+      text: text,
+      timestamp: Date.now()
+    };
+    
+    messages.push(message);
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+    
+    displayMessage(message);
+    input.value = '';
+  }
+}
+
+function handleImageUpload(event) {
+  if (!currentUser) return;
+  
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  if (!file.type.startsWith('image/')) {
+    showToast('Тек суреттерді жіберуге болады');
+    return;
+  }
+  
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('Сурет 5МБ-тан аспауы керек');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const message = {
+      author: currentUser,
+      image: e.target.result,
+      timestamp: Date.now()
+    };
+    
+    messages.push(message);
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+    
+    displayMessage(message);
+  };
+  
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function openImageModal(src) {
+  document.getElementById('modalImage').src = src;
+  document.getElementById('imageModal').classList.remove('hidden');
+}
+
+function closeImageModal() {
+  document.getElementById('imageModal').classList.add('hidden');
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  toast.textContent = text;
+  toast.classList.remove('hidden');
+  
+  setTimeout(() => {
+    toast.classList.add('hidden');
+  }, 3000);
+}
+
+// Пароль тексеру
+function checkPw() {
+  const pw = document.getElementById('pw-in').value;
+  if (pw === '2401') {
+    document.getElementById('page-login').classList.remove('active');
+    document.getElementById('page-home').classList.add('active');
+  } else {
+    document.getElementById('pw-err').classList.remove('hidden');
+  }
+}
+
+// Тест функциялары
+function startTest() {
+  document.getElementById('page-home').classList.remove('active');
+  document.getElementById('page-test').classList.add('active');
+}
+
+function retakeTest() {
+  document.getElementById('page-result').classList.remove('active');
+  document.getElementById('page-test').classList.add('active');
+}
+
+function goHome() {
+  document.getElementById('page-result').classList.remove('active');
+  document.getElementById('page-home').classList.add('active');
+}
+
+function toggleDark() {
+  document.body.style.background = document.body.style.background === 'linear-gradient(145deg, #1a1e2c 0%, #2d1f3a 100%)' ? 
+    'linear-gradient(145deg, #f5f5f5 0%, #e0e0e0 100%)' : 
+    'linear-gradient(145deg, #1a1e2c 0%, #2d1f3a 100%)';
+}
+
+function toggleWarm() {
+  document.body.style.background = 'linear-gradient(145deg, #ff9a9e 0%, #fad0c4 100%)';
+}
+
+function toggleFont() {
+  document.body.style.fontSize = document.body.style.fontSize === '18px' ? '16px' : '18px';
+}
+
+// Чатты автоматты түрде көрсету
+document.addEventListener('DOMContentLoaded', function() {
+  const savedMessages = localStorage.getItem('chatMessages');
+  if (savedMessages) {
+    messages = JSON.parse(savedMessages);
+  }
+  
+  const savedUsers = localStorage.getItem('onlineUsers');
+  if (savedUsers) {
+    onlineUsers = JSON.parse(savedUsers);
+  }
+  
+  // Бетті жапқанда пайдаланушыны онлайн тізімнен өшіру
+  window.addEventListener('beforeunload', function() {
+    if (currentUser) {
+      const index = onlineUsers.indexOf(currentUser);
+      if (index > -1) {
+        onlineUsers.splice(index, 1);
+        localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
+      }
+    }
+  });
+});
+</script>
 </body>
 </html>
