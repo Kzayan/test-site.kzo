@@ -110,6 +110,7 @@ body {
   border: none;
   border-radius: 12px;
   font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
   transition: transform 0.3s;
 }
@@ -199,7 +200,7 @@ body {
 .chat-header {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
-  padding: 15px;
+  padding: 15px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -219,6 +220,11 @@ body {
   font-size: 24px;
   cursor: pointer;
   padding: 0 5px;
+  transition: transform 0.3s;
+}
+
+.chat-close:hover {
+  transform: scale(1.2);
 }
 
 .chat-login {
@@ -229,10 +235,16 @@ body {
 }
 
 .chat-login input {
-  padding: 12px;
+  padding: 12px 15px;
   border: 2px solid #e0e0e0;
   border-radius: 10px;
   font-size: 14px;
+  transition: all 0.3s;
+}
+
+.chat-login input:focus {
+  border-color: #667eea;
+  outline: none;
 }
 
 .chat-login button {
@@ -242,7 +254,13 @@ body {
   border: none;
   border-radius: 10px;
   font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.chat-login button:hover {
+  transform: translateY(-2px);
 }
 
 .chat-messages {
@@ -260,6 +278,18 @@ body {
   border-radius: 15px;
   position: relative;
   word-wrap: break-word;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .message-own {
@@ -324,10 +354,16 @@ body {
 
 .chat-input-area input[type="text"] {
   flex: 1;
-  padding: 10px;
+  padding: 10px 15px;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   font-size: 14px;
+  transition: all 0.3s;
+}
+
+.chat-input-area input[type="text"]:focus {
+  border-color: #667eea;
+  outline: none;
 }
 
 .file-label {
@@ -561,68 +597,71 @@ body {
     <p class="login-sub">Паролді енгізіп, жалғастырыңыз</p>
     <div class="pw-wrap">
       <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
-      <button onclick="checkPw()">Кіру →</button>
+      <button onclick="checkPw()">Кіру</button>
     </div>
-    <p id="pw-err" class="pw-err hidden">⚠️ Пароль қате, қайта енгізіңіз</p>
+    <p id="pw-err" class="pw-err hidden">▲ Пароль қате, қайта енгізіңіз</p>
   </div>
 </div>
 
 <div id="page-home" class="page">
   <header class="topbar" style="background: rgba(255,255,255,0.1); padding: 20px; display: flex; justify-content: space-between;">
-    <span class="logo" style="color: white;">🧠 AyanTest</span>
+    <span class="logo" style="color: white; font-size: 24px; font-weight: 800;">🧠 AyanTest</span>
     <div class="tools">
-      <button class="tb" onclick="toggleDark()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">🌙</button>
-      <button class="tb" onclick="toggleWarm()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">☀️</button>
-      <button class="tb" onclick="toggleFont()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">Аа</button>
+      <button class="tb" onclick="toggleDark()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin: 0 5px;">🌙</button>
+      <button class="tb" onclick="toggleWarm()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin: 0 5px;">☀️</button>
+      <button class="tb" onclick="toggleFont()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; margin: 0 5px;">Аа</button>
     </div>
   </header>
   <section class="hero" style="text-align: center; padding: 50px 20px; color: white;">
-    <div class="badge" style="background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 16px; border-radius: 50px;">📘 Бағдарламалық қамтамасыз ету</div>
-    <h1 class="hero-title" style="font-size: 48px; margin: 20px 0;">Кодтағы ақауларды<br><em>жою тесті</em></h1>
-    <p class="hero-desc" style="font-size: 18px; margin-bottom: 30px;">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
-    <div class="pills" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+    <div class="badge" style="background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 16px; border-radius: 50px; margin-bottom: 20px;">📘 Бағдарламалық қамтамасыз ету</div>
+    <h1 class="hero-title" style="font-size: 48px; margin: 20px 0; line-height: 1.2;">Кодтағы ақауларды<br><em style="background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">жою тесті</em></h1>
+    <p class="hero-desc" style="font-size: 18px; margin-bottom: 30px; opacity: 0.9;">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
+    <div class="pills" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
       <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">📋 100 сұрақ</span>
       <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">⏱️ 30 минут</span>
       <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">🎲 Кездейсоқ тәртіп</span>
       <span class="pill" style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 50px;">✅ Дереу нәтиже</span>
     </div>
-    <button class="btn-main" onclick="startTest()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; cursor: pointer;">▶ Тестті бастау</button>
+    <button class="btn-main" onclick="startTest()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 18px; font-weight: 600; cursor: pointer; transition: transform 0.3s;">▶ Тестті бастау</button>
   </section>
-  <footer class="footer" style="text-align: center; color: white; padding: 20px;">Жасаған — <strong>Ayan KZ</strong></footer>
+  <footer class="footer" style="text-align: center; color: white; padding: 20px; position: absolute; bottom: 0; width: 100%;">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
 <div id="page-test" class="page">
-  <header class="test-hdr" style="background: white; padding: 15px;">
+  <header class="test-hdr" style="background: white; padding: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span class="logo">🧠 AyanTest</span>
+      <span class="logo" style="font-size: 20px; font-weight: 800;">🧠 AyanTest</span>
       <div class="tools">
-        <button class="tb" onclick="toggleDark()">🌙</button>
-        <button class="tb" onclick="toggleWarm()">☀️</button>
-        <button class="tb" onclick="toggleFont()">Аа</button>
+        <button class="tb" onclick="toggleDark()" style="background: none; border: none; font-size: 18px; cursor: pointer; margin: 0 5px;">🌙</button>
+        <button class="tb" onclick="toggleWarm()" style="background: none; border: none; font-size: 18px; cursor: pointer; margin: 0 5px;">☀️</button>
+        <button class="tb" onclick="toggleFont()" style="background: none; border: none; font-size: 18px; cursor: pointer; margin: 0 5px;">Аа</button>
       </div>
     </div>
-    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+    <div style="display: flex; justify-content: space-between; margin-top: 15px; font-weight: 600;">
       <span id="q-num">1 / 100</span>
       <div id="timer">⏱ 30:00</div>
       <span id="score-live">✅ 0</span>
     </div>
   </header>
-  <main style="padding: 20px;">
-    <div class="q-card" style="background: white; padding: 30px; border-radius: 15px;">
-      <h2 id="q-text">Сұрақ мәтіні</h2>
+  <main style="padding: 20px; max-width: 800px; margin: 0 auto;">
+    <div class="q-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+      <h2 id="q-text" style="font-size: 20px; margin-bottom: 20px;">Сұрақ мәтіні</h2>
       <div id="q-opts" class="q-opts" style="margin-top: 20px;"></div>
     </div>
   </main>
-  <footer class="footer" style="text-align: center; padding: 20px;">Жасаған — <strong>Ayan KZ</strong></footer>
+  <footer class="footer" style="text-align: center; padding: 20px; position: absolute; bottom: 0; width: 100%;">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
 <div id="page-result" class="page">
   <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-    <div class="res-card" style="background: white; padding: 40px; border-radius: 20px; text-align: center;">
-      <h1 id="res-title">Нәтиже</h1>
-      <div id="res-big" style="font-size: 48px; margin: 20px 0;">— / —</div>
-      <button class="btn-main" onclick="retakeTest()">🔄 Қайта тапсыру</button>
-      <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
+    <div class="res-card" style="background: white; padding: 40px; border-radius: 20px; text-align: center; max-width: 400px; width: 90%;">
+      <div id="res-emoji" style="font-size: 48px; margin-bottom: 20px;">🏆</div>
+      <h1 id="res-title" style="font-size: 32px; margin-bottom: 10px;">Нәтиже</h1>
+      <div id="res-big" style="font-size: 48px; font-weight: 800; margin: 20px 0;">— / —</div>
+      <div id="res-pct" style="font-size: 24px; color: #667eea; margin-bottom: 20px;">—%</div>
+      <div class="res-stats" style="display: flex; justify-content: space-around; margin: 20px 0;"></div>
+      <button class="btn-main" onclick="retakeTest()" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px;">🔄 Қайта тапсыру</button>
+      <button class="btn-sec" onclick="goHome()" style="background: #f0f0f0; color: #333; border: none; padding: 12px 30px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%;">🏠 Басты бет</button>
     </div>
   </div>
 </div>
@@ -689,6 +728,22 @@ let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
 let onlineUsers = JSON.parse(localStorage.getItem('onlineUsers')) || [];
 let unreadCount = 0;
 
+// Пароль тексеру - ЕНДІ 7777
+function checkPw() {
+  const pw = document.getElementById('pw-in').value;
+  
+  if (pw === '7777') {
+    document.getElementById('page-login').classList.remove('active');
+    document.getElementById('page-home').classList.add('active');
+    showToast('Сәтті кірдіңіз! Қош келдіңіз!');
+    
+    // Пароль дұрыс болғанда қате хабарын жасыру
+    document.getElementById('pw-err').classList.add('hidden');
+  } else {
+    document.getElementById('pw-err').classList.remove('hidden');
+  }
+}
+
 function toggleChat() {
   const chat = document.getElementById('chatContainer');
   const button = document.getElementById('chatButton');
@@ -720,15 +775,12 @@ function joinChat() {
     return;
   }
   
-  // Аты бұрыннан бар ма тексеру
   if (onlineUsers.includes(name)) {
     showToast('Бұл ат бос емес, басқа ат таңдаңыз');
     return;
   }
   
   currentUser = name;
-  
-  // Пайдаланушыны онлайн тізімге қосу
   onlineUsers.push(name);
   localStorage.setItem('onlineUsers', JSON.stringify(onlineUsers));
   
@@ -737,10 +789,8 @@ function joinChat() {
   document.getElementById('chatInput').classList.remove('hidden');
   document.getElementById('onlineUsers').classList.remove('hidden');
   
-  // Онлайн пайдаланушыларды көрсету
   updateOnlineUsers();
   
-  // Жүйелік хабарлама
   const systemMessage = {
     author: '🔔 Жүйе',
     text: `${name} чатқа қосылды`,
@@ -771,7 +821,6 @@ function loadMessages() {
   const messagesContainer = document.getElementById('chatMessages');
   messagesContainer.innerHTML = '';
   
-  // Хабарламаларды уақыты бойынша сұрыптау
   messages.sort((a, b) => a.timestamp - b.timestamp).forEach(msg => {
     displayMessage(msg);
   });
@@ -796,7 +845,6 @@ function displayMessage(msg) {
   } else {
     messageDiv.className = `message ${isOwn ? 'message-own' : 'message-other'}`;
     
-    // Егер хабарлама өздікі емес және чат жабық болса, оқылмағандар санын көбейту
     if (!isOwn && !document.getElementById('chatContainer').classList.contains('open')) {
       unreadCount++;
       updateChatBadge();
@@ -905,21 +953,11 @@ function showToast(text) {
   }, 3000);
 }
 
-// Пароль тексеру
-function checkPw() {
-  const pw = document.getElementById('pw-in').value;
-  if (pw === '2401') {
-    document.getElementById('page-login').classList.remove('active');
-    document.getElementById('page-home').classList.add('active');
-  } else {
-    document.getElementById('pw-err').classList.remove('hidden');
-  }
-}
-
 // Тест функциялары
 function startTest() {
   document.getElementById('page-home').classList.remove('active');
   document.getElementById('page-test').classList.add('active');
+  showToast('Тест басталды! Сәттілік!');
 }
 
 function retakeTest() {
@@ -946,7 +984,7 @@ function toggleFont() {
   document.body.style.fontSize = document.body.style.fontSize === '18px' ? '16px' : '18px';
 }
 
-// Чатты автоматты түрде көрсету
+// Бетті жүктеу
 document.addEventListener('DOMContentLoaded', function() {
   const savedMessages = localStorage.getItem('chatMessages');
   if (savedMessages) {
@@ -960,7 +998,13 @@ document.addEventListener('DOMContentLoaded', function() {
   
   updateChatBadge();
   
-  // Бетті жапқанда пайдаланушыны онлайн тізімнен өшіру
+  // Enter батырмасымен кіру
+  document.getElementById('pw-in').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      checkPw();
+    }
+  });
+  
   window.addEventListener('beforeunload', function() {
     if (currentUser) {
       const index = onlineUsers.indexOf(currentUser);
