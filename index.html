@@ -128,6 +128,50 @@ body {
   display: none !important;
 }
 
+/* Chat Button */
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+}
+
+.chat-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.chat-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
 /* Chat Container */
 .chat-container {
   position: fixed;
@@ -138,14 +182,18 @@ body {
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow: hidden;
-  z-index: 10000;
+  z-index: 9999;
   animation: slideUp 0.5s ease;
   border: 1px solid rgba(255,255,255,0.2);
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.95);
+}
+
+.chat-container.open {
+  display: flex;
 }
 
 .chat-header {
@@ -369,7 +417,7 @@ body {
 .instagram-link, .telegram-link {
   position: fixed;
   bottom: 20px;
-  z-index: 9999;
+  z-index: 9997;
   animation: slideUp 0.5s ease;
 }
 
@@ -378,7 +426,7 @@ body {
 }
 
 .telegram-link {
-  right: 20px;
+  right: 100px;
 }
 
 .instagram-badge, .telegram-badge {
@@ -440,15 +488,12 @@ body {
 @keyframes pulse {
   0% {
     transform: scale(1);
-    opacity: 1;
   }
   50% {
     transform: scale(1.1);
-    opacity: 0.7;
   }
   100% {
     transform: scale(1);
-    opacity: 1;
   }
 }
 
@@ -461,13 +506,45 @@ body {
     bottom: 80px;
   }
   
+  .chat-button {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .telegram-link {
+    right: 80px;
+  }
+  
   .instagram-link, .telegram-link {
     bottom: 15px;
   }
   
   .instagram-badge, .telegram-badge {
-    padding: 10px 16px;
-    font-size: 13px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .telegram-link {
+    right: 70px;
+  }
+  
+  .instagram-badge span:last-child,
+  .telegram-badge span:last-child {
+    display: none;
+  }
+  
+  .instagram-badge, .telegram-badge {
+    padding: 10px;
+  }
+  
+  .ig-icon, .tg-icon {
+    font-size: 20px;
+    margin: 0;
   }
 }
 </style>
@@ -550,6 +627,12 @@ body {
   </div>
 </div>
 
+<!-- Чат батырмасы -->
+<button class="chat-button" onclick="toggleChat()" id="chatButton">
+  💬
+  <span class="chat-badge" id="chatBadge">1</span>
+</button>
+
 <!-- Instagram парақшасына сілтеме -->
 <div class="instagram-link">
   <a href="https://instagram.com/aian_wtkkz" target="_blank" class="instagram-badge">
@@ -604,10 +687,28 @@ body {
 let currentUser = null;
 let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
 let onlineUsers = JSON.parse(localStorage.getItem('onlineUsers')) || [];
+let unreadCount = 0;
 
 function toggleChat() {
   const chat = document.getElementById('chatContainer');
-  chat.style.display = chat.style.display === 'none' ? 'flex' : 'none';
+  const button = document.getElementById('chatButton');
+  
+  chat.classList.toggle('open');
+  
+  if (chat.classList.contains('open')) {
+    unreadCount = 0;
+    updateChatBadge();
+  }
+}
+
+function updateChatBadge() {
+  const badge = document.getElementById('chatBadge');
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 function joinChat() {
@@ -694,6 +795,12 @@ function displayMessage(msg) {
     messageDiv.style.fontStyle = 'italic';
   } else {
     messageDiv.className = `message ${isOwn ? 'message-own' : 'message-other'}`;
+    
+    // Егер хабарлама өздікі емес және чат жабық болса, оқылмағандар санын көбейту
+    if (!isOwn && !document.getElementById('chatContainer').classList.contains('open')) {
+      unreadCount++;
+      updateChatBadge();
+    }
   }
   
   const time = new Date(msg.timestamp).toLocaleTimeString('kk-KZ', { hour: '2-digit', minute: '2-digit' });
@@ -850,6 +957,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (savedUsers) {
     onlineUsers = JSON.parse(savedUsers);
   }
+  
+  updateChatBadge();
   
   // Бетті жапқанда пайдаланушыны онлайн тізімнен өшіру
   window.addEventListener('beforeunload', function() {
