@@ -1,19 +1,259 @@
-<!-- Чат стильдері -->
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Debugging Тесті | Ayan KZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
 <style>
-/* Чат стильдері */
-.chat-button {
+/* Instagram байланысы - стильдері қосылды */
+.instagram-link {
   position: fixed;
-  bottom: 80px;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  animation: slideUp 0.5s ease;
+}
+.instagram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(131, 58, 180, 0.4);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.instagram-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(253, 29, 29, 0.5);
+  background: linear-gradient(135deg, #fcb045, #fd1d1d, #833ab4);
+}
+.ig-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .instagram-link {
+    bottom: 15px;
+    left: 15px;
+  }
+  .instagram-badge {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .ig-icon {
+    font-size: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .instagram-badge span:last-child {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Telegram бот стилі */
+.telegram-link {
+  position: fixed;
+  bottom: 20px;
   right: 20px;
   z-index: 9999;
-  background: #2ecc71;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 12px 20px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255,255,255,0.2);
+  animation: slideUp 0.5s ease 0.2s both;
 }
+.telegram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0088cc, #229ED9);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.telegram-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 136, 204, 0.6);
+  background: linear-gradient(135deg, #229ED9, #0088cc);
+}
+.tg-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+@media (max-width: 768px) {
+  .telegram-link {
+    bottom: 15px;
+    right: 15px;
+  }
+  .telegram-badge {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .tg-icon {
+    font-size: 18px;
+  }
+}
+@media (max-width: 480px) {
+  .telegram-badge span:last-child {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="page-login" class="page active">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="login-box">
+    <div class="login-icon">
+      <div class="ring"></div>
+      <span class="lock">🔐</span>
+    </div>
+    <h1 class="login-h">Тестке кіру</h1>
+    <p class="login-sub">Паролді енгізіп, жалғастырыңыз</p>
+    <div class="pw-wrap" id="pw-wrap">
+      <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
+      <button onclick="checkPw()">Кіру →</button>
+    </div>
+    <p id="pw-err" class="pw-err hidden">⚠️ Пароль қате, қайта енгізіңіз</p>
+  </div>
+</div>
+
+<div id="page-home" class="page">
+  <header class="topbar">
+    <span class="logo">🧠 AyanTest</span>
+    <div class="tools">
+      <button class="tb" id="btn-dark" onclick="toggleDark()">🌙</button>
+      <button class="tb" id="btn-warm" onclick="toggleWarm()">☀️</button>
+      <button class="tb" id="btn-font" onclick="toggleFont()">Аа</button>
+    </div>
+  </header>
+  <section class="hero">
+    <div class="badge">📘 Бағдарламалық қамтамасыз ету</div>
+    <h1 class="hero-title">Кодтағы ақауларды<br><em>жою тесті</em></h1>
+    <p class="hero-desc">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
+    <div class="pills">
+      <span class="pill">📋 100 сұрақ</span>
+      <span class="pill">⏱️ 30 минут</span>
+      <span class="pill">🎲 Кездейсоқ тәртіп</span>
+      <span class="pill">✅ Дереу нәтиже</span>
+    </div>
+    <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
+  </section>
+  <section class="feats">
+    <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
+    <div class="feat"><span class="feat-ico">🔀</span><strong>Кездейсоқ реттеу</strong><p>Әр тапсыру уникалды болады</p></div>
+    <div class="feat"><span class="feat-ico">👁️</span><strong>Көз қорғау</strong><p>Dark / жылы / үлкен шрифт режимдері</p></div>
+    <div class="feat"><span class="feat-ico">🛡️</span><strong>Қорғаныс</strong><p>Көшіру мен paste мүмкіндіксіз</p></div>
+  </section>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
+</div>
+
+<div id="page-test" class="page">
+  <header class="test-hdr">
+    <div class="th1">
+      <span class="logo sm">🧠 AyanTest</span>
+      <div class="tools">
+        <button class="tb" onclick="toggleDark()">🌙</button>
+        <button class="tb" onclick="toggleWarm()">☀️</button>
+        <button class="tb" onclick="toggleFont()">Аа</button>
+      </div>
+    </div>
+    <div class="th2">
+      <span id="q-num" class="q-num">1 / 100</span>
+      <div id="timer" class="timer">⏱ 30:00</div>
+      <span id="score-live" class="score-live">✅ 0</span>
+    </div>
+    <div class="prog-track">
+      <div id="prog-bar" class="prog-bar" style="width:0%"></div>
+    </div>
+  </header>
+  <main class="q-main">
+    <div id="q-card" class="q-card">
+      <p id="q-lbl" class="q-lbl">Сұрақ 1</p>
+      <h2 id="q-text" class="q-text">…</h2>
+      <div id="q-opts" class="q-opts"></div>
+    </div>
+  </main>
+  <div id="eye-banner" class="eye-banner hidden">
+    👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз
+    <button onclick="document.getElementById('eye-banner').classList.add('hidden')">✕</button>
+  </div>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
+</div>
+
+<div id="page-result" class="page">
+  <div class="res-center">
+    <div class="res-card">
+      <div id="res-emoji" class="res-emoji">🏆</div>
+      <h1 id="res-title" class="res-title">Нәтиже</h1>
+      <div id="res-big" class="res-big">— / —</div>
+      <div id="res-pct" class="res-pct">—%</div>
+      <div class="res-stats">
+        <div class="rs rs-g"><span id="rs-c" class="rs-n">0</span><span class="rs-l">Дұрыс</span></div>
+        <div class="rs rs-r"><span id="rs-w" class="rs-n">0</span><span class="rs-l">Қате</span></div>
+        <div class="rs rs-b"><span id="rs-t" class="rs-n">0</span><span class="rs-l">Барлығы</span></div>
+      </div>
+      <div class="res-prog-track">
+        <div id="res-prog" class="res-prog-fill"></div>
+      </div>
+      <button class="btn-main" style="width:100%" onclick="retakeTest()">🔄 Қайта тапсыру</button>
+      <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
+    </div>
+  </div>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
+</div>
+
+<!-- Instagram парақшасына сілтеме -->
+<div class="instagram-link">
+  <a href="https://instagram.com/aian_wtkkz" target="_blank" class="instagram-badge">
+    <span class="ig-icon">📷</span>
+    <span>Instagram: @aian_wtkkz</span>
+  </a>
+</div>
+
+<!-- Telegram бот сілтемесі -->
+<div class="telegram-link">
+  <a href="https://t.me/Kzayan_bot" target="_blank" class="telegram-badge">
+    <span class="tg-icon">✈️</span>
+    <span>Telegram бот: @Kzayan_bot</span>
+  </a>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="script.js"></script>
+</body>
+</html>
+
