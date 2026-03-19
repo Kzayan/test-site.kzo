@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css"/>
 <style>
 /* Негізгі стильдер */
 * {
@@ -393,6 +392,8 @@ body.dark .pw-wrap input {
   padding: 20px;
   opacity: 0.7;
   font-size: 12px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Тест беті */
@@ -763,12 +764,19 @@ body.dark .leaderboard-item {
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
+  margin-right: 15px;
+}
+
+.leaderboard-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .leaderboard-name {
-  flex: 1;
-  margin-left: 15px;
   font-weight: 600;
+  font-size: 16px;
 }
 
 .leaderboard-score {
@@ -783,13 +791,13 @@ body.dark .leaderboard-item {
   padding: 3px 10px;
   border-radius: 20px;
   font-size: 12px;
-  margin-left: 15px;
+  font-weight: 600;
 }
 
 .leaderboard-date {
   font-size: 11px;
   opacity: 0.5;
-  margin-left: 15px;
+  margin-left: auto;
 }
 
 .leaderboard-empty {
@@ -925,6 +933,18 @@ body.dark .leaderboard-item {
     grid-template-columns: 1fr;
     padding: 20px;
   }
+  .leaderboard-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .leaderboard-info {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .leaderboard-date {
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -996,7 +1016,7 @@ body.dark .leaderboard-item {
     <h1 class="hero-title">Кодтағы ақауларды<br><em>жою тесті</em></h1>
     <p class="hero-desc">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
     <div class="pills">
-      <span class="pill">📋 100 сұрақ</span>
+      <span class="pill">📋 81 сұрақ</span>
       <span class="pill">⏱️ 30 минут</span>
       <span class="pill">🎲 Кездейсоқ тәртіп</span>
       <span class="pill">✅ Дереу нәтиже</span>
@@ -1025,7 +1045,7 @@ body.dark .leaderboard-item {
       </div>
     </div>
     <div class="th2">
-      <span id="q-num" class="q-num">1 / 100</span>
+      <span id="q-num" class="q-num">1 / 81</span>
       <div id="timer" class="timer">⏱ 30:00</div>
       <span id="score-live" class="score-live">✅ 0</span>
     </div>
@@ -1075,7 +1095,9 @@ body.dark .leaderboard-item {
   <div class="leaderboard-container">
     <div class="leaderboard-card">
       <h2 class="leaderboard-title">🏆 Топ тізімі</h2>
-      <div id="leaderboard-list" class="leaderboard-list"></div>
+      <div id="leaderboard-list" class="leaderboard-list">
+        <!-- Тізім JavaScript арқылы толтырылады -->
+      </div>
       <div class="leaderboard-buttons">
         <button class="btn-main" onclick="goHome()">🏠 Басты бет</button>
         <button class="btn-sec" onclick="startTest()">📝 Тесті бастау</button>
