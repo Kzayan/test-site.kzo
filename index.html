@@ -388,232 +388,13 @@ body.dark .pw-wrap input {
   font-size: 14px;
 }
 
-/* ЖАРНАМА СТИЛЬДЕРІ */
-.ad-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.ad-banner {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+.footer {
+  text-align: center;
   padding: 20px;
-  margin: 20px 0;
-  text-align: center;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid rgba(255,255,255,0.2);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.ad-banner:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-}
-
-.ad-label {
-  font-size: 12px;
   opacity: 0.7;
-  display: block;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.ad-title {
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 10px;
-}
-
-.ad-desc {
-  font-size: 16px;
-  margin-bottom: 15px;
-  opacity: 0.9;
-}
-
-.ad-button {
-  background: rgba(255,255,255,0.2);
-  border: 2px solid white;
-  color: white;
-  padding: 10px 30px;
-  border-radius: 50px;
-  font-weight: 700;
-  display: inline-block;
-  transition: all 0.3s;
-}
-
-.ad-button:hover {
-  background: white;
-  color: #667eea;
-}
-
-.ad-mini {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  width: 280px;
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-  z-index: 9999;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: 1px solid rgba(0,0,0,0.1);
-  animation: slideInRight 0.5s ease;
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-body.dark .ad-mini {
-  background: #2d2d44;
-  color: white;
-  border-color: rgba(255,255,255,0.1);
-}
-
-.ad-mini:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-}
-
-.ad-mini-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.1);
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.ad-mini-close:hover {
-  background: rgba(0,0,0,0.2);
-}
-
-.ad-mini-icon {
-  font-size: 36px;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.ad-mini-title {
-  font-weight: 800;
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-.ad-mini-text {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-bottom: 15px;
-}
-
-.ad-mini-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 12px;
-  width: 100%;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.ad-mini-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-.ad-native {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 15px;
-  margin: 20px 0;
-  border: 1px solid rgba(255,255,255,0.1);
-  animation: fadeIn 0.5s ease;
-}
-
-.ad-native-icon {
-  font-size: 40px;
-  min-width: 60px;
-  text-align: center;
-}
-
-.ad-native-content {
-  flex: 1;
-}
-
-.ad-native-title {
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.ad-native-desc {
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-.ad-native-btn {
-  background: white;
-  color: #667eea;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-body.dark .ad-native-btn {
-  background: #667eea;
-  color: white;
-}
-
-.ad-between {
-  text-align: center;
-  padding: 15px;
-  margin: 20px 0;
-  background: rgba(255,255,255,0.05);
-  border-radius: 10px;
-  font-size: 14px;
-  animation: fadeIn 0.5s ease;
-}
-
-.ad-timer {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
   font-size: 12px;
-  opacity: 0.7;
-  background: rgba(0,0,0,0.3);
-  padding: 3px 10px;
-  border-radius: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Тест беті */
@@ -900,6 +681,7 @@ body.dark .res-card {
   width: 0%;
 }
 
+/* Нәтиже беті батырмалары */
 .res-buttons {
   display: flex;
   gap: 10px;
@@ -916,7 +698,22 @@ body.dark .res-card {
   font-size: 14px;
 }
 
-/* Топ тізімі беті */
+/* АТЫН ЕНГІЗУ БЕТІ */
+#page-name-input .login-box {
+  max-width: 450px;
+}
+
+#page-name-input .pw-wrap {
+  margin-bottom: 10px;
+}
+
+#page-name-input .btn-sec {
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+}
+
+/* ТОП ТІЗІМІ БЕТІ */
 .leaderboard-container {
   max-width: 800px;
   margin: 40px auto;
@@ -1051,7 +848,6 @@ body.dark .leaderboard-item {
   z-index: 9999;
   animation: slideUp 0.5s ease;
 }
-
 .instagram-badge {
   display: flex;
   align-items: center;
@@ -1068,13 +864,11 @@ body.dark .leaderboard-item {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .instagram-badge:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(253, 29, 29, 0.5);
   background: linear-gradient(135deg, #fcb045, #fd1d1d, #833ab4);
 }
-
 .ig-icon {
   font-size: 20px;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
@@ -1088,7 +882,6 @@ body.dark .leaderboard-item {
   z-index: 9999;
   animation: slideUp 0.5s ease 0.2s both;
 }
-
 .telegram-badge {
   display: flex;
   align-items: center;
@@ -1105,13 +898,11 @@ body.dark .leaderboard-item {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
-
 .telegram-badge:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(0, 136, 204, 0.6);
   background: linear-gradient(135deg, #229ED9, #0088cc);
 }
-
 .tg-icon {
   font-size: 20px;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
@@ -1184,12 +975,6 @@ body.dark .leaderboard-item {
   .res-buttons .btn-sec {
     width: 100%;
   }
-  .ad-mini {
-    width: 240px;
-    bottom: 80px;
-    right: 10px;
-    padding: 15px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -1199,12 +984,6 @@ body.dark .leaderboard-item {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-  .ad-banner {
-    padding: 15px;
-  }
-  .ad-title {
-    font-size: 18px;
   }
 }
 </style>
@@ -1262,7 +1041,6 @@ body.dark .leaderboard-item {
       <button class="tb" id="btn-font" onclick="toggleFont()">Аа</button>
     </div>
   </header>
-  
   <section class="hero">
     <div class="badge">📘 Бағдарламалық қамтамасыз ету</div>
     <h1 class="hero-title">Кодтағы ақауларды<br><em>жою тесті</em></h1>
@@ -1278,38 +1056,12 @@ body.dark .leaderboard-item {
       <button class="btn-sec" onclick="showLeaderboard()">🏆 Топ тізімі</button>
     </div>
   </section>
-
-  <!-- ЖАРНАМА 1 - Үлкен баннер (5 секунд көрінеді) -->
-  <div class="ad-container">
-    <div id="ad-banner-1" class="ad-banner" onclick="window.open('https://t.me/Kzayan_bot', '_blank')">
-      <span class="ad-label">📢 Жарнама</span>
-      <div class="ad-title">🔥 Telegram бот - KZ Ayan</div>
-      <div class="ad-desc">Күнделікті жаңа тесттер, пайдалы материалдар</div>
-      <span class="ad-button">Қосылу</span>
-      <div class="ad-timer" id="ad-timer-1">5 секунд</div>
-    </div>
-  </div>
-
   <section class="feats">
     <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
     <div class="feat"><span class="feat-ico">🔀</span><strong>Кездейсоқ реттеу</strong><p>Әр тапсыру уникалды болады</p></div>
     <div class="feat"><span class="feat-ico">👁️</span><strong>Көз қорғау</strong><p>Dark / жылы / үлкен шрифт режимдері</p></div>
     <div class="feat"><span class="feat-ico">🛡️</span><strong>Қорғаныс</strong><p>Көшіру мен paste мүмкіндіксіз</p></div>
   </section>
-
-  <!-- ЖАРНАМА 2 - Табиғи жарнама (5 секунд көрінеді) -->
-  <div class="ad-container">
-    <div id="ad-native-1" class="ad-native" onclick="window.open('https://instagram.com/aian_wtkkz', '_blank')">
-      <div class="ad-native-icon">📸</div>
-      <div class="ad-native-content">
-        <div class="ad-native-title">Instagram парақшамыз</div>
-        <div class="ad-native-desc">Күнделікті пайдалы контент, жаңалықтар</div>
-      </div>
-      <button class="ad-native-btn">Follow</button>
-      <div class="ad-timer" id="ad-timer-2">5</div>
-    </div>
-  </div>
-
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
@@ -1333,7 +1085,6 @@ body.dark .leaderboard-item {
       <div id="prog-bar" class="prog-bar" style="width:0%"></div>
     </div>
   </header>
-  
   <main class="q-main">
     <div id="q-card" class="q-card">
       <p id="q-lbl" class="q-lbl">Сұрақ 1</p>
@@ -1341,14 +1092,6 @@ body.dark .leaderboard-item {
       <div id="q-opts" class="q-opts"></div>
     </div>
   </main>
-
-  <!-- ЖАРНАМА 3 - Тест арасындағы жарнама (5 секунд көрінеді) -->
-  <div id="ad-between-1" class="ad-between">
-    <span style="opacity: 0.5;">📢 Жарнама орны •</span>
-    <a href="https://t.me/Kzayan_bot" target="_blank" style="color: white; text-decoration: none;">@Kzayan_bot - Telegram бот</a>
-    <div class="ad-timer" id="ad-timer-3">5</div>
-  </div>
-
   <div id="eye-banner" class="eye-banner hidden">
     👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз
     <button onclick="document.getElementById('eye-banner').classList.add('hidden')">✕</button>
@@ -1356,7 +1099,7 @@ body.dark .leaderboard-item {
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- НӘТИЖЕ БЕТІ -->
+<!-- НӘТИЖЕ БЕТІ (Басты бет батырмасы қосылған) -->
 <div id="page-result" class="page">
   <div class="res-center">
     <div class="res-card">
@@ -1373,6 +1116,7 @@ body.dark .leaderboard-item {
         <div id="res-prog" class="res-prog-fill"></div>
       </div>
       
+      <!-- Батырмалар тобы - Басты бет қосылды -->
       <div class="res-buttons">
         <button class="btn-main" onclick="retakeTest()">🔄 Қайта тапсыру</button>
         <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
@@ -1388,14 +1132,6 @@ body.dark .leaderboard-item {
   <div class="leaderboard-container">
     <div class="leaderboard-card">
       <h2 class="leaderboard-title">🏆 Топ тізімі</h2>
-      
-      <!-- ЖАРНАМА 4 - Топ тізіміндегі шағын жарнама (5 секунд көрінеді) -->
-      <div id="ad-leaderboard-1" class="ad-between" style="margin-bottom: 20px;">
-        <span>🤖 Тест бот: </span>
-        <a href="https://t.me/Kzayan_bot" target="_blank" style="color: #667eea; text-decoration: none;">@Kzayan_bot</a>
-        <div class="ad-timer" id="ad-timer-4">5</div>
-      </div>
-      
       <div id="leaderboard-list" class="leaderboard-list">
         <!-- Тізім JavaScript арқылы толтырылады -->
       </div>
@@ -1406,16 +1142,6 @@ body.dark .leaderboard-item {
     </div>
   </div>
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
-</div>
-
-<!-- ЖАРНАМА 5 - Мини жарнама (5 секунд көрінеді) -->
-<div id="mini-ad" class="ad-mini" onclick="window.open('https://t.me/Kzayan_bot', '_blank')">
-  <button class="ad-mini-close" onclick="event.stopPropagation(); document.getElementById('mini-ad').style.display='none';">✕</button>
-  <span class="ad-mini-icon">🤖</span>
-  <div class="ad-mini-title">Telegram бот</div>
-  <div class="ad-mini-text">Күнделікті тесттер, жаңа сұрақтар</div>
-  <button class="ad-mini-btn" onclick="event.stopPropagation(); window.open('https://t.me/Kzayan_bot', '_blank')">Қосылу</button>
-  <div class="ad-timer" id="ad-timer-5">5</div>
 </div>
 
 <!-- Instagram парақшасына сілтеме -->
@@ -1445,101 +1171,6 @@ body.dark .leaderboard-item {
 <div id="sharaut-youtube-player" style="display: none;"></div>
 <div id="shiza-live-youtube-player" style="display: none;"></div>
 
-<script>
-// Жарнамаларды 5 секундтан кейін жасыру функциясы
-document.addEventListener('DOMContentLoaded', function() {
-  // Барлық жарнама элементтері
-  const ads = [
-    { id: 'ad-banner-1', timerId: 'ad-timer-1', seconds: 5 },
-    { id: 'ad-native-1', timerId: 'ad-timer-2', seconds: 5 },
-    { id: 'ad-between-1', timerId: 'ad-timer-3', seconds: 5 },
-    { id: 'ad-leaderboard-1', timerId: 'ad-timer-4', seconds: 5 },
-    { id: 'mini-ad', timerId: 'ad-timer-5', seconds: 5 }
-  ];
-
-  ads.forEach(ad => {
-    if (document.getElementById(ad.id)) {
-      let timeLeft = ad.seconds;
-      const timerElement = document.getElementById(ad.timerId);
-      
-      // Таймерді жаңарту
-      const timer = setInterval(function() {
-        timeLeft--;
-        if (timerElement) {
-          timerElement.textContent = timeLeft + ' секунд';
-        }
-        
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          // Жарнаманы жасыру
-          const adElement = document.getElementById(ad.id);
-          if (adElement) {
-            adElement.style.display = 'none';
-          }
-        }
-      }, 1000);
-    }
-  });
-});
-
-// Қалған функциялар (олар script.js файлында болуы керек)
-function checkPw() {
-  const pw = document.getElementById('pw-in').value;
-  if (pw === '0000') {
-    document.getElementById('page-login').classList.remove('active');
-    document.getElementById('page-name-input').classList.add('active');
-  } else {
-    document.getElementById('pw-err').classList.remove('hidden');
-    document.getElementById('pw-wrap').classList.add('shake');
-    setTimeout(() => document.getElementById('pw-wrap').classList.remove('shake'), 400);
-  }
-}
-
-function saveUserNameAndStart() {
-  const name = document.getElementById('name-input').value.trim();
-  if (name) {
-    localStorage.setItem('userName', name);
-    document.getElementById('page-name-input').classList.remove('active');
-    document.getElementById('page-home').classList.add('active');
-  } else {
-    document.getElementById('name-err').classList.remove('hidden');
-  }
-}
-
-function goHome() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-home').classList.add('active');
-}
-
-function startTest() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-test').classList.add('active');
-}
-
-function showLeaderboard() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-leaderboard').classList.add('active');
-}
-
-function retakeTest() {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-name-input').classList.add('active');
-}
-
-function toggleDark() {
-  document.body.classList.toggle('dark');
-  document.body.classList.remove('warm');
-}
-
-function toggleWarm() {
-  document.body.classList.toggle('warm');
-  document.body.classList.remove('dark');
-}
-
-function toggleFont() {
-  document.body.classList.toggle('large');
-}
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
