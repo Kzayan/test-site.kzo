@@ -5,6 +5,9 @@ let cachedWeather = null;
 let lastWeatherFetch = 0;
 const WEATHER_FETCH_INTERVAL = 5 * 60 * 1000; // 5 минут
 
+// Пайдаланушылар тізімі (localStorage-де сақталады)
+let usersResults = JSON.parse(localStorage.getItem('quizUsers')) || [];
+
 // Қызылорда ауа райын алу функциясы (кэшпен)
 async function getKyzylordaWeather() {
   const now = Date.now();
@@ -1275,6 +1278,7 @@ let isWarm = false;
 let isLarge = false;
 let toastT = null;
 let answeredCount = 0;
+let currentUserName = '';
 
 function shuffleArray(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -1324,13 +1328,48 @@ function showPage(pageId) {
   document.getElementById(pageId).classList.add('active');
 }
 
+// Пайдаланушы атын енгізу бетін көрсету
+function showNameInput() {
+  document.getElementById('name-err').classList.add('hidden');
+  document.getElementById('name-input').value = '';
+  showPage('page-name-input');
+}
+
+// Пайдаланушы атын сақтау және тесті бастау
+function saveUserNameAndStart() {
+  const nameInput = document.getElementById('name-input');
+  const name = nameInput.value.trim();
+  
+  if (name === '') {
+    document.getElementById('name-err').classList.remove('hidden');
+    nameInput.classList.add('shake');
+    setTimeout(() => nameInput.classList.remove('shake'), 400);
+    nameInput.focus();
+    return;
+  }
+  
+  currentUserName = name;
+  
+  // Пайдаланушыны тізімге қосу (әзірше нәтижесіз)
+  const existingUser = usersResults.find(u => u.name === name);
+  if (!existingUser) {
+    usersResults.push({ name: name, score: 0, total: 0, date: new Date().toLocaleString() });
+    localStorage.setItem('quizUsers', JSON.stringify(usersResults));
+  }
+  
+  // Тесті бастау
+  startTest();
+}
+
+// Парольді тексеру (өзгертілді)
 function checkPw() {
   const input = document.getElementById('pw-in');
   const value = input.value.trim();
   
   if (value === '7777') {
     document.getElementById('pw-err').classList.add('hidden');
-    showPage('page-home');
+    // Атын енгізу бетіне өту
+    showNameInput();
     input.value = '';
   } else {
     document.getElementById('pw-err').classList.remove('hidden');
@@ -1341,6 +1380,7 @@ function checkPw() {
   }
 }
 
+// Тесті бастау
 function startTest() {
   shuffled = shuffleArray([...QUESTIONS]);
   curIdx = 0;
@@ -1453,6 +1493,81 @@ function updateTimer() {
   }
 }
 
+// Нәтижені сақтау
+function saveResult(score, total) {
+  if (!currentUserName) return;
+  
+  const userIndex = usersResults.findIndex(u => u.name === currentUserName);
+  if (userIndex !== -1) {
+    usersResults[userIndex] = { 
+      name: currentUserName, 
+      score: score, 
+      total: total, 
+      date: new Date().toLocaleString() 
+    };
+  } else {
+    usersResults.push({ 
+      name: currentUserName, 
+      score: score, 
+      total: total, 
+      date: new Date().toLocaleString() 
+    });
+  }
+  
+  // Тізімді ұпай бойынша сұрыптау (ең жоғарыдан төменге)
+  usersResults.sort((a, b) => b.score - a.score);
+  
+  localStorage.setItem('quizUsers', JSON.stringify(usersResults));
+}
+
+// Топ тізімін көрсету
+function showLeaderboard() {
+  const leaderboardList = document.getElementById('leaderboard-list');
+  leaderboardList.innerHTML = '';
+  
+  if (usersResults.length === 0) {
+    leaderboardList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Әлі ешкім тест тапсырған жоқ</div>';
+  } else {
+    usersResults.forEach((user, index) => {
+      const row = document.createElement('div');
+      row.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        background: ${index === 0 ? 'rgba(255,215,0,0.1)' : 'transparent'};
+      `;
+      
+      let medal = '';
+      if (index === 0) medal = '🥇';
+      else if (index === 1) medal = '🥈';
+      else if (index === 2) medal = '🥉';
+      else medal = `${index + 1}.`;
+      
+      const percentage = user.total > 0 ? Math.round((user.score / user.total) * 100) : 0;
+      
+      row.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-weight: 700; width: 30px;">${medal}</span>
+          <span style="font-weight: 600;">${user.name}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+          <span style="background: ${percentage >= 70 ? '#2ecc71' : '#e74c3c'}; padding: 3px 10px; border-radius: 20px; font-size: 12px;">
+            ${percentage}%
+          </span>
+          <span style="font-weight: 700;">${user.score}/${user.total}</span>
+          <span style="font-size: 11px; opacity: 0.7;">${user.date || ''}</span>
+        </div>
+      `;
+      
+      leaderboardList.appendChild(row);
+    });
+  }
+  
+  showPage('page-leaderboard');
+}
+
 function finishTest(timeout) {
   clearInterval(timerID);
   clearTimeout(eyeTimer);
@@ -1460,6 +1575,9 @@ function finishTest(timeout) {
   const total = shuffled.length;
   const wrong = total - score;
   const percentage = Math.round((score / total) * 100);
+  
+  // Нәтижені сақтау
+  saveResult(score, total);
   
   document.getElementById('rs-c').textContent = score;
   document.getElementById('rs-w').textContent = wrong;
@@ -1492,7 +1610,7 @@ function getResultEmoji(percentage, timeout) {
 }
 
 function retakeTest() { 
-  startTest(); 
+  showNameInput(); // Атын қайта сұрау
 }
 
 function goHome() { 
@@ -1567,11 +1685,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
+  // Атын енгізу өрісіне Enter басқанда
+  const nameInput = document.getElementById('name-input');
+  if (nameInput) {
+    nameInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') saveUserNameAndStart();
+    });
+  }
+  
   lockContent();
 });
 
 window.checkPw = checkPw;
-window.startTest = startTest;
+window.saveUserNameAndStart = saveUserNameAndStart;
+window.showLeaderboard = showLeaderboard;
 window.toggleDark = toggleDark;
 window.toggleWarm = toggleWarm;
 window.toggleFont = toggleFont;
@@ -1858,7 +1985,6 @@ function playNextTrack() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
-      isSharautPlaying = false;
       isShizaLivePlaying = false;
       updateMusicIcons();
     }
@@ -2171,7 +2297,6 @@ window.prevTrack = function() {
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
-      isSharautPlaying = false;
       isShizaLivePlaying = false;
       updateMusicIcons();
     }
