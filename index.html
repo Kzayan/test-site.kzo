@@ -327,6 +327,7 @@ body.dark .pw-wrap input {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  margin: 5px;
 }
 
 .btn-main:hover {
@@ -338,13 +339,13 @@ body.dark .pw-wrap input {
   background: transparent;
   border: 2px solid rgba(255,255,255,0.3);
   color: white;
-  padding: 12px 30px;
+  padding: 15px 40px;
   border-radius: 50px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  margin-top: 10px;
+  margin: 5px;
 }
 
 .btn-sec:hover {
@@ -680,6 +681,23 @@ body.dark .res-card {
   width: 0%;
 }
 
+/* Нәтиже беті батырмалары */
+.res-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.res-buttons .btn-main,
+.res-buttons .btn-sec {
+  flex: 1;
+  min-width: 150px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
 /* АТЫН ЕНГІЗУ БЕТІ */
 #page-name-input .login-box {
   max-width: 450px;
@@ -740,7 +758,6 @@ body.dark .leaderboard-list {
 .leaderboard-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 15px 20px;
   border-bottom: 1px solid rgba(0,0,0,0.1);
   transition: all 0.3s;
@@ -765,6 +782,7 @@ body.dark .leaderboard-item {
   background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   margin-right: 15px;
+  flex-shrink: 0;
 }
 
 .leaderboard-info {
@@ -772,17 +790,20 @@ body.dark .leaderboard-item {
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .leaderboard-name {
   font-weight: 600;
   font-size: 16px;
+  min-width: 120px;
 }
 
 .leaderboard-score {
   font-weight: 700;
   font-size: 18px;
   color: #2ecc71;
+  min-width: 60px;
 }
 
 .leaderboard-percent {
@@ -792,12 +813,15 @@ body.dark .leaderboard-item {
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
+  min-width: 50px;
+  text-align: center;
 }
 
 .leaderboard-date {
   font-size: 11px;
   opacity: 0.5;
   margin-left: auto;
+  white-space: nowrap;
 }
 
 .leaderboard-empty {
@@ -940,10 +964,16 @@ body.dark .leaderboard-item {
   }
   .leaderboard-info {
     width: 100%;
-    flex-wrap: wrap;
   }
   .leaderboard-date {
     margin-left: 0;
+  }
+  .res-buttons {
+    flex-direction: column;
+  }
+  .res-buttons .btn-main,
+  .res-buttons .btn-sec {
+    width: 100%;
   }
 }
 
@@ -1021,8 +1051,10 @@ body.dark .leaderboard-item {
       <span class="pill">🎲 Кездейсоқ тәртіп</span>
       <span class="pill">✅ Дереу нәтиже</span>
     </div>
-    <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
-    <button class="btn-sec" onclick="showLeaderboard()" style="margin-left: 10px;">🏆 Топ тізімі</button>
+    <div>
+      <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
+      <button class="btn-sec" onclick="showLeaderboard()">🏆 Топ тізімі</button>
+    </div>
   </section>
   <section class="feats">
     <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
@@ -1067,7 +1099,7 @@ body.dark .leaderboard-item {
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- НӘТИЖЕ БЕТІ -->
+<!-- НӘТИЖЕ БЕТІ (Басты бет батырмасы қосылған) -->
 <div id="page-result" class="page">
   <div class="res-center">
     <div class="res-card">
@@ -1083,8 +1115,13 @@ body.dark .leaderboard-item {
       <div class="res-prog-track">
         <div id="res-prog" class="res-prog-fill"></div>
       </div>
-      <button class="btn-main" style="width:100%" onclick="retakeTest()">🔄 Қайта тапсыру</button>
-      <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
+      
+      <!-- Батырмалар тобы - Басты бет қосылды -->
+      <div class="res-buttons">
+        <button class="btn-main" onclick="retakeTest()">🔄 Қайта тапсыру</button>
+        <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
+        <button class="btn-sec" onclick="showLeaderboard()">🏆 Топ тізімі</button>
+      </div>
     </div>
   </div>
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
