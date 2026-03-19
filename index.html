@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Debugging Тесті | Ayan KZ</title>
+<title>Debugging Тесті / Тест по отладке | Ayan KZ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
@@ -205,6 +205,42 @@ body.dark .pw-wrap input {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-10px); }
   75% { transform: translateX(10px); }
+}
+
+/* Тіл ауыстыру батырмасы */
+.lang-switch {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  gap: 5px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding: 5px;
+  border-radius: 30px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 30px;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.lang-btn.active {
+  background: rgba(255,255,255,0.3);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+body.dark .lang-btn {
+  color: #fff;
 }
 
 /* Басты бет */
@@ -938,6 +974,10 @@ body.dark .leaderboard-item {
 }
 
 @media (max-width: 768px) {
+  .lang-switch {
+    top: 10px;
+    right: 10px;
+  }
   .instagram-link {
     bottom: 15px;
     left: 15px;
@@ -990,6 +1030,12 @@ body.dark .leaderboard-item {
 </head>
 <body>
 
+<!-- ТІЛ АУЫСТЫРУ БАТЫРМАСЫ -->
+<div class="lang-switch">
+  <button class="lang-btn active" onclick="switchLanguage('kk')">Қаз</button>
+  <button class="lang-btn" onclick="switchLanguage('ru')">Рус</button>
+</div>
+
 <!-- КІРУ БЕТІ -->
 <div id="page-login" class="page active">
   <div class="blob b1"></div>
@@ -1000,13 +1046,13 @@ body.dark .leaderboard-item {
       <div class="ring"></div>
       <span class="lock">🔐</span>
     </div>
-    <h1 class="login-h">Тестке кіру</h1>
-    <p class="login-sub">Паролді енгізіп, жалғастырыңыз</p>
+    <h1 class="login-h" data-kk="Тестке кіру" data-ru="Вход в тест">Тестке кіру</h1>
+    <p class="login-sub" data-kk="Паролді енгізіп, жалғастырыңыз" data-ru="Введите пароль для продолжения">Паролді енгізіп, жалғастырыңыз</p>
     <div class="pw-wrap" id="pw-wrap">
       <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
-      <button onclick="checkPw()">Кіру →</button>
+      <button onclick="checkPw()" data-kk="Кіру →" data-ru="Вход →">Кіру →</button>
     </div>
-    <p id="pw-err" class="pw-err hidden">⚠️ Пароль қате, қайта енгізіңіз</p>
+    <p id="pw-err" class="pw-err hidden" data-kk="⚠️ Пароль қате, қайта енгізіңіз" data-ru="⚠️ Неверный пароль, повторите попытку">⚠️ Пароль қате, қайта енгізіңіз</p>
   </div>
 </div>
 
@@ -1020,14 +1066,14 @@ body.dark .leaderboard-item {
       <div class="ring"></div>
       <span class="lock">✏️</span>
     </div>
-    <h1 class="login-h">Атыңызды енгізіңіз</h1>
-    <p class="login-sub">Тест нәтижесі сақталу үшін</p>
+    <h1 class="login-h" data-kk="Атыңызды енгізіңіз" data-ru="Введите ваше имя">Атыңызды енгізіңіз</h1>
+    <p class="login-sub" data-kk="Тест нәтижесі сақталу үшін" data-ru="Для сохранения результата теста">Тест нәтижесі сақталу үшін</p>
     <div class="pw-wrap" style="margin-bottom: 10px;">
       <input id="name-input" type="text" placeholder="Атыңыз" maxlength="30" autocomplete="off"/>
-      <button onclick="saveUserNameAndStart()">Бастау →</button>
+      <button onclick="saveUserNameAndStart()" data-kk="Бастау →" data-ru="Начать →">Бастау →</button>
     </div>
-    <p id="name-err" class="pw-err hidden">⚠️ Атыңызды енгізіңіз</p>
-    <button onclick="goHome()" class="btn-sec" style="width: 100%; margin-top: 15px; padding: 12px;">🏠 Басты бетке оралу</button>
+    <p id="name-err" class="pw-err hidden" data-kk="⚠️ Атыңызды енгізіңіз" data-ru="⚠️ Введите ваше имя">⚠️ Атыңызды енгізіңіз</p>
+    <button onclick="goHome()" class="btn-sec" style="width: 100%; margin-top: 15px; padding: 12px;" data-kk="🏠 Басты бетке оралу" data-ru="🏠 На главную">🏠 Басты бетке оралу</button>
   </div>
 </div>
 
@@ -1042,25 +1088,25 @@ body.dark .leaderboard-item {
     </div>
   </header>
   <section class="hero">
-    <div class="badge">📘 Бағдарламалық қамтамасыз ету</div>
-    <h1 class="hero-title">Кодтағы ақауларды<br><em>жою тесті</em></h1>
-    <p class="hero-desc">Синтаксис, логика, runtime қателер,<br>debugging тәсілдері — барлығы бір тесте.</p>
+    <div class="badge" data-kk="📘 Бағдарламалық қамтамасыз ету" data-ru="📘 Программное обеспечение">📘 Бағдарламалық қамтамасыз ету</div>
+    <h1 class="hero-title"><span data-kk="Кодтағы ақауларды" data-ru="Поиск и исправление">Кодтағы ақауларды</span><br><em data-kk="жою тесті" data-ru="ошибок в коде">жою тесті</em></h1>
+    <p class="hero-desc" data-kk="Синтаксис, логика, runtime қателер, debugging тәсілдері — барлығы бір тесте." data-ru="Синтаксис, логика, runtime ошибки, методы отладки — всё в одном тесте.">Синтаксис, логика, runtime қателер, debugging тәсілдері — барлығы бір тесте.</p>
     <div class="pills">
-      <span class="pill">📋 81 сұрақ</span>
-      <span class="pill">⏱️ 30 минут</span>
-      <span class="pill">🎲 Кездейсоқ тәртіп</span>
-      <span class="pill">✅ Дереу нәтиже</span>
+      <span class="pill" data-kk="📋 81 сұрақ" data-ru="📋 81 вопрос">📋 81 сұрақ</span>
+      <span class="pill" data-kk="⏱️ 30 минут" data-ru="⏱️ 30 минут">⏱️ 30 минут</span>
+      <span class="pill" data-kk="🎲 Кездейсоқ тәртіп" data-ru="🎲 Случайный порядок">🎲 Кездейсоқ тәртіп</span>
+      <span class="pill" data-kk="✅ Дереу нәтиже" data-ru="✅ Сразу результат">✅ Дереу нәтиже</span>
     </div>
     <div>
-      <button class="btn-main" onclick="startTest()">▶ Тестті бастау</button>
-      <button class="btn-sec" onclick="showLeaderboard()">🏆 Топ тізімі</button>
+      <button class="btn-main" onclick="startTest()" data-kk="▶ Тестті бастау" data-ru="▶ Начать тест">▶ Тестті бастау</button>
+      <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ тізімі" data-ru="🏆 Таблица лидеров">🏆 Топ тізімі</button>
     </div>
   </section>
   <section class="feats">
-    <div class="feat"><span class="feat-ico">🎯</span><strong>Дереу тексеру</strong><p>Жауап таңдаған бойда нәтиже шығады</p></div>
-    <div class="feat"><span class="feat-ico">🔀</span><strong>Кездейсоқ реттеу</strong><p>Әр тапсыру уникалды болады</p></div>
-    <div class="feat"><span class="feat-ico">👁️</span><strong>Көз қорғау</strong><p>Dark / жылы / үлкен шрифт режимдері</p></div>
-    <div class="feat"><span class="feat-ico">🛡️</span><strong>Қорғаныс</strong><p>Көшіру мен paste мүмкіндіксіз</p></div>
+    <div class="feat"><span class="feat-ico">🎯</span><strong data-kk="Дереу тексеру" data-ru="Мгновенная проверка">Дереу тексеру</strong><p data-kk="Жауап таңдаған бойда нәтиже шығады" data-ru="Результат появляется сразу после выбора">Жауап таңдаған бойда нәтиже шығады</p></div>
+    <div class="feat"><span class="feat-ico">🔀</span><strong data-kk="Кездейсоқ реттеу" data-ru="Случайный порядок">Кездейсоқ реттеу</strong><p data-kk="Әр тапсыру уникалды болады" data-ru="Каждая попытка уникальна">Әр тапсыру уникалды болады</p></div>
+    <div class="feat"><span class="feat-ico">👁️</span><strong data-kk="Көз қорғау" data-ru="Защита глаз">Көз қорғау</strong><p data-kk="Dark / жылы / үлкен шрифт режимдері" data-ru="Тёмная / тёплая / крупный шрифт">Dark / жылы / үлкен шрифт режимдері</p></div>
+    <div class="feat"><span class="feat-ico">🛡️</span><strong data-kk="Қорғаныс" data-ru="Защита">Қорғаныс</strong><p data-kk="Көшіру мен paste мүмкіндіксіз" data-ru="Копирование и вставка запрещены">Көшіру мен paste мүмкіндіксіз</p></div>
   </section>
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
@@ -1087,40 +1133,40 @@ body.dark .leaderboard-item {
   </header>
   <main class="q-main">
     <div id="q-card" class="q-card">
-      <p id="q-lbl" class="q-lbl">Сұрақ 1</p>
+      <p id="q-lbl" class="q-lbl" data-kk="Сұрақ" data-ru="Вопрос">Сұрақ</p>
       <h2 id="q-text" class="q-text">…</h2>
       <div id="q-opts" class="q-opts"></div>
     </div>
   </main>
   <div id="eye-banner" class="eye-banner hidden">
-    👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз
+    <span data-kk="👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз" data-ru="👀 Сделайте перерыв 1-2 минуты, чтобы дать глазам отдохнуть">👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз</span>
     <button onclick="document.getElementById('eye-banner').classList.add('hidden')">✕</button>
   </div>
   <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- НӘТИЖЕ БЕТІ (Басты бет батырмасы қосылған) -->
+<!-- НӘТИЖЕ БЕТІ -->
 <div id="page-result" class="page">
   <div class="res-center">
     <div class="res-card">
       <div id="res-emoji" class="res-emoji">🏆</div>
-      <h1 id="res-title" class="res-title">Нәтиже</h1>
+      <h1 id="res-title" class="res-title" data-kk="Нәтиже" data-ru="Результат">Нәтиже</h1>
       <div id="res-big" class="res-big">— / —</div>
       <div id="res-pct" class="res-pct">—%</div>
       <div class="res-stats">
-        <div class="rs rs-g"><span id="rs-c" class="rs-n">0</span><span class="rs-l">Дұрыс</span></div>
-        <div class="rs rs-r"><span id="rs-w" class="rs-n">0</span><span class="rs-l">Қате</span></div>
-        <div class="rs rs-b"><span id="rs-t" class="rs-n">0</span><span class="rs-l">Барлығы</span></div>
+        <div class="rs rs-g"><span id="rs-c" class="rs-n">0</span><span class="rs-l" data-kk="Дұрыс" data-ru="Верно">Дұрыс</span></div>
+        <div class="rs rs-r"><span id="rs-w" class="rs-n">0</span><span class="rs-l" data-kk="Қате" data-ru="Неверно">Қате</span></div>
+        <div class="rs rs-b"><span id="rs-t" class="rs-n">0</span><span class="rs-l" data-kk="Барлығы" data-ru="Всего">Барлығы</span></div>
       </div>
       <div class="res-prog-track">
         <div id="res-prog" class="res-prog-fill"></div>
       </div>
       
-      <!-- Батырмалар тобы - Басты бет қосылды -->
+      <!-- Батырмалар тобы -->
       <div class="res-buttons">
-        <button class="btn-main" onclick="retakeTest()">🔄 Қайта тапсыру</button>
-        <button class="btn-sec" onclick="goHome()">🏠 Басты бет</button>
-        <button class="btn-sec" onclick="showLeaderboard()">🏆 Топ тізімі</button>
+        <button class="btn-main" onclick="retakeTest()" data-kk="🔄 Қайта тапсыру" data-ru="🔄 Пройти заново">🔄 Қайта тапсыру</button>
+        <button class="btn-sec" onclick="goHome()" data-kk="🏠 Басты бет" data-ru="🏠 Главная">🏠 Басты бет</button>
+        <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ тізімі" data-ru="🏆 Таблица лидеров">🏆 Топ тізімі</button>
       </div>
     </div>
   </div>
@@ -1131,13 +1177,13 @@ body.dark .leaderboard-item {
 <div id="page-leaderboard" class="page">
   <div class="leaderboard-container">
     <div class="leaderboard-card">
-      <h2 class="leaderboard-title">🏆 Топ тізімі</h2>
+      <h2 class="leaderboard-title" data-kk="🏆 Топ тізімі" data-ru="🏆 Таблица лидеров">🏆 Топ тізімі</h2>
       <div id="leaderboard-list" class="leaderboard-list">
         <!-- Тізім JavaScript арқылы толтырылады -->
       </div>
       <div class="leaderboard-buttons">
-        <button class="btn-main" onclick="goHome()">🏠 Басты бет</button>
-        <button class="btn-sec" onclick="startTest()">📝 Тесті бастау</button>
+        <button class="btn-main" onclick="goHome()" data-kk="🏠 Басты бет" data-ru="🏠 Главная">🏠 Басты бет</button>
+        <button class="btn-sec" onclick="startTest()" data-kk="📝 Тесті бастау" data-ru="📝 Начать тест">📝 Тесті бастау</button>
       </div>
     </div>
   </div>
@@ -1171,6 +1217,47 @@ body.dark .leaderboard-item {
 <div id="sharaut-youtube-player" style="display: none;"></div>
 <div id="shiza-live-youtube-player" style="display: none;"></div>
 
+<script>
+// Тіл ауыстыру функциясы
+let currentLang = 'kk';
+
+function switchLanguage(lang) {
+  currentLang = lang;
+  
+  // Барлық lang-btn батырмаларының active классын жаңарту
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Барлық data-kk және data-ru атрибуттары бар элементтерді жаңарту
+  document.querySelectorAll('[data-kk][data-ru]').forEach(element => {
+    if (lang === 'kk') {
+      element.textContent = element.getAttribute('data-kk');
+    } else {
+      element.textContent = element.getAttribute('data-ru');
+    }
+  });
+  
+  // Логотипті жаңарту
+  updateLogo(lang);
+}
+
+// Логотипті жаңарту
+function updateLogo(lang) {
+  const logos = document.querySelectorAll('.logo');
+  logos.forEach(logo => {
+    if (lang === 'kk') {
+      logo.textContent = '🧠 AyanTest';
+    } else {
+      logo.textContent = '🧠 AyanTest';
+    }
+  });
+}
+
+// Қалған функциялар script.js файлында қалады
+// Бұл жерде тек тіл ауыстыру функциясын қостық
+</script>
 <script src="script.js"></script>
 </body>
 </html>
