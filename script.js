@@ -88,7 +88,7 @@ function getTimeInfo() {
   return { greeting, icon, isAccessAllowed, hours, currentTime, isNight };
 }
 
-// Уақыт баннерін қосу (тек бір рет)
+// Уақыт баннерін қосу (Forte Bank стилінде)
 async function addTimeBanner() {
   // Егер баннер бар болса, қайта жасамаймыз
   const oldBanner = document.getElementById('time-banner');
@@ -108,14 +108,14 @@ async function addTimeBanner() {
   
   let weatherHtml = '';
   if (isNight && weather) {
-    // Түнгі ауа райы (API арқылы)
+    // Түнгі ауа райы (API арқылы) - Forte Bank стилі
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 12px; background: #003057; padding: 6px 16px; color: white; font-size: 13px; font-weight: 500;">
         <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
         <span>Қызылорда</span>
-        <img src="https:${weather.icon}" alt="icon" style="width: 24px; height: 24px;">
+        <img src="https:${weather.icon}" alt="icon" style="width: 22px; height: 22px;">
         <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
-        <span style="opacity: 0.9;">${weather.condition}</span>
+        <span>${weather.condition}</span>
         <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
         <span>💧 ${weather.humidity}%</span>
         <span>🌬️ ${weather.wind} км/сағ</span>
@@ -123,17 +123,17 @@ async function addTimeBanner() {
     `;
   } else if (isNight && !weather) {
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 12px; background: #003057; padding: 6px 16px; color: white; font-size: 13px; font-weight: 500;">
         <span style="font-weight: 600;">🌙 Қызылорда</span>
         <span>Ауа райы жүктелуде...</span>
       </div>
     `;
   } else if (!isNight) {
-    // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (жай ғана мәтін түрінде)
+    // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ - Forte Bank стилі
     weatherHtml = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 12px; background: #00A3E0; padding: 6px 16px; color: white; font-size: 13px; font-weight: 500;">
         <span style="font-weight: 600;">☀️ Қызылорда ауа райы</span>
-        <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 30px; font-weight: 600;">
+        <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: #003057; padding: 4px 12px; font-weight: 600; font-size: 12px;">
           Көру →
         </a>
       </div>
@@ -141,30 +141,30 @@ async function addTimeBanner() {
   }
   
   banner.innerHTML = `
-    <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 20px;">${icon}</span>
-        <span>${greeting}</span>
-        <span style="opacity: 0.8; font-family: monospace;" id="time-banner-display">${currentTime}</span>
+    <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 18px;">${icon}</span>
+        <span style="font-weight: 500; font-size: 14px;">${greeting}</span>
+        <span style="opacity: 0.8; font-family: 'JetBrains Mono', monospace; font-size: 14px;" id="time-banner-display">${currentTime}</span>
       </div>
       <div id="weather-banner-content">${weatherHtml}</div>
     </div>
   `;
   
-  // Баннерге стиль қосу
+  // Баннерге стиль қосу - Forte Bank стилі
   banner.style.cssText = `
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    color: white;
-    padding: 12px 0;
+    background: #FFFFFF;
+    color: #003057;
+    padding: 10px 0;
     font-size: 14px;
     font-weight: 500;
     position: sticky;
     top: 0;
     z-index: 9999;
     width: 100%;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-    font-family: 'Nunito', sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 48, 87, 0.08);
+    border-bottom: 2px solid #00A3E0;
+    font-family: 'Inter', sans-serif;
   `;
   
   // Баннерді body-дің басына қосу
@@ -194,11 +194,11 @@ async function updateWeatherInBanner() {
   const { isNight } = getTimeInfo();
   
   if (!isNight) {
-    // Күндізгі ауа райы сілтемесі
+    // Күндізгі ауа райы сілтемесі - Forte Bank стилі
     weatherDiv.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 15px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 12px; background: #00A3E0; padding: 6px 16px; color: white; font-size: 13px; font-weight: 500;">
         <span style="font-weight: 600;">☀️ Қызылорда ауа райы</span>
-        <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 30px; font-weight: 600;">
+        <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="color: white; text-decoration: none; background: #003057; padding: 4px 12px; font-weight: 600; font-size: 12px;">
           Көру →
         </a>
       </div>
@@ -210,12 +210,12 @@ async function updateWeatherInBanner() {
   const weather = await getKyzylordaWeather();
   if (weather) {
     weatherDiv.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 12px; background: #003057; padding: 6px 16px; color: white; font-size: 13px; font-weight: 500;">
         <span style="font-weight: 600;">🌙 Түнгі ауа райы</span>
         <span>Қызылорда</span>
-        <img src="https:${weather.icon}" alt="icon" style="width: 24px; height: 24px;">
+        <img src="https:${weather.icon}" alt="icon" style="width: 22px; height: 22px;">
         <span style="font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</span>
-        <span style="opacity: 0.9;">${weather.condition}</span>
+        <span>${weather.condition}</span>
         <span>🌡️ ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</span>
         <span>💧 ${weather.humidity}%</span>
         <span>🌬️ ${weather.wind} км/сағ</span>
@@ -223,7 +223,7 @@ async function updateWeatherInBanner() {
     `;
   } else {
     weatherDiv.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); padding: 5px 12px; border-radius: 50px;">
+      <div style="display: flex; align-items: center; gap: 12px; background: #003057; padding: 6px 16px; color: white; font-size: 13px; font-weight: 500;">
         <span style="font-weight: 600;">🌙 Қызылорда</span>
         <span>Ауа райы жүктелуде...</span>
       </div>
@@ -231,20 +231,7 @@ async function updateWeatherInBanner() {
   }
 }
 
-// Уақытты автоматты түрде жаңарту функциясы
-function startRealTimeClock() {
-  // Бірінші рет баннерді құру
-  addTimeBanner().then(() => {
-    // Әр секунд сайын уақытты жаңарту
-    setInterval(updateTimeInBanner, 1000);
-    // Ауа райын әр 5 минут сайын жаңарту
-    setInterval(() => {
-      updateWeatherInBanner();
-    }, WEATHER_FETCH_INTERVAL);
-  });
-}
-
-// Қолжетімділікті тексеру
+// Қолжетімділікті тексеру - Forte Bank стиліндегі қолжетімсіздік беті
 async function checkAccess() {
   const { isAccessAllowed, greeting, icon, currentTime, isNight } = getTimeInfo();
   
@@ -269,63 +256,60 @@ async function checkAccess() {
         min-height: 100vh;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #0b1a2e, #1a2f3f);
+        background: #F5F7FA;
         padding: 20px;
-        font-family: 'Nunito', sans-serif;
+        font-family: 'Inter', sans-serif;
       `;
       
-      // === ҚАДІР ТҮНІ ЖӘНЕ ДҰҒАЛАР (АЛТЫН ӘРІПТЕРМЕН) ===
+      // === ҚАДІР ТҮНІ ЖӘНЕ ДҰҒАЛАР (Forte Bank стилі) ===
       const duaHtml = `
         <div style="
           margin-bottom: 30px;
-          padding: 20px;
-          background: rgba(0,0,0,0.3);
-          border-radius: 20px;
-          border: 1px solid rgba(255,215,0,0.3);
-          box-shadow: 0 0 30px rgba(255,215,0,0.2);
+          padding: 24px;
+          background: #FFFFFF;
+          border: 1px solid #E5E9F0;
+          box-shadow: 0 8px 20px rgba(0, 48, 87, 0.08);
         ">
           <h2 style="
-            font-size: 36px;
-            font-weight: 800;
-            color: #FFD700;
-            text-shadow: 0 0 10px #FFA500, 0 0 20px #FF8C00;
+            font-size: 32px;
+            font-weight: 700;
+            color: #003057;
             margin-bottom: 20px;
-            letter-spacing: 2px;
+            letter-spacing: -0.5px;
           ">✨ ҚАДІР ТҮНІ ✨</h2>
           
-          <div style="margin: 25px 0;">
-            <div style="font-size: 28px; color: #FFD700; margin-bottom: 5px; text-shadow: 0 0 8px gold;">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي</div>
-            <div style="font-size: 18px; color: #F4A460; margin-bottom: 3px;">Аллаһуммә иннәкә афууун тухиббул-афуа фағфу анни.</div>
-            <div style="font-size: 16px; color: #DAA520; font-style: italic;">Уа, Алла! Сен өте кешірімдісің, кешіруді жақсы көресің. Мені кешіре гөр.</div>
+          <div style="margin: 20px 0;">
+            <div style="font-size: 24px; color: #003057; margin-bottom: 8px; font-weight: 600;">اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ العَفْوَ فَاعْفُ عَنِّي</div>
+            <div style="font-size: 16px; color: #00A3E0; margin-bottom: 4px;">Аллаһуммә иннәкә афууун тухиббул-афуа фағфу анни.</div>
+            <div style="font-size: 14px; color: #4A5A6A;">Уа, Алла! Сен өте кешірімдісің, кешіруді жақсы көресің. Мені кешіре гөр.</div>
           </div>
           
-          <div style="margin: 25px 0;">
-            <div style="font-size: 28px; color: #FFD700; margin-bottom: 5px; text-shadow: 0 0 8px gold;">أَسْتَغْفِرُ اللّٰهَ وَأَتُوبُ إِلَيْهِ</div>
-            <div style="font-size: 18px; color: #F4A460; margin-bottom: 3px;">Астағфируллаһ уа әтубу иләйһ</div>
-            <div style="font-size: 16px; color: #DAA520; font-style: italic;">Алладан кешірім сұраймын және Оған тәубе етемін.</div>
+          <div style="margin: 20px 0;">
+            <div style="font-size: 24px; color: #003057; margin-bottom: 8px; font-weight: 600;">أَسْتَغْفِرُ اللّٰهَ وَأَتُوبُ إِلَيْهِ</div>
+            <div style="font-size: 16px; color: #00A3E0; margin-bottom: 4px;">Астағфируллаһ уа әтубу иләйһ</div>
+            <div style="font-size: 14px; color: #4A5A6A;">Алладан кешірім сұраймын және Оған тәубе етемін.</div>
           </div>
         </div>
       `;
       
       let weatherDisplay = '';
       if (isNight && weather) {
-        // Түнгі ауа райы (API)
+        // Түнгі ауа райы (API) - Forte Bank стилі
         weatherDisplay = `
           <div style="
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 25px;
+            background: #FFFFFF;
+            border: 1px solid #E5E9F0;
+            padding: 24px;
             margin: 25px 0;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
           ">
-            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <div style="font-size: 18px; margin-bottom: 16px; font-weight: 600; color: #003057;">🌙 Түнгі ауа райы - Қызылорда</div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap;">
               <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
-              <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
-              <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
+              <div style="font-size: 36px; font-weight: 700; color: #003057;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
+              <div style="font-size: 16px; background: #F0F4F8; padding: 8px 20px; color: #003057;">${weather.condition}</div>
             </div>
-            <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
+            <div style="display: flex; justify-content: center; gap: 30px; margin-top: 20px; flex-wrap: wrap; color: #4A5A6A;">
               <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
               <div>💧 Ылғалдылық: ${weather.humidity}%</div>
               <div>🌬️ Жел: ${weather.wind} км/сағ</div>
@@ -333,27 +317,25 @@ async function checkAccess() {
           </div>
         `;
       } else if (!isNight) {
-        // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (сілтеме)
+        // КҮНДІЗГІ АУА РАЙЫ ВИДЖЕТІ (сілтеме) - Forte Bank стилі
         weatherDisplay = `
           <div style="
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 25px;
+            background: #FFFFFF;
+            border: 1px solid #E5E9F0;
+            padding: 24px;
             margin: 25px 0;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
           ">
-            <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">☀️ Қызылорда ауа райы</div>
+            <div style="font-size: 18px; margin-bottom: 16px; font-weight: 600; color: #003057;">☀️ Қызылорда ауа райы</div>
             <div style="display: flex; justify-content: center;">
               <a href="https://yandex.ru/pogoda/kk/kyzylorda" target="_blank" style="
-                background: rgba(255,255,255,0.2);
+                background: #003057;
                 color: white;
                 text-decoration: none;
-                padding: 15px 30px;
-                border-radius: 50px;
-                font-size: 18px;
+                padding: 14px 28px;
+                font-size: 16px;
                 font-weight: 600;
-                border: 1px solid rgba(255,255,255,0.3);
+                display: inline-block;
               ">
                 Яндекс Погодада көру →
               </a>
@@ -364,27 +346,26 @@ async function checkAccess() {
       
       accessDeniedPage.innerHTML = `
         <div style="
-          background: rgba(255,255,255,0.05);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.15);
-          border-radius: 30px;
-          padding: 40px;
-          max-width: 650px;
+          background: #FFFFFF;
+          border: 1px solid #E5E9F0;
+          padding: 48px;
+          max-width: 700px;
           width: 100%;
           text-align: center;
-          color: white;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+          color: #1E2A3A;
+          box-shadow: 0 20px 40px rgba(0, 48, 87, 0.12);
         ">
-          <div style="font-size: 80px; margin-bottom: 20px;">${icon}</div>
-          <h1 style="font-size: 32px; margin-bottom: 15px;">Қолжетімділік шектелген</h1>
-          <p style="font-size: 16px; margin-bottom: 20px; opacity: 0.9;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
+          <div style="font-size: 72px; margin-bottom: 20px;">${icon}</div>
+          <h1 style="font-size: 32px; margin-bottom: 16px; color: #003057; font-weight: 700;">Қолжетімділік шектелген</h1>
+          <p style="font-size: 16px; margin-bottom: 24px; color: #4A5A6A;">Сайт таңғы 7:00-ден кешкі 22:00-ге дейін жұмыс істейді</p>
           
           <div style="
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            font-size: 20px;
+            background: #F0F4F8;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 18px;
+            color: #003057;
+            font-weight: 600;
           " id="access-time-display">
             ${icon} ${greeting} Қазір ${currentTime}
           </div>
@@ -394,28 +375,28 @@ async function checkAccess() {
           ${weatherDisplay}
           
           <div style="
-            background: rgba(0,0,0,0.3);
-            border-radius: 15px;
+            background: #F8FAFC;
+            border: 1px solid #E5E9F0;
             padding: 20px;
             margin-top: 20px;
           ">
-            <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(46,204,113,0.15); border-radius: 10px; margin-bottom: 10px;">
-              <span style="font-size: 24px;">✅</span>
+            <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: #E8F3E9; margin-bottom: 8px;">
+              <span style="font-size: 24px; color: #00A3E0;">✅</span>
               <div style="text-align: left;">
-                <div style="font-weight: 600;">Қолжетімді</div>
-                <div style="opacity: 0.8;">07:00 - 22:00</div>
+                <div style="font-weight: 600; color: #003057;">Қолжетімді</div>
+                <div style="color: #4A5A6A;">07:00 - 22:00</div>
               </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px; padding: 10px; background: rgba(231,76,60,0.15); border-radius: 10px;">
-              <span style="font-size: 24px;">❌</span>
+            <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: #FDECEA;">
+              <span style="font-size: 24px; color: #D92B2B;">❌</span>
               <div style="text-align: left;">
-                <div style="font-weight: 600;">Қолжетімсіз</div>
-                <div style="opacity: 0.8;">22:00 - 07:00</div>
+                <div style="font-weight: 600; color: #003057;">Қолжетімсіз</div>
+                <div style="color: #4A5A6A;">22:00 - 07:00</div>
               </div>
             </div>
           </div>
           
-          <p style="font-size: 18px; margin-top: 25px; opacity: 0.8;">Қайта келіңіз! ${icon}</p>
+          <p style="font-size: 18px; margin-top: 30px; color: #003057; font-weight: 600;">Қайта келіңіз! ${icon}</p>
         </div>
       `;
       
@@ -427,16 +408,16 @@ async function checkAccess() {
         timeDiv.innerHTML = `${icon} ${greeting} Қазір ${currentTime}`;
       }
       
-      const weatherDiv = accessDeniedPage.querySelector('div[style*="border-radius: 20px; padding: 25px;"]');
+      const weatherDiv = accessDeniedPage.querySelector('div[style*="padding: 24px;"]');
       if (weatherDiv && isNight && weather) {
         weatherDiv.innerHTML = `
-          <div style="font-size: 20px; margin-bottom: 15px; font-weight: 600;">🌙 Түнгі ауа райы - Қызылорда</div>
-          <div style="display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <div style="font-size: 18px; margin-bottom: 16px; font-weight: 600; color: #003057;">🌙 Түнгі ауа райы - Қызылорда</div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap;">
             <img src="https:${weather.icon}" alt="${weather.condition}" style="width: 64px; height: 64px;">
-            <div style="font-size: 36px; font-weight: 700;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
-            <div style="font-size: 18px; background: rgba(255,255,255,0.15); padding: 8px 20px; border-radius: 50px;">${weather.condition}</div>
+            <div style="font-size: 36px; font-weight: 700; color: #003057;">${weather.temp > 0 ? '+' : ''}${weather.temp}°C</div>
+            <div style="font-size: 16px; background: #F0F4F8; padding: 8px 20px; color: #003057;">${weather.condition}</div>
           </div>
-          <div style="display: flex; justify-content: center; gap: 25px; margin-top: 20px; flex-wrap: wrap;">
+          <div style="display: flex; justify-content: center; gap: 30px; margin-top: 20px; flex-wrap: wrap; color: #4A5A6A;">
             <div>🌡️ Сезіледі: ${weather.feelslike > 0 ? '+' : ''}${weather.feelslike}°C</div>
             <div>💧 Ылғалдылық: ${weather.humidity}%</div>
             <div>🌬️ Жел: ${weather.wind} км/сағ</div>
@@ -1520,24 +1501,17 @@ function saveResult(score, total) {
   localStorage.setItem('quizUsers', JSON.stringify(usersResults));
 }
 
-// Топ тізімін көрсету
+// Топ тізімін көрсету - Forte Bank стилінде
 function showLeaderboard() {
   const leaderboardList = document.getElementById('leaderboard-list');
   leaderboardList.innerHTML = '';
   
   if (usersResults.length === 0) {
-    leaderboardList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Әлі ешкім тест тапсырған жоқ</div>';
+    leaderboardList.innerHTML = '<div style="text-align: center; padding: 40px; color: #8A9AAC; font-size: 16px;">Әлі ешкім тест тапсырған жоқ</div>';
   } else {
     usersResults.forEach((user, index) => {
       const row = document.createElement('div');
-      row.style.cssText = `
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 12px 15px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        background: ${index === 0 ? 'rgba(255,215,0,0.1)' : 'transparent'};
-      `;
+      row.className = 'leaderboard-item';
       
       let medal = '';
       if (index === 0) medal = '🥇';
@@ -1548,16 +1522,12 @@ function showLeaderboard() {
       const percentage = user.total > 0 ? Math.round((user.score / user.total) * 100) : 0;
       
       row.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span style="font-weight: 700; width: 30px;">${medal}</span>
-          <span style="font-weight: 600;">${user.name}</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-          <span style="background: ${percentage >= 70 ? '#2ecc71' : '#e74c3c'}; padding: 3px 10px; border-radius: 20px; font-size: 12px;">
-            ${percentage}%
-          </span>
-          <span style="font-weight: 700;">${user.score}/${user.total}</span>
-          <span style="font-size: 11px; opacity: 0.7;">${user.date || ''}</span>
+        <div class="leaderboard-rank">${medal}</div>
+        <div class="leaderboard-info">
+          <span class="leaderboard-name">${user.name}</span>
+          <span class="leaderboard-score">${user.score}/${user.total}</span>
+          <span class="leaderboard-percent" style="background: ${percentage >= 70 ? '#00A3E0' : '#D92B2B'};">${percentage}%</span>
+          <span class="leaderboard-date">${user.date || ''}</span>
         </div>
       `;
       
@@ -1595,7 +1565,7 @@ function finishTest(timeout) {
 }
 
 function getResultTitle(percentage) {
-  if (percentage >= 90) return 'Тамаша нәтиже! 🎉';
+  if (percentage >= 90) return 'Тамаша нәтиже!';
   if (percentage >= 70) return 'Жақсы нәтиже!';
   if (percentage >= 50) return 'Орташа нәтиже';
   return 'Қайта оқып, тапсырыңыз';
@@ -1653,7 +1623,7 @@ function setButtonState(id, state) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Уақыт баннерін қосу (тек бір рет)
+  // Уақыт баннерін қосу (Forte Bank стилі)
   addTimeBanner();
   
   // Әр секунд сайын уақытты жаңарту
@@ -2003,7 +1973,7 @@ function playNextTrack() {
   }
 }
 
-// Музыка контроллерін қосу
+// Музыка контроллерін қосу - Forte Bank стилі
 function addMusicControl() {
   // Жасырын плеерлер қосу
   if (!document.getElementById('shiza-youtube-player')) {
@@ -2064,37 +2034,34 @@ function addMusicControl() {
     <div style="
       position: fixed;
       bottom: 80px;
-      right: 20px;
+      right: 24px;
       z-index: 9999;
-      background: linear-gradient(135deg, #8A2BE2, #4B0082);
-      border: 1px solid rgba(255,215,0,0.3);
-      border-radius: 50px;
-      padding: 8px 15px 8px 8px;
+      background: #003057;
+      border: none;
+      padding: 10px 20px 10px 12px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-      backdrop-filter: blur(5px);
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0, 48, 87, 0.2);
       color: white;
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Inter', sans-serif;
       cursor: pointer;
       transition: all 0.3s;
     " onclick="toggleMusic()">
       <div style="
-        width: 35px;
-        height: 35px;
-        background: gold;
-        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        background: #00A3E0;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #4B0082;
+        color: white;
         font-size: 18px;
         font-weight: bold;
       " id="music-icon">▶️</div>
       <div>
-        <div style="font-weight: 700; font-size: 13px;" id="music-title">Shiza</div>
-        <div style="font-size: 11px; opacity: 0.9;" id="music-subtitle">SHYM</div>
+        <div style="font-weight: 600; font-size: 13px;" id="music-title">Shiza</div>
+        <div style="font-size: 11px; opacity: 0.8;" id="music-subtitle">SHYM</div>
       </div>
     </div>
   `;
@@ -2171,31 +2138,31 @@ function updateMusicInfo() {
   if (isShizaPlaying) {
     titleEl.textContent = 'Shiza';
     subtitleEl.textContent = 'SHYM (1950s Jazz)';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8A2BE2, #4B0082)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#003057';
   } else if (isKairatPlaying) {
     titleEl.textContent = 'Қайрат Нұртас';
     subtitleEl.textContent = 'Ол сен емес';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B0000, #4A0404)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#8B0000';
   } else if (isDensPlaying) {
     titleEl.textContent = '9 Грамм';
     subtitleEl.textContent = 'ДЭНС';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #2C3E50, #3498DB)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#2C3E50';
   } else if (isKzoPlaying) {
     titleEl.textContent = '6ellucci';
     subtitleEl.textContent = 'KZO';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #006400, #228B22)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#006400';
   } else if (isKzo2Playing) {
     titleEl.textContent = '6ELLUCCI & JUNIOR';
     subtitleEl.textContent = 'KZO II';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B4513, #CD853F)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#8B4513';
   } else if (isSharautPlaying) {
     titleEl.textContent = 'Guf & BALLER';
     subtitleEl.textContent = 'Шараут';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #4B0082, #9400D3)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#4B0082';
   } else if (isShizaLivePlaying) {
     titleEl.textContent = 'Shiza';
     subtitleEl.textContent = 'SHYM (LIVE)';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #FF4500, #8B0000)';
+    document.getElementById('music-control').querySelector('div[style*="position: fixed"]').style.background = '#FF4500';
   }
 }
 
@@ -2245,6 +2212,7 @@ window.prevTrack = function() {
       kairatPlayer.playVideo();
       isKairatPlaying = true;
       isShizaPlaying = false;
+      isKairatPlaying = false;
       isDensPlaying = false;
       isKzoPlaying = false;
       isKzo2Playing = false;
