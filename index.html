@@ -1146,6 +1146,93 @@
       display: none !important;
     }
 
+    .comments-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--threads-border);
+    }
+
+    .comment {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--sber-green);
+    }
+
+    .comment-text {
+      color: var(--threads-text);
+    }
+
+    .comment-input {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .comment-input input {
+      flex: 1;
+      background-color: #2a2a2a;
+      border: 1px solid var(--threads-border);
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: var(--threads-text);
+    }
+
+    .comment-input button {
+      background: var(--sber-green);
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .search-container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px;
+      background-color: #2a2a2a;
+      border: 1px solid var(--threads-border);
+      border-radius: 30px;
+      color: var(--threads-text);
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--sber-green);
+    }
+
+    .search-results {
+      background-color: var(--threads-card);
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .search-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border-bottom: 1px solid var(--threads-border);
+      cursor: pointer;
+    }
+
+    .search-item:hover {
+      background-color: #2a2a2a;
+    }
+
     @media (max-width: 700px) {
       .hero-title { font-size: 40px; }
       .feats { grid-template-columns: 1fr; }
@@ -1311,7 +1398,7 @@
       </div>
     </div>
 
-    <!-- Threads Login (бастапқыда көрсетіледі) -->
+    <!-- Threads Login -->
     <div id="threads-login-container" class="threads-login">
       <h2>Телефон нөміріңізбен кіріңіз</h2>
       <div class="phone-input-group">
@@ -1326,7 +1413,7 @@
       <button class="btn-sec" onclick="continueAsGuest()">Қонақ ретінде кіру</button>
     </div>
 
-    <!-- Threads Feed (кіргеннен кейін көрсетіледі) -->
+    <!-- Threads Feed -->
     <div id="threads-feed-container" class="hidden">
       <div class="threads-feed">
         <!-- Жаңа пост қосу -->
@@ -1334,9 +1421,9 @@
           <textarea id="post-content" placeholder="Ойыңызбен бөлісіңіз..."></textarea>
           <div class="post-actions">
             <div class="post-actions-left">
-              <button>📷</button>
-              <button>🎵</button>
-              <button>😊</button>
+              <button onclick="alert('Сурет қосу')">📷</button>
+              <button onclick="alert('Музыка қосу')">🎵</button>
+              <button onclick="alert('Эмодзи қосу')">😊</button>
             </div>
             <button class="post-btn" onclick="createPost()">Жариялау</button>
           </div>
@@ -1372,9 +1459,32 @@
       <div id="profile-posts" class="threads-feed"></div>
     </div>
 
+    <!-- Іздеу беті -->
+    <div id="threads-search-container" class="hidden">
+      <div class="search-container">
+        <input type="text" class="search-input" id="search-input" placeholder="Адамдарды іздеу..." oninput="searchUsers()">
+        <div id="search-results" class="search-results"></div>
+      </div>
+    </div>
+
+    <!-- Пікірлер модалы -->
+    <div id="comments-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Пікірлер</h3>
+        <div id="comments-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
+        <div class="comment-input">
+          <input type="text" id="comment-input" placeholder="Пікір жазыңыз...">
+          <button onclick="addComment()">Жіберу</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sec" onclick="closeComments()">Жабу</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="threads-bottom-nav">
-      <button class="nav-item active" onclick="showThreadsFeed()">🏠</button>
+      <button class="nav-item" onclick="showThreadsFeed()">🏠</button>
       <button class="nav-item" onclick="showThreadsSearch()">🔍</button>
       <button class="nav-item" onclick="showThreadsCreate()">➕</button>
       <button class="nav-item" onclick="showThreadsProfile()">👤</button>
@@ -1447,12 +1557,53 @@
   let currentUser = null;
   let posts = [];
   let users = [];
+  let currentPostId = null;
+
+  // LocalStorage-дан деректерді жүктеу
+  function loadThreadsData() {
+    const savedPosts = localStorage.getItem('threads_posts');
+    const savedUsers = localStorage.getItem('threads_users');
+    
+    if (savedPosts) {
+      posts = JSON.parse(savedPosts);
+    } else {
+      // Тест үшін мысал посттар
+      posts = [
+        {
+          id: 1,
+          userId: 'admin',
+          userName: 'Ayan KZ',
+          userAvatar: '👤',
+          content: 'Бұл бірінші тест пост! Threads желісіне қош келдіңіздер!',
+          time: new Date().toLocaleString(),
+          likes: [],
+          comments: [
+            { author: 'Қолданушы1', text: 'Керемет!' }
+          ]
+        }
+      ];
+    }
+    
+    if (savedUsers) {
+      users = JSON.parse(savedUsers);
+    }
+  }
+
+  // Деректерді сақтау
+  function saveThreadsData() {
+    localStorage.setItem('threads_posts', JSON.stringify(posts));
+    localStorage.setItem('threads_users', JSON.stringify(users));
+  }
 
   function showThreadsLogin() {
     showPage('page-threads');
     document.getElementById('threads-login-container').classList.remove('hidden');
     document.getElementById('threads-feed-container').classList.add('hidden');
     document.getElementById('threads-profile-container').classList.add('hidden');
+    document.getElementById('threads-search-container').classList.add('hidden');
+    
+    // Төменгі навигациядан active класс алу
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
   }
 
   function loginWithPhone() {
@@ -1466,7 +1617,7 @@
     let user = users.find(u => u.phone === phone);
     if (!user) {
       user = {
-        id: Date.now(),
+        id: 'user_' + Date.now(),
         phone: phone,
         name: 'Қолданушы' + Math.floor(Math.random() * 1000),
         avatar: '👤',
@@ -1474,17 +1625,28 @@
         likes: []
       };
       users.push(user);
+      saveThreadsData();
     }
     
     currentUser = user;
-    document.getElementById('threads-login-container').classList.add('hidden');
-    document.getElementById('threads-feed-container').classList.remove('hidden');
     
     // Профильді жаңарту
     document.getElementById('profile-name').textContent = user.name;
     document.getElementById('profile-phone').textContent = '+7 ' + phone.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
     
+    // Кіру бетін жасырып, Feed көрсету
+    document.getElementById('threads-login-container').classList.add('hidden');
+    document.getElementById('threads-feed-container').classList.remove('hidden');
+    
+    // Төменгі навигацияда Feed-ті актив ету
+    document.querySelectorAll('.nav-item').forEach((item, index) => {
+      if (index === 0) item.classList.add('active');
+      else item.classList.remove('active');
+    });
+    
+    loadThreadsData();
     loadPosts();
+    updateProfileStats();
   }
 
   function continueAsGuest() {
@@ -1502,18 +1664,34 @@
     document.getElementById('profile-name').textContent = 'Қонақ';
     document.getElementById('profile-phone').textContent = 'Қонақ режимі';
     
+    // Төменгі навигацияда Feed-ті актив ету
+    document.querySelectorAll('.nav-item').forEach((item, index) => {
+      if (index === 0) item.classList.add('active');
+      else item.classList.remove('active');
+    });
+    
+    loadThreadsData();
     loadPosts();
+    updateProfileStats();
   }
 
   function createPost() {
     const content = document.getElementById('post-content').value.trim();
-    if (!content || !currentUser) return;
+    if (!content) {
+      alert('Пост жазу үшін мәтін енгізіңіз');
+      return;
+    }
+    
+    if (!currentUser) {
+      alert('Алдымен кіріңіз');
+      return;
+    }
 
     const newPost = {
       id: Date.now(),
       userId: currentUser.id,
       userName: currentUser.name,
-      userAvatar: currentUser.avatar,
+      userAvatar: currentUser.avatar || '👤',
       content: content,
       time: new Date().toLocaleString(),
       likes: [],
@@ -1521,11 +1699,18 @@
     };
 
     posts.unshift(newPost);
+    
+    if (!currentUser.posts) currentUser.posts = [];
     currentUser.posts.push(newPost.id);
+    
+    saveThreadsData();
     
     document.getElementById('post-content').value = '';
     loadPosts();
     updateProfileStats();
+    
+    // Хабарлама көрсету
+    showToast('Пост жарияланды!');
   }
 
   function loadPosts() {
@@ -1537,85 +1722,213 @@
       return;
     }
 
-    postsList.innerHTML = posts.map(post => `
-      <div class="post-card">
-        <div class="post-header">
-          <div class="post-avatar">${post.userAvatar}</div>
-          <div class="post-user-info">
-            <div class="post-username">${post.userName}</div>
-            <div class="post-time">${post.time}</div>
+    postsList.innerHTML = posts.map(post => {
+      const isLiked = currentUser && post.likes && post.likes.includes(currentUser.id);
+      
+      return `
+        <div class="post-card" data-post-id="${post.id}">
+          <div class="post-header">
+            <div class="post-avatar">${post.userAvatar || '👤'}</div>
+            <div class="post-user-info">
+              <div class="post-username">${post.userName}</div>
+              <div class="post-time">${post.time}</div>
+            </div>
+          </div>
+          <div class="post-content">${post.content}</div>
+          <div class="post-stats">
+            <div class="post-stat ${isLiked ? 'liked' : ''}" onclick="likePost(${post.id})">
+              <span>❤️</span> ${post.likes ? post.likes.length : 0}
+            </div>
+            <div class="post-stat" onclick="showComments(${post.id})">
+              <span>💬</span> ${post.comments ? post.comments.length : 0}
+            </div>
+            <div class="post-stat" onclick="sharePost(${post.id})">
+              <span>🔄</span>
+            </div>
           </div>
         </div>
-        <div class="post-content">${post.content}</div>
-        <div class="post-stats">
-          <div class="post-stat ${post.likes.includes(currentUser?.id) ? 'liked' : ''}" onclick="likePost(${post.id})">
-            <span>❤️</span> ${post.likes.length}
-          </div>
-          <div class="post-stat" onclick="commentPost(${post.id})">
-            <span>💬</span> ${post.comments.length}
-          </div>
-          <div class="post-stat" onclick="sharePost(${post.id})">
-            <span>🔄</span>
-          </div>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   function likePost(postId) {
-    if (!currentUser) return;
+    if (!currentUser) {
+      alert('Лайк басу үшін кіріңіз');
+      return;
+    }
     
     const post = posts.find(p => p.id === postId);
     if (!post) return;
 
+    if (!post.likes) post.likes = [];
+
     const likeIndex = post.likes.indexOf(currentUser.id);
     if (likeIndex === -1) {
       post.likes.push(currentUser.id);
+      if (!currentUser.likes) currentUser.likes = [];
       currentUser.likes.push(postId);
     } else {
       post.likes.splice(likeIndex, 1);
-      currentUser.likes = currentUser.likes.filter(id => id !== postId);
+      if (currentUser.likes) {
+        currentUser.likes = currentUser.likes.filter(id => id !== postId);
+      }
     }
 
+    saveThreadsData();
     loadPosts();
     updateProfileStats();
   }
 
-  function commentPost(postId) {
-    alert('Пікір жазу функциясы қосылады');
+  function showComments(postId) {
+    currentPostId = postId;
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    
+    const commentsList = document.getElementById('comments-list');
+    if (post.comments && post.comments.length > 0) {
+      commentsList.innerHTML = post.comments.map(comment => `
+        <div class="comment">
+          <span class="comment-author">${comment.author}:</span>
+          <span class="comment-text">${comment.text}</span>
+        </div>
+      `).join('');
+    } else {
+      commentsList.innerHTML = '<div style="text-align: center; color: var(--threads-secondary);">Пікірлер жоқ</div>';
+    }
+    
+    document.getElementById('comments-modal').classList.remove('hidden');
+  }
+
+  function addComment() {
+    if (!currentUser) {
+      alert('Пікір жазу үшін кіріңіз');
+      return;
+    }
+    
+    const commentText = document.getElementById('comment-input').value.trim();
+    if (!commentText || !currentPostId) return;
+    
+    const post = posts.find(p => p.id === currentPostId);
+    if (!post) return;
+    
+    if (!post.comments) post.comments = [];
+    
+    post.comments.push({
+      author: currentUser.name,
+      text: commentText
+    });
+    
+    saveThreadsData();
+    
+    document.getElementById('comment-input').value = '';
+    showComments(currentPostId); // Пікірлерді жаңарту
+  }
+
+  function closeComments() {
+    document.getElementById('comments-modal').classList.add('hidden');
+    currentPostId = null;
   }
 
   function sharePost(postId) {
-    alert('Пост сілтемесі көшірілді!');
+    // Пост сілтемесін көшіру
+    navigator.clipboard.writeText(window.location.href + '#post=' + postId);
+    showToast('Пост сілтемесі көшірілді!');
   }
 
   function showThreadsFeed() {
     document.getElementById('threads-feed-container').classList.remove('hidden');
     document.getElementById('threads-profile-container').classList.add('hidden');
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    event.target.classList.add('active');
+    document.getElementById('threads-search-container').classList.add('hidden');
+    
+    // Төменгі навигацияны жаңарту
+    document.querySelectorAll('.nav-item').forEach((item, index) => {
+      if (index === 0) item.classList.add('active');
+      else item.classList.remove('active');
+    });
+    
     loadPosts();
   }
 
   function showThreadsProfile() {
+    if (!currentUser) {
+      showThreadsLogin();
+      return;
+    }
+    
     document.getElementById('threads-feed-container').classList.add('hidden');
     document.getElementById('threads-profile-container').classList.remove('hidden');
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    event.target.classList.add('active');
+    document.getElementById('threads-search-container').classList.add('hidden');
+    
+    // Төменгі навигацияны жаңарту
+    document.querySelectorAll('.nav-item').forEach((item, index) => {
+      if (index === 3) item.classList.add('active');
+      else item.classList.remove('active');
+    });
+    
     showProfilePosts();
   }
 
   function showThreadsSearch() {
-    alert('Іздеу функциясы қосылады');
+    document.getElementById('threads-feed-container').classList.add('hidden');
+    document.getElementById('threads-profile-container').classList.add('hidden');
+    document.getElementById('threads-search-container').classList.remove('hidden');
+    
+    // Төменгі навигацияны жаңарту
+    document.querySelectorAll('.nav-item').forEach((item, index) => {
+      if (index === 1) item.classList.add('active');
+      else item.classList.remove('active');
+    });
+    
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('search-input').value = '';
   }
 
   function showThreadsCreate() {
+    if (!currentUser) {
+      showThreadsLogin();
+      return;
+    }
     document.getElementById('post-content').focus();
   }
 
+  function searchUsers() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    if (!query) {
+      document.getElementById('search-results').innerHTML = '';
+      return;
+    }
+    
+    const results = users.filter(user => 
+      user.name.toLowerCase().includes(query) || 
+      (user.phone && user.phone.includes(query))
+    );
+    
+    const resultsHtml = results.map(user => `
+      <div class="search-item" onclick="viewUserProfile('${user.id}')">
+        <div class="post-avatar">${user.avatar || '👤'}</div>
+        <div>
+          <div style="font-weight: 600;">${user.name}</div>
+          <div style="font-size: 12px; color: var(--threads-secondary);">${user.phone === 'guest' ? 'Қонақ' : '+7 ' + (user.phone || '')}</div>
+        </div>
+      </div>
+    `).join('');
+    
+    document.getElementById('search-results').innerHTML = results.length ? resultsHtml : '<div style="text-align: center;">Табылмады</div>';
+  }
+
+  function viewUserProfile(userId) {
+    alert('Қолданушы профилі: ' + userId);
+  }
+
   function showProfilePosts() {
-    const userPosts = posts.filter(p => p.userId === currentUser?.id);
+    if (!currentUser) return;
+    
+    const userPosts = posts.filter(p => p.userId === currentUser.id);
     const profilePosts = document.getElementById('profile-posts');
+    
+    // Табтарды жаңарту
+    document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
     
     if (userPosts.length === 0) {
       profilePosts.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Посттар жоқ</div>';
@@ -1625,7 +1938,7 @@
     profilePosts.innerHTML = userPosts.map(post => `
       <div class="post-card">
         <div class="post-header">
-          <div class="post-avatar">${post.userAvatar}</div>
+          <div class="post-avatar">${post.userAvatar || '👤'}</div>
           <div class="post-user-info">
             <div class="post-username">${post.userName}</div>
             <div class="post-time">${post.time}</div>
@@ -1634,10 +1947,10 @@
         <div class="post-content">${post.content}</div>
         <div class="post-stats">
           <div class="post-stat">
-            <span>❤️</span> ${post.likes.length}
+            <span>❤️</span> ${post.likes ? post.likes.length : 0}
           </div>
           <div class="post-stat">
-            <span>💬</span> ${post.comments.length}
+            <span>💬</span> ${post.comments ? post.comments.length : 0}
           </div>
         </div>
       </div>
@@ -1645,8 +1958,17 @@
   }
 
   function showProfileLikes() {
-    const likedPosts = posts.filter(p => p.likes.includes(currentUser?.id));
+    if (!currentUser || !currentUser.likes) {
+      document.getElementById('profile-posts').innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Лайктар жоқ</div>';
+      return;
+    }
+    
+    const likedPosts = posts.filter(p => currentUser.likes.includes(p.id));
     const profilePosts = document.getElementById('profile-posts');
+    
+    // Табтарды жаңарту
+    document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
     
     if (likedPosts.length === 0) {
       profilePosts.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Лайк басылған посттар жоқ</div>';
@@ -1656,7 +1978,7 @@
     profilePosts.innerHTML = likedPosts.map(post => `
       <div class="post-card">
         <div class="post-header">
-          <div class="post-avatar">${post.userAvatar}</div>
+          <div class="post-avatar">${post.userAvatar || '👤'}</div>
           <div class="post-user-info">
             <div class="post-username">${post.userName}</div>
             <div class="post-time">${post.time}</div>
@@ -1675,8 +1997,15 @@
   function updateProfileStats() {
     if (!currentUser) return;
     
-    document.getElementById('profile-posts-count').textContent = currentUser.posts.length;
-    document.getElementById('profile-likes-count').textContent = currentUser.likes.length;
+    document.getElementById('profile-posts-count').textContent = currentUser.posts ? currentUser.posts.length : 0;
+    document.getElementById('profile-likes-count').textContent = currentUser.likes ? currentUser.likes.length : 0;
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 3000);
   }
 
   // Қосымша функциялар
@@ -1685,12 +2014,15 @@
   }
 
   function toggleWarm() {
-    alert('Жылы режим');
+    showToast('Жылы режим');
   }
 
   function toggleFont() {
-    alert('Шрифт өзгертілді');
+    showToast('Шрифт өзгертілді');
   }
+
+  // Бастапқы жүктеу
+  loadThreadsData();
 
   window.switchLanguage = switchLanguage;
 </script>
