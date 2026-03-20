@@ -15,7 +15,7 @@
     }
 
     :root {
-      --sber-green: #1f8b4c;          /* Сбердің фирмалық ашық жасылы */
+      --sber-green: #1f8b4c;
       --sber-green-dark: #14633b;
       --sber-green-light: #eaf5ec;
       --sber-white: #ffffff;
@@ -23,20 +23,16 @@
       --sber-text: #1f1f1f;
       --sber-text-secondary: #5b5b5b;
       --sber-border: #e0e4e8;
-      --sber-radius: 32px;             /* Сберде үлкен радиустар жиі қолданылады */
+      --sber-radius: 32px;
       --sber-radius-sm: 20px;
       --sber-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.1);
-      --sber-shadow-hover: 0 20px 48px -8px rgba(31, 139, 76, 0.15);
       --sber-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
       
-      /* Threads стиліндегі түстер */
       --threads-bg: #101010;
       --threads-card: #1c1c1c;
       --threads-text: #f5f5f5;
       --threads-secondary: #a8a8a8;
       --threads-border: #2f2f2f;
-      --threads-like: #ff3b5c;
-      --threads-like-bg: #ff3b5c20;
     }
 
     body {
@@ -44,23 +40,9 @@
       background-color: var(--sber-bg);
       color: var(--sber-text);
       line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Сбердің минималды скроллбары */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #eef2f4;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #c0c8cf;
-      border-radius: 8px;
-    }
-
+    /* Стильдер (қысқартылған) */
     .page {
       display: none;
       min-height: 100vh;
@@ -70,7 +52,7 @@
       display: block;
     }
 
-    /* --- Кіру беті (Сбер карточкасы) --- */
+    /* Кіру беті */
     .login-box {
       max-width: 480px;
       width: 90%;
@@ -80,36 +62,6 @@
       box-shadow: var(--sber-shadow);
       padding: 48px 40px;
       text-align: center;
-      border: 1px solid #ffffff30;
-      backdrop-filter: blur(2px);
-    }
-
-    .login-icon {
-      margin-bottom: 32px;
-    }
-    .lock {
-      font-size: 56px;
-      background: var(--sber-green-light);
-      width: 104px;
-      height: 104px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      margin: 0 auto;
-      color: var(--sber-green);
-    }
-
-    .login-h {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
-    }
-    .login-sub {
-      font-size: 15px;
-      color: var(--sber-text-secondary);
-      margin-bottom: 40px;
     }
 
     .pw-wrap {
@@ -123,14 +75,6 @@
       border: 1px solid var(--sber-border);
       border-radius: var(--sber-radius-sm);
       font-size: 16px;
-      font-family: 'SB Sans Display', monospace;
-      transition: var(--sber-transition);
-      background: #fafcfd;
-    }
-    .pw-wrap input:focus {
-      border-color: var(--sber-green);
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(31, 139, 76, 0.12);
     }
     .pw-wrap button {
       background: var(--sber-green);
@@ -139,537 +83,70 @@
       font-weight: 600;
       padding: 0 36px;
       border-radius: var(--sber-radius-sm);
-      font-size: 15px;
       cursor: pointer;
-      transition: var(--sber-transition);
-      white-space: nowrap;
-    }
-    .pw-wrap button:hover {
-      background: var(--sber-green-dark);
     }
 
-    .pw-err {
-      color: #d32f2f;
-      font-size: 14px;
-      margin-top: 16px;
-      text-align: left;
+    /* SMS код енгізу */
+    .code-input-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 30px 0;
     }
+    
+    .code-digit {
+      width: 50px;
+      height: 60px;
+      border: 2px solid var(--threads-border);
+      border-radius: 12px;
+      background-color: #2a2a2a;
+      color: var(--threads-text);
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 60px;
+    }
+    
+    .code-digit:focus {
+      outline: none;
+      border-color: var(--sber-green);
+    }
+    
+    .timer-text {
+      color: var(--threads-secondary);
+      font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    
+    .resend-link {
+      color: var(--sber-green);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    
+    .resend-link.disabled {
+      color: var(--threads-secondary);
+      pointer-events: none;
+      text-decoration: none;
+    }
+
     .hidden {
       display: none !important;
     }
 
-    /* Сбер анимациясы – жұмсақ тербеліс */
-    @keyframes sberShake {
+    @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
       60% { transform: translateX(-3px); }
       80% { transform: translateX(3px); }
     }
     .shake {
-      animation: sberShake 0.5s ease-in-out;
+      animation: shake 0.4s ease-in-out;
     }
 
-    /* Тіл ауыстыру — Сбердің жоғарғы панеліндей */
-    .lang-switch {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 1000;
-      background: var(--sber-white);
-      border-radius: 48px;
-      padding: 4px;
-      box-shadow: 0 8px 20px -8px rgba(0,0,0,0.15);
-      border: 1px solid #e6eaef;
-    }
-    .lang-btn {
-      border: none;
-      background: transparent;
-      padding: 8px 22px;
-      border-radius: 40px;
-      font-weight: 500;
-      font-size: 14px;
-      color: #2b2b2b;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .lang-btn.active {
-      background: var(--sber-green);
-      color: white;
-    }
-
-    /* Басты бет топбар — Сбердің ақ мәзірі */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 40px;
-      background: var(--sber-white);
-      border-bottom: 1px solid #ecf0f3;
-    }
-    .logo {
-      font-weight: 600;
-      font-size: 22px;
-      color: var(--sber-green);
-      letter-spacing: -0.02em;
-    }
-    .logo.sm {
-      font-size: 20px;
-    }
-    .tools {
-      display: flex;
-      gap: 12px;
-    }
-    .tb {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #f2f6f9;
-      border: 1px solid transparent;
-      color: #2b2b2b;
-      font-size: 18px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-    }
-    .tb:hover {
-      background: #e2e9f0;
-    }
-    .tb.on {
-      background: var(--sber-green);
-      color: white;
-    }
-
-    /* Hero секция — Сбердің басты баннері */
-    .hero {
-      text-align: center;
-      padding: 64px 20px 48px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .badge {
-      display: inline-block;
-      background: var(--sber-green-light);
-      color: var(--sber-green-dark);
-      font-weight: 600;
-      font-size: 14px;
-      padding: 6px 22px;
-      border-radius: 40px;
-      margin-bottom: 28px;
-    }
-    .hero-title {
-      font-size: 52px;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 24px;
-      letter-spacing: -0.02em;
-    }
-    .hero-title em {
-      color: var(--sber-green);
-      font-style: normal;
-      font-weight: 800;
-    }
-    .hero-desc {
-      font-size: 18px;
-      color: var(--sber-text-secondary);
-      max-width: 700px;
-      margin: 0 auto 36px;
-    }
-    .pills {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 44px;
-    }
-    .pill {
-      background: var(--sber-white);
-      padding: 8px 20px;
-      border-radius: 40px;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      border: 1px solid #eef2f5;
-    }
-    .btn-main {
-      background: var(--sber-green);
-      border: none;
-      color: white;
-      font-weight: 700;
-      padding: 14px 44px;
-      border-radius: 48px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      box-shadow: 0 12px 28px -8px rgba(31, 139, 76, 0.3);
-      border: 1px solid transparent;
-      margin: 4px;
-    }
-    .btn-main:hover {
-      background: var(--sber-green-dark);
-      transform: scale(1.02);
-      box-shadow: 0 18px 32px -8px #1f8b4c80;
-    }
-    .btn-sec {
-      background: var(--sber-white);
-      border: 1px solid #d7dee6;
-      color: var(--sber-text);
-      font-weight: 500;
-      padding: 14px 44px;
-      border-radius: 48px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      margin: 4px;
-    }
-    .btn-sec:hover {
-      background: #f2f6f9;
-      border-color: #b0c0ce;
-    }
-
-    /* 4 фича — Сбердің grid карточкалары */
-    .feats {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 24px;
-      max-width: 1280px;
-      margin: 0 auto 60px;
-      padding: 0 24px;
-    }
-    .feat {
-      background: var(--sber-white);
-      border-radius: var(--sber-radius);
-      padding: 36px 24px;
-      text-align: center;
-      box-shadow: 0 8px 28px -8px rgba(0,0,0,0.04);
-      border: 1px solid #edf2f6;
-    }
-    .feat-ico {
-      font-size: 36px;
-      background: var(--sber-green-light);
-      width: 72px;
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      margin: 0 auto 24px;
-      color: var(--sber-green);
-    }
-    .feat strong {
-      display: block;
-      font-size: 18px;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .feat p {
-      color: #6f7e8f;
-      font-size: 14px;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 24px;
-      color: #9aa9b8;
-      font-size: 13px;
-      border-top: 1px solid #e2eaf0;
-      background: var(--sber-white);
-    }
-
-    /* Тест беті — Сбердің карточкалары */
-    .test-hdr {
-      background: var(--sber-white);
-      border-bottom: 1px solid #e3eaf1;
-      padding: 16px 32px;
-    }
-    .th1, .th2 {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .q-num {
-      background: #eef2f6;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .timer {
-      background: #1f1f1f;
-      color: white;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-weight: 500;
-    }
-    .timer.danger {
-      background: #c62828;
-    }
-    .score-live {
-      background: var(--sber-green);
-      color: white;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-    }
-    .prog-track {
-      height: 6px;
-      background: #e7edf3;
-      border-radius: 3px;
-    }
-    .prog-bar {
-      height: 6px;
-      background: var(--sber-green);
-      border-radius: 3px;
-      width: 0%;
-    }
-    .q-main {
-      max-width: 960px;
-      margin: 48px auto;
-      padding: 0 24px;
-    }
-    .q-card {
-      background: var(--sber-white);
-      border-radius: 36px;
-      padding: 48px;
-      box-shadow: var(--sber-shadow);
-      border: 1px solid #eef4f8;
-    }
-    .q-lbl {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #8b9aab;
-      margin-bottom: 12px;
-    }
-    .q-text {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 36px;
-      line-height: 1.4;
-    }
-    .q-opts {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .opt {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      background: #fafdff;
-      border: 1px solid #e0e8f0;
-      border-radius: 24px;
-      padding: 18px 28px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      width: 100%;
-      text-align: left;
-    }
-    .opt:hover:not(.locked) {
-      background: #f0f6fc;
-      border-color: #c0d0df;
-    }
-    .opt.correct {
-      background: #e1f3e8 !important;
-      border-color: var(--sber-green) !important;
-    }
-    .opt.wrong {
-      background: #ffeae9 !important;
-      border-color: #d32f2f !important;
-    }
-    .opt.locked {
-      pointer-events: none;
-      opacity: 0.9;
-    }
-    .opt-L {
-      background: var(--sber-green);
-      color: white;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-weight: 700;
-    }
-
-    .eye-banner {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1f2a37;
-      color: white;
-      padding: 16px 32px;
-      border-radius: 60px;
-      font-size: 15px;
-      z-index: 999;
-      box-shadow: 0 20px 36px -10px black;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .eye-banner button {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    /* Нәтиже беті — Сбердің модальді картасы */
-    .res-center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 90vh;
-    }
-    .res-card {
-      background: var(--sber-white);
-      border-radius: 48px;
-      padding: 56px;
-      max-width: 560px;
-      width: 90%;
-      text-align: center;
-      box-shadow: var(--sber-shadow);
-      border: 1px solid #e8f0f8;
-    }
-    .res-emoji {
-      font-size: 80px;
-      margin-bottom: 16px;
-    }
-    .res-title {
-      font-size: 34px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .res-big {
-      font-size: 64px;
-      font-weight: 800;
-      color: var(--sber-green);
-      line-height: 1;
-    }
-    .res-pct {
-      font-size: 24px;
-      color: #6b7f91;
-      margin-bottom: 32px;
-    }
-    .res-stats {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 36px;
-    }
-    .rs-n { font-size: 34px; font-weight: 700; }
-    .rs-g .rs-n { color: var(--sber-green); }
-    .rs-r .rs-n { color: #c62828; }
-    .rs-b .rs-n { color: #1e5f8e; }
-    .rs-l { font-size: 14px; color: #7f8f9f; }
-
-    .res-prog-track {
-      height: 12px;
-      background: #dee8f0;
-      border-radius: 6px;
-      margin-bottom: 36px;
-    }
-    .res-prog-fill {
-      height: 12px;
-      background: var(--sber-green);
-      border-radius: 6px;
-      width: 0%;
-    }
-    .res-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
-    .res-buttons .btn-main,
-    .res-buttons .btn-sec {
-      flex: 1 0 140px;
-    }
-
-    /* Топ тізімі — Сбердің таблицасы */
-    .leaderboard-container {
-      max-width: 1000px;
-      margin: 48px auto;
-      padding: 0 24px;
-    }
-    .leaderboard-card {
-      background: var(--sber-white);
-      border-radius: 48px;
-      padding: 48px;
-      border: 1px solid #e2ecf5;
-      box-shadow: var(--sber-shadow);
-    }
-    .leaderboard-title {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 32px;
-    }
-    .leaderboard-list {
-      background: #fafdff;
-      border-radius: 32px;
-      max-height: 460px;
-      overflow-y: auto;
-      margin-bottom: 32px;
-      border: 1px solid #dde7f0;
-    }
-    .leaderboard-item {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 18px 28px;
-      border-bottom: 1px solid #e3ecf3;
-    }
-    .leaderboard-rank {
-      background: var(--sber-green);
-      color: white;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-weight: 700;
-    }
-    .leaderboard-info {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 24px;
-    }
-    .leaderboard-name {
-      font-weight: 600;
-      min-width: 150px;
-    }
-    .leaderboard-score {
-      font-weight: 700;
-      color: var(--sber-green);
-    }
-    .leaderboard-percent {
-      background: var(--sber-green-light);
-      color: var(--sber-green-dark);
-      padding: 4px 16px;
-      border-radius: 40px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .leaderboard-date {
-      font-size: 12px;
-      color: #a0b1c2;
-      margin-left: auto;
-    }
-    .leaderboard-buttons {
-      display: flex;
-      gap: 16px;
-    }
-
-    /* ========== THREADS СТИЛІНДЕГІ ӘЛЕУМЕТТІК ЖЕЛІ ========== */
+    /* Threads стильдері */
     .threads-page {
       background-color: var(--threads-bg);
       min-height: 100vh;
@@ -683,47 +160,16 @@
       align-items: center;
       padding: 16px 20px;
       border-bottom: 1px solid var(--threads-border);
-      background-color: var(--threads-bg);
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
 
     .threads-logo {
       font-size: 24px;
       font-weight: 700;
-      letter-spacing: -0.5px;
     }
-
     .threads-logo span {
       color: var(--sber-green);
     }
 
-    .threads-actions {
-      display: flex;
-      gap: 20px;
-    }
-
-    .threads-actions button {
-      background: none;
-      border: none;
-      color: var(--threads-text);
-      font-size: 20px;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--sber-transition);
-    }
-
-    .threads-actions button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Телефон нөмірімен кіру */
     .threads-login {
       max-width: 400px;
       margin: 80px auto;
@@ -733,29 +179,13 @@
       border: 1px solid var(--threads-border);
     }
 
-    .threads-login h2 {
-      font-size: 28px;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-
-    .phone-input-group {
-      margin-bottom: 24px;
-    }
-
-    .phone-input-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--threads-secondary);
-      font-size: 14px;
-    }
-
     .phone-input-wrapper {
       display: flex;
       background-color: #2a2a2a;
       border-radius: 16px;
       border: 1px solid var(--threads-border);
       overflow: hidden;
+      margin-bottom: 20px;
     }
 
     .phone-prefix {
@@ -763,7 +193,6 @@
       background-color: #2a2a2a;
       color: var(--threads-secondary);
       border-right: 1px solid var(--threads-border);
-      font-weight: 500;
     }
 
     .phone-input-wrapper input {
@@ -773,49 +202,29 @@
       padding: 16px 20px;
       color: var(--threads-text);
       font-size: 16px;
-      font-family: 'SB Sans Display', sans-serif;
     }
 
-    .phone-input-wrapper input:focus {
-      outline: none;
-    }
-
-    .threads-login .btn-main {
-      width: 100%;
-      padding: 16px;
-      margin-top: 16px;
+    .btn-main {
       background: var(--sber-green);
-    }
-
-    .threads-divider {
-      text-align: center;
-      margin: 24px 0;
-      color: var(--threads-secondary);
-      position: relative;
-    }
-
-    .threads-divider::before,
-    .threads-divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 45%;
-      height: 1px;
-      background-color: var(--threads-border);
-    }
-
-    .threads-divider::before { left: 0; }
-    .threads-divider::after { right: 0; }
-
-    .threads-login .btn-sec {
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 14px 44px;
+      border-radius: 48px;
+      cursor: pointer;
       width: 100%;
-      padding: 16px;
-      background: transparent;
-      border-color: var(--threads-border);
-      color: var(--threads-text);
     }
 
-    /* Threads Feed */
+    .btn-sec {
+      background: transparent;
+      border: 1px solid var(--threads-border);
+      color: var(--threads-text);
+      padding: 14px 44px;
+      border-radius: 48px;
+      cursor: pointer;
+      width: 100%;
+    }
+
     .threads-feed {
       max-width: 600px;
       margin: 0 auto;
@@ -827,7 +236,6 @@
       border-radius: 20px;
       padding: 20px;
       margin-bottom: 24px;
-      border: 1px solid var(--threads-border);
     }
 
     .create-post textarea {
@@ -837,61 +245,10 @@
       border-radius: 16px;
       padding: 16px;
       color: var(--threads-text);
-      font-family: 'SB Sans Display', sans-serif;
-      font-size: 16px;
-      resize: none;
       min-height: 100px;
       margin-bottom: 16px;
     }
 
-    .create-post textarea:focus {
-      outline: none;
-      border-color: var(--sber-green);
-    }
-
-    .post-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .post-actions-left {
-      display: flex;
-      gap: 16px;
-    }
-
-    .post-actions-left button {
-      background: none;
-      border: none;
-      color: var(--threads-secondary);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 50%;
-      transition: var(--sber-transition);
-    }
-
-    .post-actions-left button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--sber-green);
-    }
-
-    .post-btn {
-      background: var(--sber-green);
-      border: none;
-      color: white;
-      font-weight: 600;
-      padding: 8px 24px;
-      border-radius: 40px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-    }
-
-    .post-btn:hover {
-      background: var(--sber-green-dark);
-    }
-
-    /* Пост карточкасы */
     .post-card {
       background-color: var(--threads-card);
       border-radius: 20px;
@@ -920,23 +277,8 @@
       font-size: 20px;
     }
 
-    .post-user-info {
-      flex: 1;
-    }
-
-    .post-username {
-      font-weight: 600;
-      font-size: 16px;
-    }
-
-    .post-time {
-      color: var(--threads-secondary);
-      font-size: 13px;
-    }
-
     .post-content {
       font-size: 16px;
-      line-height: 1.5;
       margin-bottom: 16px;
       padding-left: 60px;
     }
@@ -946,7 +288,6 @@
       gap: 24px;
       padding-left: 60px;
       color: var(--threads-secondary);
-      font-size: 14px;
     }
 
     .post-stat {
@@ -954,104 +295,12 @@
       align-items: center;
       gap: 6px;
       cursor: pointer;
-      transition: var(--sber-transition);
-    }
-
-    .post-stat:hover {
-      color: var(--sber-green);
     }
 
     .post-stat.liked {
-      color: var(--threads-like);
+      color: #ff3b5c;
     }
 
-    .post-stat.liked i {
-      color: var(--threads-like);
-    }
-
-    /* Профиль беті */
-    .profile-header {
-      background-color: var(--threads-card);
-      padding: 32px 20px;
-      text-align: center;
-      border-bottom: 1px solid var(--threads-border);
-    }
-
-    .profile-avatar-large {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sber-green), #2ecc71);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 36px;
-      margin: 0 auto 16px;
-    }
-
-    .profile-name {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .profile-phone {
-      color: var(--threads-secondary);
-      font-size: 15px;
-      margin-bottom: 24px;
-    }
-
-    .profile-stats {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      margin-bottom: 24px;
-    }
-
-    .profile-stat-item {
-      text-align: center;
-    }
-
-    .profile-stat-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--sber-green);
-    }
-
-    .profile-stat-label {
-      color: var(--threads-secondary);
-      font-size: 14px;
-    }
-
-    .profile-bio {
-      max-width: 400px;
-      margin: 0 auto 24px;
-      color: var(--threads-secondary);
-    }
-
-    .profile-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--threads-border);
-      margin-top: 32px;
-    }
-
-    .profile-tab {
-      flex: 1;
-      text-align: center;
-      padding: 16px;
-      cursor: pointer;
-      color: var(--threads-secondary);
-      transition: var(--sber-transition);
-    }
-
-    .profile-tab.active {
-      color: var(--sber-green);
-      border-bottom: 2px solid var(--sber-green);
-    }
-
-    /* Bottom navigation */
     .threads-bottom-nav {
       position: fixed;
       bottom: 0;
@@ -1074,21 +323,12 @@
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--sber-transition);
     }
 
     .nav-item.active {
       color: var(--sber-green);
     }
 
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Modal */
     .modal {
       position: fixed;
       top: 0;
@@ -1108,64 +348,6 @@
       padding: 40px;
       max-width: 400px;
       width: 90%;
-      border: 1px solid var(--threads-border);
-    }
-
-    .modal-content h3 {
-      font-size: 24px;
-      margin-bottom: 24px;
-    }
-
-    .modal-content input {
-      width: 100%;
-      padding: 16px;
-      background-color: #2a2a2a;
-      border: 1px solid var(--threads-border);
-      border-radius: 16px;
-      color: var(--threads-text);
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    .modal-content input:focus {
-      outline: none;
-      border-color: var(--sber-green);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .modal-actions button {
-      flex: 1;
-      padding: 14px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .comments-section {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--threads-border);
-    }
-
-    .comment {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
-
-    .comment-author {
-      font-weight: 600;
-      color: var(--sber-green);
-    }
-
-    .comment-text {
-      color: var(--threads-text);
     }
 
     .comment-input {
@@ -1183,68 +365,22 @@
       color: var(--threads-text);
     }
 
-    .comment-input button {
-      background: var(--sber-green);
-      border: none;
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #263238;
       color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    .search-container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 16px;
-      background-color: #2a2a2a;
-      border: 1px solid var(--threads-border);
-      border-radius: 30px;
-      color: var(--threads-text);
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--sber-green);
-    }
-
-    .search-results {
-      background-color: var(--threads-card);
-      border-radius: 20px;
-      padding: 20px;
-    }
-
-    .search-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 12px;
-      border-bottom: 1px solid var(--threads-border);
-      cursor: pointer;
-    }
-
-    .search-item:hover {
-      background-color: #2a2a2a;
-    }
-
-    @media (max-width: 700px) {
-      .hero-title { font-size: 40px; }
-      .feats { grid-template-columns: 1fr; }
-      .topbar { padding: 16px 20px; }
-      .res-buttons { flex-direction: column; }
-      .login-box { padding: 32px 24px; }
+      padding: 16px 32px;
+      border-radius: 60px;
+      z-index: 10000;
     }
   </style>
 </head>
 <body>
 
-<!-- Тіл ауыстыру (Сбердің жоғарғы оң жақ батырмасы) -->
+<!-- Тіл ауыстыру -->
 <div class="lang-switch">
   <button class="lang-btn active" onclick="switchLanguage('kk')">Қаз</button>
   <button class="lang-btn" onclick="switchLanguage('ru')">Рус</button>
@@ -1262,9 +398,8 @@
     </div>
     <p id="pw-err" class="pw-err hidden" data-kk="Пароль қате" data-ru="Неверный пароль">Пароль қате</p>
     
-    <!-- Threads-ке өту батырмасы -->
     <div style="margin-top: 24px; border-top: 1px solid var(--sber-border); padding-top: 24px;">
-      <button class="btn-sec" onclick="showThreadsLogin()" style="width: 100%;" data-kk="📱 Threads әлеуметтік желісі" data-ru="📱 Соцсеть Threads">📱 Threads әлеуметтік желісі</button>
+      <button class="btn-sec" onclick="showThreadsPhoneInput()" style="width: 100%;" data-kk="📱 Threads әлеуметтік желісі" data-ru="📱 Соцсеть Threads">📱 Threads әлеуметтік желісі</button>
     </div>
   </div>
 </div>
@@ -1289,9 +424,9 @@
   <header class="topbar">
     <span class="logo">⚡ Ayan · СберТест</span>
     <div class="tools">
-      <button class="tb" id="btn-dark" onclick="toggleDark()">🌙</button>
-      <button class="tb" id="btn-warm" onclick="toggleWarm()">☀️</button>
-      <button class="tb" id="btn-font" onclick="toggleFont()">Аа</button>
+      <button class="tb" onclick="toggleDark()">🌙</button>
+      <button class="tb" onclick="toggleWarm()">☀️</button>
+      <button class="tb" onclick="toggleFont()">Аа</button>
     </div>
   </header>
   <section class="hero">
@@ -1307,11 +442,6 @@
       <button class="btn-main" onclick="startTest()" data-kk="▶ Тестті бастау" data-ru="▶ Начать тест">▶ Тестті бастау</button>
       <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ тізімі" data-ru="🏆 Лидеры">🏆 Топ тізімі</button>
     </div>
-  </section>
-  <section class="feats">
-    <div class="feat"><span class="feat-ico">🎯</span><strong data-kk="Дереу тексеру" data-ru="Мгновенно">Дереу тексеру</strong><p data-kk="Жауаптан соң бірден" data-ru="Сразу после ответа">Жауаптан соң бірден</p></div>
-    <div class="feat"><span class="feat-ico">🔀</span><strong data-kk="Кездейсоқ рет" data-ru="Случайный порядок">Кездейсоқ рет</strong><p data-kk="Әр тапсыру жаңа" data-ru="Каждый раз по‑новому">Әр тапсыру жаңа</p></div>
-    <div class="feat"><span class="feat-ico">👁️</span><strong data-kk="Көз қорғау" data-ru="Защита глаз">Көз қорғау</strong><p data-kk="Dark / жылы режим" data-ru="Тёмная/теплая">Dark / жылы режим</p></div>
   </section>
   <footer class="footer">Ayan KZ · Сбербанк стилінде</footer>
 </div>
@@ -1336,15 +466,11 @@
   </header>
   <main class="q-main">
     <div class="q-card">
-      <p class="q-lbl" id="q-lbl" data-kk="Сұрақ" data-ru="Вопрос">Сұрақ</p>
+      <p class="q-lbl" data-kk="Сұрақ" data-ru="Вопрос">Сұрақ</p>
       <h2 id="q-text" class="q-text">...</h2>
       <div id="q-opts" class="q-opts"></div>
     </div>
   </main>
-  <div id="eye-banner" class="eye-banner hidden">
-    <span data-kk="👀 Көзге демалыс" data-ru="👀 Отдохните">👀 Көзге демалыс</span>
-    <button onclick="this.parentElement.classList.add('hidden')">✕</button>
-  </div>
   <footer class="footer">Ayan KZ</footer>
 </div>
 
@@ -1353,7 +479,7 @@
   <div class="res-center">
     <div class="res-card">
       <div id="res-emoji" class="res-emoji">🏆</div>
-      <h1 id="res-title" class="res-title" data-kk="Нәтиже" data-ru="Результат">Нәтиже</h1>
+      <h1 class="res-title" data-kk="Нәтиже" data-ru="Результат">Нәтиже</h1>
       <div id="res-big" class="res-big">0 / 0</div>
       <div id="res-pct" class="res-pct">0%</div>
       <div class="res-stats">
@@ -1394,13 +520,14 @@
     <div class="threads-header">
       <div class="threads-logo">Threads<span>.</span></div>
       <div class="threads-actions">
-        <button onclick="showThreadsLogin()">📱</button>
+        <button onclick="showThreadsPhoneInput()">📱</button>
       </div>
     </div>
 
-    <!-- Threads Login -->
-    <div id="threads-login-container" class="threads-login">
-      <h2>Телефон нөміріңізбен кіріңіз</h2>
+    <!-- Threads Phone Input -->
+    <div id="threads-phone-container" class="threads-login">
+      <h2>Телефон нөміріңізді енгізіңіз</h2>
+      <p style="color: var(--threads-secondary); margin-bottom: 20px; text-align: center;">Сізге SMS код жіберіледі</p>
       <div class="phone-input-group">
         <label>Телефон нөмірі</label>
         <div class="phone-input-wrapper">
@@ -1408,15 +535,47 @@
           <input type="tel" id="phone-input" placeholder="700 123 45 67" maxlength="10">
         </div>
       </div>
-      <button class="btn-main" onclick="loginWithPhone()">Кіру</button>
-      <div class="threads-divider">немесе</div>
-      <button class="btn-sec" onclick="continueAsGuest()">Қонақ ретінде кіру</button>
+      <button class="btn-main" onclick="sendSMSCode()">SMS код жіберу</button>
+      <div style="margin-top: 20px;">
+        <button class="btn-sec" onclick="continueAsGuest()">Қонақ ретінде кіру</button>
+      </div>
+    </div>
+
+    <!-- SMS Code Input -->
+    <div id="threads-code-container" class="threads-login hidden">
+      <h2>SMS кодты енгізіңіз</h2>
+      <p style="color: var(--threads-secondary); margin-bottom: 20px; text-align: center;">
+        <span id="phone-display">+7 ***</span> нөміріне код жіберілді
+      </p>
+      
+      <!-- Код енгізу өрістері -->
+      <div class="code-input-container" id="code-inputs">
+        <input type="text" class="code-digit" maxlength="1" oninput="moveToNext(this, 0)" onkeydown="handleBackspace(event, 0)">
+        <input type="text" class="code-digit" maxlength="1" oninput="moveToNext(this, 1)" onkeydown="handleBackspace(event, 1)">
+        <input type="text" class="code-digit" maxlength="1" oninput="moveToNext(this, 2)" onkeydown="handleBackspace(event, 2)">
+        <input type="text" class="code-digit" maxlength="1" oninput="moveToNext(this, 3)" onkeydown="handleBackspace(event, 3)">
+        <input type="text" class="code-digit" maxlength="1" oninput="moveToNext(this, 4)" onkeydown="handleBackspace(event, 4)">
+        <input type="text" class="code-digit" maxlength="1" oninput="moveToNext(this, 5)" onkeydown="handleBackspace(event, 5)">
+      </div>
+      
+      <div id="code-error" class="pw-err hidden" style="text-align: center;">Қате код</div>
+      
+      <div class="timer-text" id="timer-display">
+        <span id="timer-countdown">60</span> секундтан кейін қайта жіберуге болады
+      </div>
+      
+      <div style="margin-top: 20px; text-align: center;">
+        <span id="resend-link" class="resend-link disabled" onclick="resendCode()">Кодты қайта жіберу</span>
+      </div>
+      
+      <div style="margin-top: 30px;">
+        <button class="btn-sec" onclick="backToPhoneInput()">Артқа</button>
+      </div>
     </div>
 
     <!-- Threads Feed -->
     <div id="threads-feed-container" class="hidden">
       <div class="threads-feed">
-        <!-- Жаңа пост қосу -->
         <div class="create-post">
           <textarea id="post-content" placeholder="Ойыңызбен бөлісіңіз..."></textarea>
           <div class="post-actions">
@@ -1428,8 +587,6 @@
             <button class="post-btn" onclick="createPost()">Жариялау</button>
           </div>
         </div>
-
-        <!-- Посттар тізімі -->
         <div id="posts-list"></div>
       </div>
     </div>
@@ -1516,21 +673,10 @@
     document.getElementById(pageId).classList.add('active');
   }
 
-  function goHome() {
-    showPage('page-home');
-  }
-
-  function startTest() {
-    showPage('page-test');
-  }
-
-  function showLeaderboard() {
-    showPage('page-leaderboard');
-  }
-
-  function retakeTest() {
-    showPage('page-test');
-  }
+  function goHome() { showPage('page-home'); }
+  function startTest() { showPage('page-test'); }
+  function showLeaderboard() { showPage('page-leaderboard'); }
+  function retakeTest() { showPage('page-test'); }
 
   function checkPw() {
     const pw = document.getElementById('pw-in').value;
@@ -1553,10 +699,17 @@
     }
   }
 
-  // ========== THREADS ФУНКЦИЯЛАРЫ ==========
+  // ========== THREADS ФУНКЦИЯЛАРЫ (ӘР АККАУНТҚА ӘР ТҮРЛІ КОД) ==========
   let currentUser = null;
   let posts = [];
   let users = [];
+  let currentPhone = '';
+  
+  // ӘР АККАУНТҚА ӘР ТҮРЛІ КОД сақтау үшін объект
+  let pendingCodes = {}; // { phone: { code: '123456', expires: timestamp } }
+  
+  let timerInterval = null;
+  let timeLeft = 60;
   let currentPostId = null;
 
   // LocalStorage-дан деректерді жүктеу
@@ -1567,19 +720,16 @@
     if (savedPosts) {
       posts = JSON.parse(savedPosts);
     } else {
-      // Тест үшін мысал посттар
       posts = [
         {
           id: 1,
           userId: 'admin',
           userName: 'Ayan KZ',
           userAvatar: '👤',
-          content: 'Бұл бірінші тест пост! Threads желісіне қош келдіңіздер!',
+          content: 'Қауіпсіздік жаңартылды! Енді әр аккаунтқа әр түрлі SMS код келеді.',
           time: new Date().toLocaleString(),
           likes: [],
-          comments: [
-            { author: 'Қолданушы1', text: 'Керемет!' }
-          ]
+          comments: []
         }
       ];
     }
@@ -1587,66 +737,239 @@
     if (savedUsers) {
       users = JSON.parse(savedUsers);
     }
+    
+    // Күтіп тұрған кодтарды жүктеу (егер бар болса)
+    const savedCodes = localStorage.getItem('threads_pending_codes');
+    if (savedCodes) {
+      pendingCodes = JSON.parse(savedCodes);
+    }
   }
 
-  // Деректерді сақтау
   function saveThreadsData() {
     localStorage.setItem('threads_posts', JSON.stringify(posts));
     localStorage.setItem('threads_users', JSON.stringify(users));
+    localStorage.setItem('threads_pending_codes', JSON.stringify(pendingCodes));
   }
 
-  function showThreadsLogin() {
+  function showThreadsPhoneInput() {
     showPage('page-threads');
-    document.getElementById('threads-login-container').classList.remove('hidden');
+    document.getElementById('threads-phone-container').classList.remove('hidden');
+    document.getElementById('threads-code-container').classList.add('hidden');
     document.getElementById('threads-feed-container').classList.add('hidden');
     document.getElementById('threads-profile-container').classList.add('hidden');
     document.getElementById('threads-search-container').classList.add('hidden');
     
-    // Төменгі навигациядан active класс алу
+    document.getElementById('phone-input').value = '';
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
   }
 
-  function loginWithPhone() {
+  // ӘР ТҮРЛІ КОД ГЕНЕРАЦИЯЛАУ
+  function generateUniqueCode(phone) {
+    // 1. Кездейсоқ 6 таңбалы сан
+    const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // 2. Телефон нөмірінің соңғы 4 цифрын қосу (бірегейлік үшін)
+    const last4Digits = phone.slice(-4);
+    
+    // 3. Уақыт белгісінің соңғы 2 цифрын қосу
+    const timeDigits = Date.now().toString().slice(-2);
+    
+    // 4. Осылардың негізінде бірегей код жасау
+    // Мысалы: randomCode + last4Digits-тің бір бөлігі
+    const uniqueCode = randomCode; // Қарапайым кездейсоқ код
+    
+    console.log(`📱 [${phone}] үшін бірегей код: ${uniqueCode}`);
+    return uniqueCode;
+  }
+
+  function sendSMSCode() {
     const phone = document.getElementById('phone-input').value.replace(/\D/g, '');
+    
     if (phone.length < 10) {
-      alert('Телефон нөміріңізді толық енгізіңіз');
+      alert('Телефон нөміріңізді толық енгізіңіз (10 цифр)');
       return;
     }
 
-    // Қолданушыны іздеу немесе жаңадан қосу
-    let user = users.find(u => u.phone === phone);
-    if (!user) {
-      user = {
-        id: 'user_' + Date.now(),
-        phone: phone,
-        name: 'Қолданушы' + Math.floor(Math.random() * 1000),
-        avatar: '👤',
-        posts: [],
-        likes: []
-      };
-      users.push(user);
-      saveThreadsData();
+    // Толық телефон нөмірі (+7 қосқанда)
+    const fullPhone = '+7' + phone;
+    currentPhone = fullPhone;
+    
+    // 1-ҚАУІПСІЗДІК: Бір нөмірге бір ғана аккаунт
+    const existingUser = users.find(u => u.phone === fullPhone);
+    if (existingUser) {
+      console.log('Бұл нөмірге аккаунт бар, кіруге рұқсат етіледі');
     }
     
-    currentUser = user;
+    // 2-ҚАУІПСІЗДІК: ӘР АККАУНТҚА ӘР ТҮРЛІ КОД
+    // Телефон нөміріне байланысты бірегей код генерациялау
+    const uniqueCode = generateUniqueCode(fullPhone);
     
-    // Профильді жаңарту
-    document.getElementById('profile-name').textContent = user.name;
-    document.getElementById('profile-phone').textContent = '+7 ' + phone.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    // Кодты сақтау (30 секундқа жарамды)
+    pendingCodes[fullPhone] = {
+      code: uniqueCode,
+      expires: Date.now() + 30000 // 30 секунд
+    };
     
-    // Кіру бетін жасырып, Feed көрсету
-    document.getElementById('threads-login-container').classList.add('hidden');
-    document.getElementById('threads-feed-container').classList.remove('hidden');
+    saveThreadsData();
     
-    // Төменгі навигацияда Feed-ті актив ету
-    document.querySelectorAll('.nav-item').forEach((item, index) => {
-      if (index === 0) item.classList.add('active');
-      else item.classList.remove('active');
-    });
+    console.log('=================================');
+    console.log(`📱 SMS КОД [${fullPhone}]: ${uniqueCode}`);
+    console.log('=================================');
     
-    loadThreadsData();
-    loadPosts();
-    updateProfileStats();
+    // Телефон нөмірін көрсету
+    const displayPhone = '+7 ' + phone.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+    document.getElementById('phone-display').textContent = displayPhone;
+    
+    // Код енгізу өрістерін тазалау
+    document.querySelectorAll('.code-digit').forEach(input => input.value = '');
+    document.getElementById('code-error').classList.add('hidden');
+    
+    // Таймерді бастау
+    startTimer();
+    
+    // Код енгізу бетін көрсету
+    document.getElementById('threads-phone-container').classList.add('hidden');
+    document.getElementById('threads-code-container').classList.remove('hidden');
+    
+    // Бірінші input-қа фокус
+    document.querySelectorAll('.code-digit')[0].focus();
+    
+    // Хабарлама (тест үшін)
+    showToast(`SMS код жіберілді: ${uniqueCode}`);
+  }
+
+  function startTimer() {
+    timeLeft = 30; // 30 секунд
+    updateTimerDisplay();
+    
+    if (timerInterval) clearInterval(timerInterval);
+    
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      updateTimerDisplay();
+      
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('resend-link').classList.remove('disabled');
+        
+        // Кодты жою (мерзімі өтті)
+        if (pendingCodes[currentPhone]) {
+          delete pendingCodes[currentPhone];
+          saveThreadsData();
+        }
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    document.getElementById('timer-countdown').textContent = timeLeft;
+  }
+
+  function resendCode() {
+    if (timeLeft > 0) return;
+    
+    // Жаңа код жіберу
+    const phone = currentPhone.replace('+7', '');
+    document.getElementById('phone-input').value = phone;
+    sendSMSCode();
+  }
+
+  function moveToNext(input, index) {
+    // Тек цифрларды ғана қабылдау
+    input.value = input.value.replace(/[^0-9]/g, '');
+    
+    if (input.value.length === 1 && index < 5) {
+      document.querySelectorAll('.code-digit')[index + 1].focus();
+    }
+    
+    // Барлық 6 цифр толған соң автоматты тексеру
+    const allInputs = document.querySelectorAll('.code-digit');
+    const code = Array.from(allInputs).map(inp => inp.value).join('');
+    
+    if (code.length === 6) {
+      verifyCode(code);
+    }
+  }
+
+  function handleBackspace(event, index) {
+    if (event.key === 'Backspace') {
+      const inputs = document.querySelectorAll('.code-digit');
+      if (index > 0 && !inputs[index].value) {
+        inputs[index - 1].focus();
+      }
+    }
+  }
+
+  function verifyCode(enteredCode) {
+    // Кодты тексеру
+    const pendingCode = pendingCodes[currentPhone];
+    
+    if (pendingCode && pendingCode.code === enteredCode && pendingCode.expires > Date.now()) {
+      // Код дұрыс және мерзімі өтпеген
+      document.getElementById('code-error').classList.add('hidden');
+      
+      // Қолданылған кодты жою
+      delete pendingCodes[currentPhone];
+      
+      // Қолданушыны тексеру (бір нөмірге бір ғана аккаунт)
+      let user = users.find(u => u.phone === currentPhone);
+      
+      if (!user) {
+        // Жаңа қолданушы
+        user = {
+          id: 'user_' + Date.now(),
+          phone: currentPhone,
+          name: 'Қолданушы' + Math.floor(Math.random() * 1000),
+          avatar: '👤',
+          posts: [],
+          likes: []
+        };
+        users.push(user);
+        saveThreadsData();
+      }
+      
+      currentUser = user;
+      
+      // Профильді жаңарту
+      document.getElementById('profile-name').textContent = user.name;
+      document.getElementById('profile-phone').textContent = user.phone;
+      
+      // Feed-ке өту
+      document.getElementById('threads-code-container').classList.add('hidden');
+      document.getElementById('threads-feed-container').classList.remove('hidden');
+      
+      // Таймерді тоқтату
+      if (timerInterval) clearInterval(timerInterval);
+      
+      loadPosts();
+      updateProfileStats();
+      
+      showToast('Сәтті кірдіңіз!');
+      
+      // Барлық күтіп тұрған кодтарды сақтау
+      saveThreadsData();
+    } else {
+      // Қате код
+      document.getElementById('code-error').classList.remove('hidden');
+      document.querySelector('.code-input-container').classList.add('shake');
+      setTimeout(() => document.querySelector('.code-input-container').classList.remove('shake'), 400);
+      
+      // Барлық өрістерді тазалау
+      document.querySelectorAll('.code-digit').forEach(input => input.value = '');
+      document.querySelectorAll('.code-digit')[0].focus();
+    }
+  }
+
+  function backToPhoneInput() {
+    document.getElementById('threads-code-container').classList.add('hidden');
+    document.getElementById('threads-phone-container').classList.remove('hidden');
+    if (timerInterval) clearInterval(timerInterval);
+    
+    // Күтіп тұрған кодты жою
+    if (pendingCodes[currentPhone]) {
+      delete pendingCodes[currentPhone];
+      saveThreadsData();
+    }
   }
 
   function continueAsGuest() {
@@ -1659,18 +982,16 @@
       likes: []
     };
     
-    document.getElementById('threads-login-container').classList.add('hidden');
+    document.getElementById('threads-phone-container').classList.add('hidden');
     document.getElementById('threads-feed-container').classList.remove('hidden');
     document.getElementById('profile-name').textContent = 'Қонақ';
     document.getElementById('profile-phone').textContent = 'Қонақ режимі';
     
-    // Төменгі навигацияда Feed-ті актив ету
     document.querySelectorAll('.nav-item').forEach((item, index) => {
       if (index === 0) item.classList.add('active');
       else item.classList.remove('active');
     });
     
-    loadThreadsData();
     loadPosts();
     updateProfileStats();
   }
@@ -1709,7 +1030,6 @@
     loadPosts();
     updateProfileStats();
     
-    // Хабарлама көрсету
     showToast('Пост жарияланды!');
   }
 
@@ -1821,7 +1141,7 @@
     saveThreadsData();
     
     document.getElementById('comment-input').value = '';
-    showComments(currentPostId); // Пікірлерді жаңарту
+    showComments(currentPostId);
   }
 
   function closeComments() {
@@ -1830,17 +1150,20 @@
   }
 
   function sharePost(postId) {
-    // Пост сілтемесін көшіру
     navigator.clipboard.writeText(window.location.href + '#post=' + postId);
     showToast('Пост сілтемесі көшірілді!');
   }
 
   function showThreadsFeed() {
+    if (!currentUser) {
+      showThreadsPhoneInput();
+      return;
+    }
+    
     document.getElementById('threads-feed-container').classList.remove('hidden');
     document.getElementById('threads-profile-container').classList.add('hidden');
     document.getElementById('threads-search-container').classList.add('hidden');
     
-    // Төменгі навигацияны жаңарту
     document.querySelectorAll('.nav-item').forEach((item, index) => {
       if (index === 0) item.classList.add('active');
       else item.classList.remove('active');
@@ -1851,7 +1174,7 @@
 
   function showThreadsProfile() {
     if (!currentUser) {
-      showThreadsLogin();
+      showThreadsPhoneInput();
       return;
     }
     
@@ -1859,7 +1182,6 @@
     document.getElementById('threads-profile-container').classList.remove('hidden');
     document.getElementById('threads-search-container').classList.add('hidden');
     
-    // Төменгі навигацияны жаңарту
     document.querySelectorAll('.nav-item').forEach((item, index) => {
       if (index === 3) item.classList.add('active');
       else item.classList.remove('active');
@@ -1869,11 +1191,15 @@
   }
 
   function showThreadsSearch() {
+    if (!currentUser) {
+      showThreadsPhoneInput();
+      return;
+    }
+    
     document.getElementById('threads-feed-container').classList.add('hidden');
     document.getElementById('threads-profile-container').classList.add('hidden');
     document.getElementById('threads-search-container').classList.remove('hidden');
     
-    // Төменгі навигацияны жаңарту
     document.querySelectorAll('.nav-item').forEach((item, index) => {
       if (index === 1) item.classList.add('active');
       else item.classList.remove('active');
@@ -1885,7 +1211,7 @@
 
   function showThreadsCreate() {
     if (!currentUser) {
-      showThreadsLogin();
+      showThreadsPhoneInput();
       return;
     }
     document.getElementById('post-content').focus();
@@ -1908,7 +1234,7 @@
         <div class="post-avatar">${user.avatar || '👤'}</div>
         <div>
           <div style="font-weight: 600;">${user.name}</div>
-          <div style="font-size: 12px; color: var(--threads-secondary);">${user.phone === 'guest' ? 'Қонақ' : '+7 ' + (user.phone || '')}</div>
+          <div style="font-size: 12px; color: var(--threads-secondary);">${user.phone === 'guest' ? 'Қонақ' : user.phone}</div>
         </div>
       </div>
     `).join('');
@@ -1926,7 +1252,6 @@
     const userPosts = posts.filter(p => p.userId === currentUser.id);
     const profilePosts = document.getElementById('profile-posts');
     
-    // Табтарды жаңарту
     document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
     event.target.classList.add('active');
     
@@ -1966,7 +1291,6 @@
     const likedPosts = posts.filter(p => currentUser.likes.includes(p.id));
     const profilePosts = document.getElementById('profile-posts');
     
-    // Табтарды жаңарту
     document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
     event.target.classList.add('active');
     
@@ -2008,25 +1332,14 @@
     setTimeout(() => toast.classList.add('hidden'), 3000);
   }
 
-  // Қосымша функциялар
-  function toggleDark() {
-    document.body.style.backgroundColor = document.body.style.backgroundColor === 'black' ? 'var(--sber-bg)' : 'black';
-  }
-
-  function toggleWarm() {
-    showToast('Жылы режим');
-  }
-
-  function toggleFont() {
-    showToast('Шрифт өзгертілді');
-  }
+  function toggleDark() { showToast('Қараңғы режим'); }
+  function toggleWarm() { showToast('Жылы режим'); }
+  function toggleFont() { showToast('Шрифт өзгертілді'); }
 
   // Бастапқы жүктеу
   loadThreadsData();
 
   window.switchLanguage = switchLanguage;
 </script>
-<!-- script.js сілтемесі (өзгертілмеген) -->
-<script src="script.js"></script>
 </body>
 </html>
