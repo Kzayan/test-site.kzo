@@ -1,1293 +1,1098 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Debugging тест · Сбербанк стилі + Threads</title>
-  <!-- Сбербанк ресми шрифті: SB Sans Display -->
-  <link rel="stylesheet" href="https://online.sberbank.ru/static/fonts/sbsansdisplay/roman.css">
-  <style>
-    /* === СБЕРБАНКТІҢ ТҰПНҰСҚА ВИЗУАЛДЫҚ СТИЛІ === */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --sber-green: #1f8b4c;          /* Сбердің фирмалық ашық жасылы */
-      --sber-green-dark: #14633b;
-      --sber-green-light: #eaf5ec;
-      --sber-white: #ffffff;
-      --sber-bg: #f3f5f7;
-      --sber-text: #1f1f1f;
-      --sber-text-secondary: #5b5b5b;
-      --sber-border: #e0e4e8;
-      --sber-radius: 32px;             /* Сберде үлкен радиустар жиі қолданылады */
-      --sber-radius-sm: 20px;
-      --sber-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.1);
-      --sber-shadow-hover: 0 20px 48px -8px rgba(31, 139, 76, 0.15);
-      --sber-transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-      
-      /* Threads стиліндегі түстер */
-      --threads-bg: #101010;
-      --threads-card: #1c1c1c;
-      --threads-text: #f5f5f5;
-      --threads-secondary: #a8a8a8;
-      --threads-border: #2f2f2f;
-      --threads-like: #ff3b5c;
-      --threads-like-bg: #ff3b5c20;
-    }
-
-    body {
-      font-family: 'SB Sans Display', system-ui, -apple-system, sans-serif;
-      background-color: var(--sber-bg);
-      color: var(--sber-text);
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* Сбердің минималды скроллбары */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #eef2f4;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #c0c8cf;
-      border-radius: 8px;
-    }
-
-    .page {
-      display: none;
-      min-height: 100vh;
-      width: 100%;
-    }
-    .page.active {
-      display: block;
-    }
-
-    /* --- Кіру беті (Сбер карточкасы) --- */
-    .login-box {
-      max-width: 480px;
-      width: 90%;
-      margin: 10vh auto 0;
-      background: var(--sber-white);
-      border-radius: var(--sber-radius);
-      box-shadow: var(--sber-shadow);
-      padding: 48px 40px;
-      text-align: center;
-      border: 1px solid #ffffff30;
-      backdrop-filter: blur(2px);
-    }
-
-    .login-icon {
-      margin-bottom: 32px;
-    }
-    .lock {
-      font-size: 56px;
-      background: var(--sber-green-light);
-      width: 104px;
-      height: 104px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      margin: 0 auto;
-      color: var(--sber-green);
-    }
-
-    .login-h {
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
-    }
-    .login-sub {
-      font-size: 15px;
-      color: var(--sber-text-secondary);
-      margin-bottom: 40px;
-    }
-
-    .pw-wrap {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .pw-wrap input {
-      flex: 1;
-      padding: 16px 20px;
-      border: 1px solid var(--sber-border);
-      border-radius: var(--sber-radius-sm);
-      font-size: 16px;
-      font-family: 'SB Sans Display', monospace;
-      transition: var(--sber-transition);
-      background: #fafcfd;
-    }
-    .pw-wrap input:focus {
-      border-color: var(--sber-green);
-      outline: none;
-      box-shadow: 0 0 0 4px rgba(31, 139, 76, 0.12);
-    }
-    .pw-wrap button {
-      background: var(--sber-green);
-      border: none;
-      color: white;
-      font-weight: 600;
-      padding: 0 36px;
-      border-radius: var(--sber-radius-sm);
-      font-size: 15px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      white-space: nowrap;
-    }
-    .pw-wrap button:hover {
-      background: var(--sber-green-dark);
-    }
-
-    .pw-err {
-      color: #d32f2f;
-      font-size: 14px;
-      margin-top: 16px;
-      text-align: left;
-    }
-    .hidden {
-      display: none !important;
-    }
-
-    /* Сбер анимациясы – жұмсақ тербеліс */
-    @keyframes sberShake {
-      0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-3px); }
-      80% { transform: translateX(3px); }
-    }
-    .shake {
-      animation: sberShake 0.5s ease-in-out;
-    }
-
-    /* Тіл ауыстыру — Сбердің жоғарғы панеліндей */
-    .lang-switch {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 1000;
-      background: var(--sber-white);
-      border-radius: 48px;
-      padding: 4px;
-      box-shadow: 0 8px 20px -8px rgba(0,0,0,0.15);
-      border: 1px solid #e6eaef;
-    }
-    .lang-btn {
-      border: none;
-      background: transparent;
-      padding: 8px 22px;
-      border-radius: 40px;
-      font-weight: 500;
-      font-size: 14px;
-      color: #2b2b2b;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .lang-btn.active {
-      background: var(--sber-green);
-      color: white;
-    }
-
-    /* Басты бет топбар — Сбердің ақ мәзірі */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 40px;
-      background: var(--sber-white);
-      border-bottom: 1px solid #ecf0f3;
-    }
-    .logo {
-      font-weight: 600;
-      font-size: 22px;
-      color: var(--sber-green);
-      letter-spacing: -0.02em;
-    }
-    .logo.sm {
-      font-size: 20px;
-    }
-    .tools {
-      display: flex;
-      gap: 12px;
-    }
-    .tb {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #f2f6f9;
-      border: 1px solid transparent;
-      color: #2b2b2b;
-      font-size: 18px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-    }
-    .tb:hover {
-      background: #e2e9f0;
-    }
-    .tb.on {
-      background: var(--sber-green);
-      color: white;
-    }
-
-    /* Hero секция — Сбердің басты баннері */
-    .hero {
-      text-align: center;
-      padding: 64px 20px 48px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .badge {
-      display: inline-block;
-      background: var(--sber-green-light);
-      color: var(--sber-green-dark);
-      font-weight: 600;
-      font-size: 14px;
-      padding: 6px 22px;
-      border-radius: 40px;
-      margin-bottom: 28px;
-    }
-    .hero-title {
-      font-size: 52px;
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 24px;
-      letter-spacing: -0.02em;
-    }
-    .hero-title em {
-      color: var(--sber-green);
-      font-style: normal;
-      font-weight: 800;
-    }
-    .hero-desc {
-      font-size: 18px;
-      color: var(--sber-text-secondary);
-      max-width: 700px;
-      margin: 0 auto 36px;
-    }
-    .pills {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 44px;
-    }
-    .pill {
-      background: var(--sber-white);
-      padding: 8px 20px;
-      border-radius: 40px;
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      border: 1px solid #eef2f5;
-    }
-    .btn-main {
-      background: var(--sber-green);
-      border: none;
-      color: white;
-      font-weight: 700;
-      padding: 14px 44px;
-      border-radius: 48px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      box-shadow: 0 12px 28px -8px rgba(31, 139, 76, 0.3);
-      border: 1px solid transparent;
-      margin: 4px;
-    }
-    .btn-main:hover {
-      background: var(--sber-green-dark);
-      transform: scale(1.02);
-      box-shadow: 0 18px 32px -8px #1f8b4c80;
-    }
-    .btn-sec {
-      background: var(--sber-white);
-      border: 1px solid #d7dee6;
-      color: var(--sber-text);
-      font-weight: 500;
-      padding: 14px 44px;
-      border-radius: 48px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      margin: 4px;
-    }
-    .btn-sec:hover {
-      background: #f2f6f9;
-      border-color: #b0c0ce;
-    }
-
-    /* 4 фича — Сбердің grid карточкалары */
-    .feats {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      gap: 24px;
-      max-width: 1280px;
-      margin: 0 auto 60px;
-      padding: 0 24px;
-    }
-    .feat {
-      background: var(--sber-white);
-      border-radius: var(--sber-radius);
-      padding: 36px 24px;
-      text-align: center;
-      box-shadow: 0 8px 28px -8px rgba(0,0,0,0.04);
-      border: 1px solid #edf2f6;
-    }
-    .feat-ico {
-      font-size: 36px;
-      background: var(--sber-green-light);
-      width: 72px;
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      margin: 0 auto 24px;
-      color: var(--sber-green);
-    }
-    .feat strong {
-      display: block;
-      font-size: 18px;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .feat p {
-      color: #6f7e8f;
-      font-size: 14px;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 24px;
-      color: #9aa9b8;
-      font-size: 13px;
-      border-top: 1px solid #e2eaf0;
-      background: var(--sber-white);
-    }
-
-    /* Тест беті — Сбердің карточкалары */
-    .test-hdr {
-      background: var(--sber-white);
-      border-bottom: 1px solid #e3eaf1;
-      padding: 16px 32px;
-    }
-    .th1, .th2 {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .q-num {
-      background: #eef2f6;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .timer {
-      background: #1f1f1f;
-      color: white;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-weight: 500;
-    }
-    .timer.danger {
-      background: #c62828;
-    }
-    .score-live {
-      background: var(--sber-green);
-      color: white;
-      padding: 6px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-    }
-    .prog-track {
-      height: 6px;
-      background: #e7edf3;
-      border-radius: 3px;
-    }
-    .prog-bar {
-      height: 6px;
-      background: var(--sber-green);
-      border-radius: 3px;
-      width: 0%;
-    }
-    .q-main {
-      max-width: 960px;
-      margin: 48px auto;
-      padding: 0 24px;
-    }
-    .q-card {
-      background: var(--sber-white);
-      border-radius: 36px;
-      padding: 48px;
-      box-shadow: var(--sber-shadow);
-      border: 1px solid #eef4f8;
-    }
-    .q-lbl {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #8b9aab;
-      margin-bottom: 12px;
-    }
-    .q-text {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 36px;
-      line-height: 1.4;
-    }
-    .q-opts {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .opt {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      background: #fafdff;
-      border: 1px solid #e0e8f0;
-      border-radius: 24px;
-      padding: 18px 28px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-      width: 100%;
-      text-align: left;
-    }
-    .opt:hover:not(.locked) {
-      background: #f0f6fc;
-      border-color: #c0d0df;
-    }
-    .opt.correct {
-      background: #e1f3e8 !important;
-      border-color: var(--sber-green) !important;
-    }
-    .opt.wrong {
-      background: #ffeae9 !important;
-      border-color: #d32f2f !important;
-    }
-    .opt.locked {
-      pointer-events: none;
-      opacity: 0.9;
-    }
-    .opt-L {
-      background: var(--sber-green);
-      color: white;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-weight: 700;
-    }
-
-    .eye-banner {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1f2a37;
-      color: white;
-      padding: 16px 32px;
-      border-radius: 60px;
-      font-size: 15px;
-      z-index: 999;
-      box-shadow: 0 20px 36px -10px black;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .eye-banner button {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    /* Нәтиже беті — Сбердің модальді картасы */
-    .res-center {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 90vh;
-    }
-    .res-card {
-      background: var(--sber-white);
-      border-radius: 48px;
-      padding: 56px;
-      max-width: 560px;
-      width: 90%;
-      text-align: center;
-      box-shadow: var(--sber-shadow);
-      border: 1px solid #e8f0f8;
-    }
-    .res-emoji {
-      font-size: 80px;
-      margin-bottom: 16px;
-    }
-    .res-title {
-      font-size: 34px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .res-big {
-      font-size: 64px;
-      font-weight: 800;
-      color: var(--sber-green);
-      line-height: 1;
-    }
-    .res-pct {
-      font-size: 24px;
-      color: #6b7f91;
-      margin-bottom: 32px;
-    }
-    .res-stats {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 36px;
-    }
-    .rs-n { font-size: 34px; font-weight: 700; }
-    .rs-g .rs-n { color: var(--sber-green); }
-    .rs-r .rs-n { color: #c62828; }
-    .rs-b .rs-n { color: #1e5f8e; }
-    .rs-l { font-size: 14px; color: #7f8f9f; }
-
-    .res-prog-track {
-      height: 12px;
-      background: #dee8f0;
-      border-radius: 6px;
-      margin-bottom: 36px;
-    }
-    .res-prog-fill {
-      height: 12px;
-      background: var(--sber-green);
-      border-radius: 6px;
-      width: 0%;
-    }
-    .res-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-    }
-    .res-buttons .btn-main,
-    .res-buttons .btn-sec {
-      flex: 1 0 140px;
-    }
-
-    /* Топ тізімі — Сбердің таблицасы */
-    .leaderboard-container {
-      max-width: 1000px;
-      margin: 48px auto;
-      padding: 0 24px;
-    }
-    .leaderboard-card {
-      background: var(--sber-white);
-      border-radius: 48px;
-      padding: 48px;
-      border: 1px solid #e2ecf5;
-      box-shadow: var(--sber-shadow);
-    }
-    .leaderboard-title {
-      font-size: 36px;
-      font-weight: 700;
-      margin-bottom: 32px;
-    }
-    .leaderboard-list {
-      background: #fafdff;
-      border-radius: 32px;
-      max-height: 460px;
-      overflow-y: auto;
-      margin-bottom: 32px;
-      border: 1px solid #dde7f0;
-    }
-    .leaderboard-item {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      padding: 18px 28px;
-      border-bottom: 1px solid #e3ecf3;
-    }
-    .leaderboard-rank {
-      background: var(--sber-green);
-      color: white;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-weight: 700;
-    }
-    .leaderboard-info {
-      flex: 1;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 24px;
-    }
-    .leaderboard-name {
-      font-weight: 600;
-      min-width: 150px;
-    }
-    .leaderboard-score {
-      font-weight: 700;
-      color: var(--sber-green);
-    }
-    .leaderboard-percent {
-      background: var(--sber-green-light);
-      color: var(--sber-green-dark);
-      padding: 4px 16px;
-      border-radius: 40px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    .leaderboard-date {
-      font-size: 12px;
-      color: #a0b1c2;
-      margin-left: auto;
-    }
-    .leaderboard-buttons {
-      display: flex;
-      gap: 16px;
-    }
-
-    /* ========== THREADS СТИЛІНДЕГІ ӘЛЕУМЕТТІК ЖЕЛІ ========== */
-    .threads-page {
-      background-color: var(--threads-bg);
-      min-height: 100vh;
-      color: var(--threads-text);
-      padding-bottom: 80px;
-    }
-
-    .threads-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--threads-border);
-      background-color: var(--threads-bg);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .threads-logo {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .threads-logo span {
-      color: var(--sber-green);
-    }
-
-    .threads-actions {
-      display: flex;
-      gap: 20px;
-    }
-
-    .threads-actions button {
-      background: none;
-      border: none;
-      color: var(--threads-text);
-      font-size: 20px;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--sber-transition);
-    }
-
-    .threads-actions button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Телефон нөмірімен кіру */
-    .threads-login {
-      max-width: 400px;
-      margin: 80px auto;
-      background-color: var(--threads-card);
-      border-radius: 24px;
-      padding: 40px 32px;
-      border: 1px solid var(--threads-border);
-    }
-
-    .threads-login h2 {
-      font-size: 28px;
-      margin-bottom: 32px;
-      text-align: center;
-    }
-
-    .phone-input-group {
-      margin-bottom: 24px;
-    }
-
-    .phone-input-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--threads-secondary);
-      font-size: 14px;
-    }
-
-    .phone-input-wrapper {
-      display: flex;
-      background-color: #2a2a2a;
-      border-radius: 16px;
-      border: 1px solid var(--threads-border);
-      overflow: hidden;
-    }
-
-    .phone-prefix {
-      padding: 16px 12px 16px 20px;
-      background-color: #2a2a2a;
-      color: var(--threads-secondary);
-      border-right: 1px solid var(--threads-border);
-      font-weight: 500;
-    }
-
-    .phone-input-wrapper input {
-      flex: 1;
-      background: none;
-      border: none;
-      padding: 16px 20px;
-      color: var(--threads-text);
-      font-size: 16px;
-      font-family: 'SB Sans Display', sans-serif;
-    }
-
-    .phone-input-wrapper input:focus {
-      outline: none;
-    }
-
-    .threads-login .btn-main {
-      width: 100%;
-      padding: 16px;
-      margin-top: 16px;
-      background: var(--sber-green);
-    }
-
-    .threads-divider {
-      text-align: center;
-      margin: 24px 0;
-      color: var(--threads-secondary);
-      position: relative;
-    }
-
-    .threads-divider::before,
-    .threads-divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 45%;
-      height: 1px;
-      background-color: var(--threads-border);
-    }
-
-    .threads-divider::before { left: 0; }
-    .threads-divider::after { right: 0; }
-
-    .threads-login .btn-sec {
-      width: 100%;
-      padding: 16px;
-      background: transparent;
-      border-color: var(--threads-border);
-      color: var(--threads-text);
-    }
-
-    /* Threads Feed */
-    .threads-feed {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .create-post {
-      background-color: var(--threads-card);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid var(--threads-border);
-    }
-
-    .create-post textarea {
-      width: 100%;
-      background-color: #2a2a2a;
-      border: 1px solid var(--threads-border);
-      border-radius: 16px;
-      padding: 16px;
-      color: var(--threads-text);
-      font-family: 'SB Sans Display', sans-serif;
-      font-size: 16px;
-      resize: none;
-      min-height: 100px;
-      margin-bottom: 16px;
-    }
-
-    .create-post textarea:focus {
-      outline: none;
-      border-color: var(--sber-green);
-    }
-
-    .post-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .post-actions-left {
-      display: flex;
-      gap: 16px;
-    }
-
-    .post-actions-left button {
-      background: none;
-      border: none;
-      color: var(--threads-secondary);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 50%;
-      transition: var(--sber-transition);
-    }
-
-    .post-actions-left button:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: var(--sber-green);
-    }
-
-    .post-btn {
-      background: var(--sber-green);
-      border: none;
-      color: white;
-      font-weight: 600;
-      padding: 8px 24px;
-      border-radius: 40px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-    }
-
-    .post-btn:hover {
-      background: var(--sber-green-dark);
-    }
-
-    /* Пост карточкасы */
-    .post-card {
-      background-color: var(--threads-card);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--threads-border);
-    }
-
-    .post-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .post-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sber-green), #2ecc71);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 20px;
-    }
-
-    .post-user-info {
-      flex: 1;
-    }
-
-    .post-username {
-      font-weight: 600;
-      font-size: 16px;
-    }
-
-    .post-time {
-      color: var(--threads-secondary);
-      font-size: 13px;
-    }
-
-    .post-content {
-      font-size: 16px;
-      line-height: 1.5;
-      margin-bottom: 16px;
-      padding-left: 60px;
-    }
-
-    .post-stats {
-      display: flex;
-      gap: 24px;
-      padding-left: 60px;
-      color: var(--threads-secondary);
-      font-size: 14px;
-    }
-
-    .post-stat {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: var(--sber-transition);
-    }
-
-    .post-stat:hover {
-      color: var(--sber-green);
-    }
-
-    .post-stat.liked {
-      color: var(--threads-like);
-    }
-
-    .post-stat.liked i {
-      color: var(--threads-like);
-    }
-
-    /* Профиль беті */
-    .profile-header {
-      background-color: var(--threads-card);
-      padding: 32px 20px;
-      text-align: center;
-      border-bottom: 1px solid var(--threads-border);
-    }
-
-    .profile-avatar-large {
-      width: 96px;
-      height: 96px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--sber-green), #2ecc71);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
-      font-size: 36px;
-      margin: 0 auto 16px;
-    }
-
-    .profile-name {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .profile-phone {
-      color: var(--threads-secondary);
-      font-size: 15px;
-      margin-bottom: 24px;
-    }
-
-    .profile-stats {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      margin-bottom: 24px;
-    }
-
-    .profile-stat-item {
-      text-align: center;
-    }
-
-    .profile-stat-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--sber-green);
-    }
-
-    .profile-stat-label {
-      color: var(--threads-secondary);
-      font-size: 14px;
-    }
-
-    .profile-bio {
-      max-width: 400px;
-      margin: 0 auto 24px;
-      color: var(--threads-secondary);
-    }
-
-    .profile-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--threads-border);
-      margin-top: 32px;
-    }
-
-    .profile-tab {
-      flex: 1;
-      text-align: center;
-      padding: 16px;
-      cursor: pointer;
-      color: var(--threads-secondary);
-      transition: var(--sber-transition);
-    }
-
-    .profile-tab.active {
-      color: var(--sber-green);
-      border-bottom: 2px solid var(--sber-green);
-    }
-
-    /* Bottom navigation */
-    .threads-bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: var(--threads-card);
-      border-top: 1px solid var(--threads-border);
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      z-index: 100;
-    }
-
-    .nav-item {
-      background: none;
-      border: none;
-      color: var(--threads-secondary);
-      font-size: 24px;
-      cursor: pointer;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--sber-transition);
-    }
-
-    .nav-item.active {
-      color: var(--sber-green);
-    }
-
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background-color: var(--threads-card);
-      border-radius: 32px;
-      padding: 40px;
-      max-width: 400px;
-      width: 90%;
-      border: 1px solid var(--threads-border);
-    }
-
-    .modal-content h3 {
-      font-size: 24px;
-      margin-bottom: 24px;
-    }
-
-    .modal-content input {
-      width: 100%;
-      padding: 16px;
-      background-color: #2a2a2a;
-      border: 1px solid var(--threads-border);
-      border-radius: 16px;
-      color: var(--threads-text);
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    .modal-content input:focus {
-      outline: none;
-      border-color: var(--sber-green);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .modal-actions button {
-      flex: 1;
-      padding: 14px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .comments-section {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--threads-border);
-    }
-
-    .comment {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
-
-    .comment-author {
-      font-weight: 600;
-      color: var(--sber-green);
-    }
-
-    .comment-text {
-      color: var(--threads-text);
-    }
-
-    .comment-input {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .comment-input input {
-      flex: 1;
-      background-color: #2a2a2a;
-      border: 1px solid var(--threads-border);
-      border-radius: 20px;
-      padding: 8px 16px;
-      color: var(--threads-text);
-    }
-
-    .comment-input button {
-      background: var(--sber-green);
-      border: none;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    .search-container {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 16px;
-      background-color: #2a2a2a;
-      border: 1px solid var(--threads-border);
-      border-radius: 30px;
-      color: var(--threads-text);
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--sber-green);
-    }
-
-    .search-results {
-      background-color: var(--threads-card);
-      border-radius: 20px;
-      padding: 20px;
-    }
-
-    .search-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 12px;
-      border-bottom: 1px solid var(--threads-border);
-      cursor: pointer;
-    }
-
-    .search-item:hover {
-      background-color: #2a2a2a;
-    }
-
-    @media (max-width: 700px) {
-      .hero-title { font-size: 40px; }
-      .feats { grid-template-columns: 1fr; }
-      .topbar { padding: 16px 20px; }
-      .res-buttons { flex-direction: column; }
-      .login-box { padding: 32px 24px; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Debugging Тесті / Тест по отладке | Ayan KZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* Негізгі стильдер - JUZ40 стилінде */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #4169E1;      /* Көк түс */
+  --secondary: #6A5ACD;    /* Көкшіл күлгін */
+  --dark: #1A1A2E;
+  --light: #F5F5FA;
+  --text: #2C3E50;
+  --border-radius: 16px;
+  --shadow: 0 10px 30px rgba(65, 105, 225, 0.1);
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  color: #333;
+}
+
+body.dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #fff;
+}
+
+body.warm {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+}
+
+body.large {
+  font-size: 18px;
+}
+
+.page {
+  display: none;
+  min-height: 100vh;
+  position: relative;
+}
+
+.page.active {
+  display: block;
+}
+
+/* JUZ40 Blob эффекттері */
+.blob {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: -1;
+}
+
+.b1 {
+  top: -100px;
+  left: -100px;
+  background: rgba(65, 105, 225, 0.3);
+}
+
+.b2 {
+  bottom: -100px;
+  right: -100px;
+  background: rgba(106, 90, 205, 0.3);
+}
+
+.b3 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Кіру беті - JUZ40 стилі */
+.login-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+body.dark .login-box {
+  background: rgba(26, 26, 46, 0.95);
+  color: #fff;
+}
+
+.login-icon {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+}
+
+.ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 10s linear infinite;
+  border-top-color: transparent;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.lock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
+}
+
+.login-h {
+  font-size: 28px;
+  margin-bottom: 10px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.login-sub {
+  opacity: 0.7;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.pw-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.pw-wrap input {
+  flex: 1;
+  padding: 15px;
+  border: 2px solid #e1e5e9;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+  letter-spacing: 8px;
+  transition: all 0.3s;
+}
+
+body.dark .pw-wrap input {
+  background: #2d2d44;
+  border-color: #4a4a6a;
+  color: #fff;
+}
+
+.pw-wrap input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.1);
+}
+
+.pw-wrap button {
+  padding: 0 25px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.pw-wrap button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(65, 105, 225, 0.4);
+}
+
+.pw-err {
+  color: #e74c3c;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Тіл ауыстыру батырмасы - JUZ40 стилі */
+.lang-switch {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  gap: 5px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  padding: 5px;
+  border-radius: 30px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 30px;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.lang-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  box-shadow: 0 2px 10px rgba(65, 105, 225, 0.3);
+}
+
+body.dark .lang-btn {
+  color: #fff;
+}
+
+/* Басты бет - JUZ40 стилі */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo.sm {
+  font-size: 18px;
+}
+
+.tools {
+  display: flex;
+  gap: 10px;
+}
+
+.tb {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+
+.tb:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+
+.tb.on {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-color: transparent;
+}
+
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 30px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.hero-title em {
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-style: normal;
+}
+
+.hero-desc {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.pill {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+}
+
+.btn-main {
+  background: white;
+  color: var(--primary);
+  border: none;
+  padding: 15px 40px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  margin: 5px;
+}
+
+.btn-main:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(65, 105, 225, 0.3);
+}
+
+.btn-sec {
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 15px 40px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin: 5px;
+}
+
+.btn-sec:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.5);
+}
+
+.feats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feat {
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+}
+
+.feat-ico {
+  font-size: 36px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.feat strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feat p {
+  opacity: 0.8;
+  font-size: 14px;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  opacity: 0.7;
+  font-size: 12px;
+  position: relative;
+  z-index: 1;
+  color: white;
+}
+
+/* Тест беті - JUZ40 стилі */
+.test-hdr {
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.th1, .th2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.th2 {
+  margin-bottom: 10px;
+}
+
+.q-num, .timer, .score-live {
+  padding: 5px 15px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.q-num {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+}
+
+.timer {
+  background: #2c3e50;
+  color: white;
+}
+
+.timer.danger {
+  background: #e74c3c;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.score-live {
+  background: #2ecc71;
+  color: white;
+}
+
+.prog-track {
+  height: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.prog-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 0.3s;
+}
+
+.q-main {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.q-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: var(--shadow);
+}
+
+body.dark .q-card {
+  background: rgba(26, 26, 46, 0.95);
+  color: #fff;
+}
+
+.q-lbl {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.q-text {
+  font-size: 20px;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.q-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+body.dark .opt {
+  background: #2d2d44;
+  color: #fff;
+}
+
+.opt:hover:not(.locked) {
+  background: #e9ecef;
+  transform: translateX(5px);
+  border-color: var(--primary);
+}
+
+.opt.correct {
+  background: #d4edda !important;
+  border-color: #28a745 !important;
+  color: #155724 !important;
+}
+
+.opt.wrong {
+  background: #f8d7da !important;
+  border-color: #dc3545 !important;
+  color: #721c24 !important;
+}
+
+.opt.locked {
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.opt-L {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+body.dark .opt-L {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.eye-banner {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: rgba(231, 76, 60, 0.95);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 50px;
+  z-index: 9998;
+  animation: slideIn 0.5s;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+}
+
+.eye-banner button {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.eye-banner button:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Нәтиже беті - JUZ40 стилі */
+.res-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.res-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+body.dark .res-card {
+  background: rgba(26, 26, 46, 0.95);
+  color: #fff;
+}
+
+.res-emoji {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.res-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.res-big {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.res-pct {
+  font-size: 24px;
+  opacity: 0.8;
+  margin-bottom: 30px;
+}
+
+.res-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+.rs {
+  text-align: center;
+}
+
+.rs-n {
+  font-size: 32px;
+  font-weight: 700;
+  display: block;
+}
+
+.rs-g .rs-n { color: #2ecc71; }
+.rs-r .rs-n { color: #e74c3c; }
+.rs-b .rs-n { color: #3498db; }
+
+.rs-l {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.res-prog-track {
+  height: 10px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.res-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  transition: width 1s;
+  width: 0%;
+}
+
+/* Нәтиже беті батырмалары */
+.res-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.res-buttons .btn-main,
+.res-buttons .btn-sec {
+  flex: 1;
+  min-width: 150px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+/* ТОП ТІЗІМІ БЕТІ - JUZ40 стилі */
+.leaderboard-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.leaderboard-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: var(--shadow);
+}
+
+body.dark .leaderboard-card {
+  background: rgba(26, 26, 46, 0.95);
+  color: #fff;
+}
+
+.leaderboard-title {
+  font-size: 32px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.leaderboard-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: var(--border-radius);
+  background: rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+body.dark .leaderboard-list {
+  background: rgba(255,255,255,0.05);
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  transition: all 0.3s;
+}
+
+body.dark .leaderboard-item {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+
+.leaderboard-item:hover {
+  background: linear-gradient(135deg, rgba(65, 105, 225, 0.1), rgba(106, 90, 205, 0.1));
+}
+
+.leaderboard-rank {
+  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.leaderboard-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.leaderboard-name {
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 120px;
+}
+
+.leaderboard-score {
+  font-weight: 700;
+  font-size: 18px;
+  color: #2ecc71;
+  min-width: 60px;
+}
+
+.leaderboard-percent {
+  background: #2ecc71;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 50px;
+  text-align: center;
+}
+
+.leaderboard-date {
+  font-size: 11px;
+  opacity: 0.5;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.leaderboard-empty {
+  text-align: center;
+  padding: 40px;
+  opacity: 0.7;
+}
+
+.leaderboard-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.leaderboard-buttons button {
+  flex: 1;
+}
+
+/* Instagram парақшасына сілтеме - JUZ40 стилі */
+.instagram-link {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 9999;
+  animation: slideUp 0.5s ease;
+}
+.instagram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(65, 105, 225, 0.4);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.instagram-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(106, 90, 205, 0.5);
+}
+.ig-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* Telegram бот стилі - JUZ40 стилі */
+.telegram-link {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  animation: slideUp 0.5s ease 0.2s both;
+}
+.telegram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(106, 90, 205, 0.4);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.telegram-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(65, 105, 225, 0.6);
+}
+.tg-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 10px 20px;
+  border-radius: 30px;
+  z-index: 10000;
+  transition: opacity 0.3s;
+}
+
+.toast.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .lang-switch {
+    top: 10px;
+    right: 10px;
+  }
+  .instagram-link {
+    bottom: 15px;
+    left: 15px;
+  }
+  .telegram-link {
+    bottom: 15px;
+    right: 15px;
+  }
+  .instagram-badge, .telegram-badge {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  .hero-title {
+    font-size: 32px;
+  }
+  .feats {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .leaderboard-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .leaderboard-info {
+    width: 100%;
+  }
+  .leaderboard-date {
+    margin-left: 0;
+  }
+  .res-buttons {
+    flex-direction: column;
+  }
+  .res-buttons .btn-main,
+  .res-buttons .btn-sec {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .instagram-badge span:last-child,
+  .telegram-badge span:last-child {
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+</style>
 </head>
 <body>
 
-<!-- Тіл ауыстыру (Сбердің жоғарғы оң жақ батырмасы) -->
+<!-- ТІЛ АУЫСТЫРУ БАТЫРМАСЫ -->
 <div class="lang-switch">
   <button class="lang-btn active" onclick="switchLanguage('kk')">Қаз</button>
   <button class="lang-btn" onclick="switchLanguage('ru')">Рус</button>
 </div>
 
-<!-- Кіру беті -->
+<!-- КІРУ БЕТІ -->
 <div id="page-login" class="page active">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
   <div class="login-box">
-    <div class="login-icon"><span class="lock">🔐</span></div>
-    <h1 class="login-h" data-kk="Сбертестке кіру" data-ru="Вход в Сбертест">Сбертестке кіру</h1>
-    <p class="login-sub" data-kk="Пароліңізді енгізіңіз" data-ru="Введите ваш пароль">Пароліңізді енгізіңіз</p>
-    <div class="pw-wrap">
-      <input id="pw-in" type="password" maxlength="10" placeholder="****" autocomplete="off">
+    <div class="login-icon">
+      <div class="ring"></div>
+      <span class="lock">🔐</span>
+    </div>
+    <h1 class="login-h" data-kk="Тестке кіру" data-ru="Вход в тест">Тестке кіру</h1>
+    <p class="login-sub" data-kk="Паролді енгізіп, жалғастырыңыз" data-ru="Введите пароль для продолжения">Паролді енгізіп, жалғастырыңыз</p>
+    <div class="pw-wrap" id="pw-wrap">
+      <input id="pw-in" type="password" placeholder="• • • •" maxlength="10" autocomplete="off"/>
       <button onclick="checkPw()" data-kk="Кіру →" data-ru="Вход →">Кіру →</button>
     </div>
-    <p id="pw-err" class="pw-err hidden" data-kk="Пароль қате" data-ru="Неверный пароль">Пароль қате</p>
-    
-    <!-- Threads-ке өту батырмасы -->
-    <div style="margin-top: 24px; border-top: 1px solid var(--sber-border); padding-top: 24px;">
-      <button class="btn-sec" onclick="showThreadsLogin()" style="width: 100%;" data-kk="📱 Threads әлеуметтік желісі" data-ru="📱 Соцсеть Threads">📱 Threads әлеуметтік желісі</button>
-    </div>
+    <p id="pw-err" class="pw-err hidden" data-kk="⚠️ Пароль қате, қайта енгізіңіз" data-ru="⚠️ Неверный пароль, повторите попытку">⚠️ Пароль қате, қайта енгізіңіз</p>
   </div>
 </div>
 
-<!-- Атын енгізу беті -->
+<!-- АТЫН ЕНГІЗУ БЕТІ -->
 <div id="page-name-input" class="page">
-  <div class="login-box">
-    <div class="login-icon"><span class="lock">✏️</span></div>
-    <h1 class="login-h" data-kk="Атыңызды енгізіңіз" data-ru="Ваше имя">Атыңызды енгізіңіз</h1>
-    <p class="login-sub" data-kk="Нәтиже сақтау үшін" data-ru="Для сохранения">Нәтиже сақтау үшін</p>
-    <div class="pw-wrap">
-      <input id="name-input" type="text" placeholder="Атыңыз" maxlength="30">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="login-box" style="max-width: 450px;">
+    <div class="login-icon">
+      <div class="ring"></div>
+      <span class="lock">✏️</span>
+    </div>
+    <h1 class="login-h" data-kk="Атыңызды енгізіңіз" data-ru="Введите ваше имя">Атыңызды енгізіңіз</h1>
+    <p class="login-sub" data-kk="Тест нәтижесі сақталу үшін" data-ru="Для сохранения результата теста">Тест нәтижесі сақталу үшін</p>
+    <div class="pw-wrap" style="margin-bottom: 10px;">
+      <input id="name-input" type="text" placeholder="Атыңыз" maxlength="30" autocomplete="off"/>
       <button onclick="saveUserNameAndStart()" data-kk="Бастау →" data-ru="Начать →">Бастау →</button>
     </div>
-    <p id="name-err" class="pw-err hidden" data-kk="Атыңызды енгізіңіз" data-ru="Введите имя">Атыңызды енгізіңіз</p>
-    <button onclick="goHome()" class="btn-sec" style="width:100%; margin-top:20px;" data-kk="Басты бет" data-ru="Главная">🏠 Басты бет</button>
+    <p id="name-err" class="pw-err hidden" data-kk="⚠️ Атыңызды енгізіңіз" data-ru="⚠️ Введите ваше имя">⚠️ Атыңызды енгізіңіз</p>
+    <button onclick="goHome()" class="btn-sec" style="width: 100%; margin-top: 15px; padding: 12px;" data-kk="🏠 Басты бетке оралу" data-ru="🏠 На главную">🏠 Басты бетке оралу</button>
   </div>
 </div>
 
-<!-- Басты бет -->
+<!-- БАСТЫ БЕТ -->
 <div id="page-home" class="page">
   <header class="topbar">
-    <span class="logo">⚡ Ayan · СберТест</span>
+    <span class="logo">🧠 AyanTest</span>
     <div class="tools">
       <button class="tb" id="btn-dark" onclick="toggleDark()">🌙</button>
       <button class="tb" id="btn-warm" onclick="toggleWarm()">☀️</button>
@@ -1295,32 +1100,34 @@
     </div>
   </header>
   <section class="hero">
-    <div class="badge" data-kk="📘 Debugging" data-ru="📘 Отладка">📘 Debugging</div>
-    <h1 class="hero-title"><span data-kk="Кодтағы ақауларды" data-ru="Поиск ошибок">Кодтағы ақауларды</span><br><em data-kk="жою тесті" data-ru="в коде">жою тесті</em></h1>
-    <p class="hero-desc" data-kk="Синтаксис, логика, runtime — барлығы бір тесте." data-ru="Синтаксис, логика, runtime — всё в одном тесте.">Синтаксис, логика, runtime — барлығы бір тесте.</p>
+    <div class="badge" data-kk="📘 Бағдарламалық қамтамасыз ету" data-ru="📘 Программное обеспечение">📘 Бағдарламалық қамтамасыз ету</div>
+    <h1 class="hero-title"><span data-kk="Кодтағы ақауларды" data-ru="Поиск и исправление">Кодтағы ақауларды</span><br><em data-kk="жою тесті" data-ru="ошибок в коде">жою тесті</em></h1>
+    <p class="hero-desc" data-kk="Синтаксис, логика, runtime қателер, debugging тәсілдері — барлығы бір тесте." data-ru="Синтаксис, логика, runtime ошибки, методы отладки — всё в одном тесте.">Синтаксис, логика, runtime қателер, debugging тәсілдері — барлығы бір тесте.</p>
     <div class="pills">
-      <span class="pill">📋 81 сұрақ</span>
-      <span class="pill">⏱️ 30 минут</span>
-      <span class="pill">🎲 Кездейсоқ</span>
+      <span class="pill" data-kk="📋 81 сұрақ" data-ru="📋 81 вопрос">📋 81 сұрақ</span>
+      <span class="pill" data-kk="⏱️ 30 минут" data-ru="⏱️ 30 минут">⏱️ 30 минут</span>
+      <span class="pill" data-kk="🎲 Кездейсоқ тәртіп" data-ru="🎲 Случайный порядок">🎲 Кездейсоқ тәртіп</span>
+      <span class="pill" data-kk="✅ Дереу нәтиже" data-ru="✅ Сразу результат">✅ Дереу нәтиже</span>
     </div>
     <div>
       <button class="btn-main" onclick="startTest()" data-kk="▶ Тестті бастау" data-ru="▶ Начать тест">▶ Тестті бастау</button>
-      <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ тізімі" data-ru="🏆 Лидеры">🏆 Топ тізімі</button>
+      <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ тізімі" data-ru="🏆 Таблица лидеров">🏆 Топ тізімі</button>
     </div>
   </section>
   <section class="feats">
-    <div class="feat"><span class="feat-ico">🎯</span><strong data-kk="Дереу тексеру" data-ru="Мгновенно">Дереу тексеру</strong><p data-kk="Жауаптан соң бірден" data-ru="Сразу после ответа">Жауаптан соң бірден</p></div>
-    <div class="feat"><span class="feat-ico">🔀</span><strong data-kk="Кездейсоқ рет" data-ru="Случайный порядок">Кездейсоқ рет</strong><p data-kk="Әр тапсыру жаңа" data-ru="Каждый раз по‑новому">Әр тапсыру жаңа</p></div>
-    <div class="feat"><span class="feat-ico">👁️</span><strong data-kk="Көз қорғау" data-ru="Защита глаз">Көз қорғау</strong><p data-kk="Dark / жылы режим" data-ru="Тёмная/теплая">Dark / жылы режим</p></div>
+    <div class="feat"><span class="feat-ico">🎯</span><strong data-kk="Дереу тексеру" data-ru="Мгновенная проверка">Дереу тексеру</strong><p data-kk="Жауап таңдаған бойда нәтиже шығады" data-ru="Результат появляется сразу после выбора">Жауап таңдаған бойда нәтиже шығады</p></div>
+    <div class="feat"><span class="feat-ico">🔀</span><strong data-kk="Кездейсоқ реттеу" data-ru="Случайный порядок">Кездейсоқ реттеу</strong><p data-kk="Әр тапсыру уникалды болады" data-ru="Каждая попытка уникальна">Әр тапсыру уникалды болады</p></div>
+    <div class="feat"><span class="feat-ico">👁️</span><strong data-kk="Көз қорғау" data-ru="Защита глаз">Көз қорғау</strong><p data-kk="Dark / жылы / үлкен шрифт режимдері" data-ru="Тёмная / тёплая / крупный шрифт">Dark / жылы / үлкен шрифт режимдері</p></div>
+    <div class="feat"><span class="feat-ico">🛡️</span><strong data-kk="Қорғаныс" data-ru="Защита">Қорғаныс</strong><p data-kk="Көшіру мен paste мүмкіндіксіз" data-ru="Копирование и вставка запрещены">Көшіру мен paste мүмкіндіксіз</p></div>
   </section>
-  <footer class="footer">Ayan KZ · Сбербанк стилінде</footer>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- Тест беті -->
+<!-- ТЕСТ БЕТІ -->
 <div id="page-test" class="page">
   <header class="test-hdr">
     <div class="th1">
-      <span class="logo sm">⚡ Ayan · СберТест</span>
+      <span class="logo sm">🧠 AyanTest</span>
       <div class="tools">
         <button class="tb" onclick="toggleDark()">🌙</button>
         <button class="tb" onclick="toggleWarm()">☀️</button>
@@ -1332,701 +1139,137 @@
       <div id="timer" class="timer">⏱ 30:00</div>
       <span id="score-live" class="score-live">✅ 0</span>
     </div>
-    <div class="prog-track"><div id="prog-bar" class="prog-bar"></div></div>
+    <div class="prog-track">
+      <div id="prog-bar" class="prog-bar" style="width:0%"></div>
+    </div>
   </header>
   <main class="q-main">
-    <div class="q-card">
-      <p class="q-lbl" id="q-lbl" data-kk="Сұрақ" data-ru="Вопрос">Сұрақ</p>
-      <h2 id="q-text" class="q-text">...</h2>
+    <div id="q-card" class="q-card">
+      <p id="q-lbl" class="q-lbl" data-kk="Сұрақ" data-ru="Вопрос">Сұрақ</p>
+      <h2 id="q-text" class="q-text">…</h2>
       <div id="q-opts" class="q-opts"></div>
     </div>
   </main>
   <div id="eye-banner" class="eye-banner hidden">
-    <span data-kk="👀 Көзге демалыс" data-ru="👀 Отдохните">👀 Көзге демалыс</span>
-    <button onclick="this.parentElement.classList.add('hidden')">✕</button>
+    <span data-kk="👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз" data-ru="👀 Сделайте перерыв 1-2 минуты, чтобы дать глазам отдохнуть">👀 Көзіңізді демалдыру үшін 1–2 минут үзіліс жасаңыз</span>
+    <button onclick="document.getElementById('eye-banner').classList.add('hidden')">✕</button>
   </div>
-  <footer class="footer">Ayan KZ</footer>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- Нәтиже беті -->
+<!-- НӘТИЖЕ БЕТІ -->
 <div id="page-result" class="page">
   <div class="res-center">
     <div class="res-card">
       <div id="res-emoji" class="res-emoji">🏆</div>
       <h1 id="res-title" class="res-title" data-kk="Нәтиже" data-ru="Результат">Нәтиже</h1>
-      <div id="res-big" class="res-big">0 / 0</div>
-      <div id="res-pct" class="res-pct">0%</div>
+      <div id="res-big" class="res-big">— / —</div>
+      <div id="res-pct" class="res-pct">—%</div>
       <div class="res-stats">
         <div class="rs rs-g"><span id="rs-c" class="rs-n">0</span><span class="rs-l" data-kk="Дұрыс" data-ru="Верно">Дұрыс</span></div>
         <div class="rs rs-r"><span id="rs-w" class="rs-n">0</span><span class="rs-l" data-kk="Қате" data-ru="Неверно">Қате</span></div>
         <div class="rs rs-b"><span id="rs-t" class="rs-n">0</span><span class="rs-l" data-kk="Барлығы" data-ru="Всего">Барлығы</span></div>
       </div>
-      <div class="res-prog-track"><div id="res-prog" class="res-prog-fill"></div></div>
+      <div class="res-prog-track">
+        <div id="res-prog" class="res-prog-fill"></div>
+      </div>
+      
+      <!-- Батырмалар тобы -->
       <div class="res-buttons">
-        <button class="btn-main" onclick="retakeTest()" data-kk="🔄 Қайта" data-ru="🔄 Заново">🔄 Қайта</button>
-        <button class="btn-sec" onclick="goHome()" data-kk="🏠 Басты" data-ru="🏠 Главная">🏠 Басты</button>
-        <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ" data-ru="🏆 Лидеры">🏆 Топ</button>
+        <button class="btn-main" onclick="retakeTest()" data-kk="🔄 Қайта тапсыру" data-ru="🔄 Пройти заново">🔄 Қайта тапсыру</button>
+        <button class="btn-sec" onclick="goHome()" data-kk="🏠 Басты бет" data-ru="🏠 Главная">🏠 Басты бет</button>
+        <button class="btn-sec" onclick="showLeaderboard()" data-kk="🏆 Топ тізімі" data-ru="🏆 Таблица лидеров">🏆 Топ тізімі</button>
       </div>
     </div>
   </div>
-  <footer class="footer">Ayan KZ</footer>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- Топ тізімі -->
+<!-- ТОП ТІЗІМІ БЕТІ -->
 <div id="page-leaderboard" class="page">
   <div class="leaderboard-container">
     <div class="leaderboard-card">
-      <h2 class="leaderboard-title" data-kk="🏆 Топ тізімі" data-ru="🏆 Лидеры">🏆 Топ тізімі</h2>
-      <div id="leaderboard-list" class="leaderboard-list"></div>
+      <h2 class="leaderboard-title" data-kk="🏆 Топ тізімі" data-ru="🏆 Таблица лидеров">🏆 Топ тізімі</h2>
+      <div id="leaderboard-list" class="leaderboard-list">
+        <!-- Тізім JavaScript арқылы толтырылады -->
+      </div>
       <div class="leaderboard-buttons">
-        <button class="btn-main" onclick="goHome()" data-kk="Басты" data-ru="Главная">🏠 Басты</button>
-        <button class="btn-sec" onclick="startTest()" data-kk="Тест" data-ru="Тест">📝 Тест</button>
+        <button class="btn-main" onclick="goHome()" data-kk="🏠 Басты бет" data-ru="🏠 Главная">🏠 Басты бет</button>
+        <button class="btn-sec" onclick="startTest()" data-kk="📝 Тесті бастау" data-ru="📝 Начать тест">📝 Тесті бастау</button>
       </div>
     </div>
   </div>
-  <footer class="footer">Ayan KZ</footer>
+  <footer class="footer">Жасаған — <strong>Ayan KZ</strong></footer>
 </div>
 
-<!-- ========== THREADS СТИЛІНДЕГІ ӘЛЕУМЕТТІК ЖЕЛІ ========== -->
-<div id="page-threads" class="page">
-  <div class="threads-page" id="threads-app">
-    <!-- Threads Header -->
-    <div class="threads-header">
-      <div class="threads-logo">Threads<span>.</span></div>
-      <div class="threads-actions">
-        <button onclick="showThreadsLogin()">📱</button>
-      </div>
-    </div>
-
-    <!-- Threads Login -->
-    <div id="threads-login-container" class="threads-login">
-      <h2>Телефон нөміріңізбен кіріңіз</h2>
-      <div class="phone-input-group">
-        <label>Телефон нөмірі</label>
-        <div class="phone-input-wrapper">
-          <span class="phone-prefix">+7</span>
-          <input type="tel" id="phone-input" placeholder="700 123 45 67" maxlength="10">
-        </div>
-      </div>
-      <button class="btn-main" onclick="loginWithPhone()">Кіру</button>
-      <div class="threads-divider">немесе</div>
-      <button class="btn-sec" onclick="continueAsGuest()">Қонақ ретінде кіру</button>
-    </div>
-
-    <!-- Threads Feed -->
-    <div id="threads-feed-container" class="hidden">
-      <div class="threads-feed">
-        <!-- Жаңа пост қосу -->
-        <div class="create-post">
-          <textarea id="post-content" placeholder="Ойыңызбен бөлісіңіз..."></textarea>
-          <div class="post-actions">
-            <div class="post-actions-left">
-              <button onclick="alert('Сурет қосу')">📷</button>
-              <button onclick="alert('Музыка қосу')">🎵</button>
-              <button onclick="alert('Эмодзи қосу')">😊</button>
-            </div>
-            <button class="post-btn" onclick="createPost()">Жариялау</button>
-          </div>
-        </div>
-
-        <!-- Посттар тізімі -->
-        <div id="posts-list"></div>
-      </div>
-    </div>
-
-    <!-- Профиль беті -->
-    <div id="threads-profile-container" class="hidden">
-      <div class="profile-header">
-        <div class="profile-avatar-large" id="profile-avatar">👤</div>
-        <div class="profile-name" id="profile-name">Қонақ</div>
-        <div class="profile-phone" id="profile-phone">+7 *** *** ** **</div>
-        <div class="profile-stats">
-          <div class="profile-stat-item">
-            <div class="profile-stat-value" id="profile-posts-count">0</div>
-            <div class="profile-stat-label">пост</div>
-          </div>
-          <div class="profile-stat-item">
-            <div class="profile-stat-value" id="profile-likes-count">0</div>
-            <div class="profile-stat-label">лайк</div>
-          </div>
-        </div>
-        <div class="profile-bio" id="profile-bio">Бұл менің профилім</div>
-      </div>
-      <div class="profile-tabs">
-        <div class="profile-tab active" onclick="showProfilePosts()">Посттар</div>
-        <div class="profile-tab" onclick="showProfileLikes()">Лайктар</div>
-      </div>
-      <div id="profile-posts" class="threads-feed"></div>
-    </div>
-
-    <!-- Іздеу беті -->
-    <div id="threads-search-container" class="hidden">
-      <div class="search-container">
-        <input type="text" class="search-input" id="search-input" placeholder="Адамдарды іздеу..." oninput="searchUsers()">
-        <div id="search-results" class="search-results"></div>
-      </div>
-    </div>
-
-    <!-- Пікірлер модалы -->
-    <div id="comments-modal" class="modal hidden">
-      <div class="modal-content">
-        <h3>Пікірлер</h3>
-        <div id="comments-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;"></div>
-        <div class="comment-input">
-          <input type="text" id="comment-input" placeholder="Пікір жазыңыз...">
-          <button onclick="addComment()">Жіберу</button>
-        </div>
-        <div class="modal-actions">
-          <button class="btn-sec" onclick="closeComments()">Жабу</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="threads-bottom-nav">
-      <button class="nav-item" onclick="showThreadsFeed()">🏠</button>
-      <button class="nav-item" onclick="showThreadsSearch()">🔍</button>
-      <button class="nav-item" onclick="showThreadsCreate()">➕</button>
-      <button class="nav-item" onclick="showThreadsProfile()">👤</button>
-    </div>
-  </div>
+<!-- Instagram парақшасына сілтеме -->
+<div class="instagram-link">
+  <a href="https://instagram.com/aian_wtkkz" target="_blank" class="instagram-badge">
+    <span class="ig-icon">📷</span>
+    <span>Instagram: @aian_wtkkz</span>
+  </a>
 </div>
 
-<!-- Тұрақты сілтемелер -->
-<div class="instagram-link"><a href="https://instagram.com/aian_wtkkz" target="_blank" class="instagram-badge"><span>📷</span> <span>@aian_wtkkz</span></a></div>
-<div class="telegram-link"><a href="https://t.me/Kzayan_bot" target="_blank" class="telegram-badge"><span>✈️</span> <span>@Kzayan_bot</span></a></div>
+<!-- Telegram бот сілтемесі -->
+<div class="telegram-link">
+  <a href="https://t.me/Kzayan_bot" target="_blank" class="telegram-badge">
+    <span class="tg-icon">✈️</span>
+    <span>Telegram бот: @Kzayan_bot</span>
+  </a>
+</div>
 
 <div id="toast" class="toast hidden"></div>
 
+<!-- YouTube плеерлері (жасырын) -->
+<div id="shiza-youtube-player" style="display: none;"></div>
+<div id="kairat-youtube-player" style="display: none;"></div>
+<div id="dens-youtube-player" style="display: none;"></div>
+<div id="kzo-youtube-player" style="display: none;"></div>
+<div id="kzo2-youtube-player" style="display: none;"></div>
+<div id="sharaut-youtube-player" style="display: none;"></div>
+<div id="shiza-live-youtube-player" style="display: none;"></div>
+
 <script>
-  // Тіл ауыстыру
-  let currentLang = 'kk';
-  function switchLanguage(lang) {
-    currentLang = lang;
-    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    document.querySelectorAll('[data-kk][data-ru]').forEach(el => {
-      el.textContent = el.getAttribute(lang === 'kk' ? 'data-kk' : 'data-ru');
-    });
-  }
+// Тіл ауыстыру функциясы
+let currentLang = 'kk';
 
-  // Беттерді басқару
-  function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-  }
-
-  function goHome() {
-    showPage('page-home');
-  }
-
-  function startTest() {
-    showPage('page-test');
-  }
-
-  function showLeaderboard() {
-    showPage('page-leaderboard');
-  }
-
-  function retakeTest() {
-    showPage('page-test');
-  }
-
-  function checkPw() {
-    const pw = document.getElementById('pw-in').value;
-    if (pw === '0000') {
-      showPage('page-name-input');
+function switchLanguage(lang) {
+  currentLang = lang;
+  
+  // Барлық lang-btn батырмаларының active классын жаңарту
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Барлық data-kk және data-ru атрибуттары бар элементтерді жаңарту
+  document.querySelectorAll('[data-kk][data-ru]').forEach(element => {
+    if (lang === 'kk') {
+      element.textContent = element.getAttribute('data-kk');
     } else {
-      document.getElementById('pw-err').classList.remove('hidden');
-      document.querySelector('.login-box').classList.add('shake');
-      setTimeout(() => document.querySelector('.login-box').classList.remove('shake'), 500);
+      element.textContent = element.getAttribute('data-ru');
     }
-  }
+  });
+  
+  // Логотипті жаңарту
+  updateLogo(lang);
+}
 
-  function saveUserNameAndStart() {
-    const name = document.getElementById('name-input').value.trim();
-    if (name) {
-      localStorage.setItem('username', name);
-      showPage('page-home');
+// Логотипті жаңарту
+function updateLogo(lang) {
+  const logos = document.querySelectorAll('.logo');
+  logos.forEach(logo => {
+    if (lang === 'kk') {
+      logo.textContent = '🧠 AyanTest';
     } else {
-      document.getElementById('name-err').classList.remove('hidden');
+      logo.textContent = '🧠 AyanTest';
     }
-  }
+  });
+}
 
-  // ========== THREADS ФУНКЦИЯЛАРЫ ==========
-  let currentUser = null;
-  let posts = [];
-  let users = [];
-  let currentPostId = null;
-
-  // LocalStorage-дан деректерді жүктеу
-  function loadThreadsData() {
-    const savedPosts = localStorage.getItem('threads_posts');
-    const savedUsers = localStorage.getItem('threads_users');
-    
-    if (savedPosts) {
-      posts = JSON.parse(savedPosts);
-    } else {
-      // Тест үшін мысал посттар
-      posts = [
-        {
-          id: 1,
-          userId: 'admin',
-          userName: 'Ayan KZ',
-          userAvatar: '👤',
-          content: 'Бұл бірінші тест пост! Threads желісіне қош келдіңіздер!',
-          time: new Date().toLocaleString(),
-          likes: [],
-          comments: [
-            { author: 'Қолданушы1', text: 'Керемет!' }
-          ]
-        }
-      ];
-    }
-    
-    if (savedUsers) {
-      users = JSON.parse(savedUsers);
-    }
-  }
-
-  // Деректерді сақтау
-  function saveThreadsData() {
-    localStorage.setItem('threads_posts', JSON.stringify(posts));
-    localStorage.setItem('threads_users', JSON.stringify(users));
-  }
-
-  function showThreadsLogin() {
-    showPage('page-threads');
-    document.getElementById('threads-login-container').classList.remove('hidden');
-    document.getElementById('threads-feed-container').classList.add('hidden');
-    document.getElementById('threads-profile-container').classList.add('hidden');
-    document.getElementById('threads-search-container').classList.add('hidden');
-    
-    // Төменгі навигациядан active класс алу
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  }
-
-  function loginWithPhone() {
-    const phone = document.getElementById('phone-input').value.replace(/\D/g, '');
-    if (phone.length < 10) {
-      alert('Телефон нөміріңізді толық енгізіңіз');
-      return;
-    }
-
-    // Қолданушыны іздеу немесе жаңадан қосу
-    let user = users.find(u => u.phone === phone);
-    if (!user) {
-      user = {
-        id: 'user_' + Date.now(),
-        phone: phone,
-        name: 'Қолданушы' + Math.floor(Math.random() * 1000),
-        avatar: '👤',
-        posts: [],
-        likes: []
-      };
-      users.push(user);
-      saveThreadsData();
-    }
-    
-    currentUser = user;
-    
-    // Профильді жаңарту
-    document.getElementById('profile-name').textContent = user.name;
-    document.getElementById('profile-phone').textContent = '+7 ' + phone.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
-    
-    // Кіру бетін жасырып, Feed көрсету
-    document.getElementById('threads-login-container').classList.add('hidden');
-    document.getElementById('threads-feed-container').classList.remove('hidden');
-    
-    // Төменгі навигацияда Feed-ті актив ету
-    document.querySelectorAll('.nav-item').forEach((item, index) => {
-      if (index === 0) item.classList.add('active');
-      else item.classList.remove('active');
-    });
-    
-    loadThreadsData();
-    loadPosts();
-    updateProfileStats();
-  }
-
-  function continueAsGuest() {
-    currentUser = {
-      id: 'guest_' + Date.now(),
-      name: 'Қонақ',
-      phone: 'guest',
-      avatar: '👤',
-      posts: [],
-      likes: []
-    };
-    
-    document.getElementById('threads-login-container').classList.add('hidden');
-    document.getElementById('threads-feed-container').classList.remove('hidden');
-    document.getElementById('profile-name').textContent = 'Қонақ';
-    document.getElementById('profile-phone').textContent = 'Қонақ режимі';
-    
-    // Төменгі навигацияда Feed-ті актив ету
-    document.querySelectorAll('.nav-item').forEach((item, index) => {
-      if (index === 0) item.classList.add('active');
-      else item.classList.remove('active');
-    });
-    
-    loadThreadsData();
-    loadPosts();
-    updateProfileStats();
-  }
-
-  function createPost() {
-    const content = document.getElementById('post-content').value.trim();
-    if (!content) {
-      alert('Пост жазу үшін мәтін енгізіңіз');
-      return;
-    }
-    
-    if (!currentUser) {
-      alert('Алдымен кіріңіз');
-      return;
-    }
-
-    const newPost = {
-      id: Date.now(),
-      userId: currentUser.id,
-      userName: currentUser.name,
-      userAvatar: currentUser.avatar || '👤',
-      content: content,
-      time: new Date().toLocaleString(),
-      likes: [],
-      comments: []
-    };
-
-    posts.unshift(newPost);
-    
-    if (!currentUser.posts) currentUser.posts = [];
-    currentUser.posts.push(newPost.id);
-    
-    saveThreadsData();
-    
-    document.getElementById('post-content').value = '';
-    loadPosts();
-    updateProfileStats();
-    
-    // Хабарлама көрсету
-    showToast('Пост жарияланды!');
-  }
-
-  function loadPosts() {
-    const postsList = document.getElementById('posts-list');
-    if (!postsList) return;
-
-    if (posts.length === 0) {
-      postsList.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Әзірше посттар жоқ. Бірінші болып жазыңыз!</div>';
-      return;
-    }
-
-    postsList.innerHTML = posts.map(post => {
-      const isLiked = currentUser && post.likes && post.likes.includes(currentUser.id);
-      
-      return `
-        <div class="post-card" data-post-id="${post.id}">
-          <div class="post-header">
-            <div class="post-avatar">${post.userAvatar || '👤'}</div>
-            <div class="post-user-info">
-              <div class="post-username">${post.userName}</div>
-              <div class="post-time">${post.time}</div>
-            </div>
-          </div>
-          <div class="post-content">${post.content}</div>
-          <div class="post-stats">
-            <div class="post-stat ${isLiked ? 'liked' : ''}" onclick="likePost(${post.id})">
-              <span>❤️</span> ${post.likes ? post.likes.length : 0}
-            </div>
-            <div class="post-stat" onclick="showComments(${post.id})">
-              <span>💬</span> ${post.comments ? post.comments.length : 0}
-            </div>
-            <div class="post-stat" onclick="sharePost(${post.id})">
-              <span>🔄</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function likePost(postId) {
-    if (!currentUser) {
-      alert('Лайк басу үшін кіріңіз');
-      return;
-    }
-    
-    const post = posts.find(p => p.id === postId);
-    if (!post) return;
-
-    if (!post.likes) post.likes = [];
-
-    const likeIndex = post.likes.indexOf(currentUser.id);
-    if (likeIndex === -1) {
-      post.likes.push(currentUser.id);
-      if (!currentUser.likes) currentUser.likes = [];
-      currentUser.likes.push(postId);
-    } else {
-      post.likes.splice(likeIndex, 1);
-      if (currentUser.likes) {
-        currentUser.likes = currentUser.likes.filter(id => id !== postId);
-      }
-    }
-
-    saveThreadsData();
-    loadPosts();
-    updateProfileStats();
-  }
-
-  function showComments(postId) {
-    currentPostId = postId;
-    const post = posts.find(p => p.id === postId);
-    if (!post) return;
-    
-    const commentsList = document.getElementById('comments-list');
-    if (post.comments && post.comments.length > 0) {
-      commentsList.innerHTML = post.comments.map(comment => `
-        <div class="comment">
-          <span class="comment-author">${comment.author}:</span>
-          <span class="comment-text">${comment.text}</span>
-        </div>
-      `).join('');
-    } else {
-      commentsList.innerHTML = '<div style="text-align: center; color: var(--threads-secondary);">Пікірлер жоқ</div>';
-    }
-    
-    document.getElementById('comments-modal').classList.remove('hidden');
-  }
-
-  function addComment() {
-    if (!currentUser) {
-      alert('Пікір жазу үшін кіріңіз');
-      return;
-    }
-    
-    const commentText = document.getElementById('comment-input').value.trim();
-    if (!commentText || !currentPostId) return;
-    
-    const post = posts.find(p => p.id === currentPostId);
-    if (!post) return;
-    
-    if (!post.comments) post.comments = [];
-    
-    post.comments.push({
-      author: currentUser.name,
-      text: commentText
-    });
-    
-    saveThreadsData();
-    
-    document.getElementById('comment-input').value = '';
-    showComments(currentPostId); // Пікірлерді жаңарту
-  }
-
-  function closeComments() {
-    document.getElementById('comments-modal').classList.add('hidden');
-    currentPostId = null;
-  }
-
-  function sharePost(postId) {
-    // Пост сілтемесін көшіру
-    navigator.clipboard.writeText(window.location.href + '#post=' + postId);
-    showToast('Пост сілтемесі көшірілді!');
-  }
-
-  function showThreadsFeed() {
-    document.getElementById('threads-feed-container').classList.remove('hidden');
-    document.getElementById('threads-profile-container').classList.add('hidden');
-    document.getElementById('threads-search-container').classList.add('hidden');
-    
-    // Төменгі навигацияны жаңарту
-    document.querySelectorAll('.nav-item').forEach((item, index) => {
-      if (index === 0) item.classList.add('active');
-      else item.classList.remove('active');
-    });
-    
-    loadPosts();
-  }
-
-  function showThreadsProfile() {
-    if (!currentUser) {
-      showThreadsLogin();
-      return;
-    }
-    
-    document.getElementById('threads-feed-container').classList.add('hidden');
-    document.getElementById('threads-profile-container').classList.remove('hidden');
-    document.getElementById('threads-search-container').classList.add('hidden');
-    
-    // Төменгі навигацияны жаңарту
-    document.querySelectorAll('.nav-item').forEach((item, index) => {
-      if (index === 3) item.classList.add('active');
-      else item.classList.remove('active');
-    });
-    
-    showProfilePosts();
-  }
-
-  function showThreadsSearch() {
-    document.getElementById('threads-feed-container').classList.add('hidden');
-    document.getElementById('threads-profile-container').classList.add('hidden');
-    document.getElementById('threads-search-container').classList.remove('hidden');
-    
-    // Төменгі навигацияны жаңарту
-    document.querySelectorAll('.nav-item').forEach((item, index) => {
-      if (index === 1) item.classList.add('active');
-      else item.classList.remove('active');
-    });
-    
-    document.getElementById('search-results').innerHTML = '';
-    document.getElementById('search-input').value = '';
-  }
-
-  function showThreadsCreate() {
-    if (!currentUser) {
-      showThreadsLogin();
-      return;
-    }
-    document.getElementById('post-content').focus();
-  }
-
-  function searchUsers() {
-    const query = document.getElementById('search-input').value.toLowerCase();
-    if (!query) {
-      document.getElementById('search-results').innerHTML = '';
-      return;
-    }
-    
-    const results = users.filter(user => 
-      user.name.toLowerCase().includes(query) || 
-      (user.phone && user.phone.includes(query))
-    );
-    
-    const resultsHtml = results.map(user => `
-      <div class="search-item" onclick="viewUserProfile('${user.id}')">
-        <div class="post-avatar">${user.avatar || '👤'}</div>
-        <div>
-          <div style="font-weight: 600;">${user.name}</div>
-          <div style="font-size: 12px; color: var(--threads-secondary);">${user.phone === 'guest' ? 'Қонақ' : '+7 ' + (user.phone || '')}</div>
-        </div>
-      </div>
-    `).join('');
-    
-    document.getElementById('search-results').innerHTML = results.length ? resultsHtml : '<div style="text-align: center;">Табылмады</div>';
-  }
-
-  function viewUserProfile(userId) {
-    alert('Қолданушы профилі: ' + userId);
-  }
-
-  function showProfilePosts() {
-    if (!currentUser) return;
-    
-    const userPosts = posts.filter(p => p.userId === currentUser.id);
-    const profilePosts = document.getElementById('profile-posts');
-    
-    // Табтарды жаңарту
-    document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    if (userPosts.length === 0) {
-      profilePosts.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Посттар жоқ</div>';
-      return;
-    }
-
-    profilePosts.innerHTML = userPosts.map(post => `
-      <div class="post-card">
-        <div class="post-header">
-          <div class="post-avatar">${post.userAvatar || '👤'}</div>
-          <div class="post-user-info">
-            <div class="post-username">${post.userName}</div>
-            <div class="post-time">${post.time}</div>
-          </div>
-        </div>
-        <div class="post-content">${post.content}</div>
-        <div class="post-stats">
-          <div class="post-stat">
-            <span>❤️</span> ${post.likes ? post.likes.length : 0}
-          </div>
-          <div class="post-stat">
-            <span>💬</span> ${post.comments ? post.comments.length : 0}
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function showProfileLikes() {
-    if (!currentUser || !currentUser.likes) {
-      document.getElementById('profile-posts').innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Лайктар жоқ</div>';
-      return;
-    }
-    
-    const likedPosts = posts.filter(p => currentUser.likes.includes(p.id));
-    const profilePosts = document.getElementById('profile-posts');
-    
-    // Табтарды жаңарту
-    document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    if (likedPosts.length === 0) {
-      profilePosts.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--threads-secondary);">Лайк басылған посттар жоқ</div>';
-      return;
-    }
-
-    profilePosts.innerHTML = likedPosts.map(post => `
-      <div class="post-card">
-        <div class="post-header">
-          <div class="post-avatar">${post.userAvatar || '👤'}</div>
-          <div class="post-user-info">
-            <div class="post-username">${post.userName}</div>
-            <div class="post-time">${post.time}</div>
-          </div>
-        </div>
-        <div class="post-content">${post.content}</div>
-        <div class="post-stats">
-          <div class="post-stat liked">
-            <span>❤️</span> ${post.likes.length}
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  function updateProfileStats() {
-    if (!currentUser) return;
-    
-    document.getElementById('profile-posts-count').textContent = currentUser.posts ? currentUser.posts.length : 0;
-    document.getElementById('profile-likes-count').textContent = currentUser.likes ? currentUser.likes.length : 0;
-  }
-
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 3000);
-  }
-
-  // Қосымша функциялар
-  function toggleDark() {
-    document.body.style.backgroundColor = document.body.style.backgroundColor === 'black' ? 'var(--sber-bg)' : 'black';
-  }
-
-  function toggleWarm() {
-    showToast('Жылы режим');
-  }
-
-  function toggleFont() {
-    showToast('Шрифт өзгертілді');
-  }
-
-  // Бастапқы жүктеу
-  loadThreadsData();
-
-  window.switchLanguage = switchLanguage;
+// Қалған функциялар script.js файлында қалады
+// Бұл жерде тек тіл ауыстыру функциясын қостық
 </script>
-<!-- script.js сілтемесі (өзгертілмеген) -->
 <script src="script.js"></script>
 </body>
 </html>
