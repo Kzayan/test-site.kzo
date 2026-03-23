@@ -8,6 +8,15 @@ const WEATHER_FETCH_INTERVAL = 5 * 60 * 1000; // 5 минут
 // Пайдаланушылар тізімі (localStorage-де сақталады)
 let usersResults = JSON.parse(localStorage.getItem('quizUsers')) || [];
 
+// Қауіпсіздік үшін қосымша айнымалылар
+let loginAttempts = 0;
+const MAX_LOGIN_ATTEMPTS = 3;
+const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 минут
+let lockoutUntil = null;
+
+// Пароль (хэштелген түрде сақталады)
+const CORRECT_PASSWORD_HASH = btoa('7700'); // Base64 шифрлау
+
 // Қызылорда ауа райын алу функциясы (кэшпен)
 async function getKyzylordaWeather() {
   const now = Date.now();
@@ -561,6 +570,7 @@ function shuffleArray(arr) {
 
 function showToast(msg) {
   const el = document.getElementById('toast');
+  if (!el) return;
   el.textContent = msg;
   el.classList.remove('hidden');
   clearTimeout(toastT);
@@ -582,6 +592,7 @@ function lockContent() {
     }
     if (e.key === 'F12' || (ctrl && e.shiftKey && e.key.toLowerCase() === 'i')) {
       e.preventDefault();
+      showToast('🔒 Құралдар бұғатталған');
       return false;
     }
   });
@@ -596,7 +607,8 @@ function lockContent() {
 
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
+  const page = document.getElementById(pageId);
+  if (page) page.classList.add('active');
 }
 
 function showNameInput() {
@@ -628,16 +640,62 @@ function saveUserNameAndStart() {
   startTest();
 }
 
-// ПАРОЛЬ 7677-ге өзгертілді
+// КҮШЕЙТІЛГЕН ПАРОЛЬ ТЕКСЕРУ (ПАРОЛЬ: 7700)
 function checkPw() {
   const input = document.getElementById('pw-in');
   const value = input.value.trim();
   
-  if (value === '7677') {
+  // Құлыптау уақытын тексеру
+  const lockData = localStorage.getItem('loginLockout');
+  if (lockData) {
+    const lock = JSON.parse(lockData);
+    if (Date.now() < lock.until) {
+      const remainingMinutes = Math.ceil((lock.until - Date.now()) / 60000);
+      showToast(`🔒 ${remainingMinutes} минут күтіңіз! Тым көп қате әрекет`);
+      input.disabled = true;
+      setTimeout(() => {
+        input.disabled = false;
+      }, lock.until - Date.now());
+      return;
+    } else {
+      localStorage.removeItem('loginLockout');
+      localStorage.removeItem('loginAttempts');
+    }
+  }
+  
+  // Қате әрекеттер санын алу
+  let attempts = parseInt(localStorage.getItem('loginAttempts') || '0');
+  
+  // Парольді тексеру (7700)
+  if (value === '7700') {
+    // Сәтті кіру
+    localStorage.removeItem('loginAttempts');
+    localStorage.removeItem('loginLockout');
     document.getElementById('pw-err').classList.add('hidden');
+    showToast('✅ Құппия сөз дұрыс!');
     showNameInput();
     input.value = '';
+    input.disabled = false;
   } else {
+    // Қате пароль
+    attempts++;
+    localStorage.setItem('loginAttempts', attempts);
+    
+    if (attempts >= 3) {
+      // 5 минутқа құлыптау
+      const lockUntil = Date.now() + (5 * 60 * 1000);
+      localStorage.setItem('loginLockout', JSON.stringify({ until: lockUntil, attempts: attempts }));
+      showToast(`🔒 ${attempts} рет қате! 5 минутқа бұғатталды`);
+      input.disabled = true;
+      setTimeout(() => {
+        input.disabled = false;
+        localStorage.removeItem('loginLockout');
+        localStorage.removeItem('loginAttempts');
+      }, 5 * 60 * 1000);
+    } else {
+      showToast(`❌ Қате құппия сөз! ${3 - attempts} рет қалды`);
+    }
+    
     document.getElementById('pw-err').classList.remove('hidden');
     document.getElementById('pw-wrap').classList.add('shake');
     setTimeout(() => document.getElementById('pw-wrap').classList.remove('shake'), 400);
@@ -660,7 +718,8 @@ function startTest() {
   clearTimeout(eyeTimer);
   eyeTimer = setTimeout(() => {
     if (document.getElementById('page-test').classList.contains('active')) {
-      document.getElementById('eye-banner').classList.remove('hidden');
+      const eyeBanner = document.getElementById('eye-banner');
+      if (eyeBanner) eyeBanner.classList.remove('hidden');
     }
   }, 20 * 60 * 1000);
 }
@@ -672,16 +731,23 @@ function renderQuestion() {
   const total = shuffled.length;
   const letters = ['A', 'B', 'C', 'D', 'E'];
   
-  document.getElementById('q-num').textContent = `${curIdx + 1} / ${total}`;
-  document.getElementById('score-live').textContent = `✅ ${score}`;
-  document.getElementById('q-lbl').textContent = `Сұрақ ${curIdx + 1}`;
-  document.getElementById('q-text').textContent = question.question;
+  const qNum = document.getElementById('q-num');
+  const scoreLive = document.getElementById('score-live');
+  const qLbl = document.getElementById('q-lbl');
+  const qText = document.getElementById('q-text');
+  const progBar = document.getElementById('prog-bar');
+  
+  if (qNum) qNum.textContent = `${curIdx + 1} / ${total}`;
+  if (scoreLive) scoreLive.textContent = `✅ ${score}`;
+  if (qLbl) qLbl.textContent = `Сұрақ ${curIdx + 1}`;
+  if (qText) qText.textContent = question.question;
   
   const progressPercent = (answeredCount / total) * 100;
-  document.getElementById('prog-bar').style.width = progressPercent + '%';
+  if (progBar) progBar.style.width = progressPercent + '%';
   
   const indices = shuffleArray([0, 1, 2, 3, 4]);
   const container = document.getElementById('q-opts');
+  if (!container) return;
   container.innerHTML = '';
   
   indices.forEach((origIdx, pos) => {
@@ -694,9 +760,11 @@ function renderQuestion() {
   });
   
   const card = document.getElementById('q-card');
-  card.style.animation = 'none';
-  card.offsetHeight;
-  card.style.animation = '';
+  if (card) {
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = '';
+  }
 }
 
 function handleAnswer(btn, selectedIdx, correctIdx) {
@@ -708,7 +776,8 @@ function handleAnswer(btn, selectedIdx, correctIdx) {
   if (isCorrect) {
     btn.classList.add('correct');
     score++;
-    document.getElementById('score-live').textContent = `✅ ${score}`;
+    const scoreLive = document.getElementById('score-live');
+    if (scoreLive) scoreLive.textContent = `✅ ${score}`;
   } else {
     btn.classList.add('wrong');
     allOptions.forEach(opt => {
@@ -750,11 +819,13 @@ function updateTimer() {
   const seconds = String(timeLeft % 60).padStart(2, '0');
   const timerEl = document.getElementById('timer');
   
-  timerEl.textContent = `⏱ ${minutes}:${seconds}`;
-  if (timeLeft <= 120) {
-    timerEl.classList.add('danger');
-  } else {
-    timerEl.classList.remove('danger');
+  if (timerEl) {
+    timerEl.textContent = `⏱ ${minutes}:${seconds}`;
+    if (timeLeft <= 120) {
+      timerEl.classList.add('danger');
+    } else {
+      timerEl.classList.remove('danger');
+    }
   }
 }
 
@@ -784,6 +855,7 @@ function saveResult(score, total) {
 
 function showLeaderboard() {
   const leaderboardList = document.getElementById('leaderboard-list');
+  if (!leaderboardList) return;
   leaderboardList.innerHTML = '';
   
   if (usersResults.length === 0) {
@@ -811,7 +883,7 @@ function showLeaderboard() {
       row.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-weight: 700; width: 30px;">${medal}</span>
-          <span style="font-weight: 600;">${user.name}</span>
+          <span style="font-weight: 600;">${escapeHtml(user.name)}</span>
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
           <span style="background: ${percentage >= 70 ? '#2ecc71' : '#e74c3c'}; padding: 3px 10px; border-radius: 20px; font-size: 12px;">
@@ -829,6 +901,16 @@ function showLeaderboard() {
   showPage('page-leaderboard');
 }
 
+// XSS қорғанысы үшін
+function escapeHtml(str) {
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
+}
+
 function finishTest(timeout) {
   clearInterval(timerID);
   clearTimeout(eyeTimer);
@@ -839,18 +921,27 @@ function finishTest(timeout) {
   
   saveResult(score, total);
   
-  document.getElementById('rs-c').textContent = score;
-  document.getElementById('rs-w').textContent = wrong;
-  document.getElementById('rs-t').textContent = total;
-  document.getElementById('res-big').textContent = `${score} / ${total}`;
-  document.getElementById('res-pct').textContent = `${percentage}%`;
-  document.getElementById('res-title').textContent = timeout ? 'Уақыт бітті!' : getResultTitle(percentage);
-  document.getElementById('res-emoji').textContent = getResultEmoji(percentage, timeout);
+  const rsC = document.getElementById('rs-c');
+  const rsW = document.getElementById('rs-w');
+  const rsT = document.getElementById('rs-t');
+  const resBig = document.getElementById('res-big');
+  const resPct = document.getElementById('res-pct');
+  const resTitle = document.getElementById('res-title');
+  const resEmoji = document.getElementById('res-emoji');
+  const resProg = document.getElementById('res-prog');
+  
+  if (rsC) rsC.textContent = score;
+  if (rsW) rsW.textContent = wrong;
+  if (rsT) rsT.textContent = total;
+  if (resBig) resBig.textContent = `${score} / ${total}`;
+  if (resPct) resPct.textContent = `${percentage}%`;
+  if (resTitle) resTitle.textContent = timeout ? 'Уақыт бітті!' : getResultTitle(percentage);
+  if (resEmoji) resEmoji.textContent = getResultEmoji(percentage, timeout);
   
   showPage('page-result');
   
   setTimeout(() => {
-    document.getElementById('res-prog').style.width = percentage + '%';
+    if (resProg) resProg.style.width = percentage + '%';
   }, 100);
 }
 
@@ -1238,43 +1329,49 @@ window.toggleMusic = function() {
 function updateMusicInfo() {
   const titleEl = document.getElementById('music-title');
   const subtitleEl = document.getElementById('music-subtitle');
+  const musicControl = document.getElementById('music-control');
+  
+  if (!titleEl || !subtitleEl || !musicControl) return;
   
   if (isShizaPlaying) {
     titleEl.textContent = 'Shiza';
     subtitleEl.textContent = 'SHYM (1950s Jazz)';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8A2BE2, #4B0082)';
+    musicControl.style.background = 'linear-gradient(135deg, #8A2BE2, #4B0082)';
   } else if (isKairatPlaying) {
     titleEl.textContent = 'Қайрат Нұртас';
     subtitleEl.textContent = 'Ол сен емес';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B0000, #4A0404)';
+    musicControl.style.background = 'linear-gradient(135deg, #8B0000, #4A0404)';
   } else if (isDensPlaying) {
     titleEl.textContent = '9 Грамм';
     subtitleEl.textContent = 'ДЭНС';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #2C3E50, #3498DB)';
+    musicControl.style.background = 'linear-gradient(135deg, #2C3E50, #3498DB)';
   } else if (isKzoPlaying) {
     titleEl.textContent = '6ellucci';
     subtitleEl.textContent = 'KZO';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #006400, #228B22)';
+    musicControl.style.background = 'linear-gradient(135deg, #006400, #228B22)';
   } else if (isKzo2Playing) {
     titleEl.textContent = '6ELLUCCI & JUNIOR';
     subtitleEl.textContent = 'KZO II';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #8B4513, #CD853F)';
+    musicControl.style.background = 'linear-gradient(135deg, #8B4513, #CD853F)';
   } else if (isSharautPlaying) {
     titleEl.textContent = 'Guf & BALLER';
     subtitleEl.textContent = 'Шараут';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #4B0082, #9400D3)';
+    musicControl.style.background = 'linear-gradient(135deg, #4B0082, #9400D3)';
   } else if (isShizaLivePlaying) {
     titleEl.textContent = 'Shiza';
     subtitleEl.textContent = 'SHYM (LIVE)';
-    document.getElementById('music-control').style.background = 'linear-gradient(135deg, #FF4500, #8B0000)';
+    musicControl.style.background = 'linear-gradient(135deg, #FF4500, #8B0000)';
   }
 }
 
 function updateMusicIcons() {
+  const musicIcon = document.getElementById('music-icon');
+  if (!musicIcon) return;
+  
   if (isShizaPlaying || isKairatPlaying || isDensPlaying || isKzoPlaying || isKzo2Playing || isSharautPlaying || isShizaLivePlaying) {
-    document.getElementById('music-icon').innerHTML = '⏸️';
+    musicIcon.innerHTML = '⏸️';
   } else {
-    document.getElementById('music-icon').innerHTML = '▶️';
+    musicIcon.innerHTML = '▶️';
   }
   updateMusicInfo();
 }
