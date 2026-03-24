@@ -17,6 +17,348 @@ let lockoutUntil = null;
 // Пароль (хэштелген түрде сақталады)
 const CORRECT_PASSWORD_HASH = btoa('7700'); // Base64 шифрлау
 
+// ==================== БЕТ ӘЛПЕТІМЕН КІРУ МОДУЛІ ====================
+let faceRecognitionEnabled = false;
+let videoStream = null;
+let faceAuthAttempts = 0;
+let isFaceAuthActive = false;
+let faceDescriptors = JSON.parse(localStorage.getItem('faceDescriptors')) || {};
+let faceModelLoaded = false;
+let currentFaceVideo = null;
+
+// Face API кітапханаларын жүктеу
+function loadFaceAPILibraries() {
+    return new Promise((resolve, reject) => {
+        if (typeof faceapi !== 'undefined') {
+            resolve();
+            return;
+        }
+        
+        const tfScript = document.createElement('script');
+        tfScript.src = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js';
+        tfScript.onload = () => {
+            const faceScript = document.createElement('script');
+            faceScript.src = 'https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js';
+            faceScript.onload = resolve;
+            faceScript.onerror = reject;
+            document.head.appendChild(faceScript);
+        };
+        tfScript.onerror = reject;
+        document.head.appendChild(tfScript);
+    });
+}
+
+// Face API модельдерін жүктеу
+async function initFaceRecognition() {
+    try {
+        if (faceModelLoaded) return true;
+        
+        showToast('📷 Бет тану жүктелуде...');
+        
+        await loadFaceAPILibraries();
+        
+        const MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+        
+        await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+        await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+        
+        faceModelLoaded = true;
+        faceRecognitionEnabled = true;
+        showToast('✅ Бет тану модулі дайын');
+        
+        return true;
+    } catch (error) {
+        console.error('Face API жүктеу қатесі:', error);
+        showToast('⚠️ Бет тану модулі қолжетімсіз');
+        faceRecognitionEnabled = false;
+        return false;
+    }
+}
+
+// Веб-камераны ашу
+async function startFaceCamera() {
+    try {
+        if (videoStream) stopFaceCamera();
+        
+        videoStream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' } 
+        });
+        
+        let videoElement = document.getElementById('face-video');
+        if (!videoElement) {
+            videoElement = document.createElement('video');
+            videoElement.id = 'face-video';
+            videoElement.autoplay = true;
+            videoElement.playsInline = true;
+            videoElement.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 400px;
+                height: 300px;
+                border-radius: 20px;
+                border: 3px solid #4CAF50;
+                z-index: 10001;
+                box-shadow: 0 0 30px rgba(0,0,0,0.5);
+                object-fit: cover;
+                background: #000;
+            `;
+            document.body.appendChild(videoElement);
+        }
+        
+        videoElement.srcObject = videoStream;
+        await videoElement.play();
+        currentFaceVideo = videoElement;
+        return videoElement;
+    } catch (error) {
+        console.error('Камераны ашу қатесі:', error);
+        showToast('❌ Камераға рұқсат берілмеді');
+        return null;
+    }
+}
+
+// Камераны жабу
+function stopFaceCamera() {
+    if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+    }
+    const videoElement = document.getElementById('face-video');
+    if (videoElement) videoElement.remove();
+    currentFaceVideo = null;
+}
+
+// Бетті тіркеу
+async function registerFace() {
+    if (!faceRecognitionEnabled) {
+        const initialized = await initFaceRecognition();
+        if (!initialized) {
+            showToast('⚠️ Бет тану модулі жүктелмеді');
+            return false;
+        }
+    }
+    
+    if (!currentUserName) {
+        showToast('❌ Алдымен атыңызды енгізіңіз');
+        return false;
+    }
+    
+    showToast('📸 Бетіңізді камераға қаратыңыз...');
+    
+    const video = await startFaceCamera();
+    if (!video) return false;
+    
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    try {
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks().withFaceDescriptor();
+        
+        if (detection) {
+            const faceDescriptor = Array.from(detection.descriptor);
+            faceDescriptors[currentUserName] = {
+                descriptor: faceDescriptor,
+                date: new Date().toLocaleString(),
+                name: currentUserName
+            };
+            localStorage.setItem('faceDescriptors', JSON.stringify(faceDescriptors));
+            showToast(`✅ ${currentUserName} бетіңіз сәтті тіркелді!`);
+            stopFaceCamera();
+            return true;
+        } else {
+            showToast('❌ Бет табылмады, қайталаңыз');
+            stopFaceCamera();
+            return false;
+        }
+    } catch (error) {
+        console.error('Бет тіркеу қатесі:', error);
+        showToast('❌ Бет тіркеу сәтсіз аяқталды');
+        stopFaceCamera();
+        return false;
+    }
+}
+
+// Бет арқылы аутентификация
+async function authenticateWithFace() {
+    if (!faceRecognitionEnabled) {
+        const initialized = await initFaceRecognition();
+        if (!initialized) {
+            showToast('⚠️ Бет тану модулі қолжетімсіз');
+            return false;
+        }
+    }
+    
+    if (isFaceAuthActive) {
+        showToast('⏳ Бет тану жүріп жатыр...');
+        return false;
+    }
+    
+    if (faceAuthAttempts >= 3) {
+        showToast(`🔒 3 рет қате! 5 минут күтіңіз`);
+        setTimeout(() => { faceAuthAttempts = 0; }, 5 * 60 * 1000);
+        return false;
+    }
+    
+    if (Object.keys(faceDescriptors).length === 0) {
+        showToast('📝 Әуелі бетіңізді тіркеңіз');
+        return false;
+    }
+    
+    isFaceAuthActive = true;
+    showToast('📷 Бетіңізді камераға қаратыңыз...');
+    
+    const video = await startFaceCamera();
+    if (!video) { isFaceAuthActive = false; return false; }
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    try {
+        const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks().withFaceDescriptor();
+        
+        if (!detection) {
+            showToast('❌ Бет табылмады');
+            faceAuthAttempts++;
+            stopFaceCamera();
+            isFaceAuthActive = false;
+            return false;
+        }
+        
+        const currentDescriptor = detection.descriptor;
+        let bestMatch = null;
+        let bestDistance = 0.6;
+        
+        for (const [userName, userData] of Object.entries(faceDescriptors)) {
+            const savedDescriptor = new Float32Array(userData.descriptor);
+            const distance = faceapi.euclideanDistance(currentDescriptor, savedDescriptor);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestMatch = userName;
+            }
+        }
+        
+        if (bestMatch) {
+            showToast(`✅ Сәлем, ${bestMatch}! Аутентификация сәтті өтті`);
+            currentUserName = bestMatch;
+            setTimeout(() => { startTest(); }, 1000);
+            faceAuthAttempts = 0;
+            stopFaceCamera();
+            isFaceAuthActive = false;
+            return true;
+        } else {
+            showToast('❌ Бет сәйкестендірілмеді');
+            faceAuthAttempts++;
+            stopFaceCamera();
+            isFaceAuthActive = false;
+            return false;
+        }
+    } catch (error) {
+        console.error('Face auth қатесі:', error);
+        showToast('❌ Аутентификация қатесі');
+        faceAuthAttempts++;
+        stopFaceCamera();
+        isFaceAuthActive = false;
+        return false;
+    }
+}
+
+// Тіркелген беттерді көрсету
+function showRegisteredFaces() {
+    const faceList = Object.keys(faceDescriptors);
+    if (faceList.length === 0) {
+        showToast('📝 Тіркелген бет жоқ');
+        return;
+    }
+    let message = '📋 Тіркелген беттер:\n\n';
+    faceList.forEach((name, index) => {
+        message += `${index + 1}. ${name}\n   📅 ${faceDescriptors[name].date}\n\n`;
+    });
+    alert(message);
+}
+
+// Бетті жою
+function deleteFace() {
+    if (!currentUserName) {
+        showToast('❌ Атыңызды енгізіңіз');
+        return;
+    }
+    if (faceDescriptors[currentUserName]) {
+        delete faceDescriptors[currentUserName];
+        localStorage.setItem('faceDescriptors', JSON.stringify(faceDescriptors));
+        showToast(`✅ ${currentUserName} беті жойылды`);
+    } else {
+        showToast(`❌ ${currentUserName} беті табылмады`);
+    }
+}
+
+// Бет тану интерфейсін қосу
+function addFaceAuthUI() {
+    const existingUI = document.getElementById('face-auth-ui');
+    if (existingUI) return;
+    
+    const pwPage = document.getElementById('page-pw');
+    if (!pwPage) return;
+    
+    const faceAuthDiv = document.createElement('div');
+    faceAuthDiv.id = 'face-auth-ui';
+    faceAuthDiv.style.cssText = `margin-top: 25px; text-align: center; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;`;
+    
+    faceAuthDiv.innerHTML = `
+        <div style="margin-bottom: 15px; font-size: 14px; color: rgba(255,255,255,0.8);">🎭 НЕМЕСЕ БЕТПЕН КІРУ</div>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <button id="face-auth-btn" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <span>😀</span> Бетпен кіру
+            </button>
+            <button id="face-register-btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); border: none; color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <span>📸</span> Бет тіркеу
+            </button>
+            <button id="face-list-btn" style="background: linear-gradient(135deg, #3498db, #2980b9); border: none; color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <span>📋</span> Тізім
+            </button>
+            <button id="face-delete-btn" style="background: linear-gradient(135deg, #e74c3c, #c0392b); border: none; color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                <span>🗑️</span> Бетті жою
+            </button>
+        </div>
+        <div id="face-status" style="margin-top: 12px; font-size: 11px; color: rgba(255,255,255,0.6);">
+            💡 Бетпен кіру үшін алдымен бетіңізді тіркеңіз
+        </div>
+    `;
+    
+    const pwContainer = pwPage.querySelector('.glass-card') || pwPage;
+    pwContainer.appendChild(faceAuthDiv);
+    
+    setTimeout(() => {
+        const authBtn = document.getElementById('face-auth-btn');
+        const registerBtn = document.getElementById('face-register-btn');
+        const listBtn = document.getElementById('face-list-btn');
+        const deleteBtn = document.getElementById('face-delete-btn');
+        if (authBtn) authBtn.addEventListener('click', authenticateWithFace);
+        if (registerBtn) registerBtn.addEventListener('click', registerFace);
+        if (listBtn) listBtn.addEventListener('click', showRegisteredFaces);
+        if (deleteBtn) deleteBtn.addEventListener('click', deleteFace);
+    }, 100);
+}
+
+// Бет тануды инициализациялау
+async function initFaceAuth() {
+    try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            console.log('Веб-камера қолжетімсіз');
+            return;
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(track => track.stop());
+        
+        setTimeout(() => { initFaceRecognition(); }, 3000);
+        setTimeout(() => { addFaceAuthUI(); }, 1000);
+    } catch (error) {
+        console.log('Камера рұқсаты жоқ');
+    }
+}
+// ==================== БЕТ ӘЛПЕТІМЕН КІРУ МОДУЛІ АЯҚТАЛДЫ ====================
+
 // Қызылорда ауа райын алу функциясы (кэшпен)
 async function getKyzylordaWeather() {
   const now = Date.now();
@@ -1037,6 +1379,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   lockContent();
+  
+  // Бет тануды инициализациялау
+  setTimeout(() => {
+    initFaceAuth();
+  }, 5000);
 });
 
 window.checkPw = checkPw;
@@ -1047,6 +1394,10 @@ window.toggleWarm = toggleWarm;
 window.toggleFont = toggleFont;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
+window.registerFace = registerFace;
+window.authenticateWithFace = authenticateWithFace;
+window.showRegisteredFaces = showRegisteredFaces;
+window.deleteFace = deleteFace;
 
 // ============ МУЗЫКА (YouTube API) ============
 let kairatPlayer = null;
