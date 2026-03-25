@@ -1,3 +1,4 @@
+
 const translations = {
   kz: {
     title: "Сайтта жөндеу жұмыстары жүргізілуде",
@@ -9,10 +10,33 @@ const translations = {
   }
 };
 
+// Тілді ауыстыру
 function setLang(lang) {
-  document.getElementById("title").innerText = translations[lang].title;
-  document.getElementById("desc").innerText = translations[lang].desc;
+  localStorage.setItem("lang", lang);
+
+  document.body.innerHTML = document.body.innerHTML
+    .replace(
+      "Сайтта жөндеу жұмыстары жүргізілуде",
+      translations[lang].title
+    )
+    .replace(
+      "Қолайсыздықтар үшін кешірім сұраймыз!",
+      translations[lang].desc
+    );
 }
 
+// Батырмаларды табу (Қаз / Рус)
+document.querySelectorAll("button").forEach(btn => {
+  if (btn.innerText.includes("Рус")) {
+    btn.onclick = () => setLang("ru");
+  }
+  if (btn.innerText.includes("Қаз")) {
+    btn.onclick = () => setLang("kz");
+  }
+});
+
 // Бастапқы тіл
-setLang("kz");
+const savedLang = localStorage.getItem("lang") || "kz";
+if (savedLang === "ru") {
+  setLang("ru");
+}
