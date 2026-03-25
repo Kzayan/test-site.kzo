@@ -1,18 +1,30 @@
-const banner = document.createElement('div');
-banner.style.cssText = `
+const overlay = document.createElement('div');
+overlay.style.cssText = `
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    background: #ff9800;
-    color: #000;
-    text-align: center;
-    padding: 12px;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
     font-family: Arial, sans-serif;
     z-index: 9999;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    text-align: center;
+    padding: 20px;
+    line-height: 1.5;
 `;
-banner.innerHTML = '⚠️ Сайтта жөндеу жұмыстары жүргізілуде / На сайте проводятся технические работы ⚠️';
-document.body.appendChild(banner);
-document.body.style.paddingTop = '40px';
+overlay.innerHTML = `
+    <div>
+        <div>Сайтта жөндеу жұмыстары жүргізілуде.</div>
+        <div>Қолайсыздықтар үшін кешірім сұраймыз!</div>
+        <br>
+        <div>На сайте проводятся технические работы.</div>
+        <div>Приносим извинения за временные неудобства!</div>
+    </div>
+`;
+document.body.appendChild(overlay);
+document.body.style.overflow = 'hidden';
