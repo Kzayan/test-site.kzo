@@ -43,6 +43,10 @@ function createSpecialMusicPlayer() {
         
         window.onYouTubeIframeAPIReady = function() {
             initSpecialPlayer();
+            // Басқа музыка ойнатқыштарын да инициализациялау
+            if (typeof initMusicPlayers === 'function') {
+                initMusicPlayers();
+            }
         };
     } else {
         initSpecialPlayer();
@@ -146,101 +150,115 @@ function createImageModal() {
     
     modal.innerHTML = `
         <div style="
-            max-width: 600px;
+            max-width: 95%;
             width: 100%;
+            max-height: 95%;
             position: relative;
             animation: zoomIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         ">
-            <!-- Сурет слайды -->
-            <div style="position: relative; margin-bottom: 20px;">
+            <!-- Сурет слайды - ТОЛЫҚ ӨЛШЕМДЕ -->
+            <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto;">
                 <img class="memory-slide-img" 
                      src="${MEMORY_IMAGES[0]}" 
                      alt="Естелік сурет" 
                      style="
                          width: 100%;
+                         max-height: 65vh;
+                         object-fit: contain;
                          border-radius: 20px;
                          box-shadow: 0 20px 40px rgba(0,0,0,0.3);
                          border: 3px solid gold;
-                         object-fit: cover;
-                         max-height: 400px;
-                         background: #333;
+                         background: #1a1a2e;
                      "
-                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 200 200\\'%3E%3Crect width=\\'200\\' height=\\'200\\' fill=\\'%23444\\'/%3E%3Ctext x=\\'100\\' y=\\'110\\' text-anchor=\\'middle\\' fill=\\'white\\' font-size=\\'14\\'%3EСурет жүктелмеді%3C/text%3E%3C/svg%3E'">
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 400 300\\'%3E%3Crect width=\\'400\\' height=\\'300\\' fill=\\'%23444\\'/%3E%3Ctext x=\\'200\\' y=\\'150\\' text-anchor=\\'middle\\' fill=\\'white\\' font-size=\\'16\\'%3EСурет жүктелмеді%3C/text%3E%3C/svg%3E'">
                 
                 <!-- Алдыңғы батырма -->
                 <button class="prev-btn" style="
                     position: absolute;
-                    left: -20px;
+                    left: 10px;
                     top: 50%;
                     transform: translateY(-50%);
                     background: rgba(0,0,0,0.6);
                     border: none;
                     color: white;
-                    font-size: 30px;
+                    font-size: 36px;
                     cursor: pointer;
-                    width: 45px;
-                    height: 45px;
+                    width: 50px;
+                    height: 50px;
                     border-radius: 50%;
                     display: ${MEMORY_IMAGES.length === 1 ? 'none' : 'flex'};
                     align-items: center;
                     justify-content: center;
                     transition: all 0.3s;
+                    z-index: 10;
                 ">❮</button>
                 
                 <!-- Келесі батырма -->
                 <button class="next-btn" style="
                     position: absolute;
-                    right: -20px;
+                    right: 10px;
                     top: 50%;
                     transform: translateY(-50%);
                     background: rgba(0,0,0,0.6);
                     border: none;
                     color: white;
-                    font-size: 30px;
+                    font-size: 36px;
                     cursor: pointer;
-                    width: 45px;
-                    height: 45px;
+                    width: 50px;
+                    height: 50px;
                     border-radius: 50%;
                     display: ${MEMORY_IMAGES.length === 1 ? 'none' : 'flex'};
                     align-items: center;
                     justify-content: center;
                     transition: all 0.3s;
+                    z-index: 10;
                 ">❯</button>
             </div>
             
             <!-- Сурет санауышы -->
             <div class="image-counter" style="
                 text-align: center;
-                color: rgba(255,255,255,0.7);
+                color: rgba(255,255,255,0.8);
                 font-size: 14px;
-                margin-bottom: 20px;
+                margin: 15px 0;
+                background: rgba(0,0,0,0.5);
+                padding: 5px 12px;
+                border-radius: 20px;
+                display: inline-block;
             ">1 / ${MEMORY_IMAGES.length}</div>
             
             <!-- Естелік мәтін -->
             <div style="
-                background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,140,0,0.1));
+                background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,140,0,0.15));
                 border-radius: 20px;
-                padding: 24px;
-                margin-bottom: 20px;
+                padding: 20px;
+                margin: 10px 0 15px 0;
                 border: 1px solid rgba(255,215,0,0.3);
                 backdrop-filter: blur(10px);
+                max-width: 700px;
+                width: 100%;
             ">
                 <div style="
-                    font-size: 24px;
+                    font-size: 22px;
                     text-align: center;
-                    margin-bottom: 15px;
+                    margin-bottom: 12px;
+                    color: #FFD700;
                 ">📖 Естеліктер...</div>
                 <div style="
-                    font-size: 16px;
+                    font-size: 15px;
                     line-height: 1.6;
                     color: white;
                     text-align: center;
                 ">${MEMORY_TEXT.replace(/\n/g, '<br>')}</div>
             </div>
             
-            <!-- АРНАЙЫ МУЗЫКА БАТЫРМАСЫ (жаңа) -->
+            <!-- АРНАЙЫ МУЗЫКА БАТЫРМАСЫ -->
             <button id="special-music-btn" style="
                 width: 100%;
+                max-width: 400px;
                 background: linear-gradient(135deg, #8B5CF6, #6B21A5);
                 border: none;
                 color: white;
@@ -264,6 +282,7 @@ function createImageModal() {
             <!-- Тест бастау батырмасы -->
             <button id="close-memory-image" style="
                 width: 100%;
+                max-width: 400px;
                 background: linear-gradient(135deg, gold, #ff8c00);
                 border: none;
                 color: #333;
@@ -294,7 +313,7 @@ function createImageModal() {
         @keyframes zoomIn {
             from {
                 opacity: 0;
-                transform: scale(0.8);
+                transform: scale(0.9);
             }
             to {
                 opacity: 1;
@@ -308,6 +327,12 @@ function createImageModal() {
         #close-memory-image:hover, #special-music-btn:hover {
             transform: scale(1.02);
             box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+        .memory-slide-img {
+            transition: transform 0.3s ease;
+        }
+        .memory-slide-img:hover {
+            transform: scale(1.01);
         }
     `;
     document.head.appendChild(style);
@@ -372,7 +397,7 @@ function updateImage(imgElement, counterElement) {
     if (imgElement) {
         imgElement.src = MEMORY_IMAGES[currentImageIndex];
         imgElement.onerror = function() {
-            this.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23444\'/%3E%3Ctext x=\'100\' y=\'110\' text-anchor=\'middle\' fill=\'white\' font-size=\'14\'%3EСурет жүктелмеді%3C/text%3E%3C/svg%3E';
+            this.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%23444\'/%3E%3Ctext x=\'200\' y=\'150\' text-anchor=\'middle\' fill=\'white\' font-size=\'16\'%3EСурет жүктелмеді%3C/text%3E%3C/svg%3E';
         };
     }
     if (counterElement) {
@@ -1243,6 +1268,7 @@ function goHome() {
 let musicPlayers = {};
 let isMusicPlaying = false;
 let currentTrackIndex = 0;
+let musicInitialized = false;
 
 const playlist = [
     { id: 'belye_rozy', videoId: 'aKL8LxvLPoA', title: 'Белые розы', subtitle: 'Ласковый май' },
@@ -1265,8 +1291,10 @@ function loadYouTubeAPI() {
     document.body.appendChild(tag);
 }
 
-window.onYouTubeIframeAPIReady = function() {
-    playlist.forEach((track, index) => {
+function initMusicPlayers() {
+    if (musicInitialized) return;
+    
+    playlist.forEach((track) => {
         const playerDiv = document.createElement('div');
         playerDiv.id = `${track.id}-player`;
         playerDiv.style.display = 'none';
@@ -1286,18 +1314,19 @@ window.onYouTubeIframeAPIReady = function() {
             },
             events: {
                 onStateChange: (event) => {
-                    if (event.data === 0) {
+                    if (event.data === 0 && isMusicPlaying) {
                         playNextTrack();
                     }
                 }
             }
         });
     });
-    
-    // Арнайы музыка ойнатқышын да дайындау
-    if (typeof initSpecialPlayer === 'function') {
-        initSpecialPlayer();
-    }
+    musicInitialized = true;
+}
+
+window.onYouTubeIframeAPIReady = function() {
+    initMusicPlayers();
+    initSpecialPlayer();
 };
 
 function playNextTrack() {
@@ -1329,10 +1358,10 @@ function updateMusicUI(track) {
 }
 
 function toggleMusic() {
-    if (!musicPlayers[playlist[0]?.id]) {
+    if (!musicInitialized) {
         loadYouTubeAPI();
         setTimeout(() => {
-            if (musicPlayers[playlist[0]?.id]) toggleMusic();
+            if (musicInitialized) toggleMusic();
         }, 1000);
         return;
     }
