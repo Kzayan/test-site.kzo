@@ -13,6 +13,394 @@ const LOCKOUT_DURATION = 5 * 60 * 1000;
 
 const CORRECT_PASSWORD = '7700';
 
+// ==================== ЕСТЕЛІК СУРЕТТЕР ====================
+const MEMORY_IMAGES = [
+    'https://i.ibb.co.com/fzmRbCFb/IMG-20241115-WA0005.jpg',
+    'https://i.ibb.co.com/wNttZZ5p/IMG-20221221-WA0015.jpg'
+];
+
+let currentImageIndex = 0;
+
+// Естелік мәтін
+const MEMORY_TEXT = `Бір кезде жаңа келіп, бәрі бейтаныс болған еді, ал қазір міне — әр бұрыш, әр аудитория таныс болып кеткен. Осы уақыт ішінде қаншама нәрсе өтті: күліп жүрген күндер де, қиналған сәттер де. Бірақ ең бастысы — бәрін бірге өткердік.
+Енді сол күндер артта қалып барады. Бірге отырған парта, бірге талқылаған тапсырмалар, бір-бірімізге көмектескен сәттер — бәрі естелікке айналды.
+Сендермен өткізген уақыт босқа кеткен жоқ, керісінше — өмірдің бір жақсы кезеңі болды.
+Алда әрқайсыңның өз жолдарың бар. Сол жолда адаспай, өз орындарыңды тауып, биікке жетулеріңді тілеймін!
+Сәттілік серіктерің болсын! ✨`;
+
+// ==================== АРНАЙЫ МУЗЫКА (Суреттер астындағы батырма) ====================
+let specialMusicPlayer = null;
+let isSpecialMusicPlaying = false;
+
+function createSpecialMusicPlayer() {
+    if (specialMusicPlayer) return;
+    
+    // YouTube API жүктеу
+    if (typeof YT === 'undefined') {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+        
+        window.onYouTubeIframeAPIReady = function() {
+            initSpecialPlayer();
+        };
+    } else {
+        initSpecialPlayer();
+    }
+}
+
+function initSpecialPlayer() {
+    const playerDiv = document.createElement('div');
+    playerDiv.id = 'special-music-player';
+    playerDiv.style.display = 'none';
+    document.body.appendChild(playerDiv);
+    
+    specialMusicPlayer = new YT.Player('special-music-player', {
+        height: '0',
+        width: '0',
+        videoId: 't1-yL-xvklc', // Баста - Выпускной (Медлячок)
+        playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            enablejsapi: 1,
+            fs: 0,
+            loop: 1,
+            playlist: 't1-yL-xvklc'
+        },
+        events: {
+            onReady: (event) => {
+                console.log('Арнайы музыка дайын');
+            },
+            onStateChange: (event) => {
+                if (event.data === 0) {
+                    // Ән аяқталса, қайта бастау
+                    if (specialMusicPlayer && isSpecialMusicPlaying) {
+                        specialMusicPlayer.playVideo();
+                    }
+                }
+            }
+        }
+    });
+}
+
+function toggleSpecialMusic() {
+    if (!specialMusicPlayer) {
+        createSpecialMusicPlayer();
+        setTimeout(() => {
+            toggleSpecialMusic();
+        }, 1000);
+        return;
+    }
+    
+    const musicBtn = document.getElementById('special-music-btn');
+    const btnText = musicBtn ? musicBtn.querySelector('.btn-text') : null;
+    const btnIcon = musicBtn ? musicBtn.querySelector('.btn-icon') : null;
+    
+    if (isSpecialMusicPlaying) {
+        specialMusicPlayer.pauseVideo();
+        isSpecialMusicPlaying = false;
+        if (btnText) btnText.textContent = 'Естелік әнін тыңдау';
+        if (btnIcon) btnIcon.textContent = '🎵';
+        if (musicBtn) musicBtn.style.background = 'linear-gradient(135deg, #8B5CF6, #6B21A5)';
+    } else {
+        specialMusicPlayer.playVideo();
+        isSpecialMusicPlaying = true;
+        if (btnText) btnText.textContent = 'Ән тоқтату';
+        if (btnIcon) btnIcon.textContent = '⏸️';
+        if (musicBtn) musicBtn.style.background = 'linear-gradient(135deg, #DC2626, #9B2C2C)';
+    }
+}
+
+// Суреттер мен мәтінді көрсету функциясы (тест басталар алдында)
+function showMemoryImagesBeforeTest() {
+    // Егер модальды терезә бар болса, оны жою
+    const existingModal = document.getElementById('memory-image-modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    currentImageIndex = 0;
+    createImageModal();
+}
+
+function createImageModal() {
+    const modal = document.createElement('div');
+    modal.id = 'memory-image-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.5s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        overflow-y: auto;
+        padding: 20px;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            animation: zoomIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+        ">
+            <!-- Сурет слайды -->
+            <div style="position: relative; margin-bottom: 20px;">
+                <img class="memory-slide-img" 
+                     src="${MEMORY_IMAGES[0]}" 
+                     alt="Естелік сурет" 
+                     style="
+                         width: 100%;
+                         border-radius: 20px;
+                         box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                         border: 3px solid gold;
+                         object-fit: cover;
+                         max-height: 400px;
+                         background: #333;
+                     "
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 200 200\\'%3E%3Crect width=\\'200\\' height=\\'200\\' fill=\\'%23444\\'/%3E%3Ctext x=\\'100\\' y=\\'110\\' text-anchor=\\'middle\\' fill=\\'white\\' font-size=\\'14\\'%3EСурет жүктелмеді%3C/text%3E%3C/svg%3E'">
+                
+                <!-- Алдыңғы батырма -->
+                <button class="prev-btn" style="
+                    position: absolute;
+                    left: -20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: rgba(0,0,0,0.6);
+                    border: none;
+                    color: white;
+                    font-size: 30px;
+                    cursor: pointer;
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 50%;
+                    display: ${MEMORY_IMAGES.length === 1 ? 'none' : 'flex'};
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s;
+                ">❮</button>
+                
+                <!-- Келесі батырма -->
+                <button class="next-btn" style="
+                    position: absolute;
+                    right: -20px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background: rgba(0,0,0,0.6);
+                    border: none;
+                    color: white;
+                    font-size: 30px;
+                    cursor: pointer;
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 50%;
+                    display: ${MEMORY_IMAGES.length === 1 ? 'none' : 'flex'};
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s;
+                ">❯</button>
+            </div>
+            
+            <!-- Сурет санауышы -->
+            <div class="image-counter" style="
+                text-align: center;
+                color: rgba(255,255,255,0.7);
+                font-size: 14px;
+                margin-bottom: 20px;
+            ">1 / ${MEMORY_IMAGES.length}</div>
+            
+            <!-- Естелік мәтін -->
+            <div style="
+                background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,140,0,0.1));
+                border-radius: 20px;
+                padding: 24px;
+                margin-bottom: 20px;
+                border: 1px solid rgba(255,215,0,0.3);
+                backdrop-filter: blur(10px);
+            ">
+                <div style="
+                    font-size: 24px;
+                    text-align: center;
+                    margin-bottom: 15px;
+                ">📖 Естеліктер...</div>
+                <div style="
+                    font-size: 16px;
+                    line-height: 1.6;
+                    color: white;
+                    text-align: center;
+                ">${MEMORY_TEXT.replace(/\n/g, '<br>')}</div>
+            </div>
+            
+            <!-- АРНАЙЫ МУЗЫКА БАТЫРМАСЫ (жаңа) -->
+            <button id="special-music-btn" style="
+                width: 100%;
+                background: linear-gradient(135deg, #8B5CF6, #6B21A5);
+                border: none;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                padding: 14px 24px;
+                border-radius: 50px;
+                transition: all 0.3s;
+                font-family: inherit;
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            ">
+                <span class="btn-icon">🎵</span>
+                <span class="btn-text">Естелік әнін тыңдау</span>
+            </button>
+            
+            <!-- Тест бастау батырмасы -->
+            <button id="close-memory-image" style="
+                width: 100%;
+                background: linear-gradient(135deg, gold, #ff8c00);
+                border: none;
+                color: #333;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                padding: 14px 24px;
+                border-radius: 50px;
+                transition: all 0.3s;
+                font-family: inherit;
+            ">✨ Тест бастау ✨</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Анимацияларды қосу
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .prev-btn:hover, .next-btn:hover {
+            background: rgba(0,0,0,0.8);
+            transform: translateY(-50%) scale(1.1);
+        }
+        #close-memory-image:hover, #special-music-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Батырмаларға оқиғалар қосу
+    const prevBtn = modal.querySelector('.prev-btn');
+    const nextBtn = modal.querySelector('.next-btn');
+    const closeBtn = document.getElementById('close-memory-image');
+    const musicBtn = document.getElementById('special-music-btn');
+    const imgElement = modal.querySelector('.memory-slide-img');
+    const counterElement = modal.querySelector('.image-counter');
+    
+    // Алдыңғы сурет
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateImage(imgElement, counterElement);
+                updateButtons(prevBtn, nextBtn);
+            }
+        });
+    }
+    
+    // Келесі сурет
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (currentImageIndex < MEMORY_IMAGES.length - 1) {
+                currentImageIndex++;
+                updateImage(imgElement, counterElement);
+                updateButtons(prevBtn, nextBtn);
+            }
+        });
+    }
+    
+    // Арнайы музыка батырмасы
+    if (musicBtn) {
+        musicBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSpecialMusic();
+        });
+    }
+    
+    // Жабу және тест бастау
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            closeModalAndStart();
+        });
+    }
+    
+    // Сыртқы аймақты басқанда жабу
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModalAndStart();
+        }
+    });
+    
+    // YouTube API және музыка ойнатқышын алдын ала дайындау
+    createSpecialMusicPlayer();
+}
+
+function updateImage(imgElement, counterElement) {
+    if (imgElement) {
+        imgElement.src = MEMORY_IMAGES[currentImageIndex];
+        imgElement.onerror = function() {
+            this.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 200\'%3E%3Crect width=\'200\' height=\'200\' fill=\'%23444\'/%3E%3Ctext x=\'100\' y=\'110\' text-anchor=\'middle\' fill=\'white\' font-size=\'14\'%3EСурет жүктелмеді%3C/text%3E%3C/svg%3E';
+        };
+    }
+    if (counterElement) {
+        counterElement.textContent = `${currentImageIndex + 1} / ${MEMORY_IMAGES.length}`;
+    }
+}
+
+function updateButtons(prevBtn, nextBtn) {
+    if (prevBtn) {
+        prevBtn.style.display = currentImageIndex === 0 ? 'none' : 'flex';
+    }
+    if (nextBtn) {
+        nextBtn.style.display = currentImageIndex === MEMORY_IMAGES.length - 1 ? 'none' : 'flex';
+    }
+}
+
+function closeModalAndStart() {
+    const modal = document.getElementById('memory-image-modal');
+    if (modal) {
+        modal.style.animation = 'fadeOut 0.3s ease';
+        setTimeout(() => {
+            modal.remove();
+            // Тест бастау
+            showNameInput();
+        }, 300);
+    }
+}
+
 // ==================== АУА РАЙЫ ====================
 async function getKyzylordaWeather() {
     const now = Date.now();
@@ -573,7 +961,8 @@ function checkPw() {
         localStorage.removeItem('loginLockout');
         document.getElementById('pw-err').classList.add('hidden');
         showToast('✅ Құппия сөз дұрыс!');
-        showNameInput();
+        // Құпия сөз дұрыс болған соң, суреттерді көрсету
+        showMemoryImagesBeforeTest();
         input.value = '';
         input.disabled = false;
     } else {
@@ -850,12 +1239,11 @@ function goHome() {
     showPage('page-home'); 
 }
 
-// ==================== МУЗЫКА (ЖАҢАРТЫЛҒАН ПЛЕЙЛИСТ) ====================
+// ==================== МУЗЫКА (Фондық) ====================
 let musicPlayers = {};
 let isMusicPlaying = false;
 let currentTrackIndex = 0;
 
-// ЖАҢА ПЛЕЙЛИСТ: Бірінші - Белые розы, Екінші - Забудь
 const playlist = [
     { id: 'belye_rozy', videoId: 'aKL8LxvLPoA', title: 'Белые розы', subtitle: 'Ласковый май' },
     { id: 'zabud', videoId: 'IFCF_NUyiu4', title: 'Забудь', subtitle: 'Юрий Шатунов' },
@@ -905,6 +1293,11 @@ window.onYouTubeIframeAPIReady = function() {
             }
         });
     });
+    
+    // Арнайы музыка ойнатқышын да дайындау
+    if (typeof initSpecialPlayer === 'function') {
+        initSpecialPlayer();
+    }
 };
 
 function playNextTrack() {
@@ -1007,8 +1400,114 @@ function addMusicControl() {
     loadYouTubeAPI();
 }
 
+// ==================== HTML КОДЫН ҚОСУ ====================
+function addHTML() {
+    const html = `
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+            .page { display: none; min-height: 100vh; padding: 20px; }
+            .page.active { display: block; }
+            .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 32px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+            .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; padding: 12px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.2s; width: 100%; }
+            .btn:hover { transform: translateY(-2px); }
+            .input-field { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 50px; font-size: 16px; transition: border-color 0.3s; }
+            .input-field:focus { outline: none; border-color: #667eea; }
+            .shake { animation: shake 0.4s ease; }
+            @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+            .hidden { display: none !important; }
+            .opt { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 16px; margin: 8px 0; background: #f5f5f5; border: 2px solid transparent; border-radius: 16px; cursor: pointer; transition: all 0.2s; font-size: 14px; text-align: left; }
+            .opt-L { width: 30px; height: 30px; background: #667eea; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+            .opt.correct { background: #d4edda; border-color: #28a745; }
+            .opt.wrong { background: #f8d7da; border-color: #dc3545; }
+            .opt.locked { pointer-events: none; opacity: 0.8; }
+            #timer { font-size: 24px; font-weight: bold; font-family: monospace; background: #333; color: white; padding: 8px 16px; border-radius: 50px; display: inline-block; }
+            #timer.danger { background: #dc3545; animation: pulse 1s infinite; }
+            @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+            .progress-bar { width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; margin: 16px 0; }
+            .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s; }
+            .result-card { text-align: center; padding: 32px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 24px; color: white; margin-bottom: 20px; }
+            .leaderboard-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        </style>
+        
+        <!-- Құпия сөз беті -->
+        <div id="page-login" class="page active">
+            <div class="container">
+                <h1 style="text-align: center; margin-bottom: 24px;">🔐 Java Тест</h1>
+                <div id="pw-wrap">
+                    <input type="password" id="pw-in" class="input-field" placeholder="Құпия сөзді енгізіңіз" style="margin-bottom: 16px;">
+                    <button class="btn" onclick="checkPw()">Кіру</button>
+                    <p id="pw-err" class="hidden" style="color: red; margin-top: 12px; text-align: center;">❌ Қате құпия сөз</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Есім енгізу беті -->
+        <div id="page-name-input" class="page">
+            <div class="container">
+                <h1 style="text-align: center; margin-bottom: 24px;">👤 Есіміңіз</h1>
+                <input type="text" id="name-input" class="input-field" placeholder="Аты-жөніңіз" style="margin-bottom: 16px;">
+                <button class="btn" onclick="saveUserNameAndStart()">Тест бастау</button>
+                <p id="name-err" class="hidden" style="color: red; margin-top: 12px; text-align: center;">❌ Есіміңізді енгізіңіз</p>
+                <button class="btn" style="margin-top: 12px; background: #6c757d;" onclick="showLeaderboard()">🏆 Рейтинг</button>
+            </div>
+        </div>
+        
+        <!-- Тест беті -->
+        <div id="page-test" class="page">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <span id="q-num">0 / 0</span>
+                    <span id="timer">⏱ 30:00</span>
+                    <span id="score-live">✅ 0</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="prog-bar" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <h2 id="q-lbl" style="font-size: 18px; color: #667eea; margin-bottom: 12px;">Сұрақ 1</h2>
+                <p id="q-text" style="font-size: 18px; font-weight: 600; margin-bottom: 24px;"></p>
+                <div id="q-opts"></div>
+            </div>
+        </div>
+        
+        <!-- Нәтиже беті -->
+        <div id="page-result" class="page">
+            <div class="container">
+                <div class="result-card">
+                    <div id="res-emoji" style="font-size: 64px;">🏆</div>
+                    <h2 id="res-title">Тамаша!</h2>
+                    <div id="res-big" style="font-size: 48px; font-weight: bold; margin: 16px 0;">0 / 0</div>
+                    <div class="progress-bar">
+                        <div id="res-prog" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 24px; margin-top: 20px;">
+                        <div>✅ Дұрыс: <strong id="rs-c">0</strong></div>
+                        <div>❌ Қате: <strong id="rs-w">0</strong></div>
+                        <div>📊 Пайыз: <strong id="res-pct">0%</strong></div>
+                    </div>
+                </div>
+                <button class="btn" onclick="showLeaderboard()" style="margin-bottom: 12px;">🏆 Рейтинг</button>
+                <button class="btn" onclick="retakeTest()" style="margin-bottom: 12px; background: #28a745;">🔄 Қайта тапсыру</button>
+                <button class="btn" onclick="goHome()" style="background: #6c757d;">🏠 Басты бет</button>
+            </div>
+        </div>
+        
+        <!-- Рейтинг беті -->
+        <div id="page-leaderboard" class="page">
+            <div class="container">
+                <h1 style="text-align: center; margin-bottom: 24px;">🏆 Үздіктер</h1>
+                <div id="leaderboard-list"></div>
+                <button class="btn" onclick="goHome()" style="margin-top: 20px; background: #6c757d;">🔙 Артқа</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.innerHTML = html;
+}
+
 // ==================== DOM READY ====================
 document.addEventListener('DOMContentLoaded', function() {
+    addHTML();
     addTimeBanner();
     setInterval(updateTimeInBanner, 1000);
     setInterval(() => {
@@ -1052,3 +1551,4 @@ window.showLeaderboard = showLeaderboard;
 window.retakeTest = retakeTest;
 window.goHome = goHome;
 window.toggleMusic = toggleMusic;
+window.toggleSpecialMusic = toggleSpecialMusic;
