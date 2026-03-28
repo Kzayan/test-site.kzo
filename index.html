@@ -2,24 +2,25 @@
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qazaq TTS – Мәтінді аудиоға айналдыру</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <div class="header">
-        <h1>Qazaq TTS Studio</h1>
-        <p>Жасанды интеллект көмегімен мәтінді қазақша аудиоға айналдырыңыз</p>
+        <h1>🎙️ Qazaq TTS Studio</h1>
+        <p>Жасанды интеллект көмегімен мәтінді қазақша аудиоға айналдыру</p>
     </div>
 
-    <div class="content">
-        <div class="textarea-group">
-            <label>📝 Қазақша мәтініңіз:</label>
-            <textarea id="textInput" rows="5" placeholder="Мысалы: Сәлем, бұл жасанды интеллект арқылы жасалған қазақша дауыс. Технологияның мүмкіндігі шексіз!"></textarea>
-            <div class="char-counter">
+    <div class="main-content">
+        <div class="input-section">
+            <label for="textInput">📝 Қазақша мәтініңіз:</label>
+            <textarea id="textInput" rows="5" placeholder="Мысалы: Сәлеметсіз бе! Бұл жасанды интеллект арқылы жасалған қазақша дауыс."></textarea>
+            <div class="char-info">
                 <span id="charCount">0</span> символ
+                <span id="warningMsg" class="warning"></span>
             </div>
         </div>
 
@@ -28,34 +29,28 @@
                 🎧 Аудио жасау
             </button>
             <button id="clearBtn" class="btn btn-secondary">
-                🧹 Тазалау
+                🗑️ Тазалау
             </button>
         </div>
 
-        <div class="audio-section" id="audioSection" style="display: none;">
-            <div class="audio-title">
+        <div id="audioContainer" class="audio-container" style="display: none;">
+            <div class="audio-header">
                 <span>🔊 Дыбыстық нәтиже</span>
             </div>
-            <audio id="audioPlayer" controls preload="metadata">
-                <source src="" type="audio/mpeg">
-                Браузеріңіз аудио элементін қолдамайды.
-            </audio>
-            <div class="download-area">
-                <button id="downloadBtn" class="btn btn-download">
-                    ⬇️ Аудионы жүктеп алу (MP3)
-                </button>
-                <span class="api-info">Қазақша TTS API</span>
-            </div>
+            <audio id="audioPlayer" controls></audio>
+            <button id="downloadBtn" class="btn btn-download">
+                💾 Аудионы жүктеп алу (MP3)
+            </button>
         </div>
 
-        <div id="statusMsg" class="status-message">
-            ✨ Мәтінді енгізіп, «Аудио жасау» батырмасын басыңыз.
+        <div id="status" class="status">
+            ✨ Мәтінді енгізіп, «Аудио жасау» батырмасын басыңыз
         </div>
     </div>
-    
-    <footer>
-        ⚡ Қазақ тіліндегі жасанды интеллект | Дыбыстау технологиясы
-    </footer>
+
+    <div class="footer">
+        ⚡ Қазақ тіліндегі дыбыстау технологиясы | Тегін сервис
+    </div>
 </div>
 
 <script src="script.js"></script>
