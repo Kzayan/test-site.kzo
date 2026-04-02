@@ -1,148 +1,69 @@
 const express = require('express');
-const { body, validationResult } = require('express-validator');
-const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
+const { authenticateToken } = require('../middleware/auth.middleware');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
-// SMS код жіберу
-router.post('/send-code', [
-  body('phone').isMobilePhone().withMessage('Invalid phone number')
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
+const MATERIAL_PRICES = {
+  PVC: 15000,
+  ALUMINUM: 25000,
+  WOOD: 35000,
+  WOOD_ALUMINUM: 45000
+};
 
-  const { phone } = req.body;
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
+const GLASS_PRICES = {
+  SINGLE: 5000,
+  DOUBLE: 8000,
+  TRIPLE: 12000,
+  ENERGY_SAVING: 15000,
+  TINTED: 10000
+};
 
+router.post('/', authenticateToken, async (req, res) => {
   try {
-    await prisma.verificationCode.create({
-      data: {
-        phone,
-        code,
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000)
-      }
-    });
+    const {
+      productType,
+      width,
+      height,
+      material,
+      glassType,
+      hasInstallation = true,
+      distance = 10
+    } = req.body;
 
-    // Development режимінде кодты консольға шығару
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`📱 Verification code for ${phone}: ${code}`);
-    }
+    const area = (width * height) / 1000000;
 
-    res.json({ message: 'Code sent successfully', devCode: process.env.NODE_ENV !== 'production' ? code : undefined });
-  } catch (error) {
-    console.error('Send code error:', error);
-    res.status(500).json({ error: 'Failed to send code' });
-  }
-});
-
-// Кіру/Тіркелу
-router.post('/verify', [
-  body('phone').isMobilePhone(),
-  body('code').isLength({ min: 6, max: 6 })
-], async (req, res) => {
-  const { phone, code, name, role } = req.body;
-
-  try {
-    const verification = await prisma.verificationCode.findFirst({
-      where: {
-        phone,
-        code,
-        expiresAt: { gt: new Date() },
-        isUsed: false
-      }
-    });
-
-    if (!verification) {
-      return res.status(400).json({ error: 'Invalid or expired code' });
-    }
-
-    await prisma.verificationCode.update({
-      where: { id: verification.id },
-      data: { isUsed: true }
-    });
-
-    let user = await prisma.user.findUnique({
-      where: { phone },
-      include: { masterProfile: true }
-    });
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          phone,
-          name: name || null,
-          role: role || 'CLIENT',
-          isVerified: true
-        },
-        include: { masterProfile: true }
-      });
-
-      if (role === 'MASTER') {
-        await prisma.masterProfile.create({
-          data: {
-            userId: user.id,
-            isAvailable: true,
-            specialty: []
-          }
-        });
-        
-        user = await prisma.user.findUnique({
-          where: { id: user.id },
-          include: { masterProfile: true }
-        });
-      }
-    }
-
-    const token = jwt.sign(
-      { userId: user.id, phone: user.phone, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    let materialPrice = MATERIAL_PRICES[material] * area;
+    let glassPrice = GLASS_PRICES[glassType] * area;
+    
+    let workPrice = materialPrice * 0.3;
+    if (!hasInstallation) workPrice = 0;
+    
+    let transportPrice = distance * 500;
+    
+    let discount = 0;
+    if (area > 5) discount = 0.05;
+    if (area > 10) discount = 0.1;
+    
+    let totalPrice = (materialPrice + glassPrice + workPrice + transportPrice) * (1 - discount);
 
     res.json({
-      token,
-      user: {
-        id: user.id,
-        phone: user.phone,
-        name: user.name,
-        role: user.role,
-        isVerified: user.isVerified,
-        masterProfile: user.masterProfile
+      area: area.toFixed(2),
+      materialPrice: Math.round(materialPrice),
+      glassPrice: Math.round(glassPrice),
+      workPrice: Math.round(workPrice),
+      transportPrice: Math.round(transportPrice),
+      discount: discount * 100,
+      totalPrice: Math.round(totalPrice),
+      breakdown: {
+        material: Math.round(materialPrice),
+        glass: Math.round(glassPrice),
+        work: Math.round(workPrice),
+        transport: Math.round(transportPrice)
       }
     });
   } catch (error) {
-    console.error('Verify error:', error);
-    res.status(500).json({ error: 'Verification failed' });
-  }
-});
-
-// Ағымдағы пайдаланушыны алу
-router.get('/me', async (req, res) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-      include: { masterProfile: true }
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    console.error('Calculation error:', error);
+    res.status(500).json({ error: 'Calculation failed' });
   }
 });
 
