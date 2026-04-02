@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Social - Тест</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .post-list {
+            margin-top: 30px;
+        }
+        
+        .post-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌌 Nebula Social</h1>
+        <p class="subtitle">Тест режимі - Серверді тексеру</p>
+        
+        <div class="form-group">
+            <input type="email" id="email" placeholder="Email" value="test@example.com">
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" placeholder="Құпия сөз" value="123456">
+        </div>
+        
+        <button onclick="testAPI()">🔌 Серверді тексеру</button>
+        <button onclick="testRegister()" style="margin-top: 10px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            📝 Тіркелуді тексеру
+        </button>
+        <button onclick="getPosts()" style="margin-top: 10px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            📰 Посттарды көру
+        </button>
+        
+        <div id="status" class="status"></div>
+        <div id="posts" class="post-list"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        
+        async function testAPI() {
+            showStatus('Серверге сұраныс жіберілуде...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_URL}/test`);
+                const data = await response.json();
+                showStatus(`✅ ${data.message}`, 'success');
+                console.log('Сервер жауабы:', data);
+            } catch (error) {
+                showStatus(`❌ Қате: ${error.message}\n\nСерверді іске қосыңыз: node backend/test-server.js`, 'error');
+            }
+        }
+        
+        async function testRegister() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            showStatus('Тіркелу жүруде...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                showStatus(`✅ ${data.message}\nToken: ${data.token}`, 'success');
+            } catch (error) {
+                showStatus(`❌ Қате: ${error.message}`, 'error');
+            }
+        }
+        
+        async function getPosts() {
+            showStatus('Посттар жүктелуде...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_URL}/posts`);
+                const data = await response.json();
+                
+                const postsHtml = data.posts.map(post => `
+                    <div class="post-card">
+                        <strong>📝 Пост #${post.id}</strong>
+                        <p>${post.content}</p>
+                        <small>❤️ ${post.likes} лайк | 💬 ${post.comments} пікір</small>
+                    </div>
+                `).join('');
+                
+                document.getElementById('posts').innerHTML = postsHtml;
+                showStatus(`✅ ${data.posts.length} пост жүктелді`, 'success');
+            } catch (error) {
+                showStatus(`❌ Қате: ${error.message}`, 'error');
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = message;
+            statusDiv.className = 'status';
+            
+            if (type === 'loading') {
+                statusDiv.innerHTML = `<div class="loading"></div> ${message}`;
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#e7f3ff';
+                statusDiv.style.color = '#004085';
+            } else if (type === 'success') {
+                statusDiv.classList.add('success');
+            } else if (type === 'error') {
+                statusDiv.classList.add('error');
+            }
+        }
+        
+        // Автоматты түрде серверді тексеру
+        setTimeout(() => {
+            testAPI();
+        }, 500);
+    </script>
+</body>
+</html>
