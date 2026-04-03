@@ -1,0 +1,324 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at 10% 20%, #0a0f1e, #05080f);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.app-container {
+    max-width: 720px;
+    width: 100%;
+    background: rgba(12, 18, 34, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 56px;
+    padding: 24px 28px 32px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.logo-area h1 {
+    font-size: 26px;
+    font-weight: 700;
+    background: linear-gradient(125deg, #ffffff, #b0c4ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.logo-area span {
+    font-weight: 500;
+    background: none;
+    -webkit-background-clip: unset;
+    color: #ffd966;
+}
+
+.stats {
+    display: flex;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 100px;
+    padding: 6px 18px;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+}
+
+.stat-item {
+    display: flex;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.stat-label {
+    color: #9aa4bf;
+}
+
+.stat-value {
+    font-weight: 700;
+    color: #ffd966;
+    font-size: 18px;
+}
+
+.stat-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.2);
+}
+
+/* Category Tabs */
+.category-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    background: rgba(0,0,0,0.3);
+    padding: 6px;
+    border-radius: 60px;
+    width: fit-content;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 40px;
+    color: #b9c3e6;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.tab-btn.active {
+    background: #2d3eff;
+    color: white;
+    box-shadow: 0 2px 8px rgba(45, 62, 255, 0.3);
+}
+
+/* Quiz Info Bar */
+.quiz-info-bar {
+    display: flex;
+    justify-content: space-between;
+    background: #0f1425;
+    border-radius: 60px;
+    padding: 12px 24px;
+    margin-bottom: 28px;
+}
+
+.progress-badge, .timer-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.timer-badge {
+    color: #ffaa44;
+    background: #1e293b;
+    padding: 4px 16px;
+    border-radius: 40px;
+}
+
+/* Question Card */
+.question-card {
+    background: linear-gradient(145deg, #10172f, #0b1022);
+    border-radius: 48px;
+    padding: 32px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.question-number {
+    font-size: 13px;
+    color: #8f9bb3;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: inline-block;
+}
+
+.question-text {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 32px;
+    color: #f0f3ff;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 36px;
+}
+
+.option {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 16px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #e2e8ff;
+}
+
+.option:hover {
+    background: rgba(45, 62, 255, 0.2);
+    border-color: #2d3eff;
+    transform: translateX(4px);
+}
+
+.option.selected {
+    background: #2d3eff;
+    border-color: #ffffff;
+    color: white;
+    box-shadow: 0 4px 14px rgba(45, 62, 255, 0.4);
+}
+
+.submit-btn {
+    background: linear-gradient(95deg, #f97316, #ef4444);
+    width: 100%;
+    border: none;
+    padding: 16px;
+    border-radius: 60px;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.submit-btn:active {
+    transform: scale(0.97);
+}
+
+/* Global Progress */
+.global-progress {
+    margin: 20px 0 24px;
+}
+
+.progress-bar-bg {
+    height: 8px;
+    background: #1e2740;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f97316, #ffd966);
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #9aa4bf;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.2s;
+    z-index: 1000;
+}
+
+.modal.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-content {
+    background: #121b2f;
+    border-radius: 48px;
+    padding: 40px 32px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.modal-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+}
+
+.final-score {
+    font-size: 52px;
+    font-weight: 800;
+    color: #ffd966;
+    margin: 16px 0;
+}
+
+.final-details {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin: 20px 0;
+}
+
+.restart-btn {
+    background: #2d3eff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    font-size: 12px;
+    color: #4a5578;
+    margin-top: 20px;
+}
+
+@media (max-width: 550px) {
+    .app-container {
+        padding: 18px;
+    }
+    .question-text {
+        font-size: 20px;
+    }
+    .option {
+        padding: 12px 18px;
+        font-size: 14px;
+    }
+}
