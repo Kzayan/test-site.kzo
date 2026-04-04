@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель - 31 арна</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-panel {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #1e1e1e;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        .login-form {
+            text-align: center;
+            padding: 40px;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            background: #2c2c2c;
+            border: 1px solid #e31e24;
+            border-radius: 40px;
+            color: white;
+            font-size: 16px;
+        }
+        .login-form button, .admin-actions button {
+            background: #e31e24;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .login-form button:hover, .admin-actions button:hover {
+            background: #b0171c;
+        }
+        .link-item {
+            background: #2c2c2c;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .link-item input {
+            flex: 2;
+            padding: 10px;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 30px;
+            color: white;
+        }
+        .link-item input:first-child { flex: 1; }
+        .link-item button {
+            background: #333;
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .delete-btn { background: #e31e24; }
+        .add-link {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        .add-link input {
+            flex: 1;
+            padding: 12px;
+            background: #2c2c2c;
+            border: 1px solid #e31e24;
+            border-radius: 40px;
+            color: white;
+        }
+        .save-message {
+            margin-top: 20px;
+            color: #4caf50;
+            text-align: center;
+        }
+        h2 { color: #e31e24; border-left: 4px solid #e31e24; padding-left: 15px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #e31e24; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="admin-panel" id="adminPanel">
+            <!-- Логин формасы -->
+            <div id="loginSection">
+                <div class="login-form">
+                    <i class="fas fa-lock" style="font-size: 48px; color: #e31e24;"></i>
+                    <h2>Админ кіру</h2>
+                    <input type="password" id="adminPassword" placeholder="Пароль енгізіңіз">
+                    <button id="loginBtn">Кіру</button>
+                    <p style="margin-top: 20px; font-size: 12px; opacity: 0.6;">Демо пароль: admin123</p>
+                </div>
+            </div>
+            
+            <!-- Админ басқару тақтасы (жасырын) -->
+            <div id="adminContent" style="display: none;">
+                <a href="index.html" class="back-link" target="_blank"><i class="fas fa-eye"></i> Бетті көру</a>
+                <h2><i class="fas fa-link"></i> Сілтемелерді басқару</h2>
+                <div id="linksList"></div>
+                <div class="add-link">
+                    <input type="text" id="newLinkName" placeholder="Сілтеме атауы (мысалы: Instagram)">
+                    <input type="text" id="newLinkUrl" placeholder="URL мекенжайы (https://...)">
+                    <button id="addLinkBtn">Қосу</button>
+                </div>
+                <div id="saveMessage" class="save-message"></div>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html>
