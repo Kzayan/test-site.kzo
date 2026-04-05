@@ -1,31 +1,230 @@
-<!DOCTYPE html><html lang="ru" data-theme="minimalist"><head>
+<!DOCTYPE html>
+<html lang="kk">
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        Вход - QuizBQ    </title>
-    <link rel="stylesheet" href="/css/style.css">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ayan KZ | Жеке бренд сайты</title>
+    <!-- Tailwind CSS CDN + Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* қосымша анимациялар, smooth scroll, drag-drop стилі */
+        html { scroll-behavior: smooth; }
+        body { transition: background-color 0.3s, color 0.2s; }
+        .toast-message {
+            position: fixed; bottom: 25px; right: 25px; z-index: 9999;
+            background: #1f2937; color: white; padding: 12px 24px;
+            border-radius: 40px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            font-weight: 500; backdrop-filter: blur(4px);
+            transform: translateX(400px); transition: transform 0.3s ease;
+        }
+        .toast-message.show { transform: translateX(0); }
+        .dark .toast-message { background: #0f172a; color: #e2e8f0; border-left: 4px solid #3b82f6; }
+        .project-card, .service-item { transition: all 0.2s ease; }
+        .project-card:hover { transform: translateY(-5px); }
+        /* drag & drop аймағы */
+        .dropzone { border: 2px dashed #3b82f6; background: #eff6ff; transition: 0.2s; }
+        .dark .dropzone { background: #1e293b; border-color: #60a5fa; }
+        .dropzone.drag-over { background: #dbeafe; border-color: #2563eb; transform: scale(0.99); }
+        /* admin panel үшін қарапайым скролл */
+        .admin-card { border-radius: 1rem; }
+        button, a { cursor: pointer; }
+        img { object-fit: cover; }
+    </style>
 </head>
+<body class="bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-<body>
-    <div class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-        <div class="card" style="width: 100%; max-width: 400px; position: relative;">
-            <button class="theme-switch" onclick="toggleTheme()" title="Переключить тему" style="position: absolute; top: 1rem; right: 1rem;">🌓</button>
-            <h1 style="text-align: center; margin-bottom: 2rem;">QuizBQ</h1>
-
-            
-            <form action="/login" method="POST">
-                <div class="form-group">
-                    <label for="phone_last4">Последние 4 цифры телефона</label>
-                    <input type="text" id="phone_last4" name="phone_last4" class="form-control" maxlength="4" pattern="\d{4}" required="" placeholder="0000">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
-            </form>
-
-            <p style="text-align: center; margin-top: 1.5rem; color: var(--gray-500); font-size: 0.75rem;">
-            </p>
-        </div>
+    <!-- DARK MODE TOGGLE -->
+    <div class="fixed top-5 right-5 z-50">
+        <button id="darkModeToggle" class="bg-gray-200 dark:bg-gray-700 p-3 rounded-full shadow-lg hover:scale-105 transition">
+            <i class="fas fa-moon dark:hidden text-gray-700"></i>
+            <i class="fas fa-sun hidden dark:inline text-yellow-300"></i>
+        </button>
     </div>
 
+    <!-- NAVIGATION -->
+    <nav class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-6xl mx-auto px-5 py-4 flex flex-wrap justify-between items-center">
+            <a href="#" class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ayan KZ</a>
+            <div class="flex gap-6 text-gray-700 dark:text-gray-300 font-medium">
+                <a href="#home" class="hover:text-blue-600 transition">Басты</a>
+                <a href="#about" class="hover:text-blue-600 transition">Мен туралы</a>
+                <a href="#projects" class="hover:text-blue-600 transition">Жобалар</a>
+                <a href="#services" class="hover:text-blue-600 transition">Қызметтер</a>
+                <a href="#contact" class="hover:text-blue-600 transition">Байланыс</a>
+            </div>
+        </div>
+    </nav>
 
-</body></html>
+    <main class="max-w-6xl mx-auto px-5 py-10 space-y-24">
+        <!-- HOME секция -->
+        <section id="home" class="text-center py-10 md:py-20">
+            <div class="inline-block p-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mb-4">
+                <div class="bg-white dark:bg-gray-900 rounded-full p-1">
+                    <i class="fas fa-code text-4xl text-blue-600 dark:text-blue-400 p-4"></i>
+                </div>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight">Ayan KZ</h1>
+            <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mt-4">IT маман | Веб-әзірлеуші | Креатив дизайнер</p>
+            <div class="mt-8 flex justify-center gap-5">
+                <a href="#projects" class="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold shadow-md hover:bg-blue-700 transition">Жобаларды көру</a>
+                <a href="#contact" class="px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-full font-semibold hover:bg-blue-50 dark:hover:bg-blue-950 transition">Хабарласу</a>
+            </div>
+        </section>
+
+        <!-- МЕН ТУРАЛЫ (динамикалық) -->
+        <section id="about" class="bg-gray-50 dark:bg-gray-800/40 rounded-3xl p-8 md:p-12 shadow-sm">
+            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3"><i class="fas fa-user-astronaut text-blue-500"></i> Мен туралы</h2>
+            <div id="aboutTextContainer" class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed"></div>
+        </section>
+
+        <!-- ЖОБАЛАР (динамикалық) -->
+        <section id="projects">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-laptop-code text-blue-500"></i> Жобаларым</h2>
+            <div id="projectsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </section>
+
+        <!-- ҚЫЗМЕТТЕР (динамикалық) -->
+        <section id="services" class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 md:p-12">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-cogs text-blue-500"></i> Қызметтер</h2>
+            <div id="servicesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- БАЙЛАНЫС -->
+        <section id="contact" class="text-center py-8">
+            <h2 class="text-3xl font-bold mb-6">Байланыс</h2>
+            <a href="https://instagram.com/aian_wtkkz" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-orange-500 text-white px-8 py-4 rounded-full text-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:scale-105">
+                <i class="fab fa-instagram text-2xl"></i> Instagram арқылы хабарласыңыз
+            </a>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 border-t border-gray-200 dark:border-gray-800 mt-16 text-gray-500 text-sm">
+        <p>© 2025 Ayan KZ. Барлық құқықтар қорғалған.</p>
+    </footer>
+
+    <script>
+        // ------------- ДЕРЕКТЕРДІ БАСҚАРУ (localStorage) -------------
+        const STORAGE_KEY = "ayan_portfolio_data";
+
+        // әдепкі деректер
+        const defaultData = {
+            aboutText: "Менің атым Ayan KZ. IT саласында 5+ жыл тәжірибем бар. Веб-сайттар, интерактивті интерфейстер және full-stack шешімдер құрастырамын. Клиенттерге заманауи, жылдам және әдемі цифрлық өнімдер ұсынамын.",
+            services: ["🌐 Веб-сайт құру (HTML/CSS/JS)", "⚛️ React / Vue фронтенд", "🖥️ Node.js & Python бэкенд", "🎨 UI/UX дизайн (Figma)", "📱 Мобильді адаптив", "🚀 SEO оңтайландыру"],
+            projects: [
+                { id: "proj1", title: "Portfolio 360", description: "Интерактивті портфолио, full animation", image: "https://placehold.co/400x300/1e3a8a/white?text=Portfolio+360", link: "#" },
+                { id: "proj2", title: "EcoMarket", description: "Эко-өнімдер интернет-дүкені", image: "https://placehold.co/400x300/166534/white?text=EcoMarket", link: "#" },
+                { id: "proj3", title: "AI Chat Dashboard", description: "Жасанды интеллект чат-бот админкасы", image: "https://placehold.co/400x300/831843/white?text=AI+Dashboard", link: "#" }
+            ]
+        };
+
+        // деректерді жүктеу
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch(e) { return defaultData; }
+            } else {
+                // әдепкі сақтау
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
+                return defaultData;
+            }
+        }
+
+        let portfolioData = loadData();
+
+        function saveToLocalStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolioData));
+        }
+
+        // --- UI жаңарту (сайт) ---
+        function renderAbout() {
+            const container = document.getElementById("aboutTextContainer");
+            if (container) container.innerHTML = portfolioData.aboutText;
+        }
+
+        function renderProjects() {
+            const grid = document.getElementById("projectsGrid");
+            if (!grid) return;
+            if (!portfolioData.projects || portfolioData.projects.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center text-gray-500">Әзірше жобалар жоқ. Админ панель арқылы қосыңыз.</div>`;
+                return;
+            }
+            grid.innerHTML = portfolioData.projects.map(proj => `
+                <div class="project-card bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700">
+                    <img src="${proj.image || 'https://placehold.co/400x300/334155/white?text=No+Image'}" alt="${proj.title}" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-xl font-bold">${escapeHtml(proj.title)}</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mt-2">${escapeHtml(proj.description)}</p>
+                        <a href="${proj.link}" target="_blank" class="inline-block mt-4 text-blue-600 font-medium hover:underline">Толығырақ →</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderServices() {
+            const container = document.getElementById("servicesList");
+            if (!container) return;
+            if (!portfolioData.services || portfolioData.services.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center text-gray-400">Қызметтер тізімі бос</div>`;
+                return;
+            }
+            container.innerHTML = portfolioData.services.map(service => `
+                <div class="service-item bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex items-center gap-3 text-lg font-medium">
+                    <i class="fas fa-check-circle text-blue-500"></i> ${escapeHtml(service)}
+                </div>
+            `).join('');
+        }
+
+        function refreshAll() {
+            renderAbout();
+            renderProjects();
+            renderServices();
+        }
+
+        // қарапайым XSS қорғанысы
+        function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+        // --- DARK MODE ---
+        function initDarkMode() {
+            const isDark = localStorage.getItem("darkMode") === "true";
+            if (isDark) document.documentElement.classList.add("dark");
+            else document.documentElement.classList.remove("dark");
+            const toggle = document.getElementById("darkModeToggle");
+            if (toggle) {
+                toggle.addEventListener("click", () => {
+                    const nowDark = document.documentElement.classList.toggle("dark");
+                    localStorage.setItem("darkMode", nowDark);
+                });
+            }
+        }
+
+        // Toast хабарлама (сыртқы шақырулар үшін)
+        function showToast(message, type = "success") {
+            let toastDiv = document.querySelector(".toast-message");
+            if (!toastDiv) {
+                toastDiv = document.createElement("div");
+                toastDiv.className = "toast-message";
+                document.body.appendChild(toastDiv);
+            }
+            toastDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i> ${message}`;
+            toastDiv.classList.add("show");
+            setTimeout(() => toastDiv.classList.remove("show"), 2500);
+        }
+
+        // Басқа беттермен синхрондау үшін storage event (егер админ панель өзгертсе)
+        window.addEventListener("storage", (e) => {
+            if (e.key === STORAGE_KEY) {
+                portfolioData = loadData();
+                refreshAll();
+                showToast("Деректер жаңартылды", "info");
+            }
+        });
+
+        // Бастапқы рендер
+        refreshAll();
+        initDarkMode();
+    </script>
+</body>
+</html>
