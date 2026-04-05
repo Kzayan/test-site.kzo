@@ -3,351 +3,1036 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ панель | Ayan KZ</title>
+    <title>Admin Panel | Ayan KZ</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        .toast-message {
-            position: fixed; bottom: 25px; right: 25px; z-index: 9999;
-            background: #1e293b; color: white; padding: 12px 24px;
-            border-radius: 40px; font-weight: 500; transition: 0.2s; transform: translateX(400px);
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E1E1E',
+                        accent: '#60A5FA',
+                        dark: '#0F0F0F',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                        warning: '#F59E0B',
+                    },
+                },
+            },
         }
-        .toast-message.show { transform: translateX(0); }
-        .dropzone { transition: 0.2s; cursor: pointer; }
-        .dropzone.drag-over { background: #d9f99d; border-color: #16a34a; }
-        .dark .dropzone.drag-over { background: #2d3748; }
-        .modal-transition { transition: opacity 0.2s ease; }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F0F0F;
+            color: #F5F5F5;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0F0F0F;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3B82F6;
+            border-radius: 4px;
+        }
+        
+        /* Glass effect */
+        .glass {
+            background: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Input styles */
+        .input-field {
+            background: #1E1E1E;
+            border: 1px solid #333;
+            color: #F5F5F5;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Button hover */
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Card */
+        .admin-card {
+            background: #1E1E1E;
+            border: 1px solid #333;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-card:hover {
+            border-color: #3B82F6;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: #1E1E1E;
+            border-right: 1px solid #333;
+        }
+        
+        .sidebar-link {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            border-right: 3px solid #3B82F6;
+        }
+        
+        /* Drag and drop */
+        .draggable-item {
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+        
+        .draggable-item:active {
+            cursor: grabbing;
+        }
+        
+        .draggable-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Toast */
+        .toast {
+            animation: slideIn 0.3s ease forwards;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Tab content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Stats card */
+        .stats-card {
+            background: linear-gradient(135deg, #1E1E1E 0%, #2a2a2a 100%);
+            border: 1px solid #333;
+        }
+        
+        /* Login animation */
+        .login-container {
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-100">
-
-    <!-- АДМИН ПАНЕЛЬ: ПАРОЛЬ ҚОРҒАУЫ -->
-    <div id="loginOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 w-96 shadow-2xl">
-            <h2 class="text-2xl font-bold mb-4 text-center">🔐 Админ кіру</h2>
-            <input type="password" id="adminPassword" placeholder="Парольді енгізіңіз" class="w-full p-3 border rounded-xl dark:bg-gray-700 mb-4" autofocus>
-            <button id="loginBtn" class="w-full bg-blue-600 text-white py-2 rounded-xl font-semibold">Кіру</button>
-            <p class="text-xs text-center mt-4 text-gray-500">Демо пароль: <strong>admin123</strong></p>
-        </div>
-    </div>
-
-    <!-- АДМИН ИНТЕРФЕЙСІ (бастапқы жасырын) -->
-    <div id="adminContent" style="display: none;">
-        <div class="max-w-7xl mx-auto p-6">
-            <div class="flex justify-between items-center flex-wrap gap-4 mb-8">
-                <h1 class="text-3xl font-extrabold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent"><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
-                <div class="flex gap-3">
-                    <button id="darkToggleAdmin" class="bg-gray-200 dark:bg-gray-700 p-2 px-4 rounded-full"><i class="fas fa-moon"></i> Режим</button>
-                    <button id="logoutAdmin" class="bg-red-500 text-white px-5 py-2 rounded-full"><i class="fas fa-sign-out-alt"></i> Шығу</button>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="min-h-screen flex items-center justify-center p-4">
+        <div class="login-container w-full max-w-md">
+            <div class="glass rounded-2xl p-8">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-lock text-3xl text-white"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold gradient-text">Admin Panel</h1>
+                    <p class="text-gray-400 mt-2">Ayan KZ Portfolio</p>
                 </div>
-            </div>
-
-            <!-- TABS -->
-            <div class="flex flex-wrap gap-3 border-b mb-8">
-                <button data-tab="projectsTab" class="tab-btn px-5 py-2 font-semibold rounded-t-lg bg-blue-600 text-white">📁 Жобалар</button>
-                <button data-tab="aboutTab" class="tab-btn px-5 py-2 font-semibold">📝 Мен туралы</button>
-                <button data-tab="servicesTab" class="tab-btn px-5 py-2 font-semibold">🛠 Қызметтер</button>
-            </div>
-
-            <!-- ЖОБАЛАР ТАБЫ -->
-            <div id="projectsTab" class="tab-content">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
-                    <h2 class="text-2xl font-bold mb-4"><i class="fas fa-plus-circle text-green-500"></i> Жаңа жоба қосу</h2>
-                    <div class="grid md:grid-cols-2 gap-4 mb-6">
-                        <input type="text" id="projTitle" placeholder="Жоба атауы" class="p-3 border rounded-xl dark:bg-gray-700">
-                        <input type="text" id="projLink" placeholder="Сілтеме (URL)" class="p-3 border rounded-xl dark:bg-gray-700">
-                        <textarea id="projDesc" placeholder="Сипаттама" rows="2" class="p-3 border rounded-xl dark:bg-gray-700 md:col-span-2"></textarea>
-                        
-                        <!-- DRAG & DROP аймағы сурет жүктеу үшін -->
-                        <div id="imageDropzone" class="dropzone col-span-2 border-2 border-dashed border-blue-400 rounded-xl p-6 text-center cursor-pointer bg-blue-50 dark:bg-gray-700">
-                            <i class="fas fa-cloud-upload-alt text-3xl text-blue-500"></i>
-                            <p class="mt-2">Суретті осы аймаққа ауыстырып тастаңыз немесе басыңыз</p>
-                            <p id="imagePreviewText" class="text-xs text-gray-500 mt-1">Таңдалған сурет жоқ</p>
-                            <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+                
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Құпия сөз</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="password-input" 
+                                class="input-field w-full px-4 py-3 rounded-lg pl-12"
+                                placeholder="Құпия сөзді енгізіңіз"
+                                required
+                            >
+                            <i class="fas fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                         </div>
-                        <button id="addProjectBtn" class="bg-blue-600 text-white py-3 rounded-xl font-bold mt-2 col-span-2">➕ Жоба қосу</button>
+                        <p class="text-xs text-gray-500 mt-2">Әдепкі құпия сөз: admin123</p>
                     </div>
+                    
+                    <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-white">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Кіру
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-                    <h3 class="text-xl font-bold mt-8 mb-4">Барлық жобалар (басқару)</h3>
-                    <div id="projectsAdminList" class="space-y-3"></div>
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="glass sticky top-0 z-40">
+            <div class="flex justify-between items-center px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button id="sidebar-toggle" class="lg:hidden text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold gradient-text">Admin Panel</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="index.html" target="_blank" class="text-gray-400 hover:text-primary transition-colors">
+                        <i class="fas fa-external-link-alt mr-1"></i>
+                        <span class="hidden sm:inline">Сайтты көру</span>
+                    </a>
+                    <button id="logout-btn" class="btn-danger px-4 py-2 rounded-lg text-sm font-medium">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        <span class="hidden sm:inline">Шығу</span>
+                    </button>
                 </div>
             </div>
+        </header>
 
-            <!-- МЕН ТУРАЛЫ ТАБЫ -->
-            <div id="aboutTab" class="tab-content hidden">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
-                    <h2 class="text-2xl font-bold mb-4">✏️ Мен туралы мәтіні</h2>
-                    <textarea id="aboutEditor" rows="6" class="w-full p-4 border rounded-xl dark:bg-gray-700"></textarea>
-                    <button id="saveAboutBtn" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold">Сақтау</button>
+        <div class="flex">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar fixed lg:static inset-y-0 left-0 w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-30 pt-16 lg:pt-0">
+                <div class="p-4">
+                    <nav class="space-y-2">
+                        <button onclick="showTab('dashboard')" class="sidebar-link active w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-tab="dashboard">
+                            <i class="fas fa-tachometer-alt w-5"></i>
+                            <span>Басты бет</span>
+                        </button>
+                        <button onclick="showTab('projects')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-tab="projects">
+                            <i class="fas fa-briefcase w-5"></i>
+                            <span>Жобалар</span>
+                        </button>
+                        <button onclick="showTab('about')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-tab="about">
+                            <i class="fas fa-user w-5"></i>
+                            <span>Мен туралы</span>
+                        </button>
+                        <button onclick="showTab('services')" class="sidebar-link w-full text-left px-4 py-3 rounded-lg flex items-center gap-3" data-tab="services">
+                            <i class="fas fa-cogs w-5"></i>
+                            <span>Қызметтер</span>
+                        </button>
+                    </nav>
                 </div>
-            </div>
+            </aside>
 
-            <!-- ҚЫЗМЕТТЕР ТАБЫ -->
-            <div id="servicesTab" class="tab-content hidden">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
-                    <h2 class="text-2xl font-bold mb-4"><i class="fas fa-list-ul"></i> Қызметтер тізімін басқару</h2>
-                    <div class="flex gap-3 mb-6">
-                        <input type="text" id="newServiceInput" placeholder="Жаңа қызмет (мысалы: SEO көмек)" class="flex-1 p-3 border rounded-xl dark:bg-gray-700">
-                        <button id="addServiceBtn" class="bg-blue-500 text-white px-5 rounded-xl"><i class="fas fa-plus"></i> Қосу</button>
+            <!-- Overlay for mobile sidebar -->
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-20 hidden lg:hidden"></div>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6">
+                <!-- Dashboard Tab -->
+                <div id="tab-dashboard" class="tab-content active">
+                    <h2 class="text-2xl font-bold mb-6">Басты бет</h2>
+                    
+                    <!-- Stats -->
+                    <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="stats-card rounded-xl p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Жобалар саны</p>
+                                    <p class="text-3xl font-bold text-primary mt-1" id="stats-projects">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-briefcase text-primary text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-card rounded-xl p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Қызметтер саны</p>
+                                    <p class="text-3xl font-bold text-success mt-1" id="stats-services">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-success/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-cogs text-success text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stats-card rounded-xl p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Соңғы жаңартулар</p>
+                                    <p class="text-lg font-bold text-accent mt-1" id="stats-last-update">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-clock text-accent text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="servicesAdminList" class="space-y-2"></div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="admin-card rounded-xl p-6">
+                        <h3 class="text-lg font-semibold mb-4">Жылдам әрекеттер</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="showTab('projects'); openProjectModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i> Жоба қосу
+                            </button>
+                            <button onclick="showTab('about')" class="btn-success px-4 py-2 rounded-lg text-sm">
+                                <i class="fas fa-edit mr-1"></i> "Мен туралы" өңдеу
+                            </button>
+                            <button onclick="showTab('services'); openServiceModal()" class="btn-primary px-4 py-2 rounded-lg text-sm">
+                                <i class="fas fa-plus mr-1"></i> Қызмет қосу
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Projects Tab -->
+                <div id="tab-projects" class="tab-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Жобалар</h2>
+                        <button onclick="openProjectModal()" class="btn-primary px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i> Жоба қосу
+                        </button>
+                    </div>
+                    
+                    <div id="projects-list" class="space-y-4">
+                        <!-- Projects loaded dynamically -->
+                    </div>
+                    
+                    <p class="text-gray-500 text-sm mt-4">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Жобаларды жылжыту арқылы реттей аласыз
+                    </p>
+                </div>
+
+                <!-- About Tab -->
+                <div id="tab-about" class="tab-content">
+                    <h2 class="text-2xl font-bold mb-6">Мен туралы</h2>
+                    
+                    <div class="admin-card rounded-xl p-6">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Сипаттама</label>
+                            <textarea 
+                                id="about-textarea" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                rows="12"
+                                placeholder="Өзіңіз туралы жазыңыз..."
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button onclick="saveAbout()" class="btn-success px-6 py-2 rounded-lg">
+                                <i class="fas fa-save mr-2"></i> Сақтау
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Tab -->
+                <div id="tab-services" class="tab-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Қызметтер</h2>
+                        <button onclick="openServiceModal()" class="btn-primary px-4 py-2 rounded-lg">
+                            <i class="fas fa-plus mr-2"></i> Қызмет қосу
+                        </button>
+                    </div>
+                    
+                    <div id="services-list" class="grid md:grid-cols-2 gap-4">
+                        <!-- Services loaded dynamically -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="project-modal" class="hidden fixed inset-0 z-50">
+        <div class="modal-overlay absolute inset-0" onclick="closeProjectModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold" id="project-modal-title">Жоба қосу</h3>
+                        <button onclick="closeProjectModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="project-form" class="space-y-4">
+                        <input type="hidden" id="project-id">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Атауы</label>
+                            <input 
+                                type="text" 
+                                id="project-title" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                placeholder="Жоба атауы"
+                                required
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Сипаттама</label>
+                            <textarea 
+                                id="project-description" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                rows="3"
+                                placeholder="Жоба сипаттамасы"
+                                required
+                            ></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Сурет URL</label>
+                            <input 
+                                type="url" 
+                                id="project-image" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                placeholder="https://example.com/image.jpg"
+                                required
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Сілтеме</label>
+                            <input 
+                                type="url" 
+                                id="project-link" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                placeholder="https://example.com"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="flex justify-end gap-3 pt-4">
+                            <button type="button" onclick="closeProjectModal()" class="px-4 py-2 rounded-lg border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400">
+                                Болдырмау
+                            </button>
+                            <button type="submit" class="btn-success px-6 py-2 rounded-lg">
+                                <i class="fas fa-save mr-2"></i> Сақтау
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Service Modal -->
+    <div id="service-modal" class="hidden fixed inset-0 z-50">
+        <div class="modal-overlay absolute inset-0" onclick="closeServiceModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="glass rounded-xl w-full max-w-lg">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold" id="service-modal-title">Қызмет қосу</h3>
+                        <button onclick="closeServiceModal()" class="text-gray-400 hover:text-white">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form id="service-form" class="space-y-4">
+                        <input type="hidden" id="service-id">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Иконка</label>
+                            <select id="service-icon" class="input-field w-full px-4 py-3 rounded-lg">
+                                <option value="fa-laptop-code">💻 Веб-әзірлеу</option>
+                                <option value="fa-paint-brush">🎨 Дизайн</option>
+                                <option value="fa-headset">🎧 Қолдау</option>
+                                <option value="fa-mobile-alt">📱 Мобильді</option>
+                                <option value="fa-search">🔍 SEO</option>
+                                <option value="fa-shopping-cart">🛒 E-commerce</option>
+                                <option value="fa-code">⌨️ Код</option>
+                                <option value="fa-rocket">🚀 Жылдамдық</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Атауы</label>
+                            <input 
+                                type="text" 
+                                id="service-title" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                placeholder="Қызмет атауы"
+                                required
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Сипаттама</label>
+                            <textarea 
+                                id="service-description" 
+                                class="input-field w-full px-4 py-3 rounded-lg"
+                                rows="3"
+                                placeholder="Қызмет сипаттамасы"
+                                required
+                            ></textarea>
+                        </div>
+                        
+                        <div class="flex justify-end gap-3 pt-4">
+                            <button type="button" onclick="closeServiceModal()" class="px-4 py-2 rounded-lg border border-gray-600 text-gray-400 hover:text-white hover:border-gray-400">
+                                Болдырмау
+                            </button>
+                            <button type="submit" class="btn-success px-6 py-2 rounded-lg">
+                                <i class="fas fa-save mr-2"></i> Сақтау
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
     <script>
-        // ------------------ ДЕРЕКТЕР ------------------
-        const STORAGE_KEY = "ayan_portfolio_data";
-        let portfolioData = {};
-
-        function loadPortfolioData() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                portfolioData = JSON.parse(stored);
-            } else {
-                // әдепкіні орнату
-                portfolioData = {
-                    aboutText: "Менің атым Ayan KZ. IT саласында 5+ жыл тәжірибем бар. Веб-сайттар, интерактивті интерфейстер және full-stack шешімдер құрастырамын.",
-                    services: ["🌐 Веб-сайт құру (HTML/CSS/JS)", "⚛️ React / Vue фронтенд", "🖥️ Node.js & Python бэкенд", "🎨 UI/UX дизайн (Figma)", "📱 Мобильді адаптив", "🚀 SEO оңтайландыру"],
-                    projects: [
-                        { id: "proj1", title: "Portfolio 360", description: "Интерактивті портфолио", image: "https://placehold.co/400x300/1e3a8a/white?text=Portfolio+360", link: "#" },
-                        { id: "proj2", title: "EcoMarket", description: "Эко-дүкен", image: "https://placehold.co/400x300/166534/white?text=EcoMarket", link: "#" }
-                    ]
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolioData));
+        // ==================== PASSWORD ====================
+        const DEFAULT_PASSWORD = 'admin123';
+        
+        function checkPassword(password) {
+            return password === DEFAULT_PASSWORD;
+        }
+        
+        // ==================== AUTH ====================
+        function isLoggedIn() {
+            return localStorage.getItem('ayan_admin_logged_in') === 'true';
+        }
+        
+        function login() {
+            localStorage.setItem('ayan_admin_logged_in', 'true');
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+            initDashboard();
+        }
+        
+        function logout() {
+            localStorage.removeItem('ayan_admin_logged_in');
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('password-input').value = '';
+        }
+        
+        // ==================== DATA ====================
+        function getProjects() {
+            const data = localStorage.getItem('ayan_portfolio_projects');
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function saveProjects(projects) {
+            localStorage.setItem('ayan_portfolio_projects', JSON.stringify(projects));
+            updateStats();
+        }
+        
+        function getServices() {
+            const data = localStorage.getItem('ayan_portfolio_services');
+            return data ? JSON.parse(data) : [];
+        }
+        
+        function saveServices(services) {
+            localStorage.setItem('ayan_portfolio_services', JSON.stringify(services));
+            updateStats();
+        }
+        
+        function getAbout() {
+            return localStorage.getItem('ayan_portfolio_about') || '';
+        }
+        
+        function saveAboutText(text) {
+            localStorage.setItem('ayan_portfolio_about', text);
+            updateStats();
+        }
+        
+        // ==================== STATS ====================
+        function updateStats() {
+            const projects = getProjects();
+            const services = getServices();
+            
+            document.getElementById('stats-projects').textContent = projects.length;
+            document.getElementById('stats-services').textContent = services.length;
+            document.getElementById('stats-last-update').textContent = new Date().toLocaleTimeString('kk-KZ');
+        }
+        
+        // ==================== TABS ====================
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from sidebar links
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+            
+            // Load data if needed
+            if (tabName === 'projects') {
+                renderProjects();
+            } else if (tabName === 'services') {
+                renderServices();
+            } else if (tabName === 'about') {
+                document.getElementById('about-textarea').value = getAbout();
             }
         }
-
-        function saveGlobal() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolioData));
-            // Сайт бетіне өзгерісті хабарлау
-            window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: JSON.stringify(portfolioData) }));
-            showToast("✅ Деректер сақталды!", "success");
-        }
-
-        // render админ: жобалар тізімі, қызметтер тізімі
-        function renderAdminProjects() {
-            const container = document.getElementById("projectsAdminList");
-            if (!container) return;
-            if (!portfolioData.projects || portfolioData.projects.length === 0) {
-                container.innerHTML = "<div class='text-gray-500 p-4 text-center'>Ешқандай жоба жоқ</div>";
+        
+        // ==================== PROJECTS ====================
+        let draggedProject = null;
+        
+        function renderProjects() {
+            const projects = getProjects();
+            const container = document.getElementById('projects-list');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-folder-open text-6xl mb-4"></i>
+                        <p>Әзірше жобалар жоқ</p>
+                    </div>
+                `;
                 return;
             }
-            container.innerHTML = portfolioData.projects.map((proj, idx) => `
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 flex flex-wrap md:flex-nowrap justify-between items-center gap-3">
+            
+            container.innerHTML = projects.map((project, index) => `
+                <div 
+                    class="draggable-item admin-card rounded-xl p-4 flex items-center gap-4"
+                    draggable="true"
+                    data-index="${index}"
+                    data-id="${project.id}"
+                >
+                    <div class="text-gray-500 cursor-grab">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
+                    
+                    <img src="${project.image}" alt="${project.title}" class="w-16 h-16 rounded-lg object-cover">
+                    
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-bold text-lg">${escapeHtml(proj.title)}</h4>
-                        <p class="text-sm text-gray-600 dark:text-gray-300 truncate">${escapeHtml(proj.description)}</p>
-                        <div class="flex gap-2 mt-1"><img src="${proj.image}" class="w-10 h-10 rounded object-cover" onerror="this.src='https://placehold.co/60/blue/white?text=img'"><span class="text-xs">${proj.link ? '🔗 сілтеме бар' : 'сілтеме жоқ'}</span></div>
+                        <h4 class="font-semibold truncate">${project.title}</h4>
+                        <p class="text-gray-400 text-sm truncate">${project.description}</p>
                     </div>
+                    
                     <div class="flex gap-2">
-                        <button onclick="editProject('${proj.id}')" class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-edit"></i> Өңдеу</button>
-                        <button onclick="deleteProject('${proj.id}')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-trash"></i> Өшіру</button>
+                        <button onclick="editProject(${project.id})" class="w-10 h-10 rounded-lg bg-primary/20 text-primary hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteProject(${project.id})" class="w-10 h-10 rounded-lg bg-danger/20 text-danger hover:bg-danger hover:text-white transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
-        }
-
-        function renderAdminServices() {
-            const container = document.getElementById("servicesAdminList");
-            if (!container) return;
-            container.innerHTML = portfolioData.services.map((service, index) => `
-                <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-xl">
-                    <span class="flex-1"><i class="fas fa-cog text-blue-500 mr-2"></i> ${escapeHtml(service)}</span>
-                    <div class="flex gap-2">
-                        <button onclick="editService(${index})" class="text-blue-600 text-sm"><i class="fas fa-pen"></i> Өңдеу</button>
-                        <button onclick="deleteService(${index})" class="text-red-500 text-sm"><i class="fas fa-times"></i> Өшіру</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.editProject = function(projectId) {
-            const project = portfolioData.projects.find(p => p.id === projectId);
-            if (!project) return;
-            const newTitle = prompt("Жоба атауын өзгертіңіз:", project.title);
-            if (newTitle !== null) project.title = newTitle;
-            const newDesc = prompt("Жоба сипаттамасы:", project.description);
-            if (newDesc !== null) project.description = newDesc;
-            const newLink = prompt("Сілтеме (URL):", project.link);
-            if (newLink !== null) project.link = newLink;
-            const newImage = prompt("Сурет URL (немесе base64 бос қалдырсаңыз өзгермейді):", project.image);
-            if (newImage !== null && newImage.trim() !== "") project.image = newImage;
-            saveGlobal();
-            renderAdminProjects();
-            showToast("Жоба өңделді");
-        };
-
-        window.deleteProject = function(projectId) {
-            if (confirm("Жобаны өшіруге сенімдісіз бе?")) {
-                portfolioData.projects = portfolioData.projects.filter(p => p.id !== projectId);
-                saveGlobal();
-                renderAdminProjects();
-                showToast("Жоба өшірілді");
-            }
-        };
-
-        // қызметтерді басқару
-        window.editService = function(index) {
-            const newVal = prompt("Қызметті өңдеңіз:", portfolioData.services[index]);
-            if (newVal && newVal.trim()) portfolioData.services[index] = newVal.trim();
-            saveGlobal();
-            renderAdminServices();
-        };
-        window.deleteService = function(index) {
-            if (confirm("Қызметті өшіру?")) {
-                portfolioData.services.splice(index, 1);
-                saveGlobal();
-                renderAdminServices();
-            }
-        };
-
-        // жоба қосу (суретті drag & drop немесе файл арқылы)
-        let currentImageBase64 = null;
-        function resetImageDrop() { currentImageBase64 = null; document.getElementById("imagePreviewText").innerText = "Сурет таңдалмады"; }
-        function setImagePreview(base64) { currentImageBase64 = base64; document.getElementById("imagePreviewText").innerHTML = `<i class='fas fa-image text-green-500'></i> Сурет дайын`; }
-
-        function addProjectLogic() {
-            const title = document.getElementById("projTitle").value.trim();
-            const desc = document.getElementById("projDesc").value.trim();
-            const link = document.getElementById("projLink").value.trim();
-            if (!title) { showToast("Жоба атауын енгізіңіз", "error"); return; }
-            const newId = "proj_" + Date.now() + "_" + Math.floor(Math.random()*1000);
-            const newProject = {
-                id: newId,
-                title: title,
-                description: desc || "Сипаттама жоқ",
-                image: currentImageBase64 || "https://placehold.co/400x300/1e3a8a/white?text=New+Project",
-                link: link || "#"
-            };
-            portfolioData.projects.push(newProject);
-            saveGlobal();
-            renderAdminProjects();
-            document.getElementById("projTitle").value = "";
-            document.getElementById("projDesc").value = "";
-            document.getElementById("projLink").value = "";
-            resetImageDrop();
-            showToast("Жоба сәтті қосылды!");
-        }
-
-        // DRAG & DROP суретті өңдеу
-        function initDragDrop() {
-            const dropzone = document.getElementById("imageDropzone");
-            const fileInput = document.getElementById("imageFileInput");
-            if (!dropzone) return;
-            dropzone.addEventListener("click", () => fileInput.click());
-            dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("drag-over"); });
-            dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-over"));
-            dropzone.addEventListener("drop", (e) => {
-                e.preventDefault();
-                dropzone.classList.remove("drag-over");
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith("image/")) handleImageFile(file);
-                else showToast("Тек сурет файлын тастаңыз", "error");
-            });
-            fileInput.addEventListener("change", (e) => {
-                if (e.target.files.length) handleImageFile(e.target.files[0]);
+            
+            // Add drag and drop listeners
+            container.querySelectorAll('.draggable-item').forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+                item.addEventListener('dragover', handleDragOver);
+                item.addEventListener('drop', handleDrop);
             });
         }
-        function handleImageFile(file) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                setImagePreview(ev.target.result);
-                showToast("Сурет жүктелді!");
-            };
-            reader.readAsDataURL(file);
+        
+        function handleDragStart(e) {
+            draggedProject = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
         }
-
-        // Мен туралы сақтау
-        function loadAboutIntoEditor() {
-            const aboutArea = document.getElementById("aboutEditor");
-            if (aboutArea) aboutArea.value = portfolioData.aboutText;
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            draggedProject = null;
         }
-        document.getElementById("saveAboutBtn")?.addEventListener("click", () => {
-            const newAbout = document.getElementById("aboutEditor").value;
-            portfolioData.aboutText = newAbout;
-            saveGlobal();
-            showToast("Мәтін сақталды");
-        });
-
-        // қызмет қосу
-        document.getElementById("addServiceBtn")?.addEventListener("click", () => {
-            const newSrv = document.getElementById("newServiceInput").value.trim();
-            if (newSrv) {
-                portfolioData.services.push(newSrv);
-                saveGlobal();
-                renderAdminServices();
-                document.getElementById("newServiceInput").value = "";
-                showToast("Қызмет қосылды");
-            } else showToast("Қызмет атауын жазыңыз", "error");
-        });
-
-        // ------------------ ПАРОЛЬ ------------------
-        function checkAdminLogin() {
-            const overlay = document.getElementById("loginOverlay");
-            const adminDiv = document.getElementById("adminContent");
-            const passwordInput = document.getElementById("adminPassword");
-            const loginBtn = document.getElementById("loginBtn");
-            loginBtn.onclick = () => {
-                if (passwordInput.value === "admin123") {
-                    overlay.style.display = "none";
-                    adminDiv.style.display = "block";
-                    loadPortfolioData();
-                    renderAdminProjects();
-                    renderAdminServices();
-                    loadAboutIntoEditor();
-                    initDragDrop();
-                } else {
-                    alert("Қате пароль! Қайталап көріңіз.");
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            if (draggedProject === this) return;
+            
+            const fromIndex = parseInt(draggedProject.dataset.index);
+            const toIndex = parseInt(this.dataset.index);
+            
+            const projects = getProjects();
+            const [moved] = projects.splice(fromIndex, 1);
+            projects.splice(toIndex, 0, moved);
+            
+            saveProjects(projects);
+            renderProjects();
+            showToast('Жобалар реттелді', 'success');
+        }
+        
+        // ==================== PROJECT MODAL ====================
+        function openProjectModal(projectId = null) {
+            const modal = document.getElementById('project-modal');
+            const form = document.getElementById('project-form');
+            const title = document.getElementById('project-modal-title');
+            
+            form.reset();
+            document.getElementById('project-id').value = '';
+            
+            if (projectId) {
+                const projects = getProjects();
+                const project = projects.find(p => p.id === projectId);
+                if (project) {
+                    title.textContent = 'Жобаны өңдеу';
+                    document.getElementById('project-id').value = project.id;
+                    document.getElementById('project-title').value = project.title;
+                    document.getElementById('project-description').value = project.description;
+                    document.getElementById('project-image').value = project.image;
+                    document.getElementById('project-link').value = project.link;
                 }
+            } else {
+                title.textContent = 'Жоба қосу';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function closeProjectModal() {
+            document.getElementById('project-modal').classList.add('hidden');
+        }
+        
+        function editProject(projectId) {
+            openProjectModal(projectId);
+        }
+        
+        function deleteProject(projectId) {
+            if (confirm('Бұл жобаны өшіргіңіз келе ме?')) {
+                const projects = getProjects().filter(p => p.id !== projectId);
+                saveProjects(projects);
+                renderProjects();
+                showToast('Жоба өшірілді', 'success');
+            }
+        }
+        
+        document.getElementById('project-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const projectId = document.getElementById('project-id').value;
+            const projects = getProjects();
+            
+            const projectData = {
+                id: projectId ? parseInt(projectId) : Date.now(),
+                title: document.getElementById('project-title').value,
+                description: document.getElementById('project-description').value,
+                image: document.getElementById('project-image').value,
+                link: document.getElementById('project-link').value
             };
-            passwordInput.addEventListener("keypress", (e) => { if(e.key === "Enter") loginBtn.click(); });
-        }
-
-        // Tab switching
-        function initTabs() {
-            const tabs = document.querySelectorAll(".tab-btn");
-            const contents = document.querySelectorAll(".tab-content");
-            tabs.forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const targetId = btn.getAttribute("data-tab");
-                    contents.forEach(c => c.classList.add("hidden"));
-                    document.getElementById(targetId).classList.remove("hidden");
-                    tabs.forEach(b => b.classList.remove("bg-blue-600", "text-white"));
-                    btn.classList.add("bg-blue-600", "text-white");
-                });
-            });
-        }
-
-        // dark mode admin
-        function initDarkModeAdmin() {
-            const isDark = localStorage.getItem("darkMode") === "true";
-            if (isDark) document.documentElement.classList.add("dark");
-            document.getElementById("darkToggleAdmin")?.addEventListener("click", () => {
-                document.documentElement.classList.toggle("dark");
-                localStorage.setItem("darkMode", document.documentElement.classList.contains("dark"));
-            });
-        }
-        function showToast(msg, type="success") {
-            let toast = document.querySelector(".toast-message");
-            if(!toast) { toast = document.createElement("div"); toast.className = "toast-message"; document.body.appendChild(toast); }
-            toast.innerHTML = `<i class="fas ${type==='success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i> ${msg}`;
-            toast.classList.add("show");
-            setTimeout(()=>toast.classList.remove("show"), 2300);
-        }
-
-        document.getElementById("addProjectBtn")?.addEventListener("click", addProjectLogic);
-        document.getElementById("logoutAdmin")?.addEventListener("click", () => {
-            localStorage.removeItem("admin_logged"); // жай шығу
-            location.reload();
+            
+            if (projectId) {
+                const index = projects.findIndex(p => p.id === parseInt(projectId));
+                if (index !== -1) {
+                    projects[index] = projectData;
+                }
+            } else {
+                projects.push(projectData);
+            }
+            
+            saveProjects(projects);
+            renderProjects();
+            closeProjectModal();
+            showToast(projectId ? 'Жоба жаңартылды' : 'Жоба қосылды', 'success');
         });
-
-        checkAdminLogin();
-        initTabs();
-        initDarkModeAdmin();
-        // алдын ала деректер жүктеу үшін
-        loadPortfolioData();
+        
+        // ==================== SERVICES ====================
+        function renderServices() {
+            const services = getServices();
+            const container = document.getElementById('services-list');
+            
+            if (services.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-gray-500">
+                        <i class="fas fa-cogs text-6xl mb-4"></i>
+                        <p>Әзірше қызметтер жоқ</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = services.map(service => `
+                <div class="admin-card rounded-xl p-4 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <i class="fas ${service.icon} text-primary text-xl"></i>
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold">${service.title}</h4>
+                        <p class="text-gray-400 text-sm truncate">${service.description}</p>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button onclick="editService(${service.id})" class="w-10 h-10 rounded-lg bg-primary/20 text-primary hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteService(${service.id})" class="w-10 h-10 rounded-lg bg-danger/20 text-danger hover:bg-danger hover:text-white transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ==================== SERVICE MODAL ====================
+        function openServiceModal(serviceId = null) {
+            const modal = document.getElementById('service-modal');
+            const form = document.getElementById('service-form');
+            const title = document.getElementById('service-modal-title');
+            
+            form.reset();
+            document.getElementById('service-id').value = '';
+            
+            if (serviceId) {
+                const services = getServices();
+                const service = services.find(s => s.id === serviceId);
+                if (service) {
+                    title.textContent = 'Қызметті өңдеу';
+                    document.getElementById('service-id').value = service.id;
+                    document.getElementById('service-icon').value = service.icon;
+                    document.getElementById('service-title').value = service.title;
+                    document.getElementById('service-description').value = service.description;
+                }
+            } else {
+                title.textContent = 'Қызмет қосу';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+        
+        function closeServiceModal() {
+            document.getElementById('service-modal').classList.add('hidden');
+        }
+        
+        function editService(serviceId) {
+            openServiceModal(serviceId);
+        }
+        
+        function deleteService(serviceId) {
+            if (confirm('Бұл қызметті өшіргіңіз келе ме?')) {
+                const services = getServices().filter(s => s.id !== serviceId);
+                saveServices(services);
+                renderServices();
+                showToast('Қызмет өшірілді', 'success');
+            }
+        }
+        
+        document.getElementById('service-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const serviceId = document.getElementById('service-id').value;
+            const services = getServices();
+            
+            const serviceData = {
+                id: serviceId ? parseInt(serviceId) : Date.now(),
+                icon: document.getElementById('service-icon').value,
+                title: document.getElementById('service-title').value,
+                description: document.getElementById('service-description').value
+            };
+            
+            if (serviceId) {
+                const index = services.findIndex(s => s.id === parseInt(serviceId));
+                if (index !== -1) {
+                    services[index] = serviceData;
+                }
+            } else {
+                services.push(serviceData);
+            }
+            
+            saveServices(services);
+            renderServices();
+            closeServiceModal();
+            showToast(serviceId ? 'Қызмет жаңартылды' : 'Қызмет қосылды', 'success');
+        });
+        
+        // ==================== ABOUT ====================
+        function saveAbout() {
+            const text = document.getElementById('about-textarea').value;
+            saveAboutText(text);
+            showToast('"Мен туралы" сақталды', 'success');
+        }
+        
+        // ==================== TOAST ====================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-yellow-500'
+            };
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-circle'
+            };
+            
+            toast.className = `toast ${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3`;
+            toast.innerHTML = `
+                <i class="fas ${icons[type]}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse forwards';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // ==================== INIT ====================
+        function initDashboard() {
+            updateStats();
+            showTab('dashboard');
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check login status
+            if (isLoggedIn()) {
+                login();
+            }
+            
+            // Login form
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const password = document.getElementById('password-input').value;
+                
+                if (checkPassword(password)) {
+                    login();
+                    showToast('Қош келдіңіз!', 'success');
+                } else {
+                    showToast('Құпия сөз дұрыс емес', 'error');
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // Sidebar toggle
+            document.getElementById('sidebar-toggle').addEventListener('click', function() {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebar-overlay');
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
+            
+            // Sidebar overlay
+            document.getElementById('sidebar-overlay').addEventListener('click', function() {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+                this.classList.add('hidden');
+            });
+        });
     </script>
 </body>
 </html>
