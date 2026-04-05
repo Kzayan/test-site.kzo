@@ -4,494 +4,595 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KZ Travel - Қазақстанның көрікті жерлері</title>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Қазақстанның ең әдемі туристік жерлері: Алматы, Бурабай, Шарын шатқалы және басқалары.">
+    
+    <!-- Google Fonts: Open Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* НЕГІЗГІ АЙНЫМАЛЫЛАР (COLORS) */
+        /* 
+         * Негізгі айнымалылар және баптаулар 
+         */
         :root {
-            --primary-color: #005A9C; /* Көк */
-            --accent-color: #FFC107;  /* Алтын түсті */
-            --white: #FFFFFF;
-            --text-dark: #333333;
-            --bg-light: #F8F9FA;
+            --kz-blue: #005A9C;
+            --kz-white: #FFFFFF;
+            --kz-gold: #FFC107;
+            --kz-dark: #333333;
+            --kz-gray: #f4f4f4;
+            --font-main: 'Open Sans', Arial, sans-serif;
+            --transition: all 0.3s ease;
         }
 
-        /* ЖАЛПЫ СТИЛЬДЕР */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Open Sans', Arial, sans-serif;
-            scroll-behavior: smooth;
         }
 
         body {
-            color: var(--text-dark);
-            background-color: var(--bg-light);
+            font-family: var(--font-main);
+            background-color: var(--kz-white);
+            color: var(--kz-dark);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        h1, h2, h3 {
-            font-weight: 700;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* ҚАЗАҚ ОЮ-ӨРНЕГІ (CSS АРҚЫЛЫ) */
-        .ornament-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        
-        .ornament {
-            width: 15px;
-            height: 15px;
-            background-color: var(--accent-color);
-            transform: rotate(45deg);
+        /* 
+         * Ұлттық ою-өрнек элементі (CSS градиент арқылы геометриялық өрнек) 
+         */
+        .ornament-border {
             position: relative;
         }
-
-        .ornament::before, .ornament::after {
+        
+        .ornament-border::after {
             content: '';
             position: absolute;
-            width: 15px;
-            height: 15px;
-            border: 2px solid var(--primary-color);
-            background: transparent;
-        }
-
-        .ornament::before {
-            top: -10px;
-            left: -10px;
-        }
-
-        .ornament::after {
-            bottom: -10px;
-            right: -10px;
-        }
-
-        /* НАВИГАЦИЯ (МӘЗІР) */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            top: 0;
-            z-index: 1000;
+            height: 8px;
+            background-image: 
+                linear-gradient(45deg, var(--kz-gold) 25%, transparent 25%, transparent 75%, var(--kz-gold) 75%),
+                linear-gradient(-45deg, var(--kz-gold) 25%, transparent 25%, transparent 75%, var(--kz-gold) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.8;
         }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 5%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .logo span {
-            color: var(--accent-color);
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        .menu-toggle {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--primary-color);
-        }
-
-        /* БАСТЫ БЕТ (HERO SECTION) */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(rgba(0, 90, 156, 0.6), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1594911850125-9c922f5d962c?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-            padding: 0 20px;
-            margin-top: 60px;
-        }
-
-        .hero h1 {
-            font-size: 50px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .hero p {
-            font-size: 24px;
-            margin-bottom: 40px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-        }
-
+        /* 
+         * Батырмалар стилі 
+         */
         .btn {
-            padding: 15px 40px;
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-size: 18px;
-            font-weight: bold;
-            border: 2px solid var(--accent-color);
-            border-radius: 5px;
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--kz-blue);
+            color: var(--kz-white);
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid var(--kz-gold);
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            font-size: 16px;
         }
 
         .btn:hover {
-            background-color: var(--accent-color);
-            color: var(--primary-color);
-            border-color: var(--primary-color);
+            background-color: var(--kz-gold);
+            color: var(--kz-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        /* СЕКЦИЯЛАРДЫҢ ЖАЛПЫ СТИЛІ */
-        .section {
-            padding: 80px 5%;
+        /* 
+         * Тақырып (Header) 
+         */
+        header {
+            background-color: var(--kz-blue);
+            color: var(--kz-white);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--kz-white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo span {
+            color: var(--kz-gold);
+            margin-left: 5px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            color: var(--kz-white);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--kz-gold);
+        }
+
+        /* 
+         * Басты бет (Hero Section) 
+         */
+        #basty-bet {
+            height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                              url('https://images.unsplash.com/photo-1576487231769-2e38e5c61c17?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--kz-white);
+            position: relative;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 
+         * Карточкалар бөлімі 
+         */
+        #turizm {
+            padding: 80px 0;
+            background-color: var(--kz-gray);
         }
 
         .section-title {
             text-align: center;
-            font-size: 36px;
-            color: var(--primary-color);
-            margin-bottom: 10px;
+            font-size: 2rem;
+            color: var(--kz-blue);
+            margin-bottom: 50px;
+            position: relative;
         }
 
-        /* ТУРИЗМ (КАРТОЧКАЛАР) */
         .cards-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            justify-content: space-between;
             gap: 30px;
-            margin-top: 40px;
+            flex-wrap: wrap;
         }
 
         .card {
-            background-color: var(--white);
-            border-radius: 10px;
+            background: var(--kz-white);
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-bottom: 5px solid var(--accent-color);
-            transition: transform 0.3s ease;
+            flex: 1;
+            min-width: 300px;
+            transition: var(--transition);
+            border-top: 4px solid var(--kz-gold);
         }
 
         .card:hover {
             transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
 
         .card img {
             width: 100%;
-            height: 250px;
+            height: 200px;
             object-fit: cover;
         }
 
         .card-content {
             padding: 20px;
-            text-align: center;
         }
 
         .card-content h3 {
-            color: var(--primary-color);
+            color: var(--kz-blue);
             margin-bottom: 10px;
-            font-size: 22px;
+            font-size: 1.25rem;
         }
 
-        /* ТАРИХ СЕКЦИЯСЫ */
-        .history-text {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-            font-size: 18px;
+        .card-content p {
+            font-size: 0.95rem;
+            color: #555;
         }
 
-        /* ГАЛЕРЕЯ */
-        .gallery-container {
+        /* 
+         * Галерея бөлімі 
+         */
+        #galereya {
+            padding: 80px 0;
+            background-color: var(--kz-white);
+        }
+
+        .gallery-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-top: 40px;
         }
 
         .gallery-item {
-            width: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
             height: 250px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 8px;
-            border: 3px solid var(--white);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            transition: var(--transition);
         }
 
-        .gallery-item:hover {
-            transform: scale(1.05);
-            border-color: var(--accent-color);
+        .gallery-item:hover img {
+            transform: scale(1.1);
         }
 
-        /* БАЙЛАНЫС */
+        /* 
+         * Байланыс бөлімі 
+         */
+        #baylanys {
+            padding: 80px 0;
+            background-color: var(--kz-gray);
+        }
+
         .contact-wrapper {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: var(--white);
+            flex-wrap: wrap;
+            gap: 40px;
+            background: var(--kz-white);
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            max-width: 700px;
-            margin: 40px auto 0;
-            border-top: 5px solid var(--primary-color);
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         }
 
         .contact-form {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .contact-form input, .contact-form textarea {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .contact-form input:focus, .contact-form textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .contact-form textarea {
-            resize: vertical;
-            min-height: 150px;
+            flex: 1;
+            min-width: 300px;
         }
 
         .contact-info {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 18px;
+            flex: 0 0 300px;
+            background-color: var(--kz-blue);
+            color: var(--kz-white);
+            padding: 30px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: 600;
-            color: var(--primary-color);
+            color: var(--kz-dark);
         }
 
-        .contact-info p {
-            margin: 5px 0;
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
         }
 
-        /* ФУТЕР (ТӨМЕНГІ БӨЛІМ) */
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--kz-blue);
+            box-shadow: 0 0 0 2px rgba(0, 90, 156, 0.1);
+        }
+
+        .contact-info h3 {
+            margin-bottom: 20px;
+            color: var(--kz-gold);
+        }
+
+        .contact-item {
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+
+        /* 
+         * Төменгі бөлім (Footer) 
+         */
         footer {
-            background-color: var(--primary-color);
-            color: var(--white);
+            background-color: var(--kz-blue);
+            color: var(--kz-white);
             text-align: center;
-            padding: 20px;
-            margin-top: 40px;
-            border-top: 4px solid var(--accent-color);
+            padding: 30px 0;
+            border-top: 4px solid var(--kz-gold);
         }
 
-        /* МОБИЛЬДІ ҚҰРЫЛҒЫЛАРҒА БЕЙІМДЕЛУ (RESPONSIVE) */
+        footer p {
+            font-size: 14px;
+        }
+
+        /* 
+         * Бейімделу (Responsive Design) 
+         */
         @media (max-width: 992px) {
-            .cards-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .gallery-container {
+            .gallery-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+            .header-content {
                 flex-direction: column;
-                position: absolute;
-                top: 70px;
-                left: 0;
-                width: 100%;
-                background-color: var(--white);
-                text-align: center;
-                padding: 20px 0;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            }
-            
-            .nav-links.active {
-                display: flex;
+                gap: 15px;
             }
 
-            .menu-toggle {
-                display: block;
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
             }
 
-            .hero h1 { font-size: 36px; }
-            .hero p { font-size: 18px; }
+            .hero-content h1 {
+                font-size: 2rem;
+            }
 
             .cards-container {
+                flex-direction: column;
+            }
+
+            .card {
+                width: 100%;
+            }
+
+            .gallery-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .gallery-container {
-                grid-template-columns: 1fr;
+
+            .contact-wrapper {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .contact-info {
+                flex: auto;
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- МӘЗІР -->
-    <header>
-        <div class="navbar">
-            <div class="logo">KZ <span>Travel</span></div>
-            <div class="menu-toggle" id="mobile-menu">☰</div>
-            <ul class="nav-links" id="nav-links">
-                <li><a href="#home">Басты бет</a></li>
-                <li><a href="#tourism">Туризм</a></li>
-                <li><a href="#history">Тарих</a></li>
-                <li><a href="#gallery">Галерея</a></li>
-                <li><a href="#contact">Байланыс</a></li>
-            </ul>
+    <!-- Тақырып -->
+    <header class="ornament-border">
+        <div class="container header-content">
+            <a href="#basty-bet" class="logo">KZ <span>Travel</span></a>
+            <nav>
+                <ul>
+                    <li><a href="#basty-bet">Басты бет</a></li>
+                    <li><a href="#turizm">Туризм</a></li>
+                    <li><a href="#tarikh">Тарих</a></li>
+                    <li><a href="#galereya">Галерея</a></li>
+                    <li><a href="#baylanys">Байланыс</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
-    <!-- БАСТЫ БЕТ -->
-    <section id="home" class="hero">
-        <h1>Қазақстанға қош келдіңіз!</h1>
-        <p>Қазақстанның ең әдемі жерлерін аралаңыз</p>
-        <a href="#tourism" class="btn">Бастау</a>
+    <!-- Басты бет -->
+    <section id="basty-bet">
+        <div class="container hero-content">
+            <h1>Қазақстанға қош келдіңіз!</h1>
+            <p>Қазақстанның ең әдемі жерлерін аралаңыз. Табиғаттың ғажайып көріністері мен бай мәдениетін тамашалаңыз.</p>
+            <a href="#turizm" class="btn">Бастау</a>
+        </div>
     </section>
 
-    <!-- ТУРИЗМ СЕКЦИЯСЫ -->
-    <section id="tourism" class="section">
-        <h2 class="section-title">Көрікті жерлер</h2>
-        <div class="ornament-container"><div class="ornament"></div></div>
-        
-        <div class="cards-container">
-            <!-- Карточка 1 -->
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1580210740947-f472f1cb7502?auto=format&fit=crop&w=800&q=80" alt="Алматы">
-                <div class="card-content">
-                    <h3>Алматы – оңтүстік астана</h3>
-                    <p>Асқар таулардың бөктерінде орналасқан, табиғаты әсем, мәдениеті бай Қазақстанның ең үлкен әрі әдемі қалаларының бірі.</p>
+    <!-- Туризм карточкалары -->
+    <section id="turizm" class="ornament-border">
+        <div class="container">
+            <h2 class="section-title">Танымал бағыттар</h2>
+            <div class="cards-container">
+                <!-- Карточка 1 -->
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1596423736724-24cf29b22c30?auto=format&fit=crop&w=600&q=80" alt="Алматы қаласы">
+                    <div class="card-content">
+                        <h3>Алматы – оңтүстік астана</h3>
+                        <p>Таулар мен заманауи қаланың үйлесімі. Медеу мұз айдыны, Көк Төбе және әсем саябақтар сізді күтеді.</p>
+                    </div>
+                </div>
+                <!-- Карточка 2 -->
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1628177582580-91a1c4f3c60c?auto=format&fit=crop&w=600&q=80" alt="Бурабай көлі">
+                    <div class="card-content">
+                        <h3>Бурабай – Қазақстан Швейцариясы</h3>
+                        <p>Көкшетау өңіріндегі інжу-маржан. Қарағайлы ормандар, мөлдір көлдер және емдік ауа райы.</p>
+                    </div>
+                </div>
+                <!-- Карточка 3 -->
+                <div class="card">
+                    <img src="https://images.unsplash.com/photo-1605540405229-77f2c7a2d47c?auto=format&fit=crop&w=600&q=80" alt="Шарын шатқалы">
+                    <div class="card-content">
+                        <h3>Шарын шатқалы – Қазақстанның Гранд Каньоны</h3>
+                        <p>Миллиондаған жылдық тарихы бар табиғи ескерткіш. Қызыл жартастар әлемі және таңғажайып пейзаждар.</p>
+                    </div>
                 </div>
             </div>
-            <!-- Карточка 2 -->
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1628178652431-7bcde75fb862?auto=format&fit=crop&w=800&q=80" alt="Бурабай">
-                <div class="card-content">
-                    <h3>Бурабай – Қазақстан Швейцариясы</h3>
-                    <p>Қарағайлы орман мен мөлдір көлдердің отаны. Таза ауасы мен қайталанбас табиғаты адам жанына тыныштық сыйлайды.</p>
+        </div>
+    </section>
+
+    <!-- Тарих секциясы (Бос орын ретінде, мәзір үшін) -->
+    <section id="tarikh" style="display:none;"></section>
+
+    <!-- Галерея -->
+    <section id="galereya" class="ornament-border">
+        <div class="container">
+            <h2 class="section-title">Табиғат галереясы</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1545164868-3f6d2b5f4535?auto=format&fit=crop&w=600&q=80" alt="Таулы көрініс">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1616644876530-737538665234?auto=format&fit=crop&w=600&q=80" alt="Көлсай көлдері">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1589828966771-d81cf3737145?auto=format&fit=crop&w=600&q=80" alt="Дала көрінісі">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1620628508916-53a27d728331?auto=format&fit=crop&w=600&q=80" alt="Күн батуы">
                 </div>
             </div>
-            <!-- Карточка 3 -->
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1627914838637-25916de1ec96?auto=format&fit=crop&w=800&q=80" alt="Шарын">
-                <div class="card-content">
-                    <h3>Шарын шатқалы – Қазақстанның Гранд Каньоны</h3>
-                    <p>Миллиондаған жылдар бойы жел мен судың әсерінен қалыптасқан табиғаттың ғажайып ескерткіші. Қызыл жартастар көз жауын алады.</p>
+        </div>
+    </section>
+
+    <!-- Байланыс -->
+    <section id="baylanys">
+        <div class="container">
+            <h2 class="section-title">Бізбен байланысу</h2>
+            <div class="contact-wrapper ornament-border">
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Аты-жөні <span style="color:red">*</span></label>
+                        <input type="text" id="name" name="name" required placeholder="Аты-жөніңізді енгізіңіз">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Электрондық пошта</label>
+                        <input type="email" id="email" name="email" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Хабарлама мәтіні</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Сұрағыңызды немесе ұсынысыңызды жазыңыз..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Жіберу</button>
+                </form>
+
+                <div class="contact-info">
+                    <h3>Байланыс ақпараты</h3>
+                    <div class="contact-item">
+                        <strong>Телефон:</strong><br>
+                        +7 (700) 000-00-00
+                    </div>
+                    <div class="contact-item">
+                        <strong>Пошта:</strong><br>
+                        info@kazakhstan.kz
+                    </div>
+                    <div class="contact-item">
+                        <strong>Мекенжай:</strong><br>
+                        Қазақстан, Алматы қ.
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ТАРИХ СЕКЦИЯСЫ -->
-    <section id="history" class="section" style="background-color: var(--white);">
-        <h2 class="section-title">Ұлы Дала Тарихы</h2>
-        <div class="ornament-container"><div class="ornament"></div></div>
-        <div class="history-text">
-            <p>Қазақстан – ежелгі өркениеттер мен көшпенділер мәдениетінің бесігі. Ұлы Жібек жолының бойында орналасқан бұл қасиетті мекен сан ғасырлық тарихқа, бай мұраға және қонақжай халыққа ие. Біздің тарихымыз – біздің мақтанышымыз.</p>
-        </div>
-    </section>
-
-    <!-- ГАЛЕРЕЯ СЕКЦИЯСЫ -->
-    <section id="gallery" class="section">
-        <h2 class="section-title">Табиғат Галереясы</h2>
-        <div class="ornament-container"><div class="ornament"></div></div>
-        
-        <div class="gallery-container">
-            <img src="https://images.unsplash.com/photo-1631526463996-7c3905cfc660?auto=format&fit=crop&w=800&q=80" alt="Қайыңды көлі" class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1623145694294-82a9d20c3298?auto=format&fit=crop&w=800&q=80" alt="Таулар" class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1599388383333-6c7b7d7bb13c?auto=format&fit=crop&w=800&q=80" alt="Көл" class="gallery-item">
-            <img src="https://images.unsplash.com/photo-1636906159648-fbccb1b01df9?auto=format&fit=crop&w=800&q=80" alt="Дала" class="gallery-item">
-        </div>
-    </section>
-
-    <!-- БАЙЛАНЫС СЕКЦИЯСЫ -->
-    <section id="contact" class="section" style="background-color: var(--white);">
-        <h2 class="section-title">Бізбен Байланыс</h2>
-        <div class="ornament-container"><div class="ornament"></div></div>
-        
-        <div class="contact-wrapper">
-            <form class="contact-form" id="contactForm">
-                <input type="text" id="name" placeholder="Аты-жөніңіз" required>
-                <input type="email" id="email" placeholder="Электрондық поштаңыз">
-                <textarea id="message" placeholder="Хабарлама мәтіні" required></textarea>
-                <button type="submit" class="btn">Жіберу</button>
-            </form>
-            
-            <div class="contact-info">
-                <p>Телефон: +7 (700) 000-00-00</p>
-                <p>Пошта: info@kazakhstan.kz</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ФУТЕР -->
+    <!-- Футер -->
     <footer>
-        <p>&copy; Барлық құқықтар қорғалған. 2026</p>
+        <div class="container">
+            <p>&copy; KZ Travel. Барлық құқықтар қорғалған. 2026</p>
+        </div>
     </footer>
 
-    <!-- JAVASCRIPT -->
+    <!-- JavaScript -->
     <script>
-        // Мобильді мәзірді ашу/жабу
-        const menuToggle = document.getElementById('mobile-menu');
-        const navLinks = document.getElementById('nav-links');
-
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-        // Мәзірден сілтеме таңдалғанда мобильді мәзірді жабу
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
+        // Құжат жүктелгенде орындалатын код
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Форманы өңдеу
+            const form = document.getElementById('contactForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Парақшаны қайта жүктеуді болдырмау
+                
+                const nameInput = document.getElementById('name');
+                const nameValue = nameInput.value.trim();
+                
+                // Аты-жөні міндетті өріс екенін тексеру
+                if (nameValue === '') {
+                    alert('Ескерту: Аты-жөніңізді енгізу міндетті!');
+                    nameInput.focus();
+                    return;
+                }
+                
+                // Сәтті жіберілді деген хабарлама
+                alert('Рақмет! Хабарламаңыз сәтті жіберілді. Біз сізбен жақын арада байланысамыз.');
+                
+                // Форманы тазалау
+                form.reset();
             });
-        });
 
-        // Хабарлама жіберу формасы
-        const contactForm = document.getElementById('contactForm');
-        contactForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Беттің қайта жүктелуін тоқтату
-            
-            // Енгізілген мәліметті тексеру
-            const name = document.getElementById('name').value;
-            
-            if(name.trim() !== "") {
-                alert("Құрметті " + name + ", сіздің хабарламаңыз сәтті жіберілді! Біз сізбен жақын арада хабарласамыз.");
-                contactForm.reset(); // Форманы тазарту
+            // Мәзір сілтемелеріне жұмсақ өту (Smooth Scroll)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        // Тақырып биіктігін ескеру
+                        const headerOffset = 70;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            });
+
+            // "Бастау" батырмасына басқанда Туризм бөліміне өту
+            const startBtn = document.querySelector('.hero-content .btn');
+            if(startBtn) {
+                startBtn.addEventListener('click', function(e) {
+                    // Smooth scroll логикасы жоғарыдағы селектормен өңделеді,
+                    // бірақ қосымша анимация қосуға болады.
+                });
             }
         });
     </script>
