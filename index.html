@@ -1,230 +1,703 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="kk" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Ayan KZ | Жеке бренд сайты</title>
-    <!-- Tailwind CSS CDN + Font Awesome -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayan KZ | IT | Веб-сайт жасау</title>
+    <meta name="description" content="Ayan KZ - тәжірибелі веб-әзірлеуші. Заманауи веб-сайттар жасаймын.">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* қосымша анимациялар, smooth scroll, drag-drop стилі */
-        html { scroll-behavior: smooth; }
-        body { transition: background-color 0.3s, color 0.2s; }
-        .toast-message {
-            position: fixed; bottom: 25px; right: 25px; z-index: 9999;
-            background: #1f2937; color: white; padding: 12px 24px;
-            border-radius: 40px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-            font-weight: 500; backdrop-filter: blur(4px);
-            transform: translateX(400px); transition: transform 0.3s ease;
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E1E1E',
+                        accent: '#60A5FA',
+                        dark: '#0F0F0F',
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                },
+            },
         }
-        .toast-message.show { transform: translateX(0); }
-        .dark .toast-message { background: #0f172a; color: #e2e8f0; border-left: 4px solid #3b82f6; }
-        .project-card, .service-item { transition: all 0.2s ease; }
-        .project-card:hover { transform: translateY(-5px); }
-        /* drag & drop аймағы */
-        .dropzone { border: 2px dashed #3b82f6; background: #eff6ff; transition: 0.2s; }
-        .dark .dropzone { background: #1e293b; border-color: #60a5fa; }
-        .dropzone.drag-over { background: #dbeafe; border-color: #2563eb; transform: scale(0.99); }
-        /* admin panel үшін қарапайым скролл */
-        .admin-card { border-radius: 1rem; }
-        button, a { cursor: pointer; }
-        img { object-fit: cover; }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F0F0F;
+            color: #F5F5F5;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0F0F0F;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3B82F6;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #60A5FA;
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 50%, #3B82F6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Glass effect */
+        .glass {
+            background: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Particle background */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #3B82F6;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float-particle 15s infinite;
+        }
+        
+        @keyframes float-particle {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Card hover */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Button glow */
+        .btn-glow {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-glow:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+            transform: scale(1.02);
+        }
+        
+        /* Image zoom */
+        .img-zoom {
+            overflow: hidden;
+        }
+        
+        .img-zoom img {
+            transition: transform 0.5s ease;
+        }
+        
+        .img-zoom:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Navigation */
+        .nav-hidden {
+            transform: translateY(-100%);
+        }
+        
+        .nav-visible {
+            transform: translateY(0);
+        }
+        
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
     </style>
 </head>
-<body class="bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-
-    <!-- DARK MODE TOGGLE -->
-    <div class="fixed top-5 right-5 z-50">
-        <button id="darkModeToggle" class="bg-gray-200 dark:bg-gray-700 p-3 rounded-full shadow-lg hover:scale-105 transition">
-            <i class="fas fa-moon dark:hidden text-gray-700"></i>
-            <i class="fas fa-sun hidden dark:inline text-yellow-300"></i>
-        </button>
-    </div>
-
-    <!-- NAVIGATION -->
-    <nav class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800">
-        <div class="max-w-6xl mx-auto px-5 py-4 flex flex-wrap justify-between items-center">
-            <a href="#" class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ayan KZ</a>
-            <div class="flex gap-6 text-gray-700 dark:text-gray-300 font-medium">
-                <a href="#home" class="hover:text-blue-600 transition">Басты</a>
-                <a href="#about" class="hover:text-blue-600 transition">Мен туралы</a>
-                <a href="#projects" class="hover:text-blue-600 transition">Жобалар</a>
-                <a href="#services" class="hover:text-blue-600 transition">Қызметтер</a>
-                <a href="#contact" class="hover:text-blue-600 transition">Байланыс</a>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-transform duration-300 nav-hidden">
+        <div class="glass">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <a href="#hero" class="text-xl font-bold gradient-text">Ayan KZ</a>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex space-x-8">
+                        <a href="#about" class="text-gray-300 hover:text-primary transition-colors">Мен туралы</a>
+                        <a href="#projects" class="text-gray-300 hover:text-primary transition-colors">Жобалар</a>
+                        <a href="#services" class="text-gray-300 hover:text-primary transition-colors">Қызметтер</a>
+                        <a href="#contact" class="text-gray-300 hover:text-primary transition-colors">Байланыс</a>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 w-64 h-full bg-secondary z-50 p-6">
+        <button id="close-menu-btn" class="absolute top-4 right-4 text-white">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        <div class="flex flex-col space-y-6 mt-12">
+            <a href="#about" class="text-gray-300 hover:text-primary transition-colors text-lg">Мен туралы</a>
+            <a href="#projects" class="text-gray-300 hover:text-primary transition-colors text-lg">Жобалар</a>
+            <a href="#services" class="text-gray-300 hover:text-primary transition-colors text-lg">Қызметтер</a>
+            <a href="#contact" class="text-gray-300 hover:text-primary transition-colors text-lg">Байланыс</a>
+        </div>
+    </div>
 
-    <main class="max-w-6xl mx-auto px-5 py-10 space-y-24">
-        <!-- HOME секция -->
-        <section id="home" class="text-center py-10 md:py-20">
-            <div class="inline-block p-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mb-4">
-                <div class="bg-white dark:bg-gray-900 rounded-full p-1">
-                    <i class="fas fa-code text-4xl text-blue-600 dark:text-blue-400 p-4"></i>
+    <!-- Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <!-- Particles Background -->
+        <div class="particles" id="particles"></div>
+        
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-dark/50 to-dark z-10"></div>
+        
+        <!-- Content -->
+        <div class="relative z-20 text-center px-4">
+            <div class="animate-fade-in" style="animation-delay: 0.2s;">
+                <p class="text-primary text-lg md:text-xl mb-4 font-medium">Сәлем, мен</p>
+            </div>
+            
+            <h1 class="animate-fade-in text-5xl md:text-7xl lg:text-8xl font-bold mb-6" style="animation-delay: 0.4s;">
+                <span class="gradient-text animate-float">Ayan KZ</span>
+            </h1>
+            
+            <div class="animate-fade-in" style="animation-delay: 0.6s;">
+                <p class="text-xl md:text-2xl text-gray-400 mb-8">
+                    <span class="text-primary">IT</span> | <span class="text-accent">Веб-сайт жасау</span>
+                </p>
+            </div>
+            
+            <div class="animate-fade-in flex flex-col sm:flex-row gap-4 justify-center" style="animation-delay: 0.8s;">
+                <a href="https://instagram.com/aian_wtkkz" target="_blank" class="btn-glow inline-flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-8 py-4 rounded-full font-semibold">
+                    <i class="fab fa-instagram text-xl"></i>
+                    @aian_wtkkz
+                </a>
+                <a href="#projects" class="btn-glow inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-semibold">
+                    <i class="fas fa-briefcase"></i>
+                    Жобаларды көру
+                </a>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce-slow">
+            <a href="#about" class="text-gray-400 hover:text-primary transition-colors">
+                <i class="fas fa-chevron-down text-2xl"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 md:py-32 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <!-- Image/Avatar -->
+                <div class="reveal">
+                    <div class="relative">
+                        <div class="absolute -inset-4 bg-gradient-to-r from-primary to-accent rounded-2xl opacity-30 blur-xl"></div>
+                        <div class="relative bg-secondary rounded-2xl p-8 text-center">
+                            <div class="w-48 h-48 mx-auto bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center mb-6">
+                                <i class="fas fa-user text-6xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">Ayan KZ</h3>
+                            <p class="text-gray-400">Веб-әзірлеуші</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="reveal" style="transition-delay: 0.2s;">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                        <span class="gradient-text">Мен туралы</span>
+                    </h2>
+                    <div id="about-content" class="text-gray-300 text-lg leading-relaxed space-y-4">
+                        <!-- Content loaded from localStorage -->
+                    </div>
+                    
+                    <div class="mt-8 flex flex-wrap gap-4">
+                        <div class="flex items-center gap-2 text-gray-400">
+                            <i class="fas fa-check-circle text-primary"></i>
+                            <span>Заманауи дизайн</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-gray-400">
+                            <i class="fas fa-check-circle text-primary"></i>
+                            <span>Тез орындау</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-gray-400">
+                            <i class="fas fa-check-circle text-primary"></i>
+                            <span>Техникалық қолдау</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight">Ayan KZ</h1>
-            <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mt-4">IT маман | Веб-әзірлеуші | Креатив дизайнер</p>
-            <div class="mt-8 flex justify-center gap-5">
-                <a href="#projects" class="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold shadow-md hover:bg-blue-700 transition">Жобаларды көру</a>
-                <a href="#contact" class="px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-full font-semibold hover:bg-blue-50 dark:hover:bg-blue-950 transition">Хабарласу</a>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 md:py-32 px-4 bg-secondary/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span class="gradient-text">Жобаларым</span>
+                </h2>
+                <p class="text-gray-400 text-lg">Мен жасаған жұмыстарым</p>
             </div>
-        </section>
+            
+            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Projects loaded from localStorage -->
+            </div>
+        </div>
+    </section>
 
-        <!-- МЕН ТУРАЛЫ (динамикалық) -->
-        <section id="about" class="bg-gray-50 dark:bg-gray-800/40 rounded-3xl p-8 md:p-12 shadow-sm">
-            <h2 class="text-3xl font-bold mb-6 flex items-center gap-3"><i class="fas fa-user-astronaut text-blue-500"></i> Мен туралы</h2>
-            <div id="aboutTextContainer" class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed"></div>
-        </section>
+    <!-- Services Section -->
+    <section id="services" class="py-20 md:py-32 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                    <span class="gradient-text">Қызметтер</span>
+                </h2>
+                <p class="text-gray-400 text-lg">Сізге қалай көмектесе аламын</p>
+            </div>
+            
+            <div id="services-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Services loaded from localStorage -->
+            </div>
+        </div>
+    </section>
 
-        <!-- ЖОБАЛАР (динамикалық) -->
-        <section id="projects">
-            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-laptop-code text-blue-500"></i> Жобаларым</h2>
-            <div id="projectsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-        </section>
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 md:py-32 px-4 bg-secondary/30">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="reveal">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">
+                    <span class="gradient-text">Байланыс</span>
+                </h2>
+                <p class="text-gray-400 text-lg mb-12">Мені Instagram-да табыңыз</p>
+                
+                <div class="flex flex-col items-center gap-8">
+                    <a href="https://instagram.com/aian_wtkkz" target="_blank" class="btn-glow inline-flex items-center gap-4 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-12 py-6 rounded-full text-xl font-bold">
+                        <i class="fab fa-instagram text-3xl"></i>
+                        <span>@aian_wtkkz</span>
+                    </a>
+                    
+                    <div class="flex gap-6">
+                        <a href="https://instagram.com/aian_wtkkz" target="_blank" class="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="mailto:contact@ayankz.kz" class="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+                            <i class="fas fa-envelope text-2xl"></i>
+                        </a>
+                        <a href="tel:+77001234567" class="w-14 h-14 rounded-full bg-secondary flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all">
+                            <i class="fas fa-phone text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <!-- ҚЫЗМЕТТЕР (динамикалық) -->
-        <section id="services" class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl p-8 md:p-12">
-            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-cogs text-blue-500"></i> Қызметтер</h2>
-            <div id="servicesList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </section>
-
-        <!-- БАЙЛАНЫС -->
-        <section id="contact" class="text-center py-8">
-            <h2 class="text-3xl font-bold mb-6">Байланыс</h2>
-            <a href="https://instagram.com/aian_wtkkz" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-orange-500 text-white px-8 py-4 rounded-full text-xl font-semibold shadow-lg hover:shadow-xl transition transform hover:scale-105">
-                <i class="fab fa-instagram text-2xl"></i> Instagram арқылы хабарласыңыз
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-500 text-sm">
+                © <span id="current-year">2024</span> Ayan KZ. Барлық құқықтар қорғалған.
+            </p>
+            <a href="admin.html" class="text-gray-600 hover:text-primary text-sm transition-colors">
+                <i class="fas fa-lock mr-1"></i> Admin
             </a>
-        </section>
-    </main>
-
-    <footer class="text-center py-8 border-t border-gray-200 dark:border-gray-800 mt-16 text-gray-500 text-sm">
-        <p>© 2025 Ayan KZ. Барлық құқықтар қорғалған.</p>
+        </div>
     </footer>
 
-    <script>
-        // ------------- ДЕРЕКТЕРДІ БАСҚАРУ (localStorage) -------------
-        const STORAGE_KEY = "ayan_portfolio_data";
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
 
-        // әдепкі деректер
+    <script>
+        // ==================== INITIAL DATA ====================
         const defaultData = {
-            aboutText: "Менің атым Ayan KZ. IT саласында 5+ жыл тәжірибем бар. Веб-сайттар, интерактивті интерфейстер және full-stack шешімдер құрастырамын. Клиенттерге заманауи, жылдам және әдемі цифрлық өнімдер ұсынамын.",
-            services: ["🌐 Веб-сайт құру (HTML/CSS/JS)", "⚛️ React / Vue фронтенд", "🖥️ Node.js & Python бэкенд", "🎨 UI/UX дизайн (Figma)", "📱 Мобильді адаптив", "🚀 SEO оңтайландыру"],
+            about: `Мен Ayan KZ, тәжірибелі веб-әзірлеушімін. Мен сіздің бизнесіңіз үшін заманауи, функционалды веб-сайттар жасаймын.
+
+Менің мақсатым — сіздің идеяларыңызды сандық шындыққа айналдыру. Әрбір жобаға жеке көзқараспен қарап, сапалы нәтиже беремін.
+
+Менің қызметтерім:
+• Корпоративті веб-сайттар
+• Интернет-дүкендер
+• Лендинг беттер
+• Веб-қосымшалар`,
+            
             projects: [
-                { id: "proj1", title: "Portfolio 360", description: "Интерактивті портфолио, full animation", image: "https://placehold.co/400x300/1e3a8a/white?text=Portfolio+360", link: "#" },
-                { id: "proj2", title: "EcoMarket", description: "Эко-өнімдер интернет-дүкені", image: "https://placehold.co/400x300/166534/white?text=EcoMarket", link: "#" },
-                { id: "proj3", title: "AI Chat Dashboard", description: "Жасанды интеллект чат-бот админкасы", image: "https://placehold.co/400x300/831843/white?text=AI+Dashboard", link: "#" }
+                {
+                    id: 1,
+                    title: "E-Commerce Дүкен",
+                    description: "Заманауи интернет-дүкен. Тауарлар каталогы, себет, төлем жүйесі.",
+                    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop",
+                    link: "#"
+                },
+                {
+                    id: 2,
+                    title: "Корпоративті Сайт",
+                    description: "Компанияның корпоративті веб-сайты. Компания туралы толық ақпарат.",
+                    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop",
+                    link: "#"
+                },
+                {
+                    id: 3,
+                    title: "Портфолио Сайт",
+                    description: "Жеке бренд сайты. Өз жұмыстарыңызды көрсету үшін тамаша.",
+                    image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&h=400&fit=crop",
+                    link: "#"
+                }
+            ],
+            
+            services: [
+                {
+                    id: 1,
+                    icon: "fa-laptop-code",
+                    title: "Веб-сайт жасау",
+                    description: "Заманауи технологиялармен жоғары сапалы веб-сайттар жасаймын."
+                },
+                {
+                    id: 2,
+                    icon: "fa-paint-brush",
+                    title: "Дизайн жасау",
+                    description: "Сіздің брендіңізге сәйкес келетін әдемі дизайн жасаймын."
+                },
+                {
+                    id: 3,
+                    icon: "fa-headset",
+                    title: "Техникалық қолдау",
+                    description: "Сайтыңызды үздіксіз жұмыс істету үшін толық қолдау көрсетемін."
+                }
             ]
         };
 
-        // деректерді жүктеу
-        function loadData() {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    return JSON.parse(stored);
-                } catch(e) { return defaultData; }
-            } else {
-                // әдепкі сақтау
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultData));
-                return defaultData;
+        // ==================== LOCAL STORAGE ====================
+        function initData() {
+            if (!localStorage.getItem('ayan_portfolio_about')) {
+                localStorage.setItem('ayan_portfolio_about', defaultData.about);
+            }
+            if (!localStorage.getItem('ayan_portfolio_projects')) {
+                localStorage.setItem('ayan_portfolio_projects', JSON.stringify(defaultData.projects));
+            }
+            if (!localStorage.getItem('ayan_portfolio_services')) {
+                localStorage.setItem('ayan_portfolio_services', JSON.stringify(defaultData.services));
             }
         }
 
-        let portfolioData = loadData();
-
-        function saveToLocalStorage() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolioData));
+        function getAbout() {
+            return localStorage.getItem('ayan_portfolio_about') || defaultData.about;
         }
 
-        // --- UI жаңарту (сайт) ---
+        function getProjects() {
+            const data = localStorage.getItem('ayan_portfolio_projects');
+            return data ? JSON.parse(data) : defaultData.projects;
+        }
+
+        function getServices() {
+            const data = localStorage.getItem('ayan_portfolio_services');
+            return data ? JSON.parse(data) : defaultData.services;
+        }
+
+        // ==================== RENDER FUNCTIONS ====================
         function renderAbout() {
-            const container = document.getElementById("aboutTextContainer");
-            if (container) container.innerHTML = portfolioData.aboutText;
+            const aboutContent = document.getElementById('about-content');
+            const aboutText = getAbout();
+            aboutContent.innerHTML = aboutText.replace(/\n/g, '<br>');
         }
 
         function renderProjects() {
-            const grid = document.getElementById("projectsGrid");
-            if (!grid) return;
-            if (!portfolioData.projects || portfolioData.projects.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center text-gray-500">Әзірше жобалар жоқ. Админ панель арқылы қосыңыз.</div>`;
+            const projectsGrid = document.getElementById('projects-grid');
+            const projects = getProjects();
+            
+            if (projects.length === 0) {
+                projectsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-folder-open text-6xl text-gray-600 mb-4"></i>
+                        <p class="text-gray-400">Әзірше жобалар жоқ</p>
+                    </div>
+                `;
                 return;
             }
-            grid.innerHTML = portfolioData.projects.map(proj => `
-                <div class="project-card bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700">
-                    <img src="${proj.image || 'https://placehold.co/400x300/334155/white?text=No+Image'}" alt="${proj.title}" class="w-full h-48 object-cover">
-                    <div class="p-5">
-                        <h3 class="text-xl font-bold">${escapeHtml(proj.title)}</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mt-2">${escapeHtml(proj.description)}</p>
-                        <a href="${proj.link}" target="_blank" class="inline-block mt-4 text-blue-600 font-medium hover:underline">Толығырақ →</a>
+            
+            projectsGrid.innerHTML = projects.map((project, index) => `
+                <div class="reveal card-hover bg-secondary rounded-xl overflow-hidden" style="transition-delay: ${index * 0.1}s;">
+                    <div class="img-zoom aspect-video">
+                        <img src="${project.image}" alt="${project.title}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">${project.title}</h3>
+                        <p class="text-gray-400 mb-4">${project.description}</p>
+                        <a href="${project.link}" target="_blank" class="inline-flex items-center gap-2 text-primary hover:text-accent transition-colors">
+                            <span>Көру</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             `).join('');
         }
 
         function renderServices() {
-            const container = document.getElementById("servicesList");
-            if (!container) return;
-            if (!portfolioData.services || portfolioData.services.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center text-gray-400">Қызметтер тізімі бос</div>`;
-                return;
-            }
-            container.innerHTML = portfolioData.services.map(service => `
-                <div class="service-item bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex items-center gap-3 text-lg font-medium">
-                    <i class="fas fa-check-circle text-blue-500"></i> ${escapeHtml(service)}
+            const servicesGrid = document.getElementById('services-grid');
+            const services = getServices();
+            
+            servicesGrid.innerHTML = services.map((service, index) => `
+                <div class="reveal card-hover bg-secondary rounded-xl p-8 border border-transparent hover:border-primary/50 transition-all" style="transition-delay: ${index * 0.1}s;">
+                    <div class="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                        <i class="fas ${service.icon} text-3xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">${service.title}</h3>
+                    <p class="text-gray-400">${service.description}</p>
                 </div>
             `).join('');
         }
 
-        function refreshAll() {
+        // ==================== PARTICLES ====================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // ==================== SCROLL REVEAL ====================
+        function initScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            reveals.forEach(reveal => observer.observe(reveal));
+        }
+
+        // ==================== NAVIGATION ====================
+        function initNavigation() {
+            const navbar = document.getElementById('navbar');
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const closeMenuBtn = document.getElementById('close-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            
+            // Show/hide navbar on scroll
+            let lastScroll = 0;
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                
+                if (currentScroll > 100) {
+                    navbar.classList.remove('nav-hidden');
+                    navbar.classList.add('nav-visible');
+                } else {
+                    navbar.classList.add('nav-hidden');
+                    navbar.classList.remove('nav-visible');
+                }
+                
+                lastScroll = currentScroll;
+            });
+            
+            // Mobile menu
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.add('open');
+            });
+            
+            closeMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+            
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                });
+            });
+        }
+
+        // ==================== TOAST ====================
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500',
+                warning: 'bg-yellow-500'
+            };
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-circle'
+            };
+            
+            toast.className = `${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 transform translate-x-full transition-transform duration-300`;
+            toast.innerHTML = `
+                <i class="fas ${icons[type]}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // ==================== INITIALIZE ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current year
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            
+            // Initialize data
+            initData();
+            
+            // Create particles
+            createParticles();
+            
+            // Render content
             renderAbout();
             renderProjects();
             renderServices();
-        }
-
-        // қарапайым XSS қорғанысы
-        function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
-        // --- DARK MODE ---
-        function initDarkMode() {
-            const isDark = localStorage.getItem("darkMode") === "true";
-            if (isDark) document.documentElement.classList.add("dark");
-            else document.documentElement.classList.remove("dark");
-            const toggle = document.getElementById("darkModeToggle");
-            if (toggle) {
-                toggle.addEventListener("click", () => {
-                    const nowDark = document.documentElement.classList.toggle("dark");
-                    localStorage.setItem("darkMode", nowDark);
-                });
-            }
-        }
-
-        // Toast хабарлама (сыртқы шақырулар үшін)
-        function showToast(message, type = "success") {
-            let toastDiv = document.querySelector(".toast-message");
-            if (!toastDiv) {
-                toastDiv = document.createElement("div");
-                toastDiv.className = "toast-message";
-                document.body.appendChild(toastDiv);
-            }
-            toastDiv.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-2"></i> ${message}`;
-            toastDiv.classList.add("show");
-            setTimeout(() => toastDiv.classList.remove("show"), 2500);
-        }
-
-        // Басқа беттермен синхрондау үшін storage event (егер админ панель өзгертсе)
-        window.addEventListener("storage", (e) => {
-            if (e.key === STORAGE_KEY) {
-                portfolioData = loadData();
-                refreshAll();
-                showToast("Деректер жаңартылды", "info");
-            }
+            
+            // Initialize scroll reveal
+            initScrollReveal();
+            
+            // Initialize navigation
+            initNavigation();
+            
+            // Check for admin updates
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'ayan_portfolio_about') {
+                    renderAbout();
+                } else if (e.key === 'ayan_portfolio_projects') {
+                    renderProjects();
+                } else if (e.key === 'ayan_portfolio_services') {
+                    renderServices();
+                }
+            });
         });
-
-        // Бастапқы рендер
-        refreshAll();
-        initDarkMode();
     </script>
 </body>
 </html>
