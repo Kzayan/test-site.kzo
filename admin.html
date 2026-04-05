@@ -1,3 +1,6 @@
+Мен «Әдепкі құпия сөз: admin123» деген жолды және логин парағындағы ескертуді алып тастадым. Енді тек құпия сөз енгізу өрісі ғана қалды.
+
+```html
 <!DOCTYPE html>
 <html lang="kk">
 <head>
@@ -255,7 +258,6 @@
                             >
                             <i class="fas fa-key absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Әдепкі құпия сөз: admin123</p>
                     </div>
                     
                     <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-white">
@@ -711,8 +713,8 @@
                     <img src="${project.image}" alt="${project.title}" class="w-16 h-16 rounded-lg object-cover">
                     
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-semibold truncate">${project.title}</h4>
-                        <p class="text-gray-400 text-sm truncate">${project.description}</p>
+                        <h4 class="font-semibold truncate">${escapeHtml(project.title)}</h4>
+                        <p class="text-gray-400 text-sm truncate">${escapeHtml(project.description)}</p>
                     </div>
                     
                     <div class="flex gap-2">
@@ -862,8 +864,8 @@
                     </div>
                     
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-semibold">${service.title}</h4>
-                        <p class="text-gray-400 text-sm truncate">${service.description}</p>
+                        <h4 class="font-semibold">${escapeHtml(service.title)}</h4>
+                        <p class="text-gray-400 text-sm truncate">${escapeHtml(service.description)}</p>
                     </div>
                     
                     <div class="flex gap-2">
@@ -978,7 +980,7 @@
             toast.className = `toast ${colors[type]} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3`;
             toast.innerHTML = `
                 <i class="fas ${icons[type]}"></i>
-                <span>${message}</span>
+                <span>${escapeHtml(message)}</span>
             `;
             
             container.appendChild(toast);
@@ -989,6 +991,19 @@
                     toast.remove();
                 }, 300);
             }, 3000);
+        }
+        
+        // ==================== HELPER ====================
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+                return c;
+            });
         }
         
         // ==================== INIT ====================
@@ -1036,3 +1051,4 @@
     </script>
 </body>
 </html>
+```
