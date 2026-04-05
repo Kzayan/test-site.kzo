@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель | Ayan KZ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .toast-message {
+            position: fixed; bottom: 25px; right: 25px; z-index: 9999;
+            background: #1e293b; color: white; padding: 12px 24px;
+            border-radius: 40px; font-weight: 500; transition: 0.2s; transform: translateX(400px);
+        }
+        .toast-message.show { transform: translateX(0); }
+        .dropzone { transition: 0.2s; cursor: pointer; }
+        .dropzone.drag-over { background: #d9f99d; border-color: #16a34a; }
+        .dark .dropzone.drag-over { background: #2d3748; }
+        .modal-transition { transition: opacity 0.2s ease; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-950 text-gray-800 dark:text-gray-100">
+
+    <!-- АДМИН ПАНЕЛЬ: ПАРОЛЬ ҚОРҒАУЫ -->
+    <div id="loginOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 w-96 shadow-2xl">
+            <h2 class="text-2xl font-bold mb-4 text-center">🔐 Админ кіру</h2>
+            <input type="password" id="adminPassword" placeholder="Парольді енгізіңіз" class="w-full p-3 border rounded-xl dark:bg-gray-700 mb-4" autofocus>
+            <button id="loginBtn" class="w-full bg-blue-600 text-white py-2 rounded-xl font-semibold">Кіру</button>
+            <p class="text-xs text-center mt-4 text-gray-500">Демо пароль: <strong>admin123</strong></p>
+        </div>
+    </div>
+
+    <!-- АДМИН ИНТЕРФЕЙСІ (бастапқы жасырын) -->
+    <div id="adminContent" style="display: none;">
+        <div class="max-w-7xl mx-auto p-6">
+            <div class="flex justify-between items-center flex-wrap gap-4 mb-8">
+                <h1 class="text-3xl font-extrabold bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent"><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+                <div class="flex gap-3">
+                    <button id="darkToggleAdmin" class="bg-gray-200 dark:bg-gray-700 p-2 px-4 rounded-full"><i class="fas fa-moon"></i> Режим</button>
+                    <button id="logoutAdmin" class="bg-red-500 text-white px-5 py-2 rounded-full"><i class="fas fa-sign-out-alt"></i> Шығу</button>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="flex flex-wrap gap-3 border-b mb-8">
+                <button data-tab="projectsTab" class="tab-btn px-5 py-2 font-semibold rounded-t-lg bg-blue-600 text-white">📁 Жобалар</button>
+                <button data-tab="aboutTab" class="tab-btn px-5 py-2 font-semibold">📝 Мен туралы</button>
+                <button data-tab="servicesTab" class="tab-btn px-5 py-2 font-semibold">🛠 Қызметтер</button>
+            </div>
+
+            <!-- ЖОБАЛАР ТАБЫ -->
+            <div id="projectsTab" class="tab-content">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
+                    <h2 class="text-2xl font-bold mb-4"><i class="fas fa-plus-circle text-green-500"></i> Жаңа жоба қосу</h2>
+                    <div class="grid md:grid-cols-2 gap-4 mb-6">
+                        <input type="text" id="projTitle" placeholder="Жоба атауы" class="p-3 border rounded-xl dark:bg-gray-700">
+                        <input type="text" id="projLink" placeholder="Сілтеме (URL)" class="p-3 border rounded-xl dark:bg-gray-700">
+                        <textarea id="projDesc" placeholder="Сипаттама" rows="2" class="p-3 border rounded-xl dark:bg-gray-700 md:col-span-2"></textarea>
+                        
+                        <!-- DRAG & DROP аймағы сурет жүктеу үшін -->
+                        <div id="imageDropzone" class="dropzone col-span-2 border-2 border-dashed border-blue-400 rounded-xl p-6 text-center cursor-pointer bg-blue-50 dark:bg-gray-700">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-blue-500"></i>
+                            <p class="mt-2">Суретті осы аймаққа ауыстырып тастаңыз немесе басыңыз</p>
+                            <p id="imagePreviewText" class="text-xs text-gray-500 mt-1">Таңдалған сурет жоқ</p>
+                            <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+                        </div>
+                        <button id="addProjectBtn" class="bg-blue-600 text-white py-3 rounded-xl font-bold mt-2 col-span-2">➕ Жоба қосу</button>
+                    </div>
+
+                    <h3 class="text-xl font-bold mt-8 mb-4">Барлық жобалар (басқару)</h3>
+                    <div id="projectsAdminList" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- МЕН ТУРАЛЫ ТАБЫ -->
+            <div id="aboutTab" class="tab-content hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">✏️ Мен туралы мәтіні</h2>
+                    <textarea id="aboutEditor" rows="6" class="w-full p-4 border rounded-xl dark:bg-gray-700"></textarea>
+                    <button id="saveAboutBtn" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl font-semibold">Сақтау</button>
+                </div>
+            </div>
+
+            <!-- ҚЫЗМЕТТЕР ТАБЫ -->
+            <div id="servicesTab" class="tab-content hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md">
+                    <h2 class="text-2xl font-bold mb-4"><i class="fas fa-list-ul"></i> Қызметтер тізімін басқару</h2>
+                    <div class="flex gap-3 mb-6">
+                        <input type="text" id="newServiceInput" placeholder="Жаңа қызмет (мысалы: SEO көмек)" class="flex-1 p-3 border rounded-xl dark:bg-gray-700">
+                        <button id="addServiceBtn" class="bg-blue-500 text-white px-5 rounded-xl"><i class="fas fa-plus"></i> Қосу</button>
+                    </div>
+                    <div id="servicesAdminList" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ------------------ ДЕРЕКТЕР ------------------
+        const STORAGE_KEY = "ayan_portfolio_data";
+        let portfolioData = {};
+
+        function loadPortfolioData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                portfolioData = JSON.parse(stored);
+            } else {
+                // әдепкіні орнату
+                portfolioData = {
+                    aboutText: "Менің атым Ayan KZ. IT саласында 5+ жыл тәжірибем бар. Веб-сайттар, интерактивті интерфейстер және full-stack шешімдер құрастырамын.",
+                    services: ["🌐 Веб-сайт құру (HTML/CSS/JS)", "⚛️ React / Vue фронтенд", "🖥️ Node.js & Python бэкенд", "🎨 UI/UX дизайн (Figma)", "📱 Мобильді адаптив", "🚀 SEO оңтайландыру"],
+                    projects: [
+                        { id: "proj1", title: "Portfolio 360", description: "Интерактивті портфолио", image: "https://placehold.co/400x300/1e3a8a/white?text=Portfolio+360", link: "#" },
+                        { id: "proj2", title: "EcoMarket", description: "Эко-дүкен", image: "https://placehold.co/400x300/166534/white?text=EcoMarket", link: "#" }
+                    ]
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolioData));
+            }
+        }
+
+        function saveGlobal() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolioData));
+            // Сайт бетіне өзгерісті хабарлау
+            window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: JSON.stringify(portfolioData) }));
+            showToast("✅ Деректер сақталды!", "success");
+        }
+
+        // render админ: жобалар тізімі, қызметтер тізімі
+        function renderAdminProjects() {
+            const container = document.getElementById("projectsAdminList");
+            if (!container) return;
+            if (!portfolioData.projects || portfolioData.projects.length === 0) {
+                container.innerHTML = "<div class='text-gray-500 p-4 text-center'>Ешқандай жоба жоқ</div>";
+                return;
+            }
+            container.innerHTML = portfolioData.projects.map((proj, idx) => `
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 flex flex-wrap md:flex-nowrap justify-between items-center gap-3">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-lg">${escapeHtml(proj.title)}</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 truncate">${escapeHtml(proj.description)}</p>
+                        <div class="flex gap-2 mt-1"><img src="${proj.image}" class="w-10 h-10 rounded object-cover" onerror="this.src='https://placehold.co/60/blue/white?text=img'"><span class="text-xs">${proj.link ? '🔗 сілтеме бар' : 'сілтеме жоқ'}</span></div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editProject('${proj.id}')" class="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-edit"></i> Өңдеу</button>
+                        <button onclick="deleteProject('${proj.id}')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-sm"><i class="fas fa-trash"></i> Өшіру</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminServices() {
+            const container = document.getElementById("servicesAdminList");
+            if (!container) return;
+            container.innerHTML = portfolioData.services.map((service, index) => `
+                <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-xl">
+                    <span class="flex-1"><i class="fas fa-cog text-blue-500 mr-2"></i> ${escapeHtml(service)}</span>
+                    <div class="flex gap-2">
+                        <button onclick="editService(${index})" class="text-blue-600 text-sm"><i class="fas fa-pen"></i> Өңдеу</button>
+                        <button onclick="deleteService(${index})" class="text-red-500 text-sm"><i class="fas fa-times"></i> Өшіру</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.editProject = function(projectId) {
+            const project = portfolioData.projects.find(p => p.id === projectId);
+            if (!project) return;
+            const newTitle = prompt("Жоба атауын өзгертіңіз:", project.title);
+            if (newTitle !== null) project.title = newTitle;
+            const newDesc = prompt("Жоба сипаттамасы:", project.description);
+            if (newDesc !== null) project.description = newDesc;
+            const newLink = prompt("Сілтеме (URL):", project.link);
+            if (newLink !== null) project.link = newLink;
+            const newImage = prompt("Сурет URL (немесе base64 бос қалдырсаңыз өзгермейді):", project.image);
+            if (newImage !== null && newImage.trim() !== "") project.image = newImage;
+            saveGlobal();
+            renderAdminProjects();
+            showToast("Жоба өңделді");
+        };
+
+        window.deleteProject = function(projectId) {
+            if (confirm("Жобаны өшіруге сенімдісіз бе?")) {
+                portfolioData.projects = portfolioData.projects.filter(p => p.id !== projectId);
+                saveGlobal();
+                renderAdminProjects();
+                showToast("Жоба өшірілді");
+            }
+        };
+
+        // қызметтерді басқару
+        window.editService = function(index) {
+            const newVal = prompt("Қызметті өңдеңіз:", portfolioData.services[index]);
+            if (newVal && newVal.trim()) portfolioData.services[index] = newVal.trim();
+            saveGlobal();
+            renderAdminServices();
+        };
+        window.deleteService = function(index) {
+            if (confirm("Қызметті өшіру?")) {
+                portfolioData.services.splice(index, 1);
+                saveGlobal();
+                renderAdminServices();
+            }
+        };
+
+        // жоба қосу (суретті drag & drop немесе файл арқылы)
+        let currentImageBase64 = null;
+        function resetImageDrop() { currentImageBase64 = null; document.getElementById("imagePreviewText").innerText = "Сурет таңдалмады"; }
+        function setImagePreview(base64) { currentImageBase64 = base64; document.getElementById("imagePreviewText").innerHTML = `<i class='fas fa-image text-green-500'></i> Сурет дайын`; }
+
+        function addProjectLogic() {
+            const title = document.getElementById("projTitle").value.trim();
+            const desc = document.getElementById("projDesc").value.trim();
+            const link = document.getElementById("projLink").value.trim();
+            if (!title) { showToast("Жоба атауын енгізіңіз", "error"); return; }
+            const newId = "proj_" + Date.now() + "_" + Math.floor(Math.random()*1000);
+            const newProject = {
+                id: newId,
+                title: title,
+                description: desc || "Сипаттама жоқ",
+                image: currentImageBase64 || "https://placehold.co/400x300/1e3a8a/white?text=New+Project",
+                link: link || "#"
+            };
+            portfolioData.projects.push(newProject);
+            saveGlobal();
+            renderAdminProjects();
+            document.getElementById("projTitle").value = "";
+            document.getElementById("projDesc").value = "";
+            document.getElementById("projLink").value = "";
+            resetImageDrop();
+            showToast("Жоба сәтті қосылды!");
+        }
+
+        // DRAG & DROP суретті өңдеу
+        function initDragDrop() {
+            const dropzone = document.getElementById("imageDropzone");
+            const fileInput = document.getElementById("imageFileInput");
+            if (!dropzone) return;
+            dropzone.addEventListener("click", () => fileInput.click());
+            dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("drag-over"); });
+            dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-over"));
+            dropzone.addEventListener("drop", (e) => {
+                e.preventDefault();
+                dropzone.classList.remove("drag-over");
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith("image/")) handleImageFile(file);
+                else showToast("Тек сурет файлын тастаңыз", "error");
+            });
+            fileInput.addEventListener("change", (e) => {
+                if (e.target.files.length) handleImageFile(e.target.files[0]);
+            });
+        }
+        function handleImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                setImagePreview(ev.target.result);
+                showToast("Сурет жүктелді!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Мен туралы сақтау
+        function loadAboutIntoEditor() {
+            const aboutArea = document.getElementById("aboutEditor");
+            if (aboutArea) aboutArea.value = portfolioData.aboutText;
+        }
+        document.getElementById("saveAboutBtn")?.addEventListener("click", () => {
+            const newAbout = document.getElementById("aboutEditor").value;
+            portfolioData.aboutText = newAbout;
+            saveGlobal();
+            showToast("Мәтін сақталды");
+        });
+
+        // қызмет қосу
+        document.getElementById("addServiceBtn")?.addEventListener("click", () => {
+            const newSrv = document.getElementById("newServiceInput").value.trim();
+            if (newSrv) {
+                portfolioData.services.push(newSrv);
+                saveGlobal();
+                renderAdminServices();
+                document.getElementById("newServiceInput").value = "";
+                showToast("Қызмет қосылды");
+            } else showToast("Қызмет атауын жазыңыз", "error");
+        });
+
+        // ------------------ ПАРОЛЬ ------------------
+        function checkAdminLogin() {
+            const overlay = document.getElementById("loginOverlay");
+            const adminDiv = document.getElementById("adminContent");
+            const passwordInput = document.getElementById("adminPassword");
+            const loginBtn = document.getElementById("loginBtn");
+            loginBtn.onclick = () => {
+                if (passwordInput.value === "admin123") {
+                    overlay.style.display = "none";
+                    adminDiv.style.display = "block";
+                    loadPortfolioData();
+                    renderAdminProjects();
+                    renderAdminServices();
+                    loadAboutIntoEditor();
+                    initDragDrop();
+                } else {
+                    alert("Қате пароль! Қайталап көріңіз.");
+                }
+            };
+            passwordInput.addEventListener("keypress", (e) => { if(e.key === "Enter") loginBtn.click(); });
+        }
+
+        // Tab switching
+        function initTabs() {
+            const tabs = document.querySelectorAll(".tab-btn");
+            const contents = document.querySelectorAll(".tab-content");
+            tabs.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const targetId = btn.getAttribute("data-tab");
+                    contents.forEach(c => c.classList.add("hidden"));
+                    document.getElementById(targetId).classList.remove("hidden");
+                    tabs.forEach(b => b.classList.remove("bg-blue-600", "text-white"));
+                    btn.classList.add("bg-blue-600", "text-white");
+                });
+            });
+        }
+
+        // dark mode admin
+        function initDarkModeAdmin() {
+            const isDark = localStorage.getItem("darkMode") === "true";
+            if (isDark) document.documentElement.classList.add("dark");
+            document.getElementById("darkToggleAdmin")?.addEventListener("click", () => {
+                document.documentElement.classList.toggle("dark");
+                localStorage.setItem("darkMode", document.documentElement.classList.contains("dark"));
+            });
+        }
+        function showToast(msg, type="success") {
+            let toast = document.querySelector(".toast-message");
+            if(!toast) { toast = document.createElement("div"); toast.className = "toast-message"; document.body.appendChild(toast); }
+            toast.innerHTML = `<i class="fas ${type==='success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} mr-2"></i> ${msg}`;
+            toast.classList.add("show");
+            setTimeout(()=>toast.classList.remove("show"), 2300);
+        }
+
+        document.getElementById("addProjectBtn")?.addEventListener("click", addProjectLogic);
+        document.getElementById("logoutAdmin")?.addEventListener("click", () => {
+            localStorage.removeItem("admin_logged"); // жай шығу
+            location.reload();
+        });
+
+        checkAdminLogin();
+        initTabs();
+        initDarkModeAdmin();
+        // алдын ала деректер жүктеу үшін
+        loadPortfolioData();
+    </script>
+</body>
+</html>
