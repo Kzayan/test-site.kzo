@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="ru" data-theme="minimalist"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Вход - QuizBQ    </title>
+    <link rel="stylesheet" href="/css/style.css">
+    
+</head>
+
+<body>
+    <div class="container" style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+        <div class="card" style="width: 100%; max-width: 400px; position: relative;">
+            <button class="theme-switch" onclick="toggleTheme()" title="Переключить тему" style="position: absolute; top: 1rem; right: 1rem;">🌓</button>
+            <h1 style="text-align: center; margin-bottom: 2rem;">QuizBQ</h1>
+
+            
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label for="phone_last4">Последние 4 цифры телефона</label>
+                    <input type="text" id="phone_last4" name="phone_last4" class="form-control" maxlength="4" pattern="\d{4}" required="" placeholder="0000">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 1.5rem; color: var(--gray-500); font-size: 0.75rem;">
+            </p>
+        </div>
+    </div>
+
+
+</body></html>
