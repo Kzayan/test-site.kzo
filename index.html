@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Qazaq Reels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #app {
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        /* Беттер */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .page.hidden {
+            transform: translateX(100%);
+        }
+
+        /* Reels контейнер */
+        .reels-container {
+            height: 100%;
+            width: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .reels-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .reel-slide {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            background: #000;
+        }
+
+        .video-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111;
+        }
+
+        .reel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        .video-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 16px 100px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            color: white;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .video-overlay * {
+            pointer-events: auto;
+        }
+
+        .username-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid white;
+        }
+
+        .action-buttons {
+            position: absolute;
+            right: 12px;
+            bottom: 140px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 20;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .action-btn:active {
+            transform: scale(0.9);
+        }
+
+        .action-btn i {
+            font-size: 32px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .action-btn span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .action-btn.liked i {
+            color: #ef4444;
+        }
+
+        .music-badge {
+            position: absolute;
+            bottom: 100px;
+            left: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            z-index: 15;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Төменгі навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            border-top: 1px solid #222;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #666;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+            font-size: 12px;
+        }
+
+        .nav-item i {
+            font-size: 24px;
+        }
+
+        .nav-item.active {
+            color: #4CAF50;
+        }
+
+        /* Хабарландыру белгісі */
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Профиль беті */
+        .profile-header {
+            padding: 60px 20px 20px;
+            background: #111;
+            color: white;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+
+        /* Хабарландырулар беті */
+        .notification-item {
+            padding: 16px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            background: #111;
+        }
+
+        /* Видео жүктеу формасы */
+        .upload-section {
+            padding: 20px;
+            background: #111;
+            border-radius: 16px;
+            margin: 16px;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            color: white;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Тақырып жолағы */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            color: white;
+        }
+
+        .top-bar h1 {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Toast хабарлама */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 300;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        input, textarea {
+            background: #222;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Toast хабарлама -->
+        <div id="toast" class="toast"></div>
+
+        <!-- Үстіңгі жолақ -->
+        <div class="top-bar" id="topBar">
+            <h1 id="pageTitle">Qazaq Reels</h1>
+            <div class="flex items-center gap-3">
+                <button onclick="showUploadModal()" class="text-white">
+                    <i class="fas fa-plus-circle text-2xl"></i>
+                </button>
+                <button onclick="showNotifications()" class="text-white relative">
+                    <i class="fas fa-bell text-2xl"></i>
+                    <span id="notificationCount" class="notification-badge" style="display: none;">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Басты бет - Reels -->
+        <div id="homePage" class="page">
+            <div id="reelsContainer" class="reels-container"></div>
+        </div>
+
+        <!-- Іздеу беті -->
+        <div id="explorePage" class="page hidden">
+            <div style="height: 100%; overflow-y: auto; padding-top: 60px;">
+                <div class="p-4">
+                    <div class="relative mb-4">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchInput" placeholder="Іздеу..." class="pl-12 bg-[#1a1a1a] border-[#333]">
+                    </div>
+                    <div id="searchResults" class="grid grid-cols-2 gap-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Профиль беті -->
+        <div id="profilePage" class="page hidden">
+            <div style="height: 100%; overflow-y: auto; padding-top: 60px;">
+                <div id="profileContent"></div>
+            </div>
+        </div>
+
+        <!-- Хабарландырулар беті -->
+        <div id="notificationsPage" class="page hidden">
+            <div style="height: 100%; overflow-y: auto; padding-top: 60px;">
+                <div class="p-4">
+                    <h2 class="text-white text-xl font-bold mb-4">Хабарландырулар</h2>
+                    <div id="notificationsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Төменгі навигация -->
+        <div class="bottom-nav">
+            <button class="nav-item active" data-page="home" onclick="switchPage('home')">
+                <i class="fas fa-home"></i>
+                <span>Басты</span>
+            </button>
+            <button class="nav-item" data-page="explore" onclick="switchPage('explore')">
+                <i class="fas fa-compass"></i>
+                <span>Зерттеу</span>
+            </button>
+            <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </button>
+        </div>
+
+        <!-- Видео жүктеу модалы -->
+        <div id="uploadModal" class="modal">
+            <div class="modal-content">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Жаңа видео жүктеу</h3>
+                    <button onclick="closeUploadModal()" class="text-gray-400">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div id="authCheck" style="display: none;">
+                    <p class="text-center mb-4">Видео жүктеу үшін кіріңіз</p>
+                    <button onclick="showLoginForm()" class="btn-primary mb-2">Кіру</button>
+                    <button onclick="showRegisterForm()" class="w-full py-3 border border-gray-600 rounded-full text-white">Тіркелу</button>
+                </div>
+
+                <div id="uploadForm">
+                    <input type="text" id="videoTitle" placeholder="Видео атауы" class="mb-3">
+                    <textarea id="videoDescription" placeholder="Сипаттама" rows="2" class="mb-3"></textarea>
+                    
+                    <div class="mb-3">
+                        <label class="block mb-2 text-sm text-gray-400">Видео сілтемесі (MP4)</label>
+                        <input type="text" id="videoUrl" placeholder="https://... видео сілтемесі" class="mb-2">
+                        <p class="text-xs text-gray-500">Немесе дайын видеоны таңдаңыз:</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button onclick="selectSampleVideo('video1')" class="p-2 bg-[#222] rounded-lg text-sm">
+                            🎬 Табиғат
+                        </button>
+                        <button onclick="selectSampleVideo('video2')" class="p-2 bg-[#222] rounded-lg text-sm">
+                            🌆 Қала
+                        </button>
+                        <button onclick="selectSampleVideo('video3')" class="p-2 bg-[#222] rounded-lg text-sm">
+                            🌊 Теңіз
+                        </button>
+                        <button onclick="selectSampleVideo('video4')" class="p-2 bg-[#222] rounded-lg text-sm">
+                            🏔️ Таулар
+                        </button>
+                    </div>
+
+                    <button onclick="uploadVideo()" class="btn-primary">
+                        <i class="fas fa-upload mr-2"></i>Жүктеу
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кіру/Тіркелу модалы -->
+        <div id="authModal" class="modal">
+            <div class="modal-content">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-green-400 flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-play text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">Qazaq Reels</h3>
+                </div>
+
+                <div id="loginForm">
+                    <input type="text" id="loginUsername" placeholder="Қолданушы аты" class="mb-3">
+                    <input type="password" id="loginPassword" placeholder="Құпия сөз" class="mb-4">
+                    <button onclick="login()" class="btn-primary mb-3">Кіру</button>
+                    <p class="text-center text-gray-400">
+                        Аккаунтыңыз жоқ па? 
+                        <button onclick="toggleAuthForm()" class="text-green-500">Тіркелу</button>
+                    </p>
+                </div>
+
+                <div id="registerForm" style="display: none;">
+                    <input type="text" id="regDisplayName" placeholder="Атыңыз" class="mb-3">
+                    <input type="text" id="regUsername" placeholder="Қолданушы аты" class="mb-3">
+                    <input type="password" id="regPassword" placeholder="Құпия сөз" class="mb-4">
+                    <button onclick="register()" class="btn-primary mb-3">Тіркелу</button>
+                    <p class="text-center text-gray-400">
+                        Аккаунтыңыз бар ма? 
+                        <button onclick="toggleAuthForm()" class="text-green-500">Кіру</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ Деректер қоймасы ============
+        let currentUser = JSON.parse(localStorage.getItem('qazaqReelsUser')) || null;
+        let users = JSON.parse(localStorage.getItem('qazaqReelsUsers')) || [];
+        let videos = JSON.parse(localStorage.getItem('qazaqReelsVideos')) || [];
+        let notifications = JSON.parse(localStorage.getItem('qazaqReelsNotifications')) || [];
+        let likesMap = JSON.parse(localStorage.getItem('qazaqReelsLikes')) || {};
+        let followsMap = JSON.parse(localStorage.getItem('qazaqReelsFollows')) || {};
+
+        // Үлгі видеолар
+        const sampleVideos = {
+            video1: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+            video2: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+            video3: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+            video4: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
+        };
+
+        // Бастапқы видеолар
+        if (videos.length === 0) {
+            videos = [
+                {
+                    id: '1',
+                    userId: 'system1',
+                    username: '@aigerim_kz',
+                    displayName: 'Айгерім',
+                    userAvatar: 'A',
+                    title: 'Алматы таңы 🌅',
+                    description: 'Керемет күн басталды!',
+                    videoUrl: sampleVideos.video1,
+                    thumbnail: '',
+                    likes: [],
+                    comments: [],
+                    views: 1234,
+                    timestamp: Date.now() - 3600000,
+                    music: '🎵 Domino - Rework'
+                },
+                {
+                    id: '2',
+                    userId: 'system2',
+                    username: '@dauren_tech',
+                    displayName: 'Дәурен',
+                    userAvatar: 'D',
+                    title: 'Жаңа жоба 🚀',
+                    description: 'Қазақша әлеуметтік желі',
+                    videoUrl: sampleVideos.video2,
+                    thumbnail: '',
+                    likes: [],
+                    comments: [],
+                    views: 892,
+                    timestamp: Date.now() - 7200000,
+                    music: '🎵 Original Sound'
+                },
+                {
+                    id: '3',
+                    userId: 'system3',
+                    username: '@asel_art',
+                    displayName: 'Әсел',
+                    userAvatar: 'A',
+                    title: 'Сурет салу процесі 🎨',
+                    description: 'Жаңа туынды',
+                    videoUrl: sampleVideos.video3,
+                    thumbnail: '',
+                    likes: [],
+                    comments: [],
+                    views: 567,
+                    timestamp: Date.now() - 10800000,
+                    music: '🎵 Lofi Study'
+                }
+            ];
+            saveVideos();
+        }
+
+        // Сақтау функциялары
+        function saveVideos() {
+            localStorage.setItem('qazaqReelsVideos', JSON.stringify(videos));
+        }
+
+        function saveUsers() {
+            localStorage.setItem('qazaqReelsUsers', JSON.stringify(users));
+        }
+
+        function saveNotifications() {
+            localStorage.setItem('qazaqReelsNotifications', JSON.stringify(notifications));
+        }
+
+        function saveLikes() {
+            localStorage.setItem('qazaqReelsLikes', JSON.stringify(likesMap));
+        }
+
+        function saveFollows() {
+            localStorage.setItem('qazaqReelsFollows', JSON.stringify(followsMap));
+        }
+
+        // ============ UI Функциялары ============
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function addNotification(userId, type, fromUser, videoId = null) {
+            const notification = {
+                id: Date.now() + Math.random(),
+                userId,
+                type, // 'like', 'follow', 'comment'
+                fromUser: fromUser.username,
+                fromDisplayName: fromUser.displayName,
+                videoId,
+                timestamp: Date.now(),
+                read: false
+            };
+            notifications.unshift(notification);
+            saveNotifications();
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge() {
+            if (!currentUser) return;
+            const unreadCount = notifications.filter(n => n.userId === currentUser.id && !n.read).length;
+            const badge = document.getElementById('notificationCount');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // ============ Reels рендеринг ============
+        let currentVideoElements = new Map();
+
+        function renderReels() {
+            const container = document.getElementById('reelsContainer');
+            const sortedVideos = [...videos].sort((a, b) => b.timestamp - a.timestamp);
+            
+            container.innerHTML = sortedVideos.map(video => {
+                const isLiked = currentUser && likesMap[video.id]?.includes(currentUser.id);
+                const likeCount = likesMap[video.id]?.length || 0;
+                const isFollowing = currentUser && followsMap[currentUser.id]?.includes(video.userId);
+                
+                return `
+                    <div class="reel-slide" data-video-id="${video.id}">
+                        <div class="video-wrapper">
+                            <video 
+                                class="reel-video" 
+                                src="${video.videoUrl}" 
+                                loop 
+                                muted 
+                                playsinline 
+                                preload="metadata"
+                                onloadedmetadata="this.play().catch(()=>{})"
+                            ></video>
+                        </div>
+                        
+                        <div class="video-overlay">
+                            <div class="username-badge">
+                                <div class="user-avatar">${video.userAvatar}</div>
+                                <div>
+                                    <div class="font-semibold">${video.displayName || video.username}</div>
+                                    <div class="text-sm opacity-80">${video.username}</div>
+                                </div>
+                                ${currentUser && currentUser.id !== video.userId ? `
+                                    <button onclick="toggleFollow('${video.userId}', '${video.id}')" 
+                                        class="ml-auto px-4 py-1.5 rounded-full text-sm font-medium ${isFollowing ? 'bg-gray-600' : 'bg-gradient-to-r from-green-500 to-green-400'}">
+                                        ${isFollowing ? 'Бақылауда' : 'Бақылау'}
+                                    </button>
+                                ` : ''}
+                            </div>
+                            <p class="mb-2">${video.title}</p>
+                            <p class="text-sm opacity-80">${video.description}</p>
+                        </div>
+                        
+                        <div class="music-badge">
+                            <i class="fas fa-music"></i>
+                            <span>${video.music || 'Original Audio'}</span>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${video.id}')">
+                                <i class="fas fa-heart"></i>
+                                <span>${likeCount}</span>
+                            </button>
+                            <button class="action-btn" onclick="showComments('${video.id}')">
+                                <i class="fas fa-comment"></i>
+                                <span>${video.comments?.length || 0}</span>
+                            </button>
+                            <button class="action-btn" onclick="shareVideo('${video.id}')">
+                                <i class="fas fa-share"></i>
+                                <span>Бөлісу</span>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-eye"></i>
+                                <span>${video.views || 0}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Intersection Observer - тек көрінетін видео ойнатылады
+            setupVideoObserver();
+        }
+
+        function setupVideoObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target.querySelector('video');
+                    if (!video) return;
+                    
+                    if (entry.isIntersecting) {
+                        video.play().catch(() => {});
+                        // Қаралым санын арттыру
+                        const slide = entry.target;
+                        const videoId = slide.dataset.videoId;
+                        if (videoId && !slide.dataset.viewed) {
+                            slide.dataset.viewed = 'true';
+                            incrementViews(videoId);
+                        }
+                    } else {
+                        video.pause();
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            document.querySelectorAll('.reel-slide').forEach(slide => {
+                observer.observe(slide);
+            });
+        }
+
+        function incrementViews(videoId) {
+            const video = videos.find(v => v.id === videoId);
+            if (video) {
+                video.views = (video.views || 0) + 1;
+                saveVideos();
+            }
+        }
+
+        // ============ Әрекеттер ============
+        function toggleLike(videoId) {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+
+            if (!likesMap[videoId]) {
+                likesMap[videoId] = [];
+            }
+
+            const index = likesMap[videoId].indexOf(currentUser.id);
+            const video = videos.find(v => v.id === videoId);
+            
+            if (index === -1) {
+                likesMap[videoId].push(currentUser.id);
+                showToast('❤️ Лайк басылды');
+                
+                // Хабарландыру жіберу
+                if (video && video.userId !== currentUser.id) {
+                    addNotification(video.userId, 'like', currentUser, videoId);
+                }
+            } else {
+                likesMap[videoId].splice(index, 1);
+            }
+
+            saveLikes();
+            renderReels();
+        }
+
+        function toggleFollow(userId, videoId) {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+
+            if (!followsMap[currentUser.id]) {
+                followsMap[currentUser.id] = [];
+            }
+
+            const index = followsMap[currentUser.id].indexOf(userId);
+            
+            if (index === -1) {
+                followsMap[currentUser.id].push(userId);
+                showToast('✅ Бақылауға алынды');
+                
+                // Хабарландыру жіберу
+                addNotification(userId, 'follow', currentUser);
+            } else {
+                followsMap[currentUser.id].splice(index, 1);
+                showToast('Бақылау тоқтатылды');
+            }
+
+            saveFollows();
+            renderReels();
+        }
+
+        function shareVideo(videoId) {
+            const video = videos.find(v => v.id === videoId);
+            if (video) {
+                navigator.clipboard?.writeText(`Qazaq Reels: ${video.title}`);
+                showToast('🔗 Сілтеме көшірілді');
+            }
+        }
+
+        function showComments(videoId) {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            
+            const video = videos.find(v => v.id === videoId);
+            if (!video) return;
+            
+            const comment = prompt('Пікір қалдыру:', '');
+            if (comment && comment.trim()) {
+                if (!video.comments) video.comments = [];
+                video.comments.push({
+                    userId: currentUser.id,
+                    username: currentUser.username,
+                    text: comment.trim(),
+                    timestamp: Date.now()
+                });
+                saveVideos();
+                
+                if (video.userId !== currentUser.id) {
+                    addNotification(video.userId, 'comment', currentUser, videoId);
+                }
+                
+                renderReels();
+                showToast('💬 Пікір қосылды');
+            }
+        }
+
+        // ============ Видео жүктеу ============
+        function showUploadModal() {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+            document.getElementById('uploadModal').classList.add('active');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.remove('active');
+        }
+
+        function selectSampleVideo(type) {
+            document.getElementById('videoUrl').value = sampleVideos[type];
+        }
+
+        function uploadVideo() {
+            const title = document.getElementById('videoTitle').value.trim();
+            const description = document.getElementById('videoDescription').value.trim();
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+
+            if (!title) {
+                showToast('Видео атауын жазыңыз');
+                return;
+            }
+
+            if (!videoUrl) {
+                showToast('Видео сілтемесін енгізіңіз');
+                return;
+            }
+
+            const newVideo = {
+                id: Date.now().toString() + Math.random(),
+                userId: currentUser.id,
+                username: currentUser.username,
+                displayName: currentUser.displayName,
+                userAvatar: currentUser.displayName?.[0]?.toUpperCase() || 'U',
+                title,
+                description,
+                videoUrl,
+                thumbnail: '',
+                likes: [],
+                comments: [],
+                views: 0,
+                timestamp: Date.now(),
+                music: '🎵 Original Audio'
+            };
+
+            videos.unshift(newVideo);
+            saveVideos();
+
+            document.getElementById('videoTitle').value = '';
+            document.getElementById('videoDescription').value = '';
+            document.getElementById('videoUrl').value = '';
+            
+            closeUploadModal();
+            switchPage('home');
+            renderReels();
+            showToast('🎬 Видео сәтті жүктелді!');
+        }
+
+        // ============ Аутентификация ============
+        function showAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function toggleAuthForm() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+            }
+        }
+
+        function register() {
+            const displayName = document.getElementById('regDisplayName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if (!displayName || !username || !password) {
+                showToast('Барлық өрістерді толтырыңыз');
+                return;
+            }
+
+            const formattedUsername = username.startsWith('@') ? username : '@' + username;
+            
+            if (users.find(u => u.username === formattedUsername)) {
+                showToast('Бұл қолданушы аты бос емес');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now().toString(),
+                displayName,
+                username: formattedUsername,
+                password,
+                avatar: displayName[0].toUpperCase(),
+                createdAt: Date.now()
+            };
+
+            users.push(newUser);
+            saveUsers();
+
+            currentUser = newUser;
+            localStorage.setItem('qazaqReelsUser', JSON.stringify(currentUser));
+
+            closeAuthModal();
+            updateUI();
+            renderReels();
+            showToast(`Қош келдіңіз, ${displayName}!`);
+        }
+
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const formattedUsername = username.startsWith('@') ? username : '@' + username;
+            const user = users.find(u => u.username === formattedUsername && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('qazaqReelsUser', JSON.stringify(currentUser));
+                closeAuthModal();
+                updateUI();
+                renderReels();
+                showToast(`Қош келдіңіз, ${user.displayName}!`);
+            } else {
+                showToast('Қате қолданушы аты немесе құпия сөз');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('qazaqReelsUser');
+            updateUI();
+            renderReels();
+            showToast('Шықтыңыз');
+        }
+
+        function updateUI() {
+            updateNotificationBadge();
+            renderProfilePage();
+        }
+
+        // ============ Бет ауыстыру ============
+        function switchPage(page) {
+            // Барлық беттерді жасыру
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(page + 'Page').classList.remove('hidden');
+
+            // Навигацияны жаңарту
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === page) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Тақырыпты жаңарту
+            const titles = { home: 'Qazaq Reels', explore: 'Зерттеу', profile: 'Профиль', notifications: 'Хабарландырулар' };
+            document.getElementById('pageTitle').textContent = titles[page] || 'Qazaq Reels';
+
+            // Бет мазмұнын жаңарту
+            if (page === 'home') {
+                renderReels();
+            } else if (page === 'explore') {
+                renderExplorePage();
+            } else if (page === 'profile') {
+                if (!currentUser) {
+                    showAuthModal();
+                    switchPage('home');
+                    return;
+                }
+                renderProfilePage();
+            } else if (page === 'notifications') {
+                renderNotificationsPage();
+            }
+        }
+
+        function renderExplorePage() {
+            const container = document.getElementById('searchResults');
+            const sortedVideos = [...videos].sort((a, b) => b.views - a.views);
+            
+            container.innerHTML = sortedVideos.map(video => `
+                <div class="relative aspect-[9/16] bg-[#111]" onclick="playVideoFromExplore('${video.id}')">
+                    <video src="${video.videoUrl}" class="w-full h-full object-cover" muted></video>
+                    <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
+                        <p class="text-white text-sm font-medium truncate">${video.title}</p>
+                        <p class="text-gray-300 text-xs">${video.views || 0} қаралым</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playVideoFromExplore(videoId) {
+            switchPage('home');
+            setTimeout(() => {
+                const slide = document.querySelector(`[data-video-id="${videoId}"]`);
+                if (slide) {
+                    slide.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+
+        function renderProfilePage() {
+            if (!currentUser) return;
+
+            const container = document.getElementById('profileContent');
+            const userVideos = videos.filter(v => v.userId === currentUser.id);
+            const totalLikes = userVideos.reduce((sum, v) => sum + (likesMap[v.id]?.length || 0), 0);
+            const followers = Object.values(followsMap).filter(f => f.includes(currentUser.id)).length;
+            const following = followsMap[currentUser.id]?.length || 0;
+
+            container.innerHTML = `
+                <div class="profile-header">
+                    <div class="flex items-start gap-4 mb-4">
+                        <div class="profile-avatar">${currentUser.displayName?.[0]?.toUpperCase() || 'U'}</div>
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold">${currentUser.displayName}</h2>
+                            <p class="text-gray-400">${currentUser.username}</p>
+                        </div>
+                        <button onclick="logout()" class="text-red-500">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-around text-center mb-4">
+                        <div>
+                            <div class="font-bold text-xl">${userVideos.length}</div>
+                            <div class="text-gray-400 text-sm">Видео</div>
+                        </div>
+                        <div>
+                            <div class="font-bold text-xl">${followers}</div>
+                            <div class="text-gray-400 text-sm">Бақылаушылар</div>
+                        </div>
+                        <div>
+                            <div class="font-bold text-xl">${following}</div>
+                            <div class="text-gray-400 text-sm">Бақылауда</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-400 rounded-xl p-4 text-center">
+                        <div class="text-2xl font-bold">${totalLikes}</div>
+                        <div class="text-sm opacity-90">Барлық лайк</div>
+                    </div>
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="text-white font-semibold mb-3">Менің видеоларым</h3>
+                    <div class="grid grid-cols-2 gap-1">
+                        ${userVideos.length === 0 ? 
+                            '<p class="text-gray-400 col-span-2 text-center py-8">Әзірге видео жоқ</p>' :
+                            userVideos.map(video => `
+                                <div class="relative aspect-[9/16] bg-[#111]" onclick="playVideoFromProfile('${video.id}')">
+                                    <video src="${video.videoUrl}" class="w-full h-full object-cover"></video>
+                                    <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black">
+                                        <div class="flex items-center gap-2 text-white text-xs">
+                                            <i class="fas fa-heart text-red-500"></i>
+                                            <span>${likesMap[video.id]?.length || 0}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+            `;
+        }
+
+        function playVideoFromProfile(videoId) {
+            switchPage('home');
+            setTimeout(() => {
+                const slide = document.querySelector(`[data-video-id="${videoId}"]`);
+                if (slide) {
+                    slide.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+
+        function showNotifications() {
+            switchPage('notifications');
+        }
+
+        function renderNotificationsPage() {
+            if (!currentUser) {
+                showAuthModal();
+                return;
+            }
+
+            const container = document.getElementById('notificationsList');
+            const userNotifications = notifications.filter(n => n.userId === currentUser.id);
+            
+            // Оқылған деп белгілеу
+            userNotifications.forEach(n => n.read = true);
+            saveNotifications();
+            updateNotificationBadge();
+
+            if (userNotifications.length === 0) {
+                container.innerHTML = '<p class="text-gray-400 text-center py-8">Хабарландырулар жоқ</p>';
+                return;
+            }
+
+            container.innerHTML = userNotifications.map(n => {
+                const timeAgo = getTimeAgo(n.timestamp);
+                let icon, text;
+                
+                if (n.type === 'like') {
+                    icon = '❤️';
+                    text = `${n.fromDisplayName} сіздің видеоңызға лайк басты`;
+                } else if (n.type === 'follow') {
+                    icon = '👤';
+                    text = `${n.fromDisplayName} сізге жазылды`;
+                } else {
+                    icon = '💬';
+                    text = `${n.fromDisplayName} пікір қалдырды`;
+                }
+
+                return `
+                    <div class="notification-item" onclick="goToVideo('${n.videoId}')">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-400 flex items-center justify-center text-xl">
+                            ${icon}
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white">${text}</p>
+                            <p class="text-gray-500 text-sm">${timeAgo}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function goToVideo(videoId) {
+            if (videoId) {
+                switchPage('home');
+                setTimeout(() => {
+                    const slide = document.querySelector(`[data-video-id="${videoId}"]`);
+                    if (slide) {
+                        slide.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            }
+        }
+
+        function getTimeAgo(timestamp) {
+            const diff = Math.floor((Date.now() - timestamp) / 1000);
+            if (diff < 60) return 'дәл қазір';
+            if (diff < 3600) return `${Math.floor(diff / 60)} минут бұрын`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} сағат бұрын`;
+            return `${Math.floor(diff / 86400)} күн бұрын`;
+        }
+
+        // ============ Бастапқы жүктеу ============
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            renderReels();
+            
+            // Модальдарды жабу
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.remove('active');
+                    }
+                });
+            });
+
+            // Іздеу
+            document.getElementById('searchInput')?.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = videos.filter(v => 
+                    v.title.toLowerCase().includes(query) || 
+                    v.username.toLowerCase().includes(query)
+                );
+                const container = document.getElementById('searchResults');
+                container.innerHTML = filtered.map(video => `
+                    <div class="relative aspect-[9/16] bg-[#111]" onclick="playVideoFromExplore('${video.id}')">
+                        <video src="${video.videoUrl}" class="w-full h-full object-cover" muted></video>
+                        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black">
+                            <p class="text-white text-sm">${video.title}</p>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        });
+
+        // Тышқан дөңгелегімен скролл
+        let touchStartY = 0;
+        document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
+    </script>
+</body>
+</html>
