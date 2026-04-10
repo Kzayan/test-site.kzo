@@ -2,1253 +2,679 @@
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Qazaq Reels</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🐞 DebugMaster Pro | 100 сұрақ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background: #000;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
         }
 
-        #app {
-            height: 100vh;
-            width: 100vw;
-            position: relative;
-        }
-
-        /* Беттер */
-        .page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            transform: translateX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .page.hidden {
-            transform: translateX(100%);
-        }
-
-        /* Reels контейнер */
-        .reels-container {
-            height: 100%;
-            width: 100%;
-            overflow-y: scroll;
-            scroll-snap-type: y mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .reels-container::-webkit-scrollbar {
-            display: none;
-        }
-
-        .reel-slide {
-            height: 100vh;
-            width: 100%;
-            scroll-snap-align: start;
-            position: relative;
-            background: #000;
-        }
-
-        .video-wrapper {
-            width: 100%;
-            height: 100%;
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0a1a2f, #030b14);
             display: flex;
-            align-items: center;
             justify-content: center;
-            background: #111;
-        }
-
-        .reel-video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #000;
-        }
-
-        .video-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px 16px 100px;
-            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-            color: white;
-            z-index: 10;
-            pointer-events: none;
-        }
-
-        .video-overlay * {
-            pointer-events: auto;
-        }
-
-        .username-badge {
-            display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            border: 2px solid white;
-        }
-
-        .action-buttons {
-            position: absolute;
-            right: 12px;
-            bottom: 140px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            z-index: 20;
-        }
-
-        .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .action-btn:active {
-            transform: scale(0.9);
-        }
-
-        .action-btn i {
-            font-size: 32px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        }
-
-        .action-btn span {
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .action-btn.liked i {
-            color: #ef4444;
-        }
-
-        .music-badge {
-            position: absolute;
-            bottom: 100px;
-            left: 16px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            z-index: 15;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* Төменгі навигация */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-            border-top: 1px solid #222;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: #666;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: color 0.2s;
-            font-size: 12px;
-        }
-
-        .nav-item i {
-            font-size: 24px;
-        }
-
-        .nav-item.active {
-            color: #4CAF50;
-        }
-
-        /* Хабарландыру белгісі */
-        .notification-badge {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        /* Профиль беті */
-        .profile-header {
-            padding: 60px 20px 20px;
-            background: #111;
-            color: white;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 36px;
-            margin-bottom: 16px;
-        }
-
-        /* Хабарландырулар беті */
-        .notification-item {
             padding: 16px;
-            border-bottom: 1px solid #222;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: white;
-            background: #111;
         }
 
-        /* Видео жүктеу формасы */
-        .upload-section {
-            padding: 20px;
-            background: #111;
-            border-radius: 16px;
-            margin: 16px;
-            color: white;
+        .quiz-card {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(10, 28, 50, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 160, 255, 0.35);
+            border-radius: 48px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(30, 120, 255, 0.2) inset, 0 0 30px #0050b330;
+            padding: 28px 28px 20px;
+            color: #e5f0ff;
+            transition: box-shadow 0.3s;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 200;
-            align-items: center;
-            justify-content: center;
+        .quiz-card:hover {
+            box-shadow: 0 35px 55px #000000b0, 0 0 0 1.5px #3a8cff inset, 0 0 40px #1e6df080;
         }
 
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: #1a1a1a;
-            border-radius: 24px;
-            padding: 24px;
-            max-width: 400px;
-            width: 90%;
-            color: white;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Тақырып жолағы */
         .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, transparent 100%);
-            z-index: 50;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 16px;
-            color: white;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .top-bar h1 {
-            font-size: 24px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Toast хабарлама */
-        .toast {
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
+        .question-counter {
+            background: #0e233ac9;
             padding: 12px 24px;
-            border-radius: 40px;
-            font-size: 14px;
-            z-index: 300;
-            opacity: 0;
-            transition: opacity 0.3s;
-            white-space: nowrap;
-        }
-
-        .toast.show {
-            opacity: 1;
-        }
-
-        input, textarea {
-            background: #222;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 12px;
-            padding: 12px;
-            width: 100%;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #4CAF50, #66BB6A);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 30px;
+            border-radius: 60px;
             font-weight: 600;
+            font-size: 1.2rem;
+            border: 1px solid #1f6599;
+            box-shadow: inset 0 2px 5px #00000055, 0 6px 0 #0a151f;
+            backdrop-filter: blur(8px);
+            color: #c6e2ff;
+        }
+
+        .question-counter i {
+            margin-right: 10px;
+            color: #2a9dff;
+        }
+
+        .timer-block {
+            background: #0b1e2f;
+            padding: 10px 28px;
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: 2.2rem;
+            font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #3079c7;
+            box-shadow: 0 8px 0 #07121e, 0 8px 20px #0000006e, 0 0 15px #0088ff40;
+            color: #f0f9ff;
+            text-shadow: 0 0 10px #5ab0ff;
+            transition: all 0.2s ease;
+        }
+
+        .timer-block i {
+            font-size: 2rem;
+            color: #52a5ff;
+        }
+
+        .timer-critical {
+            color: #ffabab !important;
+            text-shadow: 0 0 18px #ff3a3a !important;
+            border-color: #e05a5a !important;
+            box-shadow: 0 8px 0 #3e1515, 0 8px 20px #2f0000, 0 0 20px #ff5e5e !important;
+            background: #1f1b2e;
+        }
+
+        .timer-critical i {
+            color: #ff8a8a !important;
+        }
+
+        .question-box {
+            background: #0d233bc2;
+            border-radius: 36px;
+            padding: 28px 26px;
+            margin: 18px 0 28px;
+            border: 1px solid #2667a7;
+            box-shadow: inset 0 3px 8px #0000005e, 0 18px 25px -10px black;
+            backdrop-filter: blur(5px);
+        }
+
+        .question-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 30px;
+            color: #d9eeff;
+            text-shadow: 0 2px 5px #00000050;
+            word-break: break-word;
+        }
+
+        .answers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-item {
+            background: #102c44e0;
+            border: 1.5px solid #1e5480;
+            border-radius: 60px;
+            transition: all 0.18s ease;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 5px 0 #0a1823;
+        }
+
+        .answer-item:hover {
+            transform: scale(1.01);
+            background: #1b3f5e;
+            border-color: #3f9aff;
+            box-shadow: 0 0 15px #0077ff, 0 5px 0 #0a1823;
+        }
+
+        .answer-label {
+            display: flex;
+            align-items: center;
+            padding: 16px 22px;
+            gap: 16px;
+            cursor: pointer;
             width: 100%;
+        }
+
+        .answer-label input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2.5px solid #2f84cf;
+            border-radius: 50%;
+            background: #0a1a28;
+            transition: 0.12s;
+            box-shadow: inset 0 2px 5px black, 0 0 5px #1e90ff;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .answer-label input[type="radio"]:checked {
+            background: #1e88e5;
+            border-color: #a0d0ff;
+            box-shadow: 0 0 18px #2a9dff, inset 0 1px 3px white;
+        }
+
+        .answer-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #d1e7ff;
+            word-break: break-word;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0 10px;
+        }
+
+        .btn {
+            background: linear-gradient(145deg, #1d4b74, #0f2b44);
+            border: none;
+            border-bottom: 5px solid #082233;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            padding: 16px 32px;
+            border-radius: 80px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 0 #05121e, 0 5px 15px #00000070, 0 0 0 1px #2b74b3 inset;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
+            border: 1px solid #1d72b8;
+        }
+
+        .btn i {
+            font-size: 1.3rem;
+            color: #8fcbff;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #05121e, 0 10px 25px black, 0 0 15px #0084ff, 0 0 0 1.5px #5aa9ff inset;
+            background: #1f5580;
+            border-color: #6eb2ff;
+        }
+
+        .btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 4px 0 #05121e, 0 8px 15px black, 0 0 0 1px #2d85d6 inset;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            transform: none;
+            box-shadow: 0 5px 0 #05121e;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+
+        .start-btn {
+            background: #005cbb;
+            border-bottom-color: #00337a;
+            font-size: 1.8rem;
+            padding: 18px 45px;
+            box-shadow: 0 10px 0 #002856, 0 0 20px #0080ff;
+            margin: 15px auto 5px;
+        }
+
+        .result-panel {
+            text-align: center;
+            padding: 25px 15px;
+        }
+
+        .score-circle {
+            font-size: 5rem;
+            font-weight: 900;
+            background: #102b44;
+            display: inline-block;
+            padding: 20px 50px;
+            border-radius: 120px;
+            margin: 25px 0;
+            border: 2px solid #1e90ff;
+            box-shadow: 0 0 40px #004cff40, inset 0 5px 10px black;
+            color: #b3dcff;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            font-size: 1.5rem;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.1rem;
+            opacity: 0.85;
+            color: #8fb7db;
+            border-top: 1px dashed #2a6291;
+            padding-top: 18px;
+        }
+
+        .footer i {
+            color: #3f9eff;
+            margin: 0 4px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 550px) {
+            .quiz-card { padding: 18px 14px; border-radius: 32px; }
+            .question-title { font-size: 1.35rem; }
+            .answer-text { font-size: 1rem; }
+            .btn { padding: 14px 18px; font-size: 1.1rem; }
+            .timer-block { font-size: 1.7rem; padding: 6px 16px; }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Toast хабарлама -->
-        <div id="toast" class="toast"></div>
-
-        <!-- Үстіңгі жолақ -->
-        <div class="top-bar" id="topBar">
-            <h1 id="pageTitle">Qazaq Reels</h1>
-            <div class="flex items-center gap-3">
-                <button onclick="showUploadModal()" class="text-white">
-                    <i class="fas fa-plus-circle text-2xl"></i>
-                </button>
-                <button onclick="showNotifications()" class="text-white relative">
-                    <i class="fas fa-bell text-2xl"></i>
-                    <span id="notificationCount" class="notification-badge" style="display: none;">0</span>
-                </button>
+<div class="quiz-card" id="quizCard">
+    <!-- Бастау экраны -->
+    <div id="startScreen">
+        <div style="text-align: center; padding: 20px 0;">
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">🐞💻</div>
+            <h1 style="font-size: 2.8rem; font-weight: 700; text-shadow: 0 0 15px #0099ff;">DEBUG QZ</h1>
+            <p style="font-size: 1.3rem; margin: 20px 0;"><i class="fas fa-bug"></i> Қателерді табу шеберлігі <i class="fas fa-code"></i></p>
+            <div style="background: #0a1e30; border-radius: 40px; padding: 20px; margin: 30px 0; border:1px solid #1c6196;">
+                <p><i class="fas fa-question-circle"></i> 100 сұрақ • 30 минут</p>
+                <p><i class="fas fa-check-circle" style="color:#4caf50;"></i> Әр дұрыс жауап = 1 балл</p>
             </div>
-        </div>
-
-        <!-- Басты бет - Reels -->
-        <div id="homePage" class="page">
-            <div id="reelsContainer" class="reels-container"></div>
-        </div>
-
-        <!-- Іздеу беті -->
-        <div id="explorePage" class="page hidden">
-            <div style="height: 100%; overflow-y: auto; padding-top: 60px;">
-                <div class="p-4">
-                    <div class="relative mb-4">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="searchInput" placeholder="Іздеу..." class="pl-12 bg-[#1a1a1a] border-[#333]">
-                    </div>
-                    <div id="searchResults" class="grid grid-cols-2 gap-1"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Профиль беті -->
-        <div id="profilePage" class="page hidden">
-            <div style="height: 100%; overflow-y: auto; padding-top: 60px;">
-                <div id="profileContent"></div>
-            </div>
-        </div>
-
-        <!-- Хабарландырулар беті -->
-        <div id="notificationsPage" class="page hidden">
-            <div style="height: 100%; overflow-y: auto; padding-top: 60px;">
-                <div class="p-4">
-                    <h2 class="text-white text-xl font-bold mb-4">Хабарландырулар</h2>
-                    <div id="notificationsList"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Төменгі навигация -->
-        <div class="bottom-nav">
-            <button class="nav-item active" data-page="home" onclick="switchPage('home')">
-                <i class="fas fa-home"></i>
-                <span>Басты</span>
-            </button>
-            <button class="nav-item" data-page="explore" onclick="switchPage('explore')">
-                <i class="fas fa-compass"></i>
-                <span>Зерттеу</span>
-            </button>
-            <button class="nav-item" data-page="profile" onclick="switchPage('profile')">
-                <i class="fas fa-user"></i>
-                <span>Профиль</span>
-            </button>
-        </div>
-
-        <!-- Видео жүктеу модалы -->
-        <div id="uploadModal" class="modal">
-            <div class="modal-content">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold">Жаңа видео жүктеу</h3>
-                    <button onclick="closeUploadModal()" class="text-gray-400">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div id="authCheck" style="display: none;">
-                    <p class="text-center mb-4">Видео жүктеу үшін кіріңіз</p>
-                    <button onclick="showLoginForm()" class="btn-primary mb-2">Кіру</button>
-                    <button onclick="showRegisterForm()" class="w-full py-3 border border-gray-600 rounded-full text-white">Тіркелу</button>
-                </div>
-
-                <div id="uploadForm">
-                    <input type="text" id="videoTitle" placeholder="Видео атауы" class="mb-3">
-                    <textarea id="videoDescription" placeholder="Сипаттама" rows="2" class="mb-3"></textarea>
-                    
-                    <div class="mb-3">
-                        <label class="block mb-2 text-sm text-gray-400">Видео сілтемесі (MP4)</label>
-                        <input type="text" id="videoUrl" placeholder="https://... видео сілтемесі" class="mb-2">
-                        <p class="text-xs text-gray-500">Немесе дайын видеоны таңдаңыз:</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <button onclick="selectSampleVideo('video1')" class="p-2 bg-[#222] rounded-lg text-sm">
-                            🎬 Табиғат
-                        </button>
-                        <button onclick="selectSampleVideo('video2')" class="p-2 bg-[#222] rounded-lg text-sm">
-                            🌆 Қала
-                        </button>
-                        <button onclick="selectSampleVideo('video3')" class="p-2 bg-[#222] rounded-lg text-sm">
-                            🌊 Теңіз
-                        </button>
-                        <button onclick="selectSampleVideo('video4')" class="p-2 bg-[#222] rounded-lg text-sm">
-                            🏔️ Таулар
-                        </button>
-                    </div>
-
-                    <button onclick="uploadVideo()" class="btn-primary">
-                        <i class="fas fa-upload mr-2"></i>Жүктеу
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Кіру/Тіркелу модалы -->
-        <div id="authModal" class="modal">
-            <div class="modal-content">
-                <div class="text-center mb-6">
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-green-500 to-green-400 flex items-center justify-center mx-auto mb-3">
-                        <i class="fas fa-play text-white text-2xl"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white">Qazaq Reels</h3>
-                </div>
-
-                <div id="loginForm">
-                    <input type="text" id="loginUsername" placeholder="Қолданушы аты" class="mb-3">
-                    <input type="password" id="loginPassword" placeholder="Құпия сөз" class="mb-4">
-                    <button onclick="login()" class="btn-primary mb-3">Кіру</button>
-                    <p class="text-center text-gray-400">
-                        Аккаунтыңыз жоқ па? 
-                        <button onclick="toggleAuthForm()" class="text-green-500">Тіркелу</button>
-                    </p>
-                </div>
-
-                <div id="registerForm" style="display: none;">
-                    <input type="text" id="regDisplayName" placeholder="Атыңыз" class="mb-3">
-                    <input type="text" id="regUsername" placeholder="Қолданушы аты" class="mb-3">
-                    <input type="password" id="regPassword" placeholder="Құпия сөз" class="mb-4">
-                    <button onclick="register()" class="btn-primary mb-3">Тіркелу</button>
-                    <p class="text-center text-gray-400">
-                        Аккаунтыңыз бар ма? 
-                        <button onclick="toggleAuthForm()" class="text-green-500">Кіру</button>
-                    </p>
-                </div>
-            </div>
+            <button class="btn start-btn" id="startTestBtn"><i class="fas fa-play"></i> ТЕСТТІ БАСТАУ</button>
         </div>
     </div>
 
-    <script>
-        // ============ Деректер қоймасы ============
-        let currentUser = JSON.parse(localStorage.getItem('qazaqReelsUser')) || null;
-        let users = JSON.parse(localStorage.getItem('qazaqReelsUsers')) || [];
-        let videos = JSON.parse(localStorage.getItem('qazaqReelsVideos')) || [];
-        let notifications = JSON.parse(localStorage.getItem('qazaqReelsNotifications')) || [];
-        let likesMap = JSON.parse(localStorage.getItem('qazaqReelsLikes')) || {};
-        let followsMap = JSON.parse(localStorage.getItem('qazaqReelsFollows')) || {};
+    <!-- Тест аймағы -->
+    <div id="quizArea" class="hidden">
+        <div class="top-bar">
+            <div class="question-counter"><i class="fas fa-list"></i> <span id="currentQDisplay">1</span>/<span id="totalQDisplay">100</span></div>
+            <div class="timer-block" id="timerDisplay"><i class="far fa-clock"></i> <span id="timerValue">30:00</span></div>
+        </div>
+        <div class="question-box">
+            <div class="question-title" id="questionText">Сұрақ жүктелуде...</div>
+            <div class="answers-list" id="answersContainer"></div>
+        </div>
+        <div class="action-bar">
+            <button class="btn" id="prevBtn" disabled><i class="fas fa-chevron-left"></i> Артқа</button>
+            <button class="btn" id="nextBtn">Келесі <i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div style="text-align:right; margin-top:5px;">
+            <button class="btn" id="finishEarlyBtn" style="padding:12px 24px; font-size:1rem;"><i class="fas fa-flag-checkered"></i> Аяқтау</button>
+        </div>
+    </div>
 
-        // Үлгі видеолар
-        const sampleVideos = {
-            video1: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-            video2: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-            video3: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-            video4: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-        };
+    <!-- Нәтиже экраны -->
+    <div id="resultScreen" class="hidden result-panel">
+        <i class="fas fa-trophy" style="font-size:4rem; color:#FFD966;"></i>
+        <h2 style="font-size:2.5rem; margin:15px 0;">Нәтиже</h2>
+        <div class="score-circle"><span id="finalScore">0</span> / 100</div>
+        <div class="stats-grid">
+            <div><i class="fas fa-check-circle" style="color:#4ade80;"></i> Дұрыс: <span id="correctCount">0</span></div>
+            <div><i class="fas fa-times-circle" style="color:#f87171;"></i> Қате: <span id="wrongCount">0</span></div>
+        </div>
+        <button class="btn restart-btn" id="restartBtn"><i class="fas fa-rotate-right"></i> Қайта тапсыру</button>
+    </div>
 
-        // Бастапқы видеолар
-        if (videos.length === 0) {
-            videos = [
-                {
-                    id: '1',
-                    userId: 'system1',
-                    username: '@aigerim_kz',
-                    displayName: 'Айгерім',
-                    userAvatar: 'A',
-                    title: 'Алматы таңы 🌅',
-                    description: 'Керемет күн басталды!',
-                    videoUrl: sampleVideos.video1,
-                    thumbnail: '',
-                    likes: [],
-                    comments: [],
-                    views: 1234,
-                    timestamp: Date.now() - 3600000,
-                    music: '🎵 Domino - Rework'
-                },
-                {
-                    id: '2',
-                    userId: 'system2',
-                    username: '@dauren_tech',
-                    displayName: 'Дәурен',
-                    userAvatar: 'D',
-                    title: 'Жаңа жоба 🚀',
-                    description: 'Қазақша әлеуметтік желі',
-                    videoUrl: sampleVideos.video2,
-                    thumbnail: '',
-                    likes: [],
-                    comments: [],
-                    views: 892,
-                    timestamp: Date.now() - 7200000,
-                    music: '🎵 Original Sound'
-                },
-                {
-                    id: '3',
-                    userId: 'system3',
-                    username: '@asel_art',
-                    displayName: 'Әсел',
-                    userAvatar: 'A',
-                    title: 'Сурет салу процесі 🎨',
-                    description: 'Жаңа туынды',
-                    videoUrl: sampleVideos.video3,
-                    thumbnail: '',
-                    likes: [],
-                    comments: [],
-                    views: 567,
-                    timestamp: Date.now() - 10800000,
-                    music: '🎵 Lofi Study'
-                }
-            ];
-            saveVideos();
+    <div class="footer">
+        <i class="far fa-keyboard"></i> Жасаған — Аян KZ <i class="fas fa-terminal"></i>
+    </div>
+</div>
+
+<script>
+    (function(){
+        "use strict";
+
+        // ==================== 100 СҰРАҚ (hardcoded) ====================
+        // Әр сұрақтың жауап саны әртүрлі. Дұрыс жауап индексі correct өрісінде.
+        const questions = [
+            // 1-10
+            { question: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
+            { question: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
+            { question: "Логикалық қате кезінде:", options: ["Бағдарлама мүлде ашылмайды", "Қате нәтиже береді", "Компьютер өшеді", "Файл жойылады", "Желі үзіледі"], correct: 1 },
+            { question: "Runtime error қашан пайда болады?", options: ["Код жазу кезінде", "Компиляция кезінде", "Орындау кезінде", "Жобалау кезінде", "Орнату кезінде"], correct: 2 },
+            { question: "Debugger не үшін керек?", options: ["Код жазу", "Қате іздеу", "Сурет салу", "Файл сақтау", "Интернетке шығу"], correct: 1 },
+            { question: "print() функциясы не үшін қолданылады?", options: ["Қате жою", "Мәлімет шығару", "Файл ашу", "Желіге қосылу", "Код жою"], correct: 1 },
+            { question: "try-except блогы не үшін керек?", options: ["Цикл құру", "Шарт жазу", "Қателерді өңдеу", "Айнымалы құру", "Файл жою"], correct: 2 },
+            { question: "IDE дегеніміз:", options: ["Операциялық жүйе", "Бағдарламалау ортасы", "Вирус", "Драйвер", "Сервер"], correct: 1 },
+            { question: "Infinite loop дегеніміз:", options: ["Бір рет орындалатын цикл", "Шексіз цикл", "Қате код", "Айнымалы", "Функция"], correct: 1 },
+            { question: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 },
+            // 11-20
+            { question: "Логикалық қатені табудың ең тиімді жолы:", options: ["Компьютерді өшіру", "Кодты қайта көшіру", "Қадамдап орындау (step-by-step)", "Интернетті тексеру", "Принтер қосу"], correct: 2 },
+            { question: "Синтаксистік қате табылғанда:", options: ["Бағдарлама дұрыс жұмыс істейді", "Компиляция тоқтайды", "Нәтиже баяу шығады", "Файл ашылады", "Желі үзіледі"], correct: 1 },
+            { question: "Айнымалы анықталмаса қандай қате шығады?", options: ["Type error", "Name error", "Index error", "Logic error", "Value error"], correct: 1 },
+            { question: "Массив шегінен тыс элементке жүгінсек:", options: ["Name error", "Type error", "Index error", "Syntax error", "Key error"], correct: 2 },
+            { question: "Type error қашан болады?", options: ["Қате атау жазылса", "Түрлер сәйкес келмесе", "Индекс дұрыс болмаса", "Цикл тоқтаса", "Файл жабылса"], correct: 1 },
+            { question: "Қатені қайталамау үшін не істеу керек?", options: ["Кодты тестілеу", "Өшіру", "Компьютер ауыстыру", "Интернет қосу", "Бағдарламаны жасыру"], correct: 0 },
+            { question: "assert командасы не үшін қолданылады?", options: ["Файл ашу", "Мәлімет басу", "Шартты тексеру", "Цикл жасау", "Айнымалы жою"], correct: 2 },
+            { question: "Лог-файл не үшін керек?", options: ["Музыка сақтау", "Қате жазбаларын сақтау", "Видео көру", "Сурет салу", "Интернетке қосылу"], correct: 1 },
+            { question: "Refactoring дегеніміз:", options: ["Кодты жою", "Код құрылымын жақсарту", "Қате қосу", "Файл форматтау", "Компьютер тазалау"], correct: 1 },
+            { question: "Unit тестілеу не тексереді?", options: ["Бүкіл жүйені", "Бір модульді", "Серверді", "Интернетті", "Дизайнды"], correct: 1 },
+            // 21-30
+            { question: "ValueError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Мәлімет түрі сәйкес келмесе", "Дұрыс емес мән енгізілсе", "Индекс артық болса", "Файл табылмаса"], correct: 2 },
+            { question: "FileNotFoundError қашан шығады?", options: ["Айнымалы жоқ болса", "Файл табылмаса", "Түр сәйкес келмесе", "Шарт қате болса", "Цикл тоқтаса"], correct: 1 },
+            { question: "except блогы қай кезде орындалады?", options: ["Қате болмаса", "Қате пайда болса", "Әрқашан", "Цикл ішінде ғана", "Функция алдында"], correct: 1 },
+            { question: "finally блогы:", options: ["Ешқашан орындалмайды", "Қате болса ғана орындалады", "Әрқашан орындалады", "Цикл жасайды", "Айнымалы құрады"], correct: 2 },
+            { question: "Логикалық қателерді табу үшін:", options: ["Кодты талдау керек", "Компьютер ауыстыру керек", "Файлды жою керек", "Интернетті өшіру керек", "Принтер қосу керек"], correct: 0 },
+            { question: "Breakpoint дегеніміз:", options: ["Қате түрі", "Бағдарламаны тоқтату нүктесі", "Айнымалы", "Цикл", "Файл"], correct: 1 },
+            { question: "Stack trace нені көрсетеді?", options: ["Дизайнды", "Қате шыққан жолды", "Интернет жылдамдығын", "Файл өлшемін", "Процессор түрін"], correct: 1 },
+            { question: "Тестілеудің мақсаты:", options: ["Қате табу", "Кодты жасыру", "Компьютерді өшіру", "Желі қосу", "Файлды көшіру"], correct: 0 },
+            { question: "Қай қате бағдарлама тоқтауына әкелуі мүмкін?", options: ["Логикалық", "Runtime error", "Комментарий қатесі", "Дизайн қатесі", "Стиль қатесі"], correct: 1 },
+            { question: "Debugging процесінің соңғы мақсаты:", options: ["Кодты жою", "Қатені түзету", "Файлды жабу", "Компьютерді өшіру", "Интернетке қосылу"], correct: 1 },
+            // 31-40
+            { question: "SyntaxError қай кезде шығады?", options: ["Орындау кезінде", "Компиляция кезінде", "Интернет жоқ кезде", "Файл жабылғанда", "Цикл тоқтағанда"], correct: 1 },
+            { question: "ZeroDivisionError қашан пайда болады?", options: ["0-ге бөлгенде", "Айнымалы жоқ болса", "Түр сәйкес келмесе", "Индекс артық болса", "Файл ашылмаса"], correct: 0 },
+            { question: "Кодтағы комментарий не үшін керек?", options: ["Қате шығару", "Түсіндіру жазу", "Файл жою", "Айнымалы құру", "Цикл жасау"], correct: 1 },
+            { question: "Қате табылғаннан кейін бірінші қадам:", options: ["Кодты өшіру", "Себебін анықтау", "Компьютерді өшіру", "Жаңа файл ашу", "Интернет қосу"], correct: 1 },
+            { question: "while циклі тоқтамаса, бұл:", options: ["Syntax error", "Логикалық қате", "Type error", "Name error", "Value error"], correct: 1 },
+            { question: "Функция дұрыс нәтиже бермесе:", options: ["Логикалық қате бар", "Компьютер бұзылған", "Интернет жоқ", "Файл ашылмаған", "Драйвер жоқ"], correct: 0 },
+            { question: "IDE-де қызыл сызық нені білдіреді?", options: ["Дұрыс код", "Синтаксистік қате", "Интернет бар", "Файл сақталған", "Принтер қосылған"], correct: 1 },
+            { question: "Exception дегеніміз:", options: ["Айнымалы", "Қате жағдай", "Цикл", "Функция", "Сервер"], correct: 1 },
+            { question: "Кодты кішкене бөліктермен тексеру:", options: ["Инсталляция", "Модульдік тексеру", "Форматтау", "Архивтеу", "Дизайн"], correct: 1 },
+            { question: "Қай әдіс қателерді азайтады?", options: ["Тестілеу", "Көшіру", "Өшіру", "Форматтамау", "Компьютер ауыстыру"], correct: 0 },
+            // 41-50
+            { question: "KeyError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Сөздікте (dict) жоқ кілт қолданылса", "0-ге бөлгенде", "Түр сәйкес келмесе", "Файл ашылмаса"], correct: 1 },
+            { question: "ImportError дегеніміз:", options: ["Айнымалы қатесі", "Модуль жүктелмесе", "Индекс қатесі", "Логикалық қате", "Шарт қатесі"], correct: 1 },
+            { question: "Кодты қайта қарау (code review) мақсаты:", options: ["Қате табу", "Файл жою", "Интернет қосу", "Компьютер өшіру", "Дизайн өзгерту"], correct: 0 },
+            { question: "Traceback нені көрсетеді?", options: ["Файл көлемін", "Қате шыққан жолдар тізбегін", "Интернет жылдамдығын", "Компьютер жадын", "Экран өлшемін"], correct: 1 },
+            { question: "Бағдарламаны тест мәліметтермен тексеру:", options: ["Архивтеу", "Тестілеу", "Орнату", "Форматтау", "Көшіру"], correct: 1 },
+            { question: "Қай жағдайда try блогы орындалады?", options: ["Қате болса ғана", "Әрқашан бірінші орындалады", "Ешқашан", "Цикл ішінде ғана", "Файл жабылғанда"], correct: 1 },
+            { question: "except бірнешеу болуы мүмкін бе?", options: ["Жоқ", "Иә", "Тек біреу", "Тек циклде", "Тек функцияда"], correct: 1 },
+            { question: "Debugging құралдарының бірі:", options: ["Paint", "Debugger", "Word", "Excel", "Browser"], correct: 1 },
+            { question: "Кодтағы артық жолдарды жою:", options: ["Refactoring", "Компиляция", "Инсталляция", "Архивтеу", "Көшіру"], correct: 0 },
+            { question: "Қате табылған соң не істеу керек?", options: ["Елемеу", "Түзету", "Жою", "Компьютер өшіру", "Файл жабу"], correct: 1 },
+            // 51-60
+            { question: "AttributeError қашан шығады?", options: ["0-ге бөлгенде", "Объектіде жоқ қасиет шақырылса", "Индекс артық болса", "Файл табылмаса", "Айнымалы жоқ болса"], correct: 1 },
+            { question: "Memory error себебі:", options: ["Жад жетіспеуі", "Интернет жоқ", "Синтаксис қате", "Индекс үлкен", "Файл жабық"], correct: 0 },
+            { question: "Қай әдіс қатені тез табуға көмектеседі?", options: ["Кодты форматтау", "Қадамдап орындау", "Файл көшіру", "Өшіру", "Архивтеу"], correct: 1 },
+            { question: "Тест кейс дегеніміз:", options: ["Қате түрі", "Тексеру сценарийі", "Айнымалы", "Файл", "Сервер"], correct: 1 },
+            { question: "Boundary value testing не тексереді?", options: ["Орта мәндерді", "Шектік мәндерді", "Тек мәтінді", "Дизайнды", "Интернетті"], correct: 1 },
+            { question: "Infinite recursion себебі:", options: ["Шарт жоқ", "Файл жоқ", "Интернет жоқ", "Индекс артық", "Түр сәйкес емес"], correct: 0 },
+            { question: "raise командасы:", options: ["Қате тастау", "Цикл құру", "Айнымалы жою", "Файл ашу", "Мәлімет шығару"], correct: 0 },
+            { question: "Қате туралы хабарлама не үшін маңызды?", options: ["Уақыт өткізу", "Себебін түсіну", "Дизайн көру", "Файл өлшеу", "Интернет тексеру"], correct: 1 },
+            { question: "Regression testing мақсаты:", options: ["Жаңа қате қосу", "Бұрынғы қателер қайталанбауын тексеру", "Файл жою", "Компьютер жаңарту", "Дизайн өзгерту"], correct: 1 },
+            { question: "Кодты жиі сақтау не үшін керек?", options: ["Қате көбейту", "Мәлімет жоғалтпау", "Интернет қосу", "Форматтау", "Архивтеу"], correct: 1 },
+            // 61-70
+            { question: "Логикалық қате табудың бір жолы:", options: ["Нәтижені күтілген мәнмен салыстыру", "Компьютер өшіру", "Файл жою", "Интернет қосу", "Архивтеу"], correct: 0 },
+            { question: "Exception handling мақсаты:", options: ["Бағдарламаны тоқтату", "Қатені басқару", "Файл ашу", "Айнымалы жою", "Дизайн жасау"], correct: 1 },
+            { question: "Кодтың оқылуын жақсарту:", options: ["Түсінікті атаулар қолдану", "Барлығын бір жолға жазу", "Комментарийсіз жазу", "Форматтамау", "Қысқарту"], correct: 0 },
+            { question: "Unit test қашан жазылады?", options: ["Кодтан кейін", "Кодпен бірге", "Ешқашан", "Орнатқанда", "Архивтегенде"], correct: 1 },
+            { question: "Bug дегеніміз:", options: ["Дұрыс код", "Қате", "Сервер", "Айнымалы", "Файл"], correct: 1 },
+            { question: "Debugging мақсаты:", options: ["Қате қосу", "Қате табу және түзету", "Файл жою", "Интернет өшіру", "Компьютер ауыстыру"], correct: 1 },
+            { question: "try блогында не жазылады?", options: ["Қауіпті код", "Комментарий", "Айнымалы аты", "Файл аты", "Дизайн"], correct: 0 },
+            { question: "finally көбіне не үшін қолданылады?", options: ["Файл жабу", "Қате шығару", "Цикл құру", "Айнымалы жою", "Дизайн жасау"], correct: 0 },
+            { question: "Кодты тексерудің автоматты түрі:", options: ["Manual testing", "Automated testing", "Архивтеу", "Форматтау", "Көшіру"], correct: 1 },
+            { question: "Stack overflow себебі:", options: ["Терең рекурсия", "Интернет жоқ", "Файл жоқ", "Индекс үлкен", "Түр сәйкес емес"], correct: 0 },
+            // 71-80
+            { question: "Input тексеру не үшін қажет?", options: ["Қате болдырмау", "Интернет қосу", "Файл жою", "Дизайн өзгерту", "Архивтеу"], correct: 0 },
+            { question: "Қате шыққан жолды табу үшін:", options: ["Traceback қарау", "Компьютер өшіру", "Файл жабу", "Интернет тексеру", "Архивтеу"], correct: 0 },
+            { question: "Version control не үшін керек?", options: ["Код нұсқаларын сақтау", "Файл жою", "Интернет қосу", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
+            { question: "Git дегеніміз:", options: ["Операциялық жүйе", "Нұсқа бақылау жүйесі", "Сервер", "Айнымалы", "Қате түрі"], correct: 1 },
+            { question: "Merge conflict қашан болады?", options: ["Бір файлды екі адам өзгерткенде", "Интернет жоқ кезде", "Файл жойылғанда", "Компьютер өшкенде", "Индекс үлкенде"], correct: 0 },
+            { question: "Test coverage нені көрсетеді?", options: ["Код көлемін", "Тестпен қамтылған пайызды", "Интернет жылдамдығын", "Файл өлшемін", "Дизайн сапасын"], correct: 1 },
+            { question: "Кодты форматтау құралы:", options: ["Linter", "Printer", "Scanner", "Monitor", "Router"], correct: 0 },
+            { question: "Static analysis қашан жасалады?", options: ["Орындаусыз", "Орындау кезінде", "Интернетпен", "Серверде", "Принтерде"], correct: 0 },
+            { question: "Dynamic testing қашан жасалады?", options: ["Орындау кезінде", "Код жазғанда", "Форматтағанда", "Архивтегенде", "Дизайнда"], correct: 0 },
+            { question: "Code smell дегеніміз:", options: ["Жақсы код", "Жаман құрылым белгісі", "Қате хабарлама", "Айнымалы", "Файл"], correct: 1 },
+            // 81-90
+            { question: "Refactoring кезінде:", options: ["Функционал өзгермейді", "Жаңа қате қосылады", "Код жойылады", "Интернет қосылады", "Компьютер өшеді"], correct: 0 },
+            { question: "Қай тест жүйені толық тексереді?", options: ["Unit test", "Integration test", "System test", "Static test", "Manual test"], correct: 2 },
+            { question: "Integration test не тексереді?", options: ["Бір функцияны", "Модульдердің байланысын", "Дизайнды", "Интернетті", "Файлды"], correct: 1 },
+            { question: "Manual testing дегеніміз:", options: ["Қолмен тексеру", "Автоматты тексеру", "Архивтеу", "Форматтау", "Орнату"], correct: 0 },
+            { question: "Automated testing артықшылығы:", options: ["Жылдамдық", "Қате көбейту", "Файл жою", "Интернет өшіру", "Дизайн бұзу"], correct: 0 },
+            { question: "Қате қайталанса:", options: ["Себебін терең талдау керек", "Елемеу керек", "Файл жою керек", "Компьютер ауыстыру керек", "Интернет қосу керек"], correct: 0 },
+            { question: "Clean code мақсаты:", options: ["Оқылуы жеңіл код", "Ұзын код", "Қате код", "Форматсыз код", "Архивтелген код"], correct: 0 },
+            { question: "DRY принципі:", options: ["Қайталауды азайту", "Қате қосу", "Файл жою", "Интернет қосу", "Дизайн өзгерту"], correct: 0 },
+            { question: "SOLID принциптері:", options: ["Дизайн қағидалары", "Қате түрлері", "Файл атауы", "Интернет түрі", "Айнымалы атауы"], correct: 0 },
+            { question: "Код сапасын арттыру үшін:", options: ["Тестілеу жүргізу", "Комментарийсіз жазу", "Барлығын қысқарту", "Форматтамау", "Тексермеу"], correct: 0 },
+            // 91-100
+            { question: "Exception түрін нақты көрсету:", options: ["Жақсы тәжірибе", "Қате", "Міндет емес", "Интернетке байланысты", "Файлға байланысты"], correct: 0 },
+            { question: "Логикалық қате көбіне:", options: ["Есептеуде болады", "Интернетте болады", "Файлда болады", "Серверде болады", "Принтерде болады"], correct: 0 },
+            { question: "Кодты қайта пайдалану:", options: ["Қайта қолдану", "Жою", "Архивтеу", "Форматтау", "Өшіру"], correct: 0 },
+            { question: "CI/CD мақсаты:", options: ["Автоматты құрастыру және тексеру", "Файл жою", "Интернет өшіру", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
+            { question: "Bug report құрамына кіреді:", options: ["Қате сипаттамасы", "Музыка", "Видео", "Сурет салу", "Архив"], correct: 0 },
+            { question: "Қате табылған орта:", options: ["Production", "Test", "Dev", "Барлығы мүмкін", "Ешқайсысы"], correct: 3 },
+            { question: "Code review кім жасайды?", options: ["Басқа бағдарламашы", "Клиент", "Дизайнер", "Қолданушы", "Принтер"], correct: 0 },
+            { question: "Тестілеу кезеңі:", options: ["Жобалау алдында", "Әзірлеу кезінде және кейін", "Орнатудан кейін ғана", "Архивтегенде", "Форматтағанда"], correct: 1 },
+            { question: "Қатені түзеткен соң:", options: ["Қайта тестілеу керек", "Елемеу керек", "Файл жою керек", "Интернет өшіру керек", "Компьютер ауыстыру керек"], correct: 0 },
+            { question: "Бағдарламалық код сапасының негізгі көрсеткіші:", options: ["Қатесіз жұмыс", "Ұзындығы", "Түсі", "Форматы", "Архив көлемі"], correct: 0 }
+        ];
+
+        // ==================== DOM ELEMENTTER ====================
+        const startScreen = document.getElementById('startScreen');
+        const quizArea = document.getElementById('quizArea');
+        const resultScreen = document.getElementById('resultScreen');
+        const startBtn = document.getElementById('startTestBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishEarlyBtn = document.getElementById('finishEarlyBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        
+        const questionText = document.getElementById('questionText');
+        const answersDiv = document.getElementById('answersContainer');
+        const currentQSpan = document.getElementById('currentQDisplay');
+        const totalQSpan = document.getElementById('totalQDisplay');
+        const timerSpan = document.getElementById('timerValue');
+        const timerBlock = document.getElementById('timerDisplay');
+        
+        const finalScoreSpan = document.getElementById('finalScore');
+        const correctSpan = document.getElementById('correctCount');
+        const wrongSpan = document.getElementById('wrongCount');
+
+        // ==================== STATE ====================
+        let currentIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timerInterval = null;
+        let timeLeft = 30 * 60; // 30 минут секундпен
+        let testActive = false;
+        let testFinished = false;
+
+        // ==================== КӨМЕКШІ ФУНКЦИЯЛАР ====================
+        function formatTime(sec) {
+            const m = Math.floor(sec / 60).toString().padStart(2, '0');
+            const s = (sec % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
         }
 
-        // Сақтау функциялары
-        function saveVideos() {
-            localStorage.setItem('qazaqReelsVideos', JSON.stringify(videos));
-        }
-
-        function saveUsers() {
-            localStorage.setItem('qazaqReelsUsers', JSON.stringify(users));
-        }
-
-        function saveNotifications() {
-            localStorage.setItem('qazaqReelsNotifications', JSON.stringify(notifications));
-        }
-
-        function saveLikes() {
-            localStorage.setItem('qazaqReelsLikes', JSON.stringify(likesMap));
-        }
-
-        function saveFollows() {
-            localStorage.setItem('qazaqReelsFollows', JSON.stringify(followsMap));
-        }
-
-        // ============ UI Функциялары ============
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        function addNotification(userId, type, fromUser, videoId = null) {
-            const notification = {
-                id: Date.now() + Math.random(),
-                userId,
-                type, // 'like', 'follow', 'comment'
-                fromUser: fromUser.username,
-                fromDisplayName: fromUser.displayName,
-                videoId,
-                timestamp: Date.now(),
-                read: false
-            };
-            notifications.unshift(notification);
-            saveNotifications();
-            updateNotificationBadge();
-        }
-
-        function updateNotificationBadge() {
-            if (!currentUser) return;
-            const unreadCount = notifications.filter(n => n.userId === currentUser.id && !n.read).length;
-            const badge = document.getElementById('notificationCount');
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                badge.style.display = 'flex';
+        function updateTimerUI() {
+            timerSpan.textContent = formatTime(timeLeft);
+            if (timeLeft <= 300) {
+                timerBlock.classList.add('timer-critical');
             } else {
-                badge.style.display = 'none';
+                timerBlock.classList.remove('timer-critical');
             }
         }
 
-        // ============ Reels рендеринг ============
-        let currentVideoElements = new Map();
-
-        function renderReels() {
-            const container = document.getElementById('reelsContainer');
-            const sortedVideos = [...videos].sort((a, b) => b.timestamp - a.timestamp);
-            
-            container.innerHTML = sortedVideos.map(video => {
-                const isLiked = currentUser && likesMap[video.id]?.includes(currentUser.id);
-                const likeCount = likesMap[video.id]?.length || 0;
-                const isFollowing = currentUser && followsMap[currentUser.id]?.includes(video.userId);
-                
-                return `
-                    <div class="reel-slide" data-video-id="${video.id}">
-                        <div class="video-wrapper">
-                            <video 
-                                class="reel-video" 
-                                src="${video.videoUrl}" 
-                                loop 
-                                muted 
-                                playsinline 
-                                preload="metadata"
-                                onloadedmetadata="this.play().catch(()=>{})"
-                            ></video>
-                        </div>
-                        
-                        <div class="video-overlay">
-                            <div class="username-badge">
-                                <div class="user-avatar">${video.userAvatar}</div>
-                                <div>
-                                    <div class="font-semibold">${video.displayName || video.username}</div>
-                                    <div class="text-sm opacity-80">${video.username}</div>
-                                </div>
-                                ${currentUser && currentUser.id !== video.userId ? `
-                                    <button onclick="toggleFollow('${video.userId}', '${video.id}')" 
-                                        class="ml-auto px-4 py-1.5 rounded-full text-sm font-medium ${isFollowing ? 'bg-gray-600' : 'bg-gradient-to-r from-green-500 to-green-400'}">
-                                        ${isFollowing ? 'Бақылауда' : 'Бақылау'}
-                                    </button>
-                                ` : ''}
-                            </div>
-                            <p class="mb-2">${video.title}</p>
-                            <p class="text-sm opacity-80">${video.description}</p>
-                        </div>
-                        
-                        <div class="music-badge">
-                            <i class="fas fa-music"></i>
-                            <span>${video.music || 'Original Audio'}</span>
-                        </div>
-                        
-                        <div class="action-buttons">
-                            <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${video.id}')">
-                                <i class="fas fa-heart"></i>
-                                <span>${likeCount}</span>
-                            </button>
-                            <button class="action-btn" onclick="showComments('${video.id}')">
-                                <i class="fas fa-comment"></i>
-                                <span>${video.comments?.length || 0}</span>
-                            </button>
-                            <button class="action-btn" onclick="shareVideo('${video.id}')">
-                                <i class="fas fa-share"></i>
-                                <span>Бөлісу</span>
-                            </button>
-                            <button class="action-btn">
-                                <i class="fas fa-eye"></i>
-                                <span>${video.views || 0}</span>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Intersection Observer - тек көрінетін видео ойнатылады
-            setupVideoObserver();
-        }
-
-        function setupVideoObserver() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const video = entry.target.querySelector('video');
-                    if (!video) return;
-                    
-                    if (entry.isIntersecting) {
-                        video.play().catch(() => {});
-                        // Қаралым санын арттыру
-                        const slide = entry.target;
-                        const videoId = slide.dataset.videoId;
-                        if (videoId && !slide.dataset.viewed) {
-                            slide.dataset.viewed = 'true';
-                            incrementViews(videoId);
-                        }
-                    } else {
-                        video.pause();
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            document.querySelectorAll('.reel-slide').forEach(slide => {
-                observer.observe(slide);
-            });
-        }
-
-        function incrementViews(videoId) {
-            const video = videos.find(v => v.id === videoId);
-            if (video) {
-                video.views = (video.views || 0) + 1;
-                saveVideos();
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
             }
         }
 
-        // ============ Әрекеттер ============
-        function toggleLike(videoId) {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-
-            if (!likesMap[videoId]) {
-                likesMap[videoId] = [];
-            }
-
-            const index = likesMap[videoId].indexOf(currentUser.id);
-            const video = videos.find(v => v.id === videoId);
-            
-            if (index === -1) {
-                likesMap[videoId].push(currentUser.id);
-                showToast('❤️ Лайк басылды');
-                
-                // Хабарландыру жіберу
-                if (video && video.userId !== currentUser.id) {
-                    addNotification(video.userId, 'like', currentUser, videoId);
-                }
-            } else {
-                likesMap[videoId].splice(index, 1);
-            }
-
-            saveLikes();
-            renderReels();
-        }
-
-        function toggleFollow(userId, videoId) {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-
-            if (!followsMap[currentUser.id]) {
-                followsMap[currentUser.id] = [];
-            }
-
-            const index = followsMap[currentUser.id].indexOf(userId);
-            
-            if (index === -1) {
-                followsMap[currentUser.id].push(userId);
-                showToast('✅ Бақылауға алынды');
-                
-                // Хабарландыру жіберу
-                addNotification(userId, 'follow', currentUser);
-            } else {
-                followsMap[currentUser.id].splice(index, 1);
-                showToast('Бақылау тоқтатылды');
-            }
-
-            saveFollows();
-            renderReels();
-        }
-
-        function shareVideo(videoId) {
-            const video = videos.find(v => v.id === videoId);
-            if (video) {
-                navigator.clipboard?.writeText(`Qazaq Reels: ${video.title}`);
-                showToast('🔗 Сілтеме көшірілді');
-            }
-        }
-
-        function showComments(videoId) {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-            
-            const video = videos.find(v => v.id === videoId);
-            if (!video) return;
-            
-            const comment = prompt('Пікір қалдыру:', '');
-            if (comment && comment.trim()) {
-                if (!video.comments) video.comments = [];
-                video.comments.push({
-                    userId: currentUser.id,
-                    username: currentUser.username,
-                    text: comment.trim(),
-                    timestamp: Date.now()
-                });
-                saveVideos();
-                
-                if (video.userId !== currentUser.id) {
-                    addNotification(video.userId, 'comment', currentUser, videoId);
-                }
-                
-                renderReels();
-                showToast('💬 Пікір қосылды');
-            }
-        }
-
-        // ============ Видео жүктеу ============
-        function showUploadModal() {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-            document.getElementById('uploadModal').classList.add('active');
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.remove('active');
-        }
-
-        function selectSampleVideo(type) {
-            document.getElementById('videoUrl').value = sampleVideos[type];
-        }
-
-        function uploadVideo() {
-            const title = document.getElementById('videoTitle').value.trim();
-            const description = document.getElementById('videoDescription').value.trim();
-            const videoUrl = document.getElementById('videoUrl').value.trim();
-
-            if (!title) {
-                showToast('Видео атауын жазыңыз');
-                return;
-            }
-
-            if (!videoUrl) {
-                showToast('Видео сілтемесін енгізіңіз');
-                return;
-            }
-
-            const newVideo = {
-                id: Date.now().toString() + Math.random(),
-                userId: currentUser.id,
-                username: currentUser.username,
-                displayName: currentUser.displayName,
-                userAvatar: currentUser.displayName?.[0]?.toUpperCase() || 'U',
-                title,
-                description,
-                videoUrl,
-                thumbnail: '',
-                likes: [],
-                comments: [],
-                views: 0,
-                timestamp: Date.now(),
-                music: '🎵 Original Audio'
-            };
-
-            videos.unshift(newVideo);
-            saveVideos();
-
-            document.getElementById('videoTitle').value = '';
-            document.getElementById('videoDescription').value = '';
-            document.getElementById('videoUrl').value = '';
-            
-            closeUploadModal();
-            switchPage('home');
-            renderReels();
-            showToast('🎬 Видео сәтті жүктелді!');
-        }
-
-        // ============ Аутентификация ============
-        function showAuthModal() {
-            document.getElementById('authModal').classList.add('active');
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
-        }
-
-        function toggleAuthForm() {
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            if (loginForm.style.display === 'none') {
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
-            } else {
-                loginForm.style.display = 'none';
-                registerForm.style.display = 'block';
-            }
-        }
-
-        function register() {
-            const displayName = document.getElementById('regDisplayName').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value;
-
-            if (!displayName || !username || !password) {
-                showToast('Барлық өрістерді толтырыңыз');
-                return;
-            }
-
-            const formattedUsername = username.startsWith('@') ? username : '@' + username;
-            
-            if (users.find(u => u.username === formattedUsername)) {
-                showToast('Бұл қолданушы аты бос емес');
-                return;
-            }
-
-            const newUser = {
-                id: Date.now().toString(),
-                displayName,
-                username: formattedUsername,
-                password,
-                avatar: displayName[0].toUpperCase(),
-                createdAt: Date.now()
-            };
-
-            users.push(newUser);
-            saveUsers();
-
-            currentUser = newUser;
-            localStorage.setItem('qazaqReelsUser', JSON.stringify(currentUser));
-
-            closeAuthModal();
-            updateUI();
-            renderReels();
-            showToast(`Қош келдіңіз, ${displayName}!`);
-        }
-
-        function login() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            const formattedUsername = username.startsWith('@') ? username : '@' + username;
-            const user = users.find(u => u.username === formattedUsername && u.password === password);
-
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('qazaqReelsUser', JSON.stringify(currentUser));
-                closeAuthModal();
-                updateUI();
-                renderReels();
-                showToast(`Қош келдіңіз, ${user.displayName}!`);
-            } else {
-                showToast('Қате қолданушы аты немесе құпия сөз');
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('qazaqReelsUser');
-            updateUI();
-            renderReels();
-            showToast('Шықтыңыз');
-        }
-
-        function updateUI() {
-            updateNotificationBadge();
-            renderProfilePage();
-        }
-
-        // ============ Бет ауыстыру ============
-        function switchPage(page) {
-            // Барлық беттерді жасыру
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(page + 'Page').classList.remove('hidden');
-
-            // Навигацияны жаңарту
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.page === page) {
-                    item.classList.add('active');
-                }
-            });
-
-            // Тақырыпты жаңарту
-            const titles = { home: 'Qazaq Reels', explore: 'Зерттеу', profile: 'Профиль', notifications: 'Хабарландырулар' };
-            document.getElementById('pageTitle').textContent = titles[page] || 'Qazaq Reels';
-
-            // Бет мазмұнын жаңарту
-            if (page === 'home') {
-                renderReels();
-            } else if (page === 'explore') {
-                renderExplorePage();
-            } else if (page === 'profile') {
-                if (!currentUser) {
-                    showAuthModal();
-                    switchPage('home');
-                    return;
-                }
-                renderProfilePage();
-            } else if (page === 'notifications') {
-                renderNotificationsPage();
-            }
-        }
-
-        function renderExplorePage() {
-            const container = document.getElementById('searchResults');
-            const sortedVideos = [...videos].sort((a, b) => b.views - a.views);
-            
-            container.innerHTML = sortedVideos.map(video => `
-                <div class="relative aspect-[9/16] bg-[#111]" onclick="playVideoFromExplore('${video.id}')">
-                    <video src="${video.videoUrl}" class="w-full h-full object-cover" muted></video>
-                    <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black to-transparent">
-                        <p class="text-white text-sm font-medium truncate">${video.title}</p>
-                        <p class="text-gray-300 text-xs">${video.views || 0} қаралым</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function playVideoFromExplore(videoId) {
-            switchPage('home');
-            setTimeout(() => {
-                const slide = document.querySelector(`[data-video-id="${videoId}"]`);
-                if (slide) {
-                    slide.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 100);
-        }
-
-        function renderProfilePage() {
-            if (!currentUser) return;
-
-            const container = document.getElementById('profileContent');
-            const userVideos = videos.filter(v => v.userId === currentUser.id);
-            const totalLikes = userVideos.reduce((sum, v) => sum + (likesMap[v.id]?.length || 0), 0);
-            const followers = Object.values(followsMap).filter(f => f.includes(currentUser.id)).length;
-            const following = followsMap[currentUser.id]?.length || 0;
-
-            container.innerHTML = `
-                <div class="profile-header">
-                    <div class="flex items-start gap-4 mb-4">
-                        <div class="profile-avatar">${currentUser.displayName?.[0]?.toUpperCase() || 'U'}</div>
-                        <div class="flex-1">
-                            <h2 class="text-xl font-bold">${currentUser.displayName}</h2>
-                            <p class="text-gray-400">${currentUser.username}</p>
-                        </div>
-                        <button onclick="logout()" class="text-red-500">
-                            <i class="fas fa-sign-out-alt text-xl"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="flex justify-around text-center mb-4">
-                        <div>
-                            <div class="font-bold text-xl">${userVideos.length}</div>
-                            <div class="text-gray-400 text-sm">Видео</div>
-                        </div>
-                        <div>
-                            <div class="font-bold text-xl">${followers}</div>
-                            <div class="text-gray-400 text-sm">Бақылаушылар</div>
-                        </div>
-                        <div>
-                            <div class="font-bold text-xl">${following}</div>
-                            <div class="text-gray-400 text-sm">Бақылауда</div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gradient-to-r from-green-500 to-green-400 rounded-xl p-4 text-center">
-                        <div class="text-2xl font-bold">${totalLikes}</div>
-                        <div class="text-sm opacity-90">Барлық лайк</div>
-                    </div>
-                </div>
-                
-                <div class="p-4">
-                    <h3 class="text-white font-semibold mb-3">Менің видеоларым</h3>
-                    <div class="grid grid-cols-2 gap-1">
-                        ${userVideos.length === 0 ? 
-                            '<p class="text-gray-400 col-span-2 text-center py-8">Әзірге видео жоқ</p>' :
-                            userVideos.map(video => `
-                                <div class="relative aspect-[9/16] bg-[#111]" onclick="playVideoFromProfile('${video.id}')">
-                                    <video src="${video.videoUrl}" class="w-full h-full object-cover"></video>
-                                    <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black">
-                                        <div class="flex items-center gap-2 text-white text-xs">
-                                            <i class="fas fa-heart text-red-500"></i>
-                                            <span>${likesMap[video.id]?.length || 0}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')
-                        }
-                    </div>
-                </div>
-            `;
-        }
-
-        function playVideoFromProfile(videoId) {
-            switchPage('home');
-            setTimeout(() => {
-                const slide = document.querySelector(`[data-video-id="${videoId}"]`);
-                if (slide) {
-                    slide.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 100);
-        }
-
-        function showNotifications() {
-            switchPage('notifications');
-        }
-
-        function renderNotificationsPage() {
-            if (!currentUser) {
-                showAuthModal();
-                return;
-            }
-
-            const container = document.getElementById('notificationsList');
-            const userNotifications = notifications.filter(n => n.userId === currentUser.id);
-            
-            // Оқылған деп белгілеу
-            userNotifications.forEach(n => n.read = true);
-            saveNotifications();
-            updateNotificationBadge();
-
-            if (userNotifications.length === 0) {
-                container.innerHTML = '<p class="text-gray-400 text-center py-8">Хабарландырулар жоқ</p>';
-                return;
-            }
-
-            container.innerHTML = userNotifications.map(n => {
-                const timeAgo = getTimeAgo(n.timestamp);
-                let icon, text;
-                
-                if (n.type === 'like') {
-                    icon = '❤️';
-                    text = `${n.fromDisplayName} сіздің видеоңызға лайк басты`;
-                } else if (n.type === 'follow') {
-                    icon = '👤';
-                    text = `${n.fromDisplayName} сізге жазылды`;
+        function startTimer() {
+            stopTimer();
+            timerInterval = setInterval(() => {
+                if (!testActive || testFinished) return;
+                if (timeLeft <= 1) {
+                    timeLeft = 0;
+                    updateTimerUI();
+                    testActive = false;
+                    testFinished = true;
+                    stopTimer();
+                    showResultScreen();
                 } else {
-                    icon = '💬';
-                    text = `${n.fromDisplayName} пікір қалдырды`;
+                    timeLeft--;
+                    updateTimerUI();
                 }
-
-                return `
-                    <div class="notification-item" onclick="goToVideo('${n.videoId}')">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-400 flex items-center justify-center text-xl">
-                            ${icon}
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-white">${text}</p>
-                            <p class="text-gray-500 text-sm">${timeAgo}</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            }, 1000);
         }
 
-        function goToVideo(videoId) {
-            if (videoId) {
-                switchPage('home');
-                setTimeout(() => {
-                    const slide = document.querySelector(`[data-video-id="${videoId}"]`);
-                    if (slide) {
-                        slide.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }, 100);
-            }
-        }
-
-        function getTimeAgo(timestamp) {
-            const diff = Math.floor((Date.now() - timestamp) / 1000);
-            if (diff < 60) return 'дәл қазір';
-            if (diff < 3600) return `${Math.floor(diff / 60)} минут бұрын`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)} сағат бұрын`;
-            return `${Math.floor(diff / 86400)} күн бұрын`;
-        }
-
-        // ============ Бастапқы жүктеу ============
-        document.addEventListener('DOMContentLoaded', () => {
-            updateUI();
-            renderReels();
+        function renderQuestion() {
+            if (!testActive && !testFinished) return;
+            const q = questions[currentIndex];
+            questionText.textContent = q.question;
             
-            // Модальдарды жабу
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        modal.classList.remove('active');
-                    }
+            let html = '';
+            q.options.forEach((opt, idx) => {
+                const checked = (userAnswers[currentIndex] === idx) ? 'checked' : '';
+                html += `<div class="answer-item">
+                    <label class="answer-label">
+                        <input type="radio" name="answer" value="${idx}" ${checked}>
+                        <span class="answer-text">${opt}</span>
+                    </label>
+                </div>`;
+            });
+            answersDiv.innerHTML = html;
+
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (!testActive || testFinished) return;
+                    userAnswers[currentIndex] = parseInt(e.target.value, 10);
                 });
             });
 
-            // Іздеу
-            document.getElementById('searchInput')?.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                const filtered = videos.filter(v => 
-                    v.title.toLowerCase().includes(query) || 
-                    v.username.toLowerCase().includes(query)
-                );
-                const container = document.getElementById('searchResults');
-                container.innerHTML = filtered.map(video => `
-                    <div class="relative aspect-[9/16] bg-[#111]" onclick="playVideoFromExplore('${video.id}')">
-                        <video src="${video.videoUrl}" class="w-full h-full object-cover" muted></video>
-                        <div class="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black">
-                            <p class="text-white text-sm">${video.title}</p>
-                        </div>
-                    </div>
-                `).join('');
+            currentQSpan.textContent = currentIndex + 1;
+            totalQSpan.textContent = questions.length;
+            
+            prevBtn.disabled = (currentIndex === 0);
+            if (currentIndex === questions.length - 1) {
+                nextBtn.innerHTML = 'Аяқтау <i class="fas fa-check"></i>';
+            } else {
+                nextBtn.innerHTML = 'Келесі <i class="fas fa-chevron-right"></i>';
+            }
+        }
+
+        function calculateScore() {
+            let correct = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questions[i].correct) correct++;
             });
+            return { correct, wrong: questions.length - correct, total: questions.length };
+        }
+
+        function showResultScreen() {
+            testActive = false;
+            testFinished = true;
+            stopTimer();
+            quizArea.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            const { correct, wrong } = calculateScore();
+            finalScoreSpan.textContent = correct;
+            correctSpan.textContent = correct;
+            wrongSpan.textContent = wrong;
+        }
+
+        function resetAndGoToStart() {
+            testActive = false;
+            testFinished = false;
+            stopTimer();
+            timeLeft = 30 * 60;
+            currentIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            updateTimerUI();
+            timerBlock.classList.remove('timer-critical');
+            
+            startScreen.classList.remove('hidden');
+            quizArea.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+        }
+
+        function startQuiz() {
+            resetAndGoToStart();
+            testActive = true;
+            testFinished = false;
+            startScreen.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            resultScreen.classList.add('hidden');
+            renderQuestion();
+            startTimer();
+        }
+
+        function goToNext() {
+            if (!testActive || testFinished) return;
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (selected) {
+                userAnswers[currentIndex] = parseInt(selected.value, 10);
+            }
+            
+            if (currentIndex === questions.length - 1) {
+                testActive = false;
+                testFinished = true;
+                stopTimer();
+                showResultScreen();
+            } else {
+                currentIndex++;
+                renderQuestion();
+            }
+        }
+
+        function goToPrev() {
+            if (!testActive || testFinished) return;
+            const selected = document.querySelector('input[name="answer"]:checked');
+            if (selected) {
+                userAnswers[currentIndex] = parseInt(selected.value, 10);
+            }
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', goToNext);
+        prevBtn.addEventListener('click', goToPrev);
+        
+        finishEarlyBtn.addEventListener('click', () => {
+            if (testActive && !testFinished) {
+                if (confirm('Тестті мерзімінен бұрын аяқтайсыз ба?')) {
+                    testActive = false;
+                    testFinished = true;
+                    stopTimer();
+                    showResultScreen();
+                }
+            }
+        });
+        
+        restartBtn.addEventListener('click', () => {
+            resetAndGoToStart();
         });
 
-        // Тышқан дөңгелегімен скролл
-        let touchStartY = 0;
-        document.addEventListener('touchstart', (e) => { touchStartY = e.touches[0].clientY; });
-    </script>
+        // ==================== БАСТАПҚЫ ҚҰЛЫПТАУ ====================
+        totalQSpan.textContent = questions.length;
+        updateTimerUI();
+        startScreen.classList.remove('hidden');
+        quizArea.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+    })();
+</script>
 </body>
 </html>
