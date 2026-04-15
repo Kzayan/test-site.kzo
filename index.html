@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>UNSIZ · ТЕСТ 100 · ТҮР + САУСАҚ ІЗІ</title>
+    <title>UNSIZ · ТЕСТ 100 · ТҮР + АЛАҚАН + САУСАҚ ІЗІ</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <style>
@@ -31,7 +31,7 @@
         }
         .login-screen.hidden { display: none !important; }
         .login-card {
-            max-width: 550px;
+            max-width: 600px;
             width: 100%;
             background: #111a24;
             border: 2px solid #cc0000;
@@ -40,26 +40,30 @@
             box-shadow: 0 20px 0 #05080c;
         }
         .login-header { text-align: center; margin-bottom: 32px; }
-        .login-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; color: white; }
+        .login-header h2 { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; color: white; }
         .red-block { color: #cc0000; }
+        .green-block { color: #00ff88; }
+        .blue-block { color: #4488ff; }
         .login-sub { color: #8a9ab0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; margin-top: 8px; }
         
         .auth-tabs {
             display: flex;
-            gap: 10px;
+            gap: 5px;
             margin-bottom: 24px;
             border-bottom: 1px solid #2a3340;
+            flex-wrap: wrap;
         }
         .auth-tab {
             flex: 1;
+            min-width: 90px;
             background: transparent;
             border: none;
             color: #8a9ab0;
-            padding: 12px 8px;
+            padding: 10px 5px;
             cursor: pointer;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             border-bottom: 2px solid transparent;
         }
         .auth-tab.active {
@@ -70,12 +74,16 @@
             color: #00ff88;
             border-bottom: 2px solid #00ff88;
         }
+        .auth-tab.blue.active {
+            color: #4488ff;
+            border-bottom: 2px solid #4488ff;
+        }
         .auth-tab:hover { color: white; }
         
         .auth-panel { display: none; }
         .auth-panel.active { display: block; }
         
-        .face-section { margin-bottom: 28px; }
+        .video-section { margin-bottom: 28px; }
         .video-container {
             position: relative;
             width: 100%;
@@ -86,25 +94,30 @@
             overflow: hidden;
             background: #000;
         }
-        #loginVideo { 
+        .video-container.blue-border { border-color: #4488ff; }
+        #loginVideo, #palmVideo { 
             width: 100%; 
             height: auto; 
             display: block;
             transform: scaleX(-1);
         }
-        .face-preview-container {
+        .preview-container {
             text-align: center;
             margin: 15px 0;
             display: none;
         }
-        .face-preview-container img {
+        .preview-container img {
             width: 100px;
             height: 100px;
             border-radius: 50%;
             border: 2px solid #cc0000;
             object-fit: cover;
         }
-        .face-status-login { 
+        .preview-container.palm-preview img {
+            border-color: #4488ff;
+            border-radius: 16px;
+        }
+        .status-login { 
             text-align: center; 
             padding: 10px; 
             margin: 10px 0; 
@@ -127,6 +140,15 @@
         .login-btn:hover { background: #cc0000; }
         .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
+        .palm-btn {
+            border-color: #4488ff;
+            color: #4488ff;
+        }
+        .palm-btn:hover {
+            background: #4488ff;
+            color: #0a0e14;
+        }
+        
         .biometric-btn {
             background: transparent;
             border: 2px solid #00ff88;
@@ -146,6 +168,12 @@
             color: #00ff88;
             text-align: center;
             font-size: 1.1rem;
+        }
+        
+        .palm-info {
+            background: #1a1a3a;
+            border: 1px solid #4488ff;
+            color: #88aaff;
         }
         
         .device-info-bar {
@@ -348,6 +376,14 @@
             border: 1px solid #cc0000;
             cursor: pointer;
         }
+        .palm-thumb {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #4488ff;
+            cursor: pointer;
+        }
         .fingerprint-thumb {
             width: 50px;
             height: 50px;
@@ -363,7 +399,7 @@
             color: #0a0e14;
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: bold;
             white-space: nowrap;
         }
@@ -373,7 +409,17 @@
             color: white;
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .palm-badge {
+            display: inline-block;
+            background: #4488ff;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: bold;
             white-space: nowrap;
         }
@@ -434,7 +480,7 @@
     <div class="login-card">
         <div class="login-header">
             <h2><span class="red-block">ҮНСІЗДІК</span><br>ТЕСТ</h2>
-            <div class="login-sub">ТҮР + САУСАҚ ІЗІ</div>
+            <div class="login-sub">ТҮР + АЛАҚАН + САУСАҚ ІЗІ</div>
         </div>
         
         <div class="device-info-bar" id="loginDeviceInfo">
@@ -442,28 +488,49 @@
         </div>
         
         <div class="auth-tabs">
-            <button class="auth-tab active" data-tab="face">📷 ТҮР (БЕТ ТАНУ)</button>
+            <button class="auth-tab active" data-tab="face">📷 ТҮР</button>
+            <button class="auth-tab blue" data-tab="palm">✋ АЛАҚАН</button>
             <button class="auth-tab green" data-tab="fingerprint">🖐️ САУСАҚ ІЗІ</button>
         </div>
         
         <!-- Түр (бет тану) панелі -->
         <div class="auth-panel active" id="facePanel">
-            <div class="face-section">
+            <div class="video-section">
                 <div class="video-container">
                     <video id="loginVideo" autoplay playsinline></video>
                 </div>
                 <canvas id="loginCanvas" style="display:none;"></canvas>
                 
-                <div class="face-preview-container" id="facePreviewContainer">
+                <div class="preview-container" id="facePreviewContainer">
                     <p style="color:#00ff00; margin-bottom:10px;">✅ Түр танылды!</p>
                     <img id="facePreview" alt="Түр суреті">
                 </div>
                 
-                <div id="loginFaceStatus" class="face-status-login info">📷 Модель жүктелуде...</div>
+                <div id="loginFaceStatus" class="status-login info">📷 Модель жүктелуде...</div>
                 <button class="login-btn" id="startLoginCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
                 <button class="login-btn" id="captureLoginFaceBtn" disabled>🔍 ТҮРДІ ТАНУ</button>
             </div>
             <button class="login-btn" id="faceLoginBtn" disabled style="background:#cc0000;">ТҮРМЕН КІРУ</button>
+        </div>
+        
+        <!-- Алақан панелі -->
+        <div class="auth-panel" id="palmPanel">
+            <div class="video-section">
+                <div class="video-container blue-border">
+                    <video id="palmVideo" autoplay playsinline></video>
+                </div>
+                <canvas id="palmCanvas" style="display:none;"></canvas>
+                
+                <div class="preview-container palm-preview" id="palmPreviewContainer">
+                    <p style="color:#4488ff; margin-bottom:10px;">✅ Алақан танылды!</p>
+                    <img id="palmPreview" alt="Алақан суреті">
+                </div>
+                
+                <div id="palmStatus" class="status-login info">✋ Алақанды көрсетіңіз</div>
+                <button class="login-btn palm-btn" id="startPalmCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
+                <button class="login-btn palm-btn" id="capturePalmBtn" disabled>🔍 АЛАҚАНДЫ ТАНУ</button>
+            </div>
+            <button class="login-btn palm-btn" id="palmLoginBtn" disabled style="background:#4488ff;">АЛАҚАНМЕН КІРУ</button>
         </div>
         
         <!-- Саусақ ізі панелі -->
@@ -489,7 +556,7 @@
         </div>
         
         <p style="color:#888; margin-top:16px; text-align:center; font-size:0.8rem;">
-            Түр (бет тану) немесе саусақ ізі арқылы кіру
+            Түр, алақан немесе саусақ ізі арқылы кіру
         </p>
     </div>
 </div>
@@ -544,12 +611,11 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>ТҮР СУРЕТІ</th>
+                            <th>ТҮР</th>
+                            <th>АЛАҚАН</th>
                             <th>САУСАҚ ІЗІ</th>
                             <th>КІРУ ӘДІСІ</th>
-                            <th>ҚҰРЫЛҒЫ ТҮРІ</th>
-                            <th>БРАУЗЕР / ОС</th>
-                            <th>ЭКРАН</th>
+                            <th>ҚҰРЫЛҒЫ</th>
                             <th>ДҰРЫС</th>
                             <th>ҚАТЕ</th>
                             <th>%</th>
@@ -652,7 +718,7 @@
             };
         }
         
-        // ========== 100 СҰРАҚ (ТОЛЫҚ) ==========
+        // ========== 100 СҰРАҚ ==========
         const ORIGINAL_QUESTIONS = [
             { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
             { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -791,16 +857,16 @@
         let currentIndex = 0;
         let testFinished = false;
         
-        let loginStream = null;
+        let faceStream = null, palmStream = null;
         let faceApiLoaded = false;
-        let loginFaceCaptured = null;
-        let loginFaceDetected = false;
+        let faceCaptured = null, palmCaptured = null;
+        let faceDetected = false, palmDetected = false;
         let deviceFingerprint = null;
         let fullDeviceInfo = null;
         
         const ADMIN_PASS = "7777";
-        const STORAGE_KEY = "unsiz_test_results_100";
-        const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_100";
+        const STORAGE_KEY = "unsiz_test_results_3in1";
+        const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_3in1";
         
         // Құрылғы ақпаратын көрсету
         fullDeviceInfo = getDetailedDeviceInfo();
@@ -907,12 +973,19 @@
         const loginScreen = document.getElementById('loginScreen');
         const mainSite = document.getElementById('mainSite');
         const loginVideo = document.getElementById('loginVideo');
+        const palmVideo = document.getElementById('palmVideo');
         const loginFaceStatus = document.getElementById('loginFaceStatus');
+        const palmStatus = document.getElementById('palmStatus');
         const startLoginCam = document.getElementById('startLoginCameraBtn');
+        const startPalmCam = document.getElementById('startPalmCameraBtn');
         const captureLoginFace = document.getElementById('captureLoginFaceBtn');
+        const capturePalmBtn = document.getElementById('capturePalmBtn');
         const faceLoginBtn = document.getElementById('faceLoginBtn');
+        const palmLoginBtn = document.getElementById('palmLoginBtn');
         const facePreviewContainer = document.getElementById('facePreviewContainer');
+        const palmPreviewContainer = document.getElementById('palmPreviewContainer');
         const facePreview = document.getElementById('facePreview');
+        const palmPreview = document.getElementById('palmPreview');
         const testArea = document.getElementById('testArea');
         const resultArea = document.getElementById('resultArea');
         const correctSpan = document.getElementById('correctCount');
@@ -934,7 +1007,7 @@
                 document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
                 tab.classList.add('active');
-                const panelId = tab.dataset.tab === 'face' ? 'facePanel' : 'fingerprintPanel';
+                const panelId = tab.dataset.tab === 'face' ? 'facePanel' : (tab.dataset.tab === 'palm' ? 'palmPanel' : 'fingerprintPanel');
                 document.getElementById(panelId).classList.add('active');
             });
         });
@@ -944,7 +1017,11 @@
             if (faceApiLoaded) return;
             try {
                 loginFaceStatus.textContent = '⏳ Модель жүктелуде...';
-                loginFaceStatus.className = 'face-status-login waiting';
+                loginFaceStatus.className = 'status-login waiting';
+                if (palmStatus) {
+                    palmStatus.textContent = '⏳ Модель жүктелуде...';
+                    palmStatus.className = 'status-login waiting';
+                }
                 
                 const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
                 await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
@@ -952,10 +1029,18 @@
                 
                 faceApiLoaded = true;
                 loginFaceStatus.textContent = '✅ Дайын. Камераны қосыңыз';
-                loginFaceStatus.className = 'face-status-login success';
+                loginFaceStatus.className = 'status-login success';
+                if (palmStatus) {
+                    palmStatus.textContent = '✅ Дайын. Камераны қосыңыз';
+                    palmStatus.className = 'status-login success';
+                }
             } catch(e) {
                 loginFaceStatus.textContent = '❌ Модель жүктелмеді';
-                loginFaceStatus.className = 'face-status-login error';
+                loginFaceStatus.className = 'status-login error';
+                if (palmStatus) {
+                    palmStatus.textContent = '❌ Модель жүктелмеді';
+                    palmStatus.className = 'status-login error';
+                }
             }
         }
         
@@ -1014,7 +1099,7 @@
         registerBiometricBtn.addEventListener('click', async () => {
             const isSupported = await checkBiometricSupport();
             if (!isSupported) {
-                alert('Құрылғыңыз биометрияны қолдамайды. Түр (бет тану) әдісін қолданыңыз.');
+                alert('Құрылғыңыз биометрияны қолдамайды. Түр немесе алақан әдісін қолданыңыз.');
                 return;
             }
             
@@ -1063,7 +1148,7 @@
                 biometricStatus.className = 'biometric-info success';
                 
                 setTimeout(() => {
-                    proceedToLogin('biometric', null, fingerprintImage);
+                    proceedToLogin('fingerprint', null, null, fingerprintImage);
                 }, 1000);
                 
             } catch(e) {
@@ -1077,7 +1162,7 @@
         loginWithBiometricBtn.addEventListener('click', async () => {
             const isSupported = await checkBiometricSupport();
             if (!isSupported) {
-                alert('Құрылғыңыз биометрияны қолдамайды. Түр (бет тану) әдісін қолданыңыз.');
+                alert('Құрылғыңыз биометрияны қолдамайды. Түр немесе алақан әдісін қолданыңыз.');
                 return;
             }
             
@@ -1104,7 +1189,7 @@
                     biometricStatus.className = 'biometric-info success';
                     drawFingerprintOnCanvas(user.credentialId + deviceFingerprint);
                     setTimeout(() => {
-                        proceedToLogin('biometric', null, user.fingerprintImage);
+                        proceedToLogin('fingerprint', null, null, user.fingerprintImage);
                     }, 500);
                 } else {
                     throw new Error('Саусақ ізі танылмады');
@@ -1117,22 +1202,22 @@
             }
         });
         
-        // Камераны қосу
+        // Камераны қосу (Түр)
         startLoginCam.addEventListener('click', async () => {
             try {
-                if (loginStream) {
-                    loginStream.getTracks().forEach(t => t.stop());
-                    loginStream = null;
+                if (faceStream) {
+                    faceStream.getTracks().forEach(t => t.stop());
+                    faceStream = null;
                 }
                 
                 loginFaceStatus.textContent = '📷 Камера сұралуда...';
-                loginFaceStatus.className = 'face-status-login waiting';
+                loginFaceStatus.className = 'status-login waiting';
                 
-                loginStream = await navigator.mediaDevices.getUserMedia({ 
+                faceStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: 'user', width: 640, height: 480 } 
                 });
                 
-                loginVideo.srcObject = loginStream;
+                loginVideo.srcObject = faceStream;
                 
                 await new Promise(resolve => {
                     loginVideo.onloadedmetadata = () => {
@@ -1142,13 +1227,48 @@
                 });
                 
                 loginFaceStatus.textContent = '📷 Камера дайын';
-                loginFaceStatus.className = 'face-status-login success';
+                loginFaceStatus.className = 'status-login success';
                 captureLoginFace.disabled = false;
                 startLoginCam.disabled = true;
                 
             } catch(e) {
                 loginFaceStatus.textContent = '❌ Камераға рұқсат берілмеді';
-                loginFaceStatus.className = 'face-status-login error';
+                loginFaceStatus.className = 'status-login error';
+            }
+        });
+        
+        // Камераны қосу (Алақан)
+        startPalmCam.addEventListener('click', async () => {
+            try {
+                if (palmStream) {
+                    palmStream.getTracks().forEach(t => t.stop());
+                    palmStream = null;
+                }
+                
+                palmStatus.textContent = '📷 Камера сұралуда...';
+                palmStatus.className = 'status-login waiting';
+                
+                palmStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment', width: 640, height: 480 } 
+                });
+                
+                palmVideo.srcObject = palmStream;
+                
+                await new Promise(resolve => {
+                    palmVideo.onloadedmetadata = () => {
+                        palmVideo.play();
+                        resolve();
+                    };
+                });
+                
+                palmStatus.textContent = '✋ Алақанды көрсетіңіз';
+                palmStatus.className = 'status-login success';
+                capturePalmBtn.disabled = false;
+                startPalmCam.disabled = true;
+                
+            } catch(e) {
+                palmStatus.textContent = '❌ Камераға рұқсат берілмеді';
+                palmStatus.className = 'status-login error';
             }
         });
         
@@ -1160,7 +1280,7 @@
             }
             
             loginFaceStatus.textContent = '🔍 Түр ізделуде...';
-            loginFaceStatus.className = 'face-status-login waiting';
+            loginFaceStatus.className = 'status-login waiting';
             
             try {
                 const detections = await faceapi.detectAllFaces(
@@ -1187,43 +1307,90 @@
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(loginVideo, x, y, width, height, 0, 0, 200, 200);
                 
-                loginFaceCaptured = canvas.toDataURL('image/jpeg', 0.9);
-                loginFaceDetected = true;
+                faceCaptured = canvas.toDataURL('image/jpeg', 0.9);
+                faceDetected = true;
                 
-                facePreview.src = loginFaceCaptured;
+                facePreview.src = faceCaptured;
                 facePreviewContainer.style.display = 'block';
                 
                 loginFaceStatus.textContent = '✅ Түр танылды!';
-                loginFaceStatus.className = 'face-status-login success';
+                loginFaceStatus.className = 'status-login success';
                 faceLoginBtn.disabled = false;
                 
-                if (loginStream) {
-                    loginStream.getTracks().forEach(t => t.stop());
-                    loginStream = null;
+                if (faceStream) {
+                    faceStream.getTracks().forEach(t => t.stop());
+                    faceStream = null;
                 }
                 loginVideo.srcObject = null;
                 captureLoginFace.disabled = true;
                 
             } catch(e) {
                 loginFaceStatus.textContent = '❌ ' + e.message;
-                loginFaceStatus.className = 'face-status-login error';
+                loginFaceStatus.className = 'status-login error';
+            }
+        });
+        
+        // Алақанды тану
+        capturePalmBtn.addEventListener('click', async () => {
+            if (!faceApiLoaded) {
+                palmStatus.textContent = '⏳ Модель жүктелуде...';
+                return;
+            }
+            
+            palmStatus.textContent = '🔍 Алақан ізделуде...';
+            palmStatus.className = 'status-login waiting';
+            
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 200;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(palmVideo, 0, 0, 200, 200);
+                
+                palmCaptured = canvas.toDataURL('image/jpeg', 0.9);
+                palmDetected = true;
+                
+                palmPreview.src = palmCaptured;
+                palmPreviewContainer.style.display = 'block';
+                
+                palmStatus.textContent = '✅ Алақан танылды!';
+                palmStatus.className = 'status-login success';
+                palmLoginBtn.disabled = false;
+                
+                if (palmStream) {
+                    palmStream.getTracks().forEach(t => t.stop());
+                    palmStream = null;
+                }
+                palmVideo.srcObject = null;
+                capturePalmBtn.disabled = true;
+                
+            } catch(e) {
+                palmStatus.textContent = '❌ ' + e.message;
+                palmStatus.className = 'status-login error';
             }
         });
         
         // Түрмен кіру
         faceLoginBtn.addEventListener('click', () => {
-            if (!loginFaceDetected) { alert('Алдымен түріңізді танытыңыз'); return; }
-            proceedToLogin('face', loginFaceCaptured, null);
+            if (!faceDetected) { alert('Алдымен түріңізді танытыңыз'); return; }
+            proceedToLogin('face', faceCaptured, null, null);
+        });
+        
+        // Алақанмен кіру
+        palmLoginBtn.addEventListener('click', () => {
+            if (!palmDetected) { alert('Алдымен алақаныңызды танытыңыз'); return; }
+            proceedToLogin('palm', null, palmCaptured, null);
         });
         
         // Кіру функциясы
-        function proceedToLogin(method, faceData, fingerprintImage = null) {
+        function proceedToLogin(method, faceData, palmData, fingerprintImage = null) {
             currentUser = {
                 face: faceData,
+                palm: palmData,
                 loginMethod: method,
                 fingerprintImage: fingerprintImage,
                 deviceInfo: fullDeviceInfo,
-                name: method === 'face' ? 'Түрмен кірді' : 'Саусақ ізімен кірді',
+                name: method === 'face' ? 'Түрмен кірді' : (method === 'palm' ? 'Алақанмен кірді' : 'Саусақ ізімен кірді'),
                 loginTime: new Date().toLocaleString('kk-KZ')
             };
             
@@ -1327,6 +1494,7 @@
             const record = {
                 id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
                 face: currentUser.face,
+                palm: currentUser.palm,
                 loginMethod: currentUser.loginMethod,
                 fingerprintImage: currentUser.fingerprintImage,
                 deviceInfo: currentUser.deviceInfo,
@@ -1435,7 +1603,7 @@
             const tbody = document.getElementById('adminTableBody');
             
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
                 return;
             }
             
@@ -1443,16 +1611,12 @@
             
             tbody.innerHTML = reversed.map((r, i) => {
                 const percentage = Math.round((r.correct / r.total) * 100);
-                const loginMethodBadge = r.loginMethod === 'biometric' ? 
-                    '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>' : 
-                    '<span class="face-badge">📷 ТҮР</span>';
+                let loginMethodBadge = '';
+                if (r.loginMethod === 'fingerprint') loginMethodBadge = '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>';
+                else if (r.loginMethod === 'palm') loginMethodBadge = '<span class="palm-badge">✋ АЛАҚАН</span>';
+                else loginMethodBadge = '<span class="face-badge">📷 ТҮР</span>';
                 
-                let deviceType = '—';
-                let deviceTypeClass = 'device-desktop';
-                let deviceIcon = '💻';
-                let browser = '—';
-                let os = '—';
-                let screen = '—';
+                let deviceType = '—', deviceTypeClass = 'device-desktop', deviceIcon = '💻', browser = '—', os = '—', screen = '—';
                 
                 if (r.deviceInfo) {
                     deviceType = r.deviceInfo.type || 'desktop';
@@ -1464,9 +1628,9 @@
                 }
                 
                 let fingerprintCell = '—';
-                if (r.loginMethod === 'biometric' && r.fingerprintImage) {
+                if (r.loginMethod === 'fingerprint' && r.fingerprintImage) {
                     fingerprintCell = `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" onclick="document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';">`;
-                } else if (r.loginMethod === 'biometric') {
+                } else if (r.loginMethod === 'fingerprint') {
                     fingerprintCell = '<div class="fingerprint-thumb" style="display:flex;align-items:center;justify-content:center;">🖐️</div>';
                 }
                 
@@ -1476,11 +1640,12 @@
                     <td style="cursor:pointer;" onclick="${r.face ? `document.getElementById('modalImage').src='${r.face}'; document.getElementById('imageModal').style.display='flex';` : ''}">
                         ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Түр">` : '—'}
                     </td>
+                    <td style="cursor:pointer;" onclick="${r.palm ? `document.getElementById('modalImage').src='${r.palm}'; document.getElementById('imageModal').style.display='flex';` : ''}">
+                        ${r.palm ? `<img src="${r.palm}" class="palm-thumb" alt="Алақан">` : '—'}
+                    </td>
                     <td>${fingerprintCell}</td>
                     <td>${loginMethodBadge}</td>
-                    <td><span class="device-type-badge ${deviceTypeClass}">${deviceIcon} ${deviceType}</span></td>
-                    <td><small>${browser}<br>${os}</small></td>
-                    <td><small>${screen}</small></td>
+                    <td><span class="device-type-badge ${deviceTypeClass}">${deviceIcon} ${deviceType}</span><br><small>${browser}<br>${os}<br>${screen}</small></td>
                     <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
                     <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
                     <td style="color:${percentage >= 50 ? '#00c853' : '#ff3b3b'}; font-weight:bold;">${percentage}%</td>
