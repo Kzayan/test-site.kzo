@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>UNSIZ · ТЕСТ 100 · БИОМЕТРИЯ</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- FingerprintJS для идентификации устройства -->
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -88,6 +89,7 @@
             display: block;
             transform: scaleX(-1);
         }
+        #loginCanvas { display: none; }
         .face-preview-container {
             text-align: center;
             margin: 15px 0;
@@ -132,6 +134,16 @@
             background: #00ff88;
             color: #0a0e14;
             border-color: #00ff88;
+        }
+        
+        .register-biometric-btn {
+            background: linear-gradient(135deg, #2a1a2a 0%, #3d0d3d 100%);
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+        }
+        .register-biometric-btn:hover {
+            background: #ff00ff;
+            color: #0a0e14;
         }
         
         .password-group { 
@@ -243,6 +255,7 @@
         }
         .nav-btn:hover { background: #cc0000; }
         .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .nav-btn:disabled:hover { background: #1e293b; }
         .result-screen {
             background: #10161d;
             border-radius: 28px;
@@ -323,20 +336,22 @@
         .error { background: #3a1a1a; color: #ff0000; }
         .waiting { background: #1a1a3a; color: #ffaa00; }
         .face-thumb { 
-            width: 45px; 
-            height: 45px; 
+            width: 40px; 
+            height: 40px; 
             object-fit: cover; 
             border-radius: 8px; 
             border: 1px solid #cc0000;
-            cursor: pointer;
         }
         .fingerprint-thumb {
-            width: 55px;
-            height: 55px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1a3a1a, #0d3d0d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
             border: 2px solid #00ff88;
-            cursor: pointer;
-            background: #0d1a0d;
         }
         .biometric-badge {
             display: inline-block;
@@ -346,6 +361,7 @@
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: bold;
+            margin-left: 5px;
         }
         .password-badge {
             display: inline-block;
@@ -360,7 +376,7 @@
         .device-info {
             font-size: 0.7rem;
             color: #888;
-            max-width: 120px;
+            max-width: 150px;
             word-break: break-word;
         }
         .shuffle-badge {
@@ -381,16 +397,31 @@
             font-size: 0.9rem;
         }
         
+        /* Саусақ ізі анимациясы */
         .fingerprint-scan {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             margin: 20px auto;
         }
         .fingerprint-scan canvas {
             width: 100%;
             height: 100%;
-            border-radius: 20px;
+        }
+        .fingerprint-scan-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,255,136,0.1) 70%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.5; }
         }
     </style>
 </head>
@@ -439,8 +470,10 @@
                 🖐️ Саусақ ізі арқылы кіру
             </div>
             
+            <!-- Саусақ ізі визуализациясы -->
             <div class="fingerprint-scan" id="fingerprintVisual">
-                <canvas id="fingerprintCanvas" width="120" height="120"></canvas>
+                <canvas id="fingerprintCanvas" width="100" height="100"></canvas>
+                <div class="fingerprint-scan-inner"></div>
             </div>
             
             <button class="login-btn biometric-btn" id="registerBiometricBtn">
@@ -515,9 +548,9 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>БЕТ</th>
+                            <th>БЕТ СУРЕТІ</th>
                             <th>САУСАҚ ІЗІ</th>
-                            <th>КІРУ</th>
+                            <th>КІРУ ӘДІСІ</th>
                             <th>ПАРОЛЬ</th>
                             <th>ҚҰРЫЛҒЫ</th>
                             <th>ДҰРЫС</th>
@@ -543,7 +576,7 @@
     (function(){
         "use strict";
         
-        // ========== 100 СҰРАҚ (ҚЫСҚАРТЫЛҒАН) ==========
+        // ========== 100 СҰРАҚ ==========
         const ORIGINAL_QUESTIONS = [
             { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
             { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -690,139 +723,10 @@
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
-        const STORAGE_KEY = "unsiz_test_results_v8";
+        const STORAGE_KEY = "unsiz_test_results_v7";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users";
         
-        // ========== САУСАҚ ІЗІ СУРЕТІН ГЕНЕРАЦИЯЛАУ ==========
-        function generateFingerprintImage(seed) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 120;
-            canvas.height = 120;
-            const ctx = canvas.getContext('2d');
-            
-            // Фон
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, '#0d1a0d');
-            gradient.addColorStop(1, '#1a2a1a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Seed негізінде бірегей саусақ ізі параметрлері
-            const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            
-            // Саусақ ізі сызықтары (эллипстер)
-            const numLines = 8 + (hash % 5);
-            for (let i = 0; i < numLines; i++) {
-                const offsetX = (hash % 7) - 3 + i * 0.5;
-                const offsetY = (hash % 5) - 2 + i * 0.3;
-                const radiusX = 40 - i * 3 + (hash % 10);
-                const radiusY = 50 - i * 3 + ((hash * 2) % 8);
-                const rotation = (hash % 10) * 0.1;
-                
-                ctx.beginPath();
-                ctx.ellipse(
-                    centerX + offsetX, 
-                    centerY + offsetY, 
-                    radiusX, 
-                    radiusY, 
-                    rotation, 
-                    0, 
-                    Math.PI * 2
-                );
-                
-                const alpha = 0.3 + (i * 0.08);
-                ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
-                ctx.lineWidth = 2.5 - i * 0.15;
-                ctx.stroke();
-            }
-            
-            // Ішкі доғалар
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.arc(
-                    centerX + (hash % 5) - 2, 
-                    centerY + 10 + i * 2, 
-                    15 - i * 2, 
-                    0, 
-                    Math.PI * 2
-                );
-                ctx.strokeStyle = `rgba(0, 255, 136, ${0.5 + i * 0.1})`;
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-            }
-            
-            // Орталық нүкте
-            ctx.beginPath();
-            ctx.arc(centerX, centerY + 5, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#00ff88';
-            ctx.shadowColor = '#00ff88';
-            ctx.shadowBlur = 15;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            // Шекара
-            ctx.strokeStyle = '#00ff88';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(0, 0, canvas.width, canvas.height);
-            
-            return canvas.toDataURL('image/png');
-        }
-        
-        // Саусақ ізі визуализациясы
-        function drawFingerprintOnCanvas(seed) {
-            const canvas = document.getElementById('fingerprintCanvas');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-            const centerX = 60;
-            const centerY = 60;
-            
-            // Фон
-            const gradient = ctx.createLinearGradient(0, 0, 120, 120);
-            gradient.addColorStop(0, '#0d1a0d');
-            gradient.addColorStop(1, '#1a2a1a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 120, 120);
-            
-            // Саусақ ізі сызықтары
-            const numLines = 8 + (hash % 5);
-            for (let i = 0; i < numLines; i++) {
-                ctx.beginPath();
-                ctx.ellipse(
-                    centerX + (hash % 7) - 3, 
-                    centerY + (hash % 5) - 2 + i * 0.5, 
-                    40 - i * 3 + (hash % 10), 
-                    50 - i * 3 + ((hash * 2) % 8), 
-                    (hash % 10) * 0.1, 
-                    0, 
-                    Math.PI * 2
-                );
-                ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.08})`;
-                ctx.lineWidth = 2.5 - i * 0.15;
-                ctx.stroke();
-            }
-            
-            ctx.beginPath();
-            ctx.arc(centerX, centerY + 5, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#00ff88';
-            ctx.shadowColor = '#00ff88';
-            ctx.shadowBlur = 15;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            ctx.strokeStyle = '#00ff88';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(0, 0, 120, 120);
-        }
-        
-        // Алғашқы саусақ ізі суретін көрсету
-        const defaultSeed = 'default_' + Date.now();
-        drawFingerprintOnCanvas(defaultSeed);
-        
-        // ========== FINGERPRINTJS ==========
+        // ========== FINGERPRINTJS ИНИЦИАЛИЗАЦИЯСЫ ==========
         async function initFingerprint() {
             try {
                 const fp = await FingerprintJS.load();
@@ -847,10 +751,48 @@
         
         initFingerprint();
         
+        // ========== САУСАҚ ІЗІ ВИЗУАЛИЗАЦИЯСЫ ==========
+        function drawFingerprintIcon() {
+            const canvas = document.getElementById('fingerprintCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const w = 100, h = 100;
+            
+            // Фон
+            ctx.fillStyle = '#0d1a0d';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Саусақ ізі сызықтары
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 2;
+            
+            // Эллипс тәрізді саусақ ізі
+            for (let i = 0; i < 8; i++) {
+                const scale = 1 - i * 0.1;
+                ctx.beginPath();
+                ctx.ellipse(w/2, h/2 + i*2, 30 * scale, 40 * scale, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.08})`;
+                ctx.stroke();
+            }
+            
+            // Ортасындағы шеңбер
+            ctx.beginPath();
+            ctx.arc(w/2, h/2 + 8, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#00ff88';
+            ctx.shadowColor = '#00ff88';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+        
+        drawFingerprintIcon();
+        
         // DOM элементтері
         const loginScreen = document.getElementById('loginScreen');
         const mainSite = document.getElementById('mainSite');
         const loginVideo = document.getElementById('loginVideo');
+        const loginCanvas = document.getElementById('loginCanvas');
         const loginFaceStatus = document.getElementById('loginFaceStatus');
         const startLoginCam = document.getElementById('startLoginCameraBtn');
         const captureLoginFace = document.getElementById('captureLoginFaceBtn');
@@ -867,6 +809,7 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const navButtons = document.getElementById('navButtons');
+        const shuffleIndicator = document.getElementById('shuffleIndicator');
         const userInfoBar = document.getElementById('userInfoBar');
         const biometricStatus = document.getElementById('biometricStatus');
         const registerBiometricBtn = document.getElementById('registerBiometricBtn');
@@ -922,7 +865,7 @@
         
         loadFaceAPI();
         
-        // ========== БИОМЕТРИЯ ==========
+        // ========== БИОМЕТРИЯ (WEB AUTHN) ==========
         function base64ToArrayBuffer(base64) {
             const binary = atob(base64);
             const bytes = new Uint8Array(binary.length);
@@ -955,7 +898,7 @@
                     const ua = navigator.userAgent;
                     if (ua.includes('Windows')) biometricDevicesInfo.textContent = '🖥️ Windows Hello';
                     else if (ua.includes('Mac')) biometricDevicesInfo.textContent = '🍎 Touch ID';
-                    else if (ua.includes('Android')) biometricDevicesInfo.textContent = '📱 Саусақ ізі';
+                    else if (ua.includes('Android')) biometricDevicesInfo.textContent = '📱 Саусақ ізі / Бет тану';
                     else if (ua.includes('iPhone') || ua.includes('iPad')) biometricDevicesInfo.textContent = '📱 Face ID / Touch ID';
                     
                     return true;
@@ -973,7 +916,43 @@
         
         checkBiometricSupport();
         
-        // Саусақ ізін тіркеу (веб-биометриясыз, тек визуализация үшін)
+        // Саусақ ізінің суретін генерациялау (визуализация үшін)
+        function generateFingerprintImage(seed) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 60;
+            canvas.height = 60;
+            const ctx = canvas.getContext('2d');
+            
+            // Фон
+            ctx.fillStyle = '#0d1a0d';
+            ctx.fillRect(0, 0, 60, 60);
+            
+            // Seed негізінде бірегей саусақ ізі
+            const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 1.5;
+            
+            for (let i = 0; i < 5; i++) {
+                const offset = (hash % 10) + i * 2;
+                ctx.beginPath();
+                ctx.ellipse(30, 30 + i * 3, 20 - i * 3, 25 - i * 3, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 136, ${0.4 + i * 0.1})`;
+                ctx.stroke();
+            }
+            
+            ctx.beginPath();
+            ctx.arc(30, 35, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#00ff88';
+            ctx.shadowColor = '#00ff88';
+            ctx.shadowBlur = 5;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            return canvas.toDataURL('image/png');
+        }
+        
+        // Саусақ ізін тіркеу
         registerBiometricBtn.addEventListener('click', async () => {
             const pass = bioLoginPassword.value.trim();
             if (pass !== LOGIN_PASSWORD) {
@@ -981,35 +960,59 @@
                 return;
             }
             
-            biometricStatus.innerHTML = '🖐️ Саусақ ізі тіркелуде...';
-            biometricStatus.className = 'biometric-info waiting';
-            
-            // Бірегей идентификатор жасау
-            const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const seed = userId + deviceFingerprint + pass;
-            
-            // Саусақ ізі суретін генерациялау
-            const fingerprintImage = generateFingerprintImage(seed);
-            drawFingerprintOnCanvas(seed);
-            
-            // Сақтау
-            let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
-            users.push({
-                id: userId,
-                fingerprintImage: fingerprintImage,
-                fingerprintSeed: seed,
-                deviceFingerprint: deviceFingerprint,
-                deviceInfo: deviceInfo,
-                registeredAt: new Date().toLocaleString('kk-KZ')
-            });
-            localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
-            
-            biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
-            biometricStatus.className = 'biometric-info success';
-            
-            setTimeout(() => {
-                proceedToLogin('biometric', null, userId, pass, fingerprintImage, seed);
-            }, 500);
+            try {
+                biometricStatus.innerHTML = '🖐️ Саусақ ізіңізді сканерлеңіз...';
+                biometricStatus.className = 'biometric-info waiting';
+                
+                const userId = 'user_' + Date.now();
+                const challenge = new Uint8Array(32);
+                crypto.getRandomValues(challenge);
+                
+                const publicKeyCredentialCreationOptions = {
+                    challenge: challenge,
+                    rp: { name: "UNSIZ Test", id: window.location.hostname || 'localhost' },
+                    user: {
+                        id: new TextEncoder().encode(userId),
+                        name: 'test_user@unsiz.kz',
+                        displayName: 'UNSIZ Test User'
+                    },
+                    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                    authenticatorSelection: {
+                        authenticatorAttachment: "platform",
+                        userVerification: "required"
+                    },
+                    timeout: 60000,
+                    attestation: "none"
+                };
+                
+                const credential = await navigator.credentials.create({
+                    publicKey: publicKeyCredentialCreationOptions
+                });
+                
+                const credentialId = arrayBufferToBase64(credential.rawId);
+                const fingerprintImage = generateFingerprintImage(credentialId + deviceFingerprint);
+                
+                let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
+                users.push({
+                    id: userId,
+                    credentialId: credentialId,
+                    fingerprintImage: fingerprintImage,
+                    deviceFingerprint: deviceFingerprint,
+                    deviceInfo: deviceInfo,
+                    registeredAt: new Date().toLocaleString('kk-KZ')
+                });
+                localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
+                
+                biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
+                biometricStatus.className = 'biometric-info success';
+                
+                proceedToLogin('biometric', null, userId, pass, fingerprintImage);
+                
+            } catch(e) {
+                console.error('Registration error:', e);
+                biometricStatus.innerHTML = '❌ Тіркеу қатесі: ' + (e.message || 'Қайталап көріңіз');
+                biometricStatus.className = 'biometric-info error';
+            }
         });
         
         // Саусақ ізімен кіру
@@ -1020,41 +1023,49 @@
                 return;
             }
             
-            biometricStatus.innerHTML = '🖐️ Саусақ ізі тексерілуде...';
-            biometricStatus.className = 'biometric-info waiting';
-            
-            const users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
-            
-            if (users.length === 0) {
-                biometricStatus.innerHTML = '❌ Тіркелген саусақ ізі табылмады';
+            try {
+                biometricStatus.innerHTML = '🖐️ Кіру үшін саусақ ізіңізді тексеріңіз...';
+                biometricStatus.className = 'biometric-info waiting';
+                
+                const challenge = new Uint8Array(32);
+                crypto.getRandomValues(challenge);
+                
+                const publicKeyCredentialRequestOptions = {
+                    challenge: challenge,
+                    timeout: 60000,
+                    rpId: window.location.hostname || 'localhost',
+                    userVerification: "required"
+                };
+                
+                const assertion = await navigator.credentials.get({
+                    publicKey: publicKeyCredentialRequestOptions
+                });
+                
+                const credentialId = arrayBufferToBase64(assertion.rawId);
+                
+                const users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
+                const user = users.find(u => u.credentialId === credentialId);
+                
+                if (user) {
+                    proceedToLogin('biometric', null, user.id, pass, user.fingerprintImage);
+                } else {
+                    throw new Error('Саусақ ізі танылмады');
+                }
+                
+            } catch(e) {
+                console.error('Login error:', e);
+                biometricStatus.innerHTML = '❌ Кіру қатесі: ' + (e.message || 'Саусақ ізі расталмады');
                 biometricStatus.className = 'biometric-info error';
-                return;
             }
-            
-            // Соңғы тіркелген қолданушыны алу
-            const user = users[users.length - 1];
-            
-            // Саусақ ізі суретін көрсету
-            if (user.fingerprintSeed) {
-                drawFingerprintOnCanvas(user.fingerprintSeed);
-            }
-            
-            biometricStatus.innerHTML = '✅ Кіру сәтті!';
-            biometricStatus.className = 'biometric-info success';
-            
-            setTimeout(() => {
-                proceedToLogin('biometric', null, user.id, pass, user.fingerprintImage, user.fingerprintSeed);
-            }, 500);
         });
         
         // Кіру функциясы
-        function proceedToLogin(method, faceData, biometricId, passwordUsed, fingerprintImage = null, fingerprintSeed = null) {
+        function proceedToLogin(method, faceData, biometricId, passwordUsed, fingerprintImage = null) {
             currentUser = {
                 face: faceData,
                 loginMethod: method,
                 biometricId: biometricId || null,
                 fingerprintImage: fingerprintImage,
-                fingerprintSeed: fingerprintSeed,
                 deviceFingerprint: deviceFingerprint,
                 deviceInfo: deviceInfo,
                 password: passwordUsed || LOGIN_PASSWORD,
@@ -1271,7 +1282,6 @@
                 loginMethod: currentUser.loginMethod,
                 biometricId: currentUser.biometricId,
                 fingerprintImage: currentUser.fingerprintImage,
-                fingerprintSeed: currentUser.fingerprintSeed,
                 deviceFingerprint: currentUser.deviceFingerprint,
                 deviceInfo: currentUser.deviceInfo,
                 password: currentUser.password,
@@ -1283,7 +1293,6 @@
             
             results.push(record);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-            console.log('Нәтиже сақталды:', record);
         }
         
         function finishTest() {
@@ -1375,6 +1384,7 @@
         
         function renderAdminTable() {
             const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const biometricUsers = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
             
             document.getElementById('adminTotalUsers').textContent = results.length;
             
@@ -1394,24 +1404,20 @@
                     (r.loginMethod === 'face' ? '<span style="color:#888;">📷 БЕТ</span>' : '<span style="color:#666;">❓</span>');
                 
                 const deviceShortInfo = r.deviceInfo ? 
-                    `${r.deviceInfo.browser || ''} / ${r.deviceInfo.os || ''}`.substring(0, 25) : 
-                    (r.deviceFingerprint ? r.deviceFingerprint.substring(0, 10) + '...' : 'Белгісіз');
-                
-                // Саусақ ізі суретін көрсету
-                let fingerprintCell = '—';
-                if (r.loginMethod === 'biometric' && r.fingerprintImage) {
-                    fingerprintCell = `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" onclick="document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';">`;
-                } else if (r.loginMethod === 'biometric') {
-                    fingerprintCell = '<div class="fingerprint-thumb" style="display:flex;align-items:center;justify-content:center;">🖐️</div>';
-                }
+                    `${r.deviceInfo.browser || ''} / ${r.deviceInfo.os || ''}`.substring(0, 30) : 
+                    (r.deviceFingerprint ? r.deviceFingerprint.substring(0, 12) + '...' : 'Белгісіз');
                 
                 return `
                 <tr>
                     <td>${i+1}</td>
                     <td style="cursor:pointer;" onclick="${r.face ? `document.getElementById('modalImage').src='${r.face}'; document.getElementById('imageModal').style.display='flex';` : ''}">
-                        ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Бет">` : '—'}
+                        ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Бет">` : '📷 Жоқ'}
                     </td>
-                    <td>${fingerprintCell}</td>
+                    <td style="cursor:pointer;" onclick="${r.fingerprintImage ? `document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';` : ''}">
+                        ${r.fingerprintImage ? 
+                            `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" style="width:40px;height:40px;object-fit:cover;">` : 
+                            (r.loginMethod === 'biometric' ? '<div class="fingerprint-thumb">🖐️</div>' : '—')}
+                    </td>
                     <td>${biometricInfo}</td>
                     <td><span class="password-badge">${r.password || '2510'}</span></td>
                     <td><div class="device-info" title="${r.deviceFingerprint || ''}">${deviceShortInfo}</div></td>
