@@ -477,6 +477,10 @@
                 🔓 САУСАҚ ІЗІМЕН КІРУ
             </button>
             
+            <button class="login-btn" id="simulateBiometricBtn" style="margin-top:15px; background:#2a1a3a; border-color:#aa88ff; color:#aa88ff;">
+                🔐 ДЕМО КІРУ (СИМУЛЯЦИЯ)
+            </button>
+            
             <div class="password-group" style="margin-top:25px;">
                 <input type="password" id="bioLoginPassword" placeholder="ПАРОЛЬ (2510)" maxlength="10" autocomplete="off" value="">
                 <span class="toggle-password" data-target="bioLoginPassword">👁️</span>
@@ -596,7 +600,6 @@
                 deviceClass = 'device-desktop';
             }
             
-            // Экран өлшемі бойынша қосымша тексеру
             if (width <= 480) {
                 deviceType = 'mobile';
                 deviceIcon = '📱';
@@ -626,7 +629,6 @@
         
         function getOSInfo() {
             const ua = navigator.userAgent;
-            const platform = navigator.platform;
             let os = 'Белгісіз';
             
             if (ua.includes('Windows NT 10.0')) os = 'Windows 10/11';
@@ -647,8 +649,6 @@
             const browser = getBrowserInfo();
             const os = getOSInfo();
             const screenRes = `${window.screen.width}x${window.screen.height}`;
-            const language = navigator.language || 'kk';
-            const cores = navigator.hardwareConcurrency || '?';
             
             return {
                 type: device.deviceType,
@@ -657,14 +657,11 @@
                 browser: browser,
                 os: os,
                 screen: screenRes,
-                language: language,
-                cores: cores,
-                userAgent: navigator.userAgent.substring(0, 100),
                 fullInfo: `${device.deviceIcon} ${device.deviceType} | ${browser} | ${os} | ${screenRes}`
             };
         }
         
-        // ========== 100 СҰРАҚ (ҚЫСҚАРТЫЛҒАН) ==========
+        // ========== 10 СҰРАҚ (ДЕМО) ==========
         const ORIGINAL_QUESTIONS = [
             { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
             { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -677,8 +674,6 @@
             { q: "Infinite loop дегеніміз:", options: ["Бір рет орындалатын цикл", "Шексіз цикл", "Қате код", "Айнымалы", "Функция"], correct: 1 },
             { q: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 }
         ];
-        
-        // Толық 100 сұрақты осы жерге қосуға болады, қысқартылған нұсқасы
         
         // ========== ВАРИАНТТАРДЫ АРАЛАСТЫРУ ==========
         function shuffleArray(arr) {
@@ -708,10 +703,11 @@
         
         // ========== КҮЙ ==========
         let currentUser = null;
-        let answers = new Array(100).fill(null);
-        let questionStatus = new Array(100).fill(false);
+        let answers = new Array(10).fill(null);
+        let questionStatus = new Array(10).fill(false);
         let currentIndex = 0;
         let testFinished = false;
+        const TOTAL_QUESTIONS = 10;
         
         let loginStream = null;
         let faceApiLoaded = false;
@@ -722,7 +718,7 @@
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
-        const STORAGE_KEY = "unsiz_test_results_v9";
+        const STORAGE_KEY = "unsiz_test_results_v10";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users";
         
         // Құрылғы ақпаратын көрсету
@@ -749,24 +745,10 @@
             
             const numLines = 8 + (hash % 5);
             for (let i = 0; i < numLines; i++) {
-                const offsetX = (hash % 7) - 3 + i * 0.5;
-                const offsetY = (hash % 5) - 2 + i * 0.3;
-                const radiusX = 40 - i * 3 + (hash % 10);
-                const radiusY = 50 - i * 3 + ((hash * 2) % 8);
-                const rotation = (hash % 10) * 0.1;
-                
                 ctx.beginPath();
-                ctx.ellipse(centerX + offsetX, centerY + offsetY, radiusX, radiusY, rotation, 0, Math.PI * 2);
+                ctx.ellipse(centerX + (hash % 7) - 3, centerY + (hash % 5) - 2 + i * 0.5, 40 - i * 3 + (hash % 10), 50 - i * 3 + ((hash * 2) % 8), (hash % 10) * 0.1, 0, Math.PI * 2);
                 ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.08})`;
                 ctx.lineWidth = 2.5 - i * 0.15;
-                ctx.stroke();
-            }
-            
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                ctx.arc(centerX + (hash % 5) - 2, centerY + 10 + i * 2, 15 - i * 2, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(0, 255, 136, ${0.5 + i * 0.1})`;
-                ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
             
@@ -865,6 +847,7 @@
         const biometricStatus = document.getElementById('biometricStatus');
         const registerBiometricBtn = document.getElementById('registerBiometricBtn');
         const loginWithBiometricBtn = document.getElementById('loginWithBiometricBtn');
+        const simulateBiometricBtn = document.getElementById('simulateBiometricBtn');
         const biometricDevicesInfo = document.getElementById('biometricDevicesInfo');
         
         // ========== ПАРОЛЬДІ КӨРСЕТУ/ЖАСЫРУ ==========
@@ -916,30 +899,55 @@
         
         loadFaceAPI();
         
-        // ========== БИОМЕТРИЯ ==========
+        // ========== БИОМЕТРИЯ ФУНКЦИЯЛАРЫ ==========
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return bytes.buffer;
+        }
+        
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+            return btoa(binary);
+        }
+        
         async function checkBiometricSupport() {
-            if (!window.PublicKeyCredential) {
-                biometricStatus.innerHTML = '❌ Браузер биометрияны қолдамайды';
-                biometricStatus.className = 'biometric-info error';
-                registerBiometricBtn.disabled = true;
-                loginWithBiometricBtn.disabled = true;
-                return false;
+            const isSupported = window.PublicKeyCredential !== undefined;
+            const ua = navigator.userAgent;
+            
+            if (ua.includes('Windows')) {
+                biometricDevicesInfo.innerHTML = '🖥️ Windows Hello - Саусақ ізі/Бет тану/ПИН';
+            } else if (ua.includes('Mac')) {
+                biometricDevicesInfo.innerHTML = '🍎 Touch ID - Саусақ ізі';
+            } else if (ua.includes('Android')) {
+                biometricDevicesInfo.innerHTML = '📱 Android Biometric - Саусақ ізі/Бет тану';
+            } else if (ua.includes('iPhone') || ua.includes('iPad')) {
+                biometricDevicesInfo.innerHTML = '📱 Face ID / Touch ID';
             }
             
-            try {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (available) {
-                    biometricStatus.innerHTML = '✅ Саусақ ізі / Бет тану қолжетімді';
-                    biometricStatus.className = 'biometric-info success';
-                    return true;
-                } else {
-                    biometricStatus.innerHTML = '⚠️ Биометрия құрылғысы табылмады';
+            if (isSupported) {
+                try {
+                    const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+                    if (available) {
+                        biometricStatus.innerHTML = '✅ Биометрия қолжетімді';
+                        biometricStatus.className = 'biometric-info success';
+                        return true;
+                    } else {
+                        biometricStatus.innerHTML = '⚠️ Биометрия құрылғысы табылмады (ДЕМО режим)';
+                        biometricStatus.className = 'biometric-info waiting';
+                        return false;
+                    }
+                } catch(e) {
+                    biometricStatus.innerHTML = '⚠️ ДЕМО режим (симуляция)';
                     biometricStatus.className = 'biometric-info waiting';
                     return false;
                 }
-            } catch(e) {
-                biometricStatus.innerHTML = '❌ Биометрия тексеру қатесі';
-                biometricStatus.className = 'biometric-info error';
+            } else {
+                biometricStatus.innerHTML = '⚠️ Браузер биометрияны қолдамайды (ДЕМО режим)';
+                biometricStatus.className = 'biometric-info waiting';
                 return false;
             }
         }
@@ -954,7 +962,68 @@
                 return;
             }
             
-            biometricStatus.innerHTML = '🖐️ Саусақ ізі тіркелуде...';
+            const isSupported = await checkBiometricSupport();
+            
+            if (isSupported) {
+                try {
+                    biometricStatus.innerHTML = '🖐️ Саусақ ізіңізді сканерлеңіз...';
+                    biometricStatus.className = 'biometric-info waiting';
+                    
+                    const userId = 'user_' + Date.now();
+                    const challenge = new Uint8Array(32);
+                    crypto.getRandomValues(challenge);
+                    
+                    const publicKey = {
+                        challenge: challenge,
+                        rp: { name: "UNSIZ Test" },
+                        user: {
+                            id: new TextEncoder().encode(userId),
+                            name: 'user@unsiz.kz',
+                            displayName: 'UNSIZ User'
+                        },
+                        pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform",
+                            userVerification: "required",
+                            residentKey: "required"
+                        },
+                        timeout: 60000,
+                        attestation: "none"
+                    };
+                    
+                    const credential = await navigator.credentials.create({ publicKey });
+                    
+                    const credentialId = arrayBufferToBase64(credential.rawId);
+                    const fingerprintImage = generateFingerprintImage(credentialId + deviceFingerprint);
+                    
+                    let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
+                    users.push({
+                        id: userId,
+                        credentialId: credentialId,
+                        fingerprintImage: fingerprintImage,
+                        deviceInfo: fullDeviceInfo,
+                        registeredAt: new Date().toLocaleString('kk-KZ')
+                    });
+                    localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
+                    
+                    biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
+                    biometricStatus.className = 'biometric-info success';
+                    
+                    setTimeout(() => {
+                        proceedToLogin('biometric', null, userId, pass, fingerprintImage);
+                    }, 1000);
+                    
+                } catch(e) {
+                    console.error('Registration error:', e);
+                    registerWithSimulation(pass);
+                }
+            } else {
+                registerWithSimulation(pass);
+            }
+        });
+        
+        function registerWithSimulation(pass) {
+            biometricStatus.innerHTML = '🖐️ Саусақ ізі тіркелуде (симуляция)...';
             biometricStatus.className = 'biometric-info waiting';
             
             const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -974,13 +1043,13 @@
             });
             localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
             
-            biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
+            biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді! (ДЕМО)';
             biometricStatus.className = 'biometric-info success';
             
             setTimeout(() => {
                 proceedToLogin('biometric', null, userId, pass, fingerprintImage, seed);
-            }, 500);
-        });
+            }, 1000);
+        }
         
         // Саусақ ізімен кіру
         loginWithBiometricBtn.addEventListener('click', async () => {
@@ -990,13 +1059,55 @@
                 return;
             }
             
-            biometricStatus.innerHTML = '🖐️ Саусақ ізі тексерілуде...';
+            const isSupported = await checkBiometricSupport();
+            
+            if (isSupported) {
+                try {
+                    biometricStatus.innerHTML = '🖐️ Кіру үшін саусақ ізіңізді тексеріңіз...';
+                    biometricStatus.className = 'biometric-info waiting';
+                    
+                    const challenge = new Uint8Array(32);
+                    crypto.getRandomValues(challenge);
+                    
+                    const publicKey = {
+                        challenge: challenge,
+                        timeout: 60000,
+                        userVerification: "required"
+                    };
+                    
+                    const assertion = await navigator.credentials.get({ publicKey });
+                    
+                    const credentialId = arrayBufferToBase64(assertion.rawId);
+                    const users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
+                    const user = users.find(u => u.credentialId === credentialId);
+                    
+                    if (user) {
+                        biometricStatus.innerHTML = '✅ Кіру сәтті!';
+                        biometricStatus.className = 'biometric-info success';
+                        setTimeout(() => {
+                            proceedToLogin('biometric', null, user.id, pass, user.fingerprintImage);
+                        }, 500);
+                    } else {
+                        throw new Error('Саусақ ізі танылмады');
+                    }
+                    
+                } catch(e) {
+                    console.error('Login error:', e);
+                    loginWithSimulation(pass);
+                }
+            } else {
+                loginWithSimulation(pass);
+            }
+        });
+        
+        function loginWithSimulation(pass) {
+            biometricStatus.innerHTML = '🖐️ Саусақ ізі тексерілуде (симуляция)...';
             biometricStatus.className = 'biometric-info waiting';
             
             const users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
             
             if (users.length === 0) {
-                biometricStatus.innerHTML = '❌ Тіркелген саусақ ізі табылмады';
+                biometricStatus.innerHTML = '❌ Тіркелген саусақ ізі табылмады. Алдымен тіркеліңіз!';
                 biometricStatus.className = 'biometric-info error';
                 return;
             }
@@ -1007,12 +1118,22 @@
                 drawFingerprintOnCanvas(user.fingerprintSeed);
             }
             
-            biometricStatus.innerHTML = '✅ Кіру сәтті!';
+            biometricStatus.innerHTML = '✅ Кіру сәтті! (ДЕМО)';
             biometricStatus.className = 'biometric-info success';
             
             setTimeout(() => {
                 proceedToLogin('biometric', null, user.id, pass, user.fingerprintImage, user.fingerprintSeed);
-            }, 500);
+            }, 1000);
+        }
+        
+        // Симуляция батырмасы
+        simulateBiometricBtn.addEventListener('click', () => {
+            const pass = bioLoginPassword.value.trim();
+            if (pass !== LOGIN_PASSWORD) {
+                alert('2510 паролін енгізіңіз!');
+                return;
+            }
+            loginWithSimulation(pass);
         });
         
         // Кіру функциясы
@@ -1031,10 +1152,14 @@
             };
             
             QUESTIONS = getQuestionsWithShuffledOptions();
+            answers = new Array(TOTAL_QUESTIONS).fill(null);
+            questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
+            currentIndex = 0;
+            testFinished = false;
             
             loginScreen.classList.add('hidden');
             mainSite.classList.add('visible');
-            userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type} | Пароль: ${currentUser.password} | ${currentUser.loginTime}`;
+            userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type} | Пароль: ${currentUser.password}`;
             renderQuestion();
             updateStats();
         }
@@ -1180,7 +1305,7 @@
             
             currentQSpan.textContent = currentIndex + 1;
             prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex === 99;
+            nextBtn.disabled = currentIndex === TOTAL_QUESTIONS - 1;
             
             checkAllAnswered();
         }
@@ -1206,7 +1331,7 @@
             renderQuestion();
             updateStats();
             
-            if (currentIndex < 99) {
+            if (currentIndex < TOTAL_QUESTIONS - 1) {
                 setTimeout(() => {
                     currentIndex++;
                     renderQuestion();
@@ -1237,15 +1362,12 @@
                 id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
                 face: currentUser.face,
                 loginMethod: currentUser.loginMethod,
-                biometricId: currentUser.biometricId,
                 fingerprintImage: currentUser.fingerprintImage,
-                fingerprintSeed: currentUser.fingerprintSeed,
-                deviceFingerprint: currentUser.deviceFingerprint,
                 deviceInfo: currentUser.deviceInfo,
                 password: currentUser.password,
                 correct: correct, 
                 wrong: wrong, 
-                total: 100,
+                total: TOTAL_QUESTIONS,
                 date: new Date().toLocaleString('kk-KZ')
             };
             
@@ -1260,7 +1382,7 @@
             
             const correct = questionStatus.filter(v => v === true).length;
             const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
-            const percentage = Math.round((correct / 100) * 100);
+            const percentage = Math.round((correct / TOTAL_QUESTIONS) * 100);
             
             testArea.classList.add('hidden');
             navButtons.classList.add('hidden');
@@ -1276,7 +1398,7 @@
                 <div class="result-screen">
                     <h2>${resultMessage}</h2>
                     <div style="font-size:5rem; color:#cc0000; font-weight:900;">${correct}</div>
-                    <p style="font-size:1.3rem; margin:20px 0;">100 сұрақтың ішінен</p>
+                    <p style="font-size:1.3rem; margin:20px 0;">${TOTAL_QUESTIONS} сұрақтың ішінен</p>
                     <div style="display:flex; justify-content:center; gap:40px; margin:30px 0;">
                         <div><span style="color:#00c853;">✔ Дұрыс:</span> ${correct}</div>
                         <div><span style="color:#ff3b3b;">✖ Қате:</span> ${wrong}</div>
@@ -1297,7 +1419,7 @@
         });
         
         nextBtn.addEventListener('click', () => {
-            if (currentIndex < 99) {
+            if (currentIndex < TOTAL_QUESTIONS - 1) {
                 currentIndex++;
                 renderQuestion();
             }
@@ -1355,7 +1477,7 @@
             const reversed = [...results].reverse();
             
             tbody.innerHTML = reversed.map((r, i) => {
-                const percentage = Math.round((r.correct / 100) * 100);
+                const percentage = Math.round((r.correct / r.total) * 100);
                 const biometricInfo = r.loginMethod === 'biometric' ? 
                     '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>' : 
                     (r.loginMethod === 'face' ? '<span style="color:#888;">📷 БЕТ</span>' : '<span style="color:#666;">❓</span>');
