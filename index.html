@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsiz – Үнсіздік – қылмысқа сыбайластық</title>
+    <!-- Face API кітапханасы -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #0a0a0a;
+            color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            min-height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            border-left: 4px solid #cc0000;
+            padding-left: 25px;
+            margin: 20px 0 40px;
+        }
+        .header h1 {
+            font-size: clamp(2.5rem, 10vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+            color: #fff;
+        }
+        .red-block { color: #cc0000; }
+        .votes-counter-main {
+            display: inline-block;
+            background: #cc0000;
+            color: #fff;
+            padding: 15px 30px;
+            margin-top: 25px;
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .votes-counter-main span { font-size: 3.5rem; margin-right: 10px; }
+        .manifesto {
+            display: grid;
+            grid-template-columns: 1fr 0.5fr 1.5fr;
+            gap: 30px;
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            border-bottom: 2px solid #333;
+        }
+        .manifesto-left { color: #aaa; text-transform: uppercase; }
+        .manifesto-center {
+            color: #fff;
+            border-left: 1px solid #444;
+            border-right: 1px solid #444;
+            padding: 0 20px;
+            font-weight: bold;
+        }
+        .manifesto-right {
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1.2;
+            text-transform: uppercase;
+            color: #cc0000;
+        }
+        .legal-note {
+            background: #1a1a1a;
+            padding: 12px 20px;
+            color: #888;
+            border-left: 4px solid #cc0000;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+        .vote-section { margin: 30px 0 50px; }
+        .vote-label {
+            color: #fff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #cc0000;
+            padding-bottom: 5px;
+        }
+        .vote-button {
+            background: transparent;
+            border: 3px solid #cc0000;
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 900;
+            padding: 20px 60px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            letter-spacing: 5px;
+        }
+        .vote-button:hover { background: #cc0000; color: #0a0a0a; }
+        .vote-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .hidden-form {
+            display: none;
+            margin-top: 30px;
+            background: #1a1a1a;
+            padding: 30px;
+            border: 1px solid #333;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        /* Бет тану аймағы */
+        .face-capture-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 15px;
+            border: 2px solid #cc0000;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+        }
+        #video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        #canvas {
+            display: none;
+        }
+        .face-status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .face-status.success {
+            background: #1a3a1a;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+        .face-status.error {
+            background: #3a1a1a;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+        .face-status.waiting {
+            background: #1a1a3a;
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+        .face-status.info {
+            background: #1a1a2a;
+            color: #00aaff;
+            border: 1px solid #00aaff;
+        }
+        .camera-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .capture-btn {
+            background: #333;
+            color: #fff;
+            border: 1px solid #cc0000;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        .capture-btn:hover { background: #cc0000; }
+        .capture-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .permission-btn {
+            background: #0066cc;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        .permission-btn:hover { background: #0055aa; }
+        .face-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 10px auto;
+            border: 1px solid #444;
+        }
+        
+        .submit-btn {
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #666;
+        }
+        .close-form {
+            color: #888;
+            margin-left: 20px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .quote-block {
+            font-size: 3rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 40px 0;
+            padding: 30px 0;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+        }
+        .quote-highlight { color: #cc0000; }
+        .initiator {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 40px;
+            margin: 40px 0;
+            padding: 30px;
+            background: #111;
+            border: 1px solid #222;
+        }
+        .initiator-label { color: #cc0000; font-weight: bold; text-transform: uppercase; }
+        .initiator-text { color: #ddd; }
+        .footer {
+            margin-top: auto;
+            padding-top: 60px;
+            color: #555;
+            text-transform: uppercase;
+            border-top: 1px solid #222;
+        }
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            color: #555;
+            border: 1px solid #333;
+            padding: 10px 15px;
+            cursor: pointer;
+            z-index: 100;
+            text-transform: uppercase;
+        }
+        .admin-link:hover { color: #cc0000; border-color: #cc0000; }
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 1000;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+        .admin-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #111;
+            border: 1px solid #333;
+            padding: 30px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #cc0000;
+        }
+        .admin-header h2 { color: #cc0000; text-transform: uppercase; }
+        .close-admin { color: #fff; font-size: 2rem; cursor: pointer; }
+        .close-admin:hover { color: #cc0000; }
+        .password-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .password-screen h3 { color: #fff; margin-bottom: 30px; }
+        .password-input {
+            padding: 15px;
+            font-size: 1.2rem;
+            background: #0a0a0a;
+            border: 1px solid #444;
+            color: #fff;
+            width: 250px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .password-btn {
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .error-msg { color: #cc0000; margin-top: 15px; }
+        .votes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: #fff;
+        }
+        .votes-table th {
+            background: #1a1a1a;
+            padding: 10px;
+            text-align: left;
+            text-transform: uppercase;
+            color: #cc0000;
+            border-bottom: 1px solid #333;
+            font-size: 0.85rem;
+        }
+        .votes-table td {
+            padding: 10px;
+            border-bottom: 1px solid #222;
+            font-size: 0.85rem;
+        }
+        .votes-table tr:hover { background: #1a1a1a; }
+        .face-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border: 1px solid #444;
+            cursor: pointer;
+        }
+        .face-thumb:hover { border-color: #cc0000; }
+        .delete-btn {
+            background: #cc0000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .delete-btn:hover { background: #990000; }
+        .total-votes {
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1a1a;
+            border-left: 4px solid #cc0000;
+        }
+        .export-btn, .clear-all-btn {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .clear-all-btn { background: #550000; }
+        .hidden { display: none !important; }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid #cc0000;
+        }
+        .close-image-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        .close-image-modal:hover { color: #cc0000; }
+        
+        @media (max-width: 768px) {
+            .manifesto { grid-template-columns: 1fr; }
+            .manifesto-center { border-left: none; border-right: none; padding: 0; }
+            .vote-button { font-size: 1.8rem; padding: 15px 30px; width: 100%; }
+            .quote-block { font-size: 2rem; }
+            .votes-counter-main { font-size: 1.5rem; }
+            .votes-counter-main span { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="red-block">ҮНСІЗДІК</span><br>
+                ҚЫЛМЫСҚА<br>
+                СЫБАЙЛАСТЫҚ
+            </h1>
+            <div class="votes-counter-main">
+                <span id="mainVotesCount">0</span> ДАУЫС ЖИНАЛДЫ
+            </div>
+        </div>
+
+        <div class="manifesto">
+            <div class="manifesto-left">АЗАМАТТЫҚ<br>БАСТАМА<br>#UNSIZ</div>
+            <div class="manifesto-center">Жануарларға қатыгездік заңдастырылғанда, үнсіздік – сыбайластыққа айналады.</div>
+            <div class="manifesto-right">ҚОҒАМДЫ<br>ЗАҢДАСТЫРЫЛҒАН<br>ҚАТЫГЕЗДІККЕ<br>ҚАРСЫ<br>БІРІКТІРЕДІ</div>
+        </div>
+
+        <div class="legal-note">
+            ⚠ Дауыс беру үшін бетіңізді таныту қажет. Әр адам тек 1 рет дауыс бере алады.
+        </div>
+
+        <div class="vote-section">
+            <div class="vote-label">Егер қарсы болсаң – дауысыңды қалдыр</div>
+            <button class="vote-button" id="showFormBtn">ДАУЫС БЕРУ</button>
+            <div id="voteLimitMsg" style="margin-top: 15px;"></div>
+            
+            <div class="hidden-form" id="voteForm">
+                <h3 style="color: #fff; margin-bottom: 20px;">ДАУЫС ҚАЛДЫРУ</h3>
+                
+                <div class="face-capture-area">
+                    <div class="video-container">
+                        <video id="video" autoplay playsinline></video>
+                    </div>
+                    <canvas id="canvas"></canvas>
+                    
+                    <div id="faceStatus" class="face-status info">
+                        📷 Камераны қосу үшін төмендегі батырманы басыңыз
+                    </div>
+                    
+                    <div class="camera-controls">
+                        <button class="permission-btn" id="requestPermissionBtn">📷 КАМЕРАҒА РҰҚСАТ БЕРУ</button>
+                        <button class="capture-btn" id="startCameraBtn" disabled>🔌 КАМЕРАНЫ ҚОСУ</button>
+                        <button class="capture-btn" id="captureFaceBtn" disabled>🔍 БЕТТІ ТАНУ</button>
+                    </div>
+                    
+                    <div id="facePreviewContainer" style="display: none;">
+                        <p style="margin: 10px 0; color: #00ff00;">✅ Бет танылды!</p>
+                        <img id="facePreview" class="face-preview" alt="Бет суреті">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <input type="text" placeholder="Аты-жөніңіз" id="name" maxlength="100" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="Қала/Облыс" id="city" maxlength="50" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="Электронды пошта (міндетті емес)" id="email" maxlength="100" autocomplete="off">
+                </div>
+                
+                <button class="submit-btn" id="submitVote" disabled>ДАУЫС БЕРУ</button>
+                <span class="close-form" id="closeForm">Бас тарту</span>
+            </div>
+        </div>
+
+        <div class="quote-block">
+            ҮНСІЗДІК –<br>
+            <span class="quote-highlight">БҰЛ КІСІ ӨЛІМГЕ</span><br>
+            КЕЛІСІМ БЕРУ.
+        </div>
+
+        <div class="initiator">
+            <div class="initiator-label">Бастамашы:</div>
+            <div class="initiator-text">
+                Бастаманы блогер, зооқорғаушы және ҚР азаматы <strong style="color: #fff;">Темірлан Тоспаев</strong> қоғамды біріктіру және жануарларға қатысты заңдастырылған қатыгездікке қарсы дауыс жинау мақсатында құрды.
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 UNSIZ.KZ — ҮНСІЗ ҚАЛМА
+        </div>
+    </div>
+
+    <div class="admin-link" id="showAdminBtn">● АДМИН</div>
+
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-content">
+            <div class="admin-header">
+                <h2>АДМИН ПАНЕЛЬ</h2>
+                <span class="close-admin" id="closeAdminBtn">&times;</span>
+            </div>
+            
+            <div id="passwordScreen" class="password-screen">
+                <h3>ҚҰПИЯ СӨЗ ЕНГІЗІҢІЗ</h3>
+                <input type="password" id="passwordInput" class="password-input" placeholder="****" autocomplete="off">
+                <br>
+                <button class="password-btn" id="loginBtn">КІРУ</button>
+                <div id="loginError" class="error-msg"></div>
+            </div>
+
+            <div id="votesPanel" class="hidden">
+                <div class="total-votes">
+                    <strong>БАРЛЫҒЫ: <span id="totalCount">0</span> ДАУЫС</strong>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <button class="export-btn" id="exportBtn">📥 JSON ЭКСПОРТ</button>
+                    <button class="clear-all-btn" id="clearAllBtn">🗑️ БАРЛЫҒЫН ЖОЮ</button>
+                </div>
+
+                <table class="votes-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Бет суреті</th>
+                            <th>Аты-жөні</th>
+                            <th>Қала</th>
+                            <th>E-mail</th>
+                            <th>Күні</th>
+                            <th>Әрекет</th>
+                        </tr>
+                    </thead>
+                    <tbody id="votesTableBody"></tbody>
+                </table>
+                <div id="noVotesMsg" style="color: #888; padding: 40px; text-align: center;">Әзірге дауыс жоқ.</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="image-modal" id="imageModal">
+        <span class="close-image-modal" id="closeImageModal">&times;</span>
+        <img id="modalImage" src="" alt="Бет суреті">
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+            
+            // ========== КОНФИГУРАЦИЯ ==========
+            const STORAGE_KEY = 'unsiz_votes_with_faces';
+            const DEVICE_KEY = 'unsiz_voted_device_face';
+            const ADMIN_PASSWORD = '7777';
+            
+            let faceApiLoaded = false;
+            let modelsLoading = false;
+            let currentStream = null;
+            let capturedFaceImage = null;
+            let faceDetected = false;
+            let hasCameraPermission = false;
+            
+            // ========== FACE API ЖҮКТЕУ ==========
+            async function loadFaceAPI() {
+                if (faceApiLoaded || modelsLoading) return;
+                modelsLoading = true;
+                
+                try {
+                    const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+                    
+                    document.getElementById('faceStatus').textContent = '⏳ Бет тану моделі жүктелуде...';
+                    document.getElementById('faceStatus').className = 'face-status waiting';
+                    
+                    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+                    await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                    
+                    faceApiLoaded = true;
+                    modelsLoading = false;
+                    
+                    document.getElementById('faceStatus').textContent = '✅ Модель жүктелді. Камераны қосуға болады.';
+                    document.getElementById('faceStatus').className = 'face-status success';
+                    
+                    if (hasCameraPermission) {
+                        document.getElementById('startCameraBtn').disabled = false;
+                    }
+                    
+                } catch (error) {
+                    console.error('Face API жүктеу қатесі:', error);
+                    modelsLoading = false;
+                    document.getElementById('faceStatus').textContent = '❌ Модель жүктелмеді. Интернетті тексеріңіз.';
+                    document.getElementById('faceStatus').className = 'face-status error';
+                }
+            }
+            
+            // ========== ҚҰРЫЛҒЫ ID ==========
+            function getDeviceId() {
+                let deviceId = localStorage.getItem('unsiz_device_id');
+                if (!deviceId) {
+                    deviceId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('unsiz_device_id', deviceId);
+                }
+                return deviceId;
+            }
+            
+            // ========== ДАУЫС БЕРУ ФУНКЦИЯЛАРЫ ==========
+            function hasVoted() {
+                return localStorage.getItem(DEVICE_KEY) === 'true';
+            }
+            
+            function markAsVoted() {
+                localStorage.setItem(DEVICE_KEY, 'true');
+            }
+            
+            function getVotes() {
+                const data = localStorage.getItem(STORAGE_KEY);
+                return data ? JSON.parse(data) : [];
+            }
+            
+            function saveVotes(votes) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(votes));
+                updateMainCounter();
+            }
+            
+            function addVote(name, city, email, faceImage) {
+                if (hasVoted()) {
+                    return { success: false, message: 'Сіз бұған дейін дауыс бергенсіз!' };
+                }
+                
+                if (!name || name.trim().length < 2) {
+                    return { success: false, message: 'Аты-жөніңізді дұрыс енгізіңіз' };
+                }
+                
+                if (!faceImage) {
+                    return { success: false, message: 'Бет суреті міндетті!' };
+                }
+                
+                const votes = getVotes();
+                const newVote = {
+                    id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                    name: name.trim(),
+                    city: city.trim() || '—',
+                    email: email.trim() || '—',
+                    date: new Date().toLocaleString('kk-KZ'),
+                    deviceId: getDeviceId().substring(0, 12),
+                    faceImage: faceImage
+                };
+                
+                votes.push(newVote);
+                saveVotes(votes);
+                markAsVoted();
+                
+                return { success: true };
+            }
+            
+            function deleteVote(id) {
+                let votes = getVotes();
+                votes = votes.filter(v => v.id !== id);
+                saveVotes(votes);
+            }
+            
+            function clearAllVotes() {
+                if (confirm('Барлық дауыстарды жоюға сенімдісіз бе?')) {
+                    saveVotes([]);
+                    localStorage.removeItem(DEVICE_KEY);
+                    renderVotesTable();
+                    updateVoteButtonState();
+                }
+            }
+            
+            function updateMainCounter() {
+                document.getElementById('mainVotesCount').textContent = getVotes().length;
+            }
+            
+            // ========== КАМЕРА ЖӘНЕ БЕТ ТАНУ ==========
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const faceStatus = document.getElementById('faceStatus');
+            const requestPermissionBtn = document.getElementById('requestPermissionBtn');
+            const startCameraBtn = document.getElementById('startCameraBtn');
+            const captureFaceBtn = document.getElementById('captureFaceBtn');
+            const facePreview = document.getElementById('facePreview');
+            const facePreviewContainer = document.getElementById('facePreviewContainer');
+            const submitVoteBtn = document.getElementById('submitVote');
+            
+            // Рұқсат сұрау
+            requestPermissionBtn.addEventListener('click', async () => {
+                try {
+                    faceStatus.textContent = '📷 Камераға рұқсат сұралуда...';
+                    faceStatus.className = 'face-status waiting';
+                    
+                    // Алдымен камераны сынап көру
+                    const testStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    testStream.getTracks().forEach(track => track.stop());
+                    
+                    hasCameraPermission = true;
+                    faceStatus.textContent = '✅ Рұқсат берілді! Енді "КАМЕРАНЫ ҚОСУ" батырмасын басыңыз.';
+                    faceStatus.className = 'face-status success';
+                    
+                    requestPermissionBtn.disabled = true;
+                    
+                    if (faceApiLoaded) {
+                        startCameraBtn.disabled = false;
+                    } else {
+                        loadFaceAPI();
+                    }
+                    
+                } catch (error) {
+                    console.error('Рұқсат қатесі:', error);
+                    hasCameraPermission = false;
+                    faceStatus.textContent = '❌ Камераға рұқсат берілмеді. Браузер параметрлерінен камераға рұқсат беріңіз.';
+                    faceStatus.className = 'face-status error';
+                    
+                    // Нұсқаулық көрсету
+                    if (error.name === 'NotAllowedError') {
+                        faceStatus.innerHTML = '❌ Камераға рұқсат берілмеді.<br>Браузердің мекенжай жолағының сол жағындағы 🔒 белгісін басып, камераға рұқсат беріңіз.';
+                    }
+                }
+            });
+            
+            async function startCamera() {
+                try {
+                    if (currentStream) {
+                        currentStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    faceStatus.textContent = '📷 Камера қосылуда...';
+                    faceStatus.className = 'face-status waiting';
+                    
+                    currentStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user', width: 640, height: 480 }
+                    });
+                    
+                    video.srcObject = currentStream;
+                    
+                    // Модель жүктелмеген болса жүктеу
+                    if (!faceApiLoaded) {
+                        loadFaceAPI();
+                    }
+                    
+                    faceStatus.textContent = '📷 Камера дайын. "БЕТТІ ТАНУ" батырмасын басыңыз.';
+                    faceStatus.className = 'face-status waiting';
+                    
+                    startCameraBtn.disabled = true;
+                    captureFaceBtn.disabled = false;
+                    
+                } catch (error) {
+                    console.error('Камера қатесі:', error);
+                    faceStatus.textContent = '❌ Камераға қосылу мүмкін болмады. Алдымен рұқсат беріңіз.';
+                    faceStatus.className = 'face-status error';
+                }
+            }
+            
+            async function detectAndCaptureFace() {
+                if (!faceApiLoaded) {
+                    faceStatus.textContent = '⏳ Бет тану моделі әлі жүктелуде... Күте тұрыңыз.';
+                    faceStatus.className = 'face-status waiting';
+                    return;
+                }
+                
+                faceStatus.textContent = '🔍 Бет ізделуде... Камераға тіке қараңыз.';
+                faceStatus.className = 'face-status waiting';
+                
+                try {
+                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                        .withFaceLandmarks();
+                    
+                    if (detections.length === 0) {
+                        faceStatus.textContent = '❌ Бет табылмады! Камераға тіке қараңыз, жарықты жақсартыңыз.';
+                        faceStatus.className = 'face-status error';
+                        return;
+                    }
+                    
+                    if (detections.length > 1) {
+                        faceStatus.textContent = '❌ Бірнеше бет табылды! Кадрда тек бір адам болуы керек.';
+                        faceStatus.className = 'face-status error';
+                        return;
+                    }
+                    
+                    const detection = detections[0];
+                    const score = detection.detection.score;
+                    
+                    if (score < 0.65) {
+                        faceStatus.textContent = '❌ Бет анық көрінбейді. Жарықты жақсартып, камераға жақындаңыз.';
+                        faceStatus.className = 'face-status error';
+                        return;
+                    }
+                    
+                    // Бетті суретке түсіру
+                    const context = canvas.getContext('2d');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Бет аймағын қиып алу
+                    const box = detection.detection.box;
+                    const padding = 40;
+                    const x = Math.max(0, box.x - padding);
+                    const y = Math.max(0, box.y - padding);
+                    const width = Math.min(box.width + padding * 2, canvas.width - x);
+                    const height = Math.min(box.height + padding * 2, canvas.height - y);
+                    
+                    const faceCanvas = document.createElement('canvas');
+                    faceCanvas.width = 200;
+                    faceCanvas.height = 200;
+                    const faceContext = faceCanvas.getContext('2d');
+                    faceContext.drawImage(canvas, x, y, width, height, 0, 0, 200, 200);
+                    
+                    capturedFaceImage = faceCanvas.toDataURL('image/jpeg', 0.85);
+                    facePreview.src = capturedFaceImage;
+                    facePreviewContainer.style.display = 'block';
+                    
+                    faceDetected = true;
+                    faceStatus.textContent = '✅ Бет сәтті танылды! Енді мәліметтеріңізді енгізіңіз.';
+                    faceStatus.className = 'face-status success';
+                    
+                    submitVoteBtn.disabled = false;
+                    captureFaceBtn.disabled = true;
+                    
+                    // Камераны тоқтату
+                    if (currentStream) {
+                        currentStream.getTracks().forEach(track => track.stop());
+                        currentStream = null;
+                    }
+                    video.srcObject = null;
+                    
+                } catch (error) {
+                    console.error('Бет тану қатесі:', error);
+                    faceStatus.textContent = '❌ Бет тану кезінде қате. Қайталап көріңіз.';
+                    faceStatus.className = 'face-status error';
+                }
+            }
+            
+            startCameraBtn.addEventListener('click', startCamera);
+            captureFaceBtn.addEventListener('click', detectAndCaptureFace);
+            
+            // ========== UI БАСҚАРУ ==========
+            updateMainCounter();
+            
+            const showFormBtn = document.getElementById('showFormBtn');
+            const voteForm = document.getElementById('voteForm');
+            const closeForm = document.getElementById('closeForm');
+            const voteLimitMsg = document.getElementById('voteLimitMsg');
+            
+            function updateVoteButtonState() {
+                if (hasVoted()) {
+                    showFormBtn.disabled = true;
+                    showFormBtn.textContent = 'ДАУЫС БЕРІЛДІ ✓';
+                    voteLimitMsg.innerHTML = '<span style="color: #00ff00;">✅ Рақмет! Сіз дауыс бердіңіз.</span>';
+                } else {
+                    showFormBtn.disabled = false;
+                    showFormBtn.textContent = 'ДАУЫС БЕРУ';
+                    voteLimitMsg.innerHTML = '';
+                }
+            }
+            
+            updateVoteButtonState();
+            
+            showFormBtn.addEventListener('click', () => {
+                if (hasVoted()) {
+                    alert('Сіз бұған дейін дауыс бергенсіз!');
+                    return;
+                }
+                voteForm.style.display = 'block';
+                showFormBtn.style.display = 'none';
+                
+                // Форманы тазарту
+                capturedFaceImage = null;
+                faceDetected = false;
+                facePreviewContainer.style.display = 'none';
+                submitVoteBtn.disabled = true;
+                faceStatus.textContent = '📷 Камераны қосу үшін төмендегі батырманы басыңыз';
+                faceStatus.className = 'face-status info';
+                captureFaceBtn.disabled = true;
+                startCameraBtn.disabled = true;
+                requestPermissionBtn.disabled = false;
+                hasCameraPermission = false;
+                
+                // Модельді алдын ала жүктеу
+                if (!faceApiLoaded) {
+                    loadFaceAPI();
+                }
+            });
+            
+            closeForm.addEventListener('click', () => {
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                    currentStream = null;
+                }
+                video.srcObject = null;
+                voteForm.style.display = 'none';
+                showFormBtn.style.display = 'inline-block';
+                document.getElementById('name').value = '';
+                document.getElementById('city').value = '';
+                document.getElementById('email').value = '';
+            });
+            
+            document.getElementById('submitVote').addEventListener('click', () => {
+                if (!faceDetected || !capturedFaceImage) {
+                    alert('Алдымен бетіңізді танытуыңыз керек!');
+                    return;
+                }
+                
+                const result = addVote(
+                    document.getElementById('name').value,
+                    document.getElementById('city').value,
+                    document.getElementById('email').value,
+                    capturedFaceImage
+                );
+                
+                if (result.success) {
+                    alert('✅ Дауысыңыз қабылданды! Рақмет.');
+                    closeForm.click();
+                    updateVoteButtonState();
+                    
+                    if (!document.getElementById('votesPanel').classList.contains('hidden')) {
+                        renderVotesTable();
+                    }
+                } else {
+                    alert('❌ ' + result.message);
+                }
+            });
+            
+            // ========== АДМИН ПАНЕЛЬ ==========
+            const adminModal = document.getElementById('adminModal');
+            const passwordScreen = document.getElementById('passwordScreen');
+            const votesPanel = document.getElementById('votesPanel');
+            
+            document.getElementById('showAdminBtn').addEventListener('click', () => {
+                adminModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                passwordScreen.classList.remove('hidden');
+                votesPanel.classList.add('hidden');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('loginError').textContent = '';
+            });
+            
+            document.getElementById('closeAdminBtn').addEventListener('click', () => {
+                adminModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            adminModal.addEventListener('click', (e) => {
+                if (e.target === adminModal) {
+                    adminModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                if (document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
+                    passwordScreen.classList.add('hidden');
+                    votesPanel.classList.remove('hidden');
+                    renderVotesTable();
+                    document.getElementById('loginError').textContent = '';
+                } else {
+                    document.getElementById('loginError').textContent = 'Қате құпия сөз!';
+                }
+            });
+            
+            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('loginBtn').click();
+            });
+            
+            function renderVotesTable() {
+                const votes = getVotes();
+                document.getElementById('totalCount').textContent = votes.length;
+                
+                const tbody = document.getElementById('votesTableBody');
+                const noVotesMsg = document.getElementById('noVotesMsg');
+                
+                if (votes.length === 0) {
+                    tbody.innerHTML = '';
+                    noVotesMsg.style.display = 'block';
+                    return;
+                }
+                
+                noVotesMsg.style.display = 'none';
+                const sorted = [...votes].reverse();
+                
+                tbody.innerHTML = sorted.map((v, i) => `
+                    <tr>
+                        <td>${sorted.length - i}</td>
+                        <td>
+                            ${v.faceImage ? 
+                                `<img src="${v.faceImage}" class="face-thumb" onclick="showLargeImage('${v.faceImage}')" alt="Бет">` : 
+                                '<span style="color: #666;">Сурет жоқ</span>'}
+                        </td>
+                        <td><strong>${v.name}</strong></td>
+                        <td>${v.city}</td>
+                        <td>${v.email}</td>
+                        <td>${v.date}</td>
+                        <td>
+                            <button class="delete-btn" data-id="${v.id}">ЖОЮ</button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if (confirm('Осы дауысты жою керек пе?')) {
+                            deleteVote(e.target.dataset.id);
+                            renderVotesTable();
+                            updateMainCounter();
+                        }
+                    });
+                });
+            }
+            
+            window.showLargeImage = function(imageSrc) {
+                const modal = document.getElementById('imageModal');
+                const modalImg = document.getElementById('modalImage');
+                modal.style.display = 'flex';
+                modalImg.src = imageSrc;
+            };
+            
+            document.getElementById('closeImageModal').addEventListener('click', () => {
+                document.getElementById('imageModal').style.display = 'none';
+            });
+            
+            document.getElementById('imageModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('imageModal')) {
+                    document.getElementById('imageModal').style.display = 'none';
+                }
+            });
+            
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const votes = getVotes();
+                const exportData = votes.map(v => ({
+                    id: v.id,
+                    name: v.name,
+                    city: v.city,
+                    email: v.email,
+                    date: v.date,
+                    deviceId: v.deviceId,
+                    hasFaceImage: !!v.faceImage
+                }));
+                const data = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([data], {type: 'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `unsiz_votes_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+            });
+            
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllVotes);
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && adminModal.style.display === 'block') {
+                    adminModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Алдын ала моделді жүктеу
+            setTimeout(loadFaceAPI, 1000);
+            
+        })();
+    </script>
+</body>
+</html>
