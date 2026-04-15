@@ -144,10 +144,14 @@
             color: #0a0e14;
         }
         
-        .password-group { margin-top: 20px; }
+        .password-group { 
+            margin-top: 20px; 
+            position: relative;
+        }
         .password-group input {
             width: 100%;
             padding: 16px;
+            padding-right: 50px;
             background: #0a0e14;
             border: 1px solid #3a4a5e;
             color: white;
@@ -155,6 +159,17 @@
             text-align: center;
             border-radius: 12px;
         }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            font-size: 1.2rem;
+            user-select: none;
+        }
+        .toggle-password:hover { color: #cc0000; }
         
         .biometric-info {
             background: #1a2a1a;
@@ -279,7 +294,7 @@
             overflow-y: auto;
         }
         .admin-content {
-            max-width: 1300px;
+            max-width: 1400px;
             margin: 0 auto;
             background: #111;
             padding: 30px;
@@ -296,12 +311,12 @@
             padding: 12px 8px; 
             color: #cc0000; 
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .votes-table td { 
             padding: 10px 8px; 
             border-bottom: 1px solid #222; 
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         .delete-btn { 
             background: #cc0000; 
@@ -334,6 +349,16 @@
             font-size: 0.7rem;
             font-weight: bold;
             margin-left: 5px;
+        }
+        .password-badge {
+            display: inline-block;
+            background: #cc0000;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            font-family: monospace;
         }
         .shuffle-badge {
             background: #2a1a3a;
@@ -388,6 +413,7 @@
             </div>
             <div class="password-group">
                 <input type="password" id="loginPassword" placeholder="ПАРОЛЬ (2510)" maxlength="10" autocomplete="off" value="">
+                <span class="toggle-password" data-target="loginPassword">👁️</span>
             </div>
             <button class="login-btn" id="finalLoginBtn" disabled style="background:#cc0000;">КІРУ</button>
         </div>
@@ -408,6 +434,7 @@
             
             <div class="password-group" style="margin-top:25px;">
                 <input type="password" id="bioLoginPassword" placeholder="ПАРОЛЬ (2510)" maxlength="10" autocomplete="off" value="">
+                <span class="toggle-password" data-target="bioLoginPassword">👁️</span>
             </div>
             
             <div id="biometricDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:15px; text-align:center;"></div>
@@ -470,7 +497,8 @@
                         <tr>
                             <th>#</th>
                             <th>БЕТ СУРЕТІ</th>
-                            <th>САУСАҚ ІЗІ</th>
+                            <th>КІРУ ӘДІСІ</th>
+                            <th>ПАРОЛЬ</th>
                             <th>ДҰРЫС</th>
                             <th>ҚАТЕ</th>
                             <th>БАРЛЫҒЫ</th>
@@ -639,7 +667,7 @@
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
-        const STORAGE_KEY = "unsiz_test_results_v5";
+        const STORAGE_KEY = "unsiz_test_results_v6";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users";
         
         // DOM элементтері
@@ -669,6 +697,21 @@
         const registerBiometricBtn = document.getElementById('registerBiometricBtn');
         const loginWithBiometricBtn = document.getElementById('loginWithBiometricBtn');
         const biometricDevicesInfo = document.getElementById('biometricDevicesInfo');
+        
+        // ========== ПАРОЛЬДІ КӨРСЕТУ/ЖАСЫРУ ==========
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const input = document.getElementById(targetId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.textContent = '🔒';
+                } else {
+                    input.type = 'password';
+                    this.textContent = '👁️';
+                }
+            });
+        });
         
         // ========== ТАБ АУЫСТЫРУ ==========
         document.querySelectorAll('.auth-tab').forEach(tab => {
@@ -734,7 +777,6 @@
                     biometricStatus.innerHTML = '✅ Саусақ ізі / Бет тану қолжетімді';
                     biometricStatus.className = 'biometric-info success';
                     
-                    // Құрылғы атауын анықтау
                     const ua = navigator.userAgent;
                     if (ua.includes('Windows')) biometricDevicesInfo.textContent = '🖥️ Windows Hello қолданыңыз';
                     else if (ua.includes('Mac')) biometricDevicesInfo.textContent = '🍎 Touch ID қолданыңыз';
@@ -793,7 +835,6 @@
                     publicKey: publicKeyCredentialCreationOptions
                 });
                 
-                // Тіркеу деректерін сақтау
                 const credentialId = arrayBufferToBase64(credential.rawId);
                 
                 let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
@@ -807,8 +848,7 @@
                 biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
                 biometricStatus.className = 'biometric-info success';
                 
-                // Тіркелгеннен кейін кіру
-                proceedToLogin('biometric', null, userId);
+                proceedToLogin('biometric', null, userId, pass);
                 
             } catch(e) {
                 console.error('Registration error:', e);
@@ -845,12 +885,11 @@
                 
                 const credentialId = arrayBufferToBase64(assertion.rawId);
                 
-                // Тіркелген пайдаланушыны тексеру
                 const users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
                 const user = users.find(u => u.credentialId === credentialId);
                 
                 if (user) {
-                    proceedToLogin('biometric', null, user.id);
+                    proceedToLogin('biometric', null, user.id, pass);
                 } else {
                     throw new Error('Саусақ ізі танылмады');
                 }
@@ -863,11 +902,12 @@
         });
         
         // Кіру функциясы
-        function proceedToLogin(method, faceData, biometricId) {
+        function proceedToLogin(method, faceData, biometricId, passwordUsed) {
             currentUser = {
                 face: faceData,
                 loginMethod: method,
                 biometricId: biometricId || null,
+                password: passwordUsed || LOGIN_PASSWORD,
                 name: method === 'face' ? 'Бетпен кірді' : 'Саусақ ізімен кірді',
                 loginTime: new Date().toLocaleString('kk-KZ')
             };
@@ -876,7 +916,7 @@
             
             loginScreen.classList.add('hidden');
             mainSite.classList.add('visible');
-            userInfoBar.innerHTML = `👤 ${currentUser.name} | ${currentUser.loginTime}`;
+            userInfoBar.innerHTML = `👤 ${currentUser.name} | Пароль: ${currentUser.password} | ${currentUser.loginTime}`;
             renderQuestion();
             updateStats();
         }
@@ -981,7 +1021,7 @@
             if (!loginFaceDetected) { alert('Алдымен бетіңізді танытыңыз'); return; }
             if (pass !== LOGIN_PASSWORD) { alert('Қате пароль! 2510 енгізіңіз'); return; }
             
-            proceedToLogin('face', loginFaceCaptured, null);
+            proceedToLogin('face', loginFaceCaptured, null, pass);
         });
         
         loginPassword.addEventListener('keypress', (e) => {
@@ -1080,6 +1120,7 @@
                 face: currentUser.face,
                 loginMethod: currentUser.loginMethod,
                 biometricId: currentUser.biometricId,
+                password: currentUser.password,
                 correct: correct, 
                 wrong: wrong, 
                 total: 100,
@@ -1186,7 +1227,7 @@
             const tbody = document.getElementById('adminTableBody');
             
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
                 return;
             }
             
@@ -1205,6 +1246,7 @@
                         ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Бет">` : '📷 Сурет жоқ'}
                     </td>
                     <td>${biometricInfo}</td>
+                    <td><span class="password-badge">${r.password || '2510'}</span></td>
                     <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
                     <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
                     <td>${r.total || 100}</td>
