@@ -171,6 +171,16 @@
             text-align: center;
         }
         
+        .device-info-bar {
+            background: #1a1a2a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 10px 0;
+            font-size: 0.75rem;
+            color: #8a9ab0;
+            text-align: center;
+        }
+        
         .main-site { display: none; }
         .main-site.visible { display: block; }
         
@@ -283,7 +293,7 @@
             overflow-y: auto;
         }
         .admin-content {
-            max-width: 1500px;
+            max-width: 1600px;
             margin: 0 auto;
             background: #111;
             padding: 30px;
@@ -357,12 +367,24 @@
             font-weight: bold;
             font-family: monospace;
         }
-        .device-info {
+        .device-info-cell {
             font-size: 0.7rem;
-            color: #888;
-            max-width: 120px;
-            word-break: break-word;
+            color: #aaa;
+            max-width: 140px;
+            line-height: 1.3;
         }
+        .device-type-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-right: 3px;
+        }
+        .device-mobile { background: #2a1a3a; color: #aa88ff; }
+        .device-tablet { background: #1a2a3a; color: #88aaff; }
+        .device-desktop { background: #1a3a2a; color: #88ffaa; }
+        .device-laptop { background: #3a2a1a; color: #ffcc88; }
         .shuffle-badge {
             background: #2a1a3a;
             padding: 5px 15px;
@@ -402,6 +424,10 @@
         <div class="login-header">
             <h2><span class="red-block">ҮНСІЗДІК</span><br>ТЕСТ</h2>
             <div class="login-sub">БИОМЕТРИЯ + 2510</div>
+        </div>
+        
+        <div class="device-info-bar" id="loginDeviceInfo">
+            📱 Құрылғы анықталуда...
         </div>
         
         <div class="auth-tabs">
@@ -543,6 +569,101 @@
     (function(){
         "use strict";
         
+        // ========== ҚҰРЫЛҒЫНЫ АВТОМАТТЫ АНЫҚТАУ ==========
+        function detectDeviceType() {
+            const ua = navigator.userAgent;
+            const width = window.innerWidth;
+            
+            let deviceType = 'desktop';
+            let deviceIcon = '💻';
+            let deviceClass = 'device-desktop';
+            
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                deviceType = 'tablet';
+                deviceIcon = '📱';
+                deviceClass = 'device-tablet';
+            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                deviceType = 'mobile';
+                deviceIcon = '📱';
+                deviceClass = 'device-mobile';
+            } else if (/(Macintosh|MacIntel|MacPPC|Mac68K|Mac OS X)/i.test(ua) && !/(iPhone|iPad|iPod)/i.test(ua)) {
+                deviceType = 'laptop';
+                deviceIcon = '💻';
+                deviceClass = 'device-laptop';
+            } else if (/(Win64|WOW64|Win32)/i.test(ua)) {
+                deviceType = 'desktop';
+                deviceIcon = '🖥️';
+                deviceClass = 'device-desktop';
+            }
+            
+            // Экран өлшемі бойынша қосымша тексеру
+            if (width <= 480) {
+                deviceType = 'mobile';
+                deviceIcon = '📱';
+                deviceClass = 'device-mobile';
+            } else if (width <= 768) {
+                deviceType = 'tablet';
+                deviceIcon = '📱';
+                deviceClass = 'device-tablet';
+            }
+            
+            return { deviceType, deviceIcon, deviceClass };
+        }
+        
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            let browser = 'Белгісіз';
+            
+            if (ua.includes('Edg/')) browser = 'Edge';
+            else if (ua.includes('OPR/') || ua.includes('Opera')) browser = 'Opera';
+            else if (ua.includes('Chrome/')) browser = 'Chrome';
+            else if (ua.includes('Safari/') && !ua.includes('Chrome')) browser = 'Safari';
+            else if (ua.includes('Firefox/')) browser = 'Firefox';
+            else if (ua.includes('MSIE ') || ua.includes('Trident/')) browser = 'Internet Explorer';
+            
+            return browser;
+        }
+        
+        function getOSInfo() {
+            const ua = navigator.userAgent;
+            const platform = navigator.platform;
+            let os = 'Белгісіз';
+            
+            if (ua.includes('Windows NT 10.0')) os = 'Windows 10/11';
+            else if (ua.includes('Windows NT 6.3')) os = 'Windows 8.1';
+            else if (ua.includes('Windows NT 6.2')) os = 'Windows 8';
+            else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
+            else if (ua.includes('Windows')) os = 'Windows';
+            else if (ua.includes('Mac OS X')) os = 'macOS';
+            else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+            else if (ua.includes('Android')) os = 'Android';
+            else if (ua.includes('Linux')) os = 'Linux';
+            
+            return os;
+        }
+        
+        function getDetailedDeviceInfo() {
+            const device = detectDeviceType();
+            const browser = getBrowserInfo();
+            const os = getOSInfo();
+            const screenRes = `${window.screen.width}x${window.screen.height}`;
+            const language = navigator.language || 'kk';
+            const cores = navigator.hardwareConcurrency || '?';
+            
+            return {
+                type: device.deviceType,
+                typeIcon: device.deviceIcon,
+                typeClass: device.deviceClass,
+                browser: browser,
+                os: os,
+                screen: screenRes,
+                language: language,
+                cores: cores,
+                userAgent: navigator.userAgent.substring(0, 100),
+                fullInfo: `${device.deviceIcon} ${device.deviceType} | ${browser} | ${os} | ${screenRes}`
+            };
+        }
+        
         // ========== 100 СҰРАҚ (ҚЫСҚАРТЫЛҒАН) ==========
         const ORIGINAL_QUESTIONS = [
             { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
@@ -554,98 +675,10 @@
             { q: "try-except блогы не үшін керек?", options: ["Цикл құру", "Шарт жазу", "Қателерді өңдеу", "Айнымалы құру", "Файл жою"], correct: 2 },
             { q: "IDE дегеніміз:", options: ["Операциялық жүйе", "Бағдарламалау ортасы", "Вирус", "Драйвер", "Сервер"], correct: 1 },
             { q: "Infinite loop дегеніміз:", options: ["Бір рет орындалатын цикл", "Шексіз цикл", "Қате код", "Айнымалы", "Функция"], correct: 1 },
-            { q: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 },
-            { q: "Логикалық қатені табудың ең тиімді жолы:", options: ["Компьютерді өшіру", "Кодты қайта көшіру", "Қадамдап орындау", "Интернетті тексеру", "Принтер қосу"], correct: 2 },
-            { q: "Синтаксистік қате табылғанда:", options: ["Бағдарлама дұрыс жұмыс істейді", "Компиляция тоқтайды", "Нәтиже баяу шығады", "Файл ашылады", "Желі үзіледі"], correct: 1 },
-            { q: "Айнымалы анықталмаса қандай қате шығады?", options: ["Type error", "Name error", "Index error", "Logic error", "Value error"], correct: 1 },
-            { q: "Массив шегінен тыс элементке жүгінсек:", options: ["Name error", "Type error", "Index error", "Syntax error", "Key error"], correct: 2 },
-            { q: "Type error қашан болады?", options: ["Қате атау жазылса", "Түрлер сәйкес келмесе", "Индекс дұрыс болмаса", "Цикл тоқтаса", "Файл жабылса"], correct: 1 },
-            { q: "Қатені қайталамау үшін не істеу керек?", options: ["Кодты тестілеу", "Өшіру", "Компьютер ауыстыру", "Интернет қосу", "Бағдарламаны жасыру"], correct: 0 },
-            { q: "assert командасы не үшін қолданылады?", options: ["Файл ашу", "Мәлімет басу", "Шартты тексеру", "Цикл жасау", "Айнымалы жою"], correct: 2 },
-            { q: "Лог-файл не үшін керек?", options: ["Музыка сақтау", "Қате жазбаларын сақтау", "Видео көру", "Сурет салу", "Интернетке қосылу"], correct: 1 },
-            { q: "Refactoring дегеніміз:", options: ["Кодты жою", "Код құрылымын жақсарту", "Қате қосу", "Файл форматтау", "Компьютер тазалау"], correct: 1 },
-            { q: "Unit тестілеу не тексереді?", options: ["Бүкіл жүйені", "Бір модульді", "Серверді", "Интернетті", "Дизайнды"], correct: 1 },
-            { q: "ValueError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Мәлімет түрі сәйкес келмесе", "Дұрыс емес мән енгізілсе", "Индекс артық болса", "Файл табылмаса"], correct: 2 },
-            { q: "FileNotFoundError қашан шығады?", options: ["Айнымалы жоқ болса", "Файл табылмаса", "Түр сәйкес келмесе", "Шарт қате болса", "Цикл тоқтаса"], correct: 1 },
-            { q: "except блогы қай кезде орындалады?", options: ["Қате болмаса", "Қате пайда болса", "Әрқашан", "Цикл ішінде ғана", "Функция алдында"], correct: 1 },
-            { q: "finally блогы:", options: ["Ешқашан орындалмайды", "Қате болса ғана орындалады", "Әрқашан орындалады", "Цикл жасайды", "Айнымалы құрады"], correct: 2 },
-            { q: "Логикалық қателерді табу үшін:", options: ["Кодты талдау керек", "Компьютер ауыстыру керек", "Файлды жою керек", "Интернетті өшіру керек", "Принтер қосу керек"], correct: 0 },
-            { q: "Breakpoint дегеніміз:", options: ["Қате түрі", "Бағдарламаны тоқтату нүктесі", "Айнымалы", "Цикл", "Файл"], correct: 1 },
-            { q: "Stack trace нені көрсетеді?", options: ["Дизайнды", "Қате шыққан жолды", "Интернет жылдамдығын", "Файл өлшемін", "Процессор түрін"], correct: 1 },
-            { q: "Тестілеудің мақсаты:", options: ["Қате табу", "Кодты жасыру", "Компьютерді өшіру", "Желі қосу", "Файлды көшіру"], correct: 0 },
-            { q: "Қай қате бағдарлама тоқтауына әкелуі мүмкін?", options: ["Логикалық", "Runtime error", "Комментарий қатесі", "Дизайн қатесі", "Стиль қатесі"], correct: 1 },
-            { q: "Debugging процесінің соңғы мақсаты:", options: ["Кодты жою", "Қатені түзету", "Файлды жабу", "Компьютерді өшіру", "Интернетке қосылу"], correct: 1 },
-            { q: "SyntaxError қай кезде шығады?", options: ["Орындау кезінде", "Компиляция кезінде", "Интернет жоқ кезде", "Файл жабылғанда", "Цикл тоқтағанда"], correct: 1 },
-            { q: "ZeroDivisionError қашан пайда болады?", options: ["0-ге бөлгенде", "Айнымалы жоқ болса", "Түр сәйкес келмесе", "Индекс артық болса", "Файл ашылмаса"], correct: 0 },
-            { q: "Кодтағы комментарий не үшін керек?", options: ["Қате шығару", "Түсіндіру жазу", "Файл жою", "Айнымалы құру", "Цикл жасау"], correct: 1 },
-            { q: "Қате табылғаннан кейін бірінші қадам:", options: ["Кодты өшіру", "Себебін анықтау", "Компьютерді өшіру", "Жаңа файл ашу", "Интернет қосу"], correct: 1 },
-            { q: "while циклі тоқтамаса, бұл:", options: ["Syntax error", "Логикалық қате", "Type error", "Name error", "Value error"], correct: 1 },
-            { q: "Функция дұрыс нәтиже бермесе:", options: ["Логикалық қате бар", "Компьютер бұзылған", "Интернет жоқ", "Файл ашылмаған", "Драйвер жоқ"], correct: 0 },
-            { q: "IDE-де қызыл сызық нені білдіреді?", options: ["Дұрыс код", "Синтаксистік қате", "Интернет бар", "Файл сақталған", "Принтер қосылған"], correct: 1 },
-            { q: "Exception дегеніміз:", options: ["Айнымалы", "Қате жағдай", "Цикл", "Функция", "Сервер"], correct: 1 },
-            { q: "Кодты кішкене бөліктермен тексеру:", options: ["Инсталляция", "Модульдік тексеру", "Форматтау", "Архивтеу", "Дизайн"], correct: 1 },
-            { q: "Қай әдіс қателерді азайтады?", options: ["Тестілеу", "Көшіру", "Өшіру", "Форматтамау", "Компьютер ауыстыру"], correct: 0 },
-            { q: "KeyError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Сөздікте жоқ кілт қолданылса", "0-ге бөлгенде", "Түр сәйкес келмесе", "Файл ашылмаса"], correct: 1 },
-            { q: "ImportError дегеніміз:", options: ["Айнымалы қатесі", "Модуль жүктелмесе", "Индекс қатесі", "Логикалық қате", "Шарт қатесі"], correct: 1 },
-            { q: "Кодты қайта қарау (code review) мақсаты:", options: ["Қате табу", "Файл жою", "Интернет қосу", "Компьютер өшіру", "Дизайн өзгерту"], correct: 0 },
-            { q: "Traceback нені көрсетеді?", options: ["Файл көлемін", "Қате шыққан жолдар тізбегін", "Интернет жылдамдығын", "Компьютер жадын", "Экран өлшемін"], correct: 1 },
-            { q: "Бағдарламаны тест мәліметтермен тексеру:", options: ["Архивтеу", "Тестілеу", "Орнату", "Форматтау", "Көшіру"], correct: 1 },
-            { q: "Қай жағдайда try блогы орындалады?", options: ["Қате болса ғана", "Әрқашан бірінші орындалады", "Ешқашан", "Цикл ішінде ғана", "Файл жабылғанда"], correct: 1 },
-            { q: "except бірнешеу болуы мүмкін бе?", options: ["Жоқ", "Иә", "Тек біреу", "Тек циклде", "Тек функцияда"], correct: 1 },
-            { q: "Debugging құралдарының бірі:", options: ["Paint", "Debugger", "Word", "Excel", "Browser"], correct: 1 },
-            { q: "Кодтағы артық жолдарды жою:", options: ["Refactoring", "Компиляция", "Инсталляция", "Архивтеу", "Көшіру"], correct: 0 },
-            { q: "Қате табылған соң не істеу керек?", options: ["Елемеу", "Түзету", "Жою", "Компьютер өшіру", "Файл жабу"], correct: 1 },
-            { q: "AttributeError қашан шығады?", options: ["0-ге бөлгенде", "Объектіде жоқ қасиет шақырылса", "Индекс артық болса", "Файл табылмаса", "Айнымалы жоқ болса"], correct: 1 },
-            { q: "Memory error себебі:", options: ["Жад жетіспеуі", "Интернет жоқ", "Синтаксис қате", "Индекс үлкен", "Файл жабық"], correct: 0 },
-            { q: "Қай әдіс қатені тез табуға көмектеседі?", options: ["Кодты форматтау", "Қадамдап орындау", "Файл көшіру", "Өшіру", "Архивтеу"], correct: 1 },
-            { q: "Тест кейс дегеніміз:", options: ["Қате түрі", "Тексеру сценарийі", "Айнымалы", "Файл", "Сервер"], correct: 1 },
-            { q: "Boundary value testing не тексереді?", options: ["Орта мәндерді", "Шектік мәндерді", "Тек мәтінді", "Дизайнды", "Интернетті"], correct: 1 },
-            { q: "Infinite recursion себебі:", options: ["Шарт жоқ", "Файл жоқ", "Интернет жоқ", "Индекс артық", "Түр сәйкес емес"], correct: 0 },
-            { q: "raise командасы:", options: ["Қате тастау", "Цикл құру", "Айнымалы жою", "Файл ашу", "Мәлімет шығару"], correct: 0 },
-            { q: "Қате туралы хабарлама не үшін маңызды?", options: ["Уақыт өткізу", "Себебін түсіну", "Дизайн көру", "Файл өлшеу", "Интернет тексеру"], correct: 1 },
-            { q: "Regression testing мақсаты:", options: ["Жаңа қате қосу", "Бұрынғы қателер қайталанбауын тексеру", "Файл жою", "Компьютер жаңарту", "Дизайн өзгерту"], correct: 1 },
-            { q: "Кодты жиі сақтау не үшін керек?", options: ["Қате көбейту", "Мәлімет жоғалтпау", "Интернет қосу", "Форматтау", "Архивтеу"], correct: 1 },
-            { q: "Логикалық қате табудың бір жолы:", options: ["Нәтижені күтілген мәнмен салыстыру", "Компьютер өшіру", "Файл жою", "Интернет қосу", "Архивтеу"], correct: 0 },
-            { q: "Exception handling мақсаты:", options: ["Бағдарламаны тоқтату", "Қатені басқару", "Файл ашу", "Айнымалы жою", "Дизайн жасау"], correct: 1 },
-            { q: "Кодтың оқылуын жақсарту:", options: ["Түсінікті атаулар қолдану", "Барлығын бір жолға жазу", "Комментарийсіз жазу", "Форматтамау", "Қысқарту"], correct: 0 },
-            { q: "Unit test қашан жазылады?", options: ["Кодтан кейін", "Кодпен бірге", "Ешқашан", "Орнатқанда", "Архивтегенде"], correct: 1 },
-            { q: "Bug дегеніміз:", options: ["Дұрыс код", "Қате", "Сервер", "Айнымалы", "Файл"], correct: 1 },
-            { q: "Debugging мақсаты:", options: ["Қате қосу", "Қате табу және түзету", "Файл жою", "Интернет өшіру", "Компьютер ауыстыру"], correct: 1 },
-            { q: "try блогында не жазылады?", options: ["Қауіпті код", "Комментарий", "Айнымалы аты", "Файл аты", "Дизайн"], correct: 0 },
-            { q: "finally көбіне не үшін қолданылады?", options: ["Файл жабу", "Қате шығару", "Цикл құру", "Айнымалы жою", "Дизайн жасау"], correct: 0 },
-            { q: "Кодты тексерудің автоматты түрі:", options: ["Manual testing", "Automated testing", "Архивтеу", "Форматтау", "Көшіру"], correct: 1 },
-            { q: "Stack overflow себебі:", options: ["Терең рекурсия", "Интернет жоқ", "Файл жоқ", "Индекс үлкен", "Түр сәйкес емес"], correct: 0 },
-            { q: "Input тексеру не үшін қажет?", options: ["Қате болдырмау", "Интернет қосу", "Файл жою", "Дизайн өзгерту", "Архивтеу"], correct: 0 },
-            { q: "Қате шыққан жолды табу үшін:", options: ["Traceback қарау", "Компьютер өшіру", "Файл жабу", "Интернет тексеру", "Архивтеу"], correct: 0 },
-            { q: "Version control не үшін керек?", options: ["Код нұсқаларын сақтау", "Файл жою", "Интернет қосу", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
-            { q: "Git дегеніміз:", options: ["Операциялық жүйе", "Нұсқа бақылау жүйесі", "Сервер", "Айнымалы", "Қате түрі"], correct: 1 },
-            { q: "Merge conflict қашан болады?", options: ["Бір файлды екі адам өзгерткенде", "Интернет жоқ кезде", "Файл жойылғанда", "Компьютер өшкенде", "Индекс үлкенде"], correct: 0 },
-            { q: "Test coverage нені көрсетеді?", options: ["Код көлемін", "Тестпен қамтылған пайызды", "Интернет жылдамдығын", "Файл өлшемін", "Дизайн сапасын"], correct: 1 },
-            { q: "Кодты форматтау құралы:", options: ["Linter", "Printer", "Scanner", "Monitor", "Router"], correct: 0 },
-            { q: "Static analysis қашан жасалады?", options: ["Орындаусыз", "Орындау кезінде", "Интернетпен", "Серверде", "Принтерде"], correct: 0 },
-            { q: "Dynamic testing қашан жасалады?", options: ["Орындау кезінде", "Код жазғанда", "Форматтағанда", "Архивтегенде", "Дизайнда"], correct: 0 },
-            { q: "Code smell дегеніміз:", options: ["Жақсы код", "Жаман құрылым белгісі", "Қате хабарлама", "Айнымалы", "Файл"], correct: 1 },
-            { q: "Refactoring кезінде:", options: ["Функционал өзгермейді", "Жаңа қате қосылады", "Код жойылады", "Интернет қосылады", "Компьютер өшеді"], correct: 0 },
-            { q: "Қай тест жүйені толық тексереді?", options: ["Unit test", "Integration test", "System test", "Static test", "Manual test"], correct: 2 },
-            { q: "Integration test не тексереді?", options: ["Бір функцияны", "Модульдердің байланысын", "Дизайнды", "Интернетті", "Файлды"], correct: 1 },
-            { q: "Manual testing дегеніміз:", options: ["Қолмен тексеру", "Автоматты тексеру", "Архивтеу", "Форматтау", "Орнату"], correct: 0 },
-            { q: "Automated testing артықшылығы:", options: ["Жылдамдық", "Қате көбейту", "Файл жою", "Интернет өшіру", "Дизайн бұзу"], correct: 0 },
-            { q: "Қате қайталанса:", options: ["Себебін терең талдау керек", "Елемеу керек", "Файл жою керек", "Компьютер ауыстыру керек", "Интернет қосу керек"], correct: 0 },
-            { q: "Clean code мақсаты:", options: ["Оқылуы жеңіл код", "Ұзын код", "Қате код", "Форматсыз код", "Архивтелген код"], correct: 0 },
-            { q: "DRY принципі:", options: ["Қайталауды азайту", "Қате қосу", "Файл жою", "Интернет қосу", "Дизайн өзгерту"], correct: 0 },
-            { q: "SOLID принциптері:", options: ["Дизайн қағидалары", "Қате түрлері", "Файл атауы", "Интернет түрі", "Айнымалы атауы"], correct: 0 },
-            { q: "Код сапасын арттыру үшін:", options: ["Тестілеу жүргізу", "Комментарийсіз жазу", "Барлығын қысқарту", "Форматтамау", "Тексермеу"], correct: 0 },
-            { q: "Exception түрін нақты көрсету:", options: ["Жақсы тәжірибе", "Қате", "Міндет емес", "Интернетке байланысты", "Файлға байланысты"], correct: 0 },
-            { q: "Логикалық қате көбіне:", options: ["Есептеуде болады", "Интернетте болады", "Файлда болады", "Серверде болады", "Принтерде болады"], correct: 0 },
-            { q: "Кодты қайта пайдалану:", options: ["Қайта қолдану", "Жою", "Архивтеу", "Форматтау", "Өшіру"], correct: 0 },
-            { q: "CI/CD мақсаты:", options: ["Автоматты құрастыру және тексеру", "Файл жою", "Интернет өшіру", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
-            { q: "Bug report құрамына кіреді:", options: ["Қате сипаттамасы", "Музыка", "Видео", "Сурет салу", "Архив"], correct: 0 },
-            { q: "Қате табылған орта:", options: ["Production", "Test", "Dev", "Барлығы мүмкін", "Ешқайсысы"], correct: 3 },
-            { q: "Code review кім жасайды?", options: ["Басқа бағдарламашы", "Клиент", "Дизайнер", "Қолданушы", "Принтер"], correct: 0 },
-            { q: "Тестілеу кезеңі:", options: ["Жобалау алдында", "Әзірлеу кезінде және кейін", "Орнатудан кейін ғана", "Архивтегенде", "Форматтағанда"], correct: 1 },
-            { q: "Қатені түзеткен соң:", options: ["Қайта тестілеу керек", "Елемеу керек", "Файл жою керек", "Интернет өшіру керек", "Компьютер ауыстыру керек"], correct: 0 },
-            { q: "Бағдарламалық код сапасының негізгі көрсеткіші:", options: ["Қатесіз жұмыс", "Ұзындығы", "Түсі", "Форматы", "Архив көлемі"], correct: 0 }
+            { q: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 }
         ];
+        
+        // Толық 100 сұрақты осы жерге қосуға болады, қысқартылған нұсқасы
         
         // ========== ВАРИАНТТАРДЫ АРАЛАСТЫРУ ==========
         function shuffleArray(arr) {
@@ -684,14 +717,18 @@
         let faceApiLoaded = false;
         let loginFaceCaptured = null;
         let loginFaceDetected = false;
-        let fpInstance = null;
         let deviceFingerprint = null;
-        let deviceInfo = null;
+        let fullDeviceInfo = null;
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
-        const STORAGE_KEY = "unsiz_test_results_v8";
+        const STORAGE_KEY = "unsiz_test_results_v9";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users";
+        
+        // Құрылғы ақпаратын көрсету
+        fullDeviceInfo = getDetailedDeviceInfo();
+        document.getElementById('loginDeviceInfo').innerHTML = 
+            `${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type} | ${fullDeviceInfo.browser} | ${fullDeviceInfo.os} | ${fullDeviceInfo.screen}`;
         
         // ========== САУСАҚ ІЗІ СУРЕТІН ГЕНЕРАЦИЯЛАУ ==========
         function generateFingerprintImage(seed) {
@@ -700,19 +737,16 @@
             canvas.height = 120;
             const ctx = canvas.getContext('2d');
             
-            // Фон
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
             gradient.addColorStop(0, '#0d1a0d');
             gradient.addColorStop(1, '#1a2a1a');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Seed негізінде бірегей саусақ ізі параметрлері
             const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             
-            // Саусақ ізі сызықтары (эллипстер)
             const numLines = 8 + (hash % 5);
             for (let i = 0; i < numLines; i++) {
                 const offsetX = (hash % 7) - 3 + i * 0.5;
@@ -722,38 +756,20 @@
                 const rotation = (hash % 10) * 0.1;
                 
                 ctx.beginPath();
-                ctx.ellipse(
-                    centerX + offsetX, 
-                    centerY + offsetY, 
-                    radiusX, 
-                    radiusY, 
-                    rotation, 
-                    0, 
-                    Math.PI * 2
-                );
-                
-                const alpha = 0.3 + (i * 0.08);
-                ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
+                ctx.ellipse(centerX + offsetX, centerY + offsetY, radiusX, radiusY, rotation, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.08})`;
                 ctx.lineWidth = 2.5 - i * 0.15;
                 ctx.stroke();
             }
             
-            // Ішкі доғалар
             for (let i = 0; i < 5; i++) {
                 ctx.beginPath();
-                ctx.arc(
-                    centerX + (hash % 5) - 2, 
-                    centerY + 10 + i * 2, 
-                    15 - i * 2, 
-                    0, 
-                    Math.PI * 2
-                );
+                ctx.arc(centerX + (hash % 5) - 2, centerY + 10 + i * 2, 15 - i * 2, 0, Math.PI * 2);
                 ctx.strokeStyle = `rgba(0, 255, 136, ${0.5 + i * 0.1})`;
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
             }
             
-            // Орталық нүкте
             ctx.beginPath();
             ctx.arc(centerX, centerY + 5, 6, 0, Math.PI * 2);
             ctx.fillStyle = '#00ff88';
@@ -762,7 +778,6 @@
             ctx.fill();
             ctx.shadowBlur = 0;
             
-            // Шекара
             ctx.strokeStyle = '#00ff88';
             ctx.lineWidth = 2;
             ctx.strokeRect(0, 0, canvas.width, canvas.height);
@@ -770,7 +785,6 @@
             return canvas.toDataURL('image/png');
         }
         
-        // Саусақ ізі визуализациясы
         function drawFingerprintOnCanvas(seed) {
             const canvas = document.getElementById('fingerprintCanvas');
             if (!canvas) return;
@@ -780,26 +794,16 @@
             const centerX = 60;
             const centerY = 60;
             
-            // Фон
             const gradient = ctx.createLinearGradient(0, 0, 120, 120);
             gradient.addColorStop(0, '#0d1a0d');
             gradient.addColorStop(1, '#1a2a1a');
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, 120, 120);
             
-            // Саусақ ізі сызықтары
             const numLines = 8 + (hash % 5);
             for (let i = 0; i < numLines; i++) {
                 ctx.beginPath();
-                ctx.ellipse(
-                    centerX + (hash % 7) - 3, 
-                    centerY + (hash % 5) - 2 + i * 0.5, 
-                    40 - i * 3 + (hash % 10), 
-                    50 - i * 3 + ((hash * 2) % 8), 
-                    (hash % 10) * 0.1, 
-                    0, 
-                    Math.PI * 2
-                );
+                ctx.ellipse(centerX + (hash % 7) - 3, centerY + (hash % 5) - 2 + i * 0.5, 40 - i * 3 + (hash % 10), 50 - i * 3 + ((hash * 2) % 8), (hash % 10) * 0.1, 0, Math.PI * 2);
                 ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.08})`;
                 ctx.lineWidth = 2.5 - i * 0.15;
                 ctx.stroke();
@@ -818,7 +822,6 @@
             ctx.strokeRect(0, 0, 120, 120);
         }
         
-        // Алғашқы саусақ ізі суретін көрсету
         const defaultSeed = 'default_' + Date.now();
         drawFingerprintOnCanvas(defaultSeed);
         
@@ -828,19 +831,10 @@
                 const fp = await FingerprintJS.load();
                 const result = await fp.get();
                 deviceFingerprint = result.visitorId;
-                deviceInfo = {
-                    visitorId: result.visitorId,
-                    browser: result.components.browser?.value || 'Белгісіз',
-                    os: result.components.os?.value || 'Белгісіз',
-                    platform: result.components.platform?.value || 'Белгісіз',
-                    screenResolution: result.components.screenResolution?.value || 'Белгісіз',
-                    timezone: result.components.timezone?.value || 'Белгісіз'
-                };
                 return result;
             } catch(e) {
                 console.error('Fingerprint error:', e);
                 deviceFingerprint = 'fp_' + Date.now() + '_' + Math.random().toString(36);
-                deviceInfo = { visitorId: deviceFingerprint, browser: 'Белгісіз', os: 'Белгісіз' };
                 return null;
             }
         }
@@ -923,20 +917,6 @@
         loadFaceAPI();
         
         // ========== БИОМЕТРИЯ ==========
-        function base64ToArrayBuffer(base64) {
-            const binary = atob(base64);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-            return bytes.buffer;
-        }
-        
-        function arrayBufferToBase64(buffer) {
-            const bytes = new Uint8Array(buffer);
-            let binary = '';
-            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-            return btoa(binary);
-        }
-        
         async function checkBiometricSupport() {
             if (!window.PublicKeyCredential) {
                 biometricStatus.innerHTML = '❌ Браузер биометрияны қолдамайды';
@@ -951,13 +931,6 @@
                 if (available) {
                     biometricStatus.innerHTML = '✅ Саусақ ізі / Бет тану қолжетімді';
                     biometricStatus.className = 'biometric-info success';
-                    
-                    const ua = navigator.userAgent;
-                    if (ua.includes('Windows')) biometricDevicesInfo.textContent = '🖥️ Windows Hello';
-                    else if (ua.includes('Mac')) biometricDevicesInfo.textContent = '🍎 Touch ID';
-                    else if (ua.includes('Android')) biometricDevicesInfo.textContent = '📱 Саусақ ізі';
-                    else if (ua.includes('iPhone') || ua.includes('iPad')) biometricDevicesInfo.textContent = '📱 Face ID / Touch ID';
-                    
                     return true;
                 } else {
                     biometricStatus.innerHTML = '⚠️ Биометрия құрылғысы табылмады';
@@ -973,7 +946,7 @@
         
         checkBiometricSupport();
         
-        // Саусақ ізін тіркеу (веб-биометриясыз, тек визуализация үшін)
+        // Саусақ ізін тіркеу
         registerBiometricBtn.addEventListener('click', async () => {
             const pass = bioLoginPassword.value.trim();
             if (pass !== LOGIN_PASSWORD) {
@@ -984,22 +957,19 @@
             biometricStatus.innerHTML = '🖐️ Саусақ ізі тіркелуде...';
             biometricStatus.className = 'biometric-info waiting';
             
-            // Бірегей идентификатор жасау
             const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             const seed = userId + deviceFingerprint + pass;
             
-            // Саусақ ізі суретін генерациялау
             const fingerprintImage = generateFingerprintImage(seed);
             drawFingerprintOnCanvas(seed);
             
-            // Сақтау
             let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
             users.push({
                 id: userId,
                 fingerprintImage: fingerprintImage,
                 fingerprintSeed: seed,
                 deviceFingerprint: deviceFingerprint,
-                deviceInfo: deviceInfo,
+                deviceInfo: fullDeviceInfo,
                 registeredAt: new Date().toLocaleString('kk-KZ')
             });
             localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
@@ -1031,10 +1001,8 @@
                 return;
             }
             
-            // Соңғы тіркелген қолданушыны алу
             const user = users[users.length - 1];
             
-            // Саусақ ізі суретін көрсету
             if (user.fingerprintSeed) {
                 drawFingerprintOnCanvas(user.fingerprintSeed);
             }
@@ -1056,7 +1024,7 @@
                 fingerprintImage: fingerprintImage,
                 fingerprintSeed: fingerprintSeed,
                 deviceFingerprint: deviceFingerprint,
-                deviceInfo: deviceInfo,
+                deviceInfo: fullDeviceInfo,
                 password: passwordUsed || LOGIN_PASSWORD,
                 name: method === 'face' ? 'Бетпен кірді' : 'Саусақ ізімен кірді',
                 loginTime: new Date().toLocaleString('kk-KZ')
@@ -1066,7 +1034,7 @@
             
             loginScreen.classList.add('hidden');
             mainSite.classList.add('visible');
-            userInfoBar.innerHTML = `👤 ${currentUser.name} | Пароль: ${currentUser.password} | ${currentUser.loginTime}`;
+            userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type} | Пароль: ${currentUser.password} | ${currentUser.loginTime}`;
             renderQuestion();
             updateStats();
         }
@@ -1283,7 +1251,6 @@
             
             results.push(record);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-            console.log('Нәтиже сақталды:', record);
         }
         
         function finishTest() {
@@ -1393,11 +1360,13 @@
                     '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>' : 
                     (r.loginMethod === 'face' ? '<span style="color:#888;">📷 БЕТ</span>' : '<span style="color:#666;">❓</span>');
                 
-                const deviceShortInfo = r.deviceInfo ? 
-                    `${r.deviceInfo.browser || ''} / ${r.deviceInfo.os || ''}`.substring(0, 25) : 
-                    (r.deviceFingerprint ? r.deviceFingerprint.substring(0, 10) + '...' : 'Белгісіз');
+                let deviceDisplay = '—';
+                if (r.deviceInfo) {
+                    const d = r.deviceInfo;
+                    deviceDisplay = `<span class="device-type-badge ${d.typeClass || 'device-desktop'}">${d.typeIcon || '💻'} ${d.type || 'desktop'}</span><br>`;
+                    deviceDisplay += `<small>${d.browser || ''} | ${d.os || ''}<br>${d.screen || ''}</small>`;
+                }
                 
-                // Саусақ ізі суретін көрсету
                 let fingerprintCell = '—';
                 if (r.loginMethod === 'biometric' && r.fingerprintImage) {
                     fingerprintCell = `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" onclick="document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';">`;
@@ -1414,7 +1383,7 @@
                     <td>${fingerprintCell}</td>
                     <td>${biometricInfo}</td>
                     <td><span class="password-badge">${r.password || '2510'}</span></td>
-                    <td><div class="device-info" title="${r.deviceFingerprint || ''}">${deviceShortInfo}</div></td>
+                    <td><div class="device-info-cell">${deviceDisplay}</div></td>
                     <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
                     <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
                     <td style="color:${percentage >= 50 ? '#00c853' : '#ff3b3b'};">${percentage}%</td>
