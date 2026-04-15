@@ -218,17 +218,51 @@
             background: #111;
             padding: 30px;
             border: 1px solid #cc0000;
+            border-radius: 20px;
         }
-        .votes-table { width: 100%; border-collapse: collapse; color: white; }
-        .votes-table th { background: #1a1a1a; padding: 10px; color: #cc0000; }
-        .votes-table td { padding: 10px; border-bottom: 1px solid #222; }
-        .delete-btn { background: #cc0000; color: white; border: none; padding: 5px 12px; cursor: pointer; }
+        .votes-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            color: white; 
+        }
+        .votes-table th { 
+            background: #1a1a1a; 
+            padding: 12px; 
+            color: #cc0000; 
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .votes-table td { 
+            padding: 12px; 
+            border-bottom: 1px solid #222; 
+        }
+        .delete-btn { 
+            background: #cc0000; 
+            color: white; 
+            border: none; 
+            padding: 6px 14px; 
+            cursor: pointer; 
+            border-radius: 6px;
+        }
+        .delete-btn:hover { background: #990000; }
         .hidden { display: none !important; }
         .info { background: #1a1a2a; color: #00aaff; }
         .success { background: #1a3a1a; color: #00ff00; }
         .error { background: #3a1a1a; color: #ff0000; }
         .waiting { background: #1a1a3a; color: #ffaa00; }
-        .face-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+        .face-thumb { 
+            width: 50px; 
+            height: 50px; 
+            object-fit: cover; 
+            border-radius: 8px; 
+            border: 1px solid #cc0000;
+        }
+        .modal-image-preview {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            border: 2px solid #cc0000;
+        }
     </style>
 </head>
 <body>
@@ -295,19 +329,38 @@
             <span style="font-size:30px; cursor:pointer;" id="closeAdminBtn">&times;</span>
         </div>
         <div id="adminPasswordScreen">
-            <input type="password" id="adminPass" placeholder="Құпия сөз" style="padding:12px; background:#000; color:#fff; border:1px solid #444;">
-            <button id="adminLoginBtn" style="background:#cc0000; padding:12px 24px;">КІРУ</button>
-            <div id="adminError" style="color:red;"></div>
+            <input type="password" id="adminPass" placeholder="Құпия сөз" style="padding:12px; background:#000; color:#fff; border:1px solid #444; width:200px;">
+            <button id="adminLoginBtn" style="background:#cc0000; padding:12px 24px; margin-left:10px;">КІРУ</button>
+            <div id="adminError" style="color:red; margin-top:10px;"></div>
         </div>
         <div id="adminPanelContent" class="hidden">
-            <div style="margin-bottom:20px;"><strong>БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong></div>
-            <button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px; margin-bottom:15px;">БАРЛЫҒЫН ЖОЮ</button>
-            <table class="votes-table">
-                <thead><tr><th>#</th><th>БЕТ СУРЕТІ</th><th>ДҰРЫС</th><th>ҚАТЕ</th><th>УАҚЫТ</th><th>ӘРЕКЕТ</th></tr></thead>
-                <tbody id="adminTableBody"></tbody>
-            </table>
+            <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:1.2rem;">БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong>
+                <button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px 20px; border:none; cursor:pointer;">🗑️ БАРЛЫҒЫН ЖОЮ</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="votes-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>БЕТ СУРЕТІ</th>
+                            <th>ДҰРЫС</th>
+                            <th>ҚАТЕ</th>
+                            <th>БАРЛЫҒЫ</th>
+                            <th>УАҚЫТ</th>
+                            <th>ӘРЕКЕТ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
+</div>
+
+<!-- Суретті үлкейтіп көру модалы -->
+<div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:4000; justify-content:center; align-items:center;" onclick="this.style.display='none'">
+    <img id="modalImage" style="max-width:90%; max-height:90%; border:2px solid #cc0000; border-radius:10px;">
 </div>
 
 <script>
@@ -432,9 +485,9 @@
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
-        const STORAGE_KEY = "unsiz_test_results";
+        const STORAGE_KEY = "unsiz_test_results_v2";
         
-        // DOM
+        // DOM элементтері
         const loginScreen = document.getElementById('loginScreen');
         const mainSite = document.getElementById('mainSite');
         const loginVideo = document.getElementById('loginVideo');
@@ -468,22 +521,20 @@
                 await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
                 
                 faceApiLoaded = true;
-                loginFaceStatus.textContent = '✅ Модель жүктелді. Камераны қосыңыз';
+                loginFaceStatus.textContent = '✅ Дайын. Камераны қосыңыз';
                 loginFaceStatus.className = 'face-status-login success';
             } catch(e) {
                 console.error('Face API error:', e);
-                loginFaceStatus.textContent = '❌ Модель жүктелмеді. Интернетті тексеріңіз';
+                loginFaceStatus.textContent = '❌ Модель жүктелмеді';
                 loginFaceStatus.className = 'face-status-login error';
             }
         }
         
-        // Модельді бірден жүктеу
         loadFaceAPI();
         
         // Камераны қосу
         startLoginCam.addEventListener('click', async () => {
             try {
-                // Алдыңғы стримді тоқтату
                 if (loginStream) {
                     loginStream.getTracks().forEach(t => t.stop());
                     loginStream = null;
@@ -492,18 +543,12 @@
                 loginFaceStatus.textContent = '📷 Камера сұралуда...';
                 loginFaceStatus.className = 'face-status-login waiting';
                 
-                // Камераға рұқсат сұрау
                 loginStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'user',
-                        width: { ideal: 640 },
-                        height: { ideal: 480 }
-                    } 
+                    video: { facingMode: 'user', width: 640, height: 480 } 
                 });
                 
                 loginVideo.srcObject = loginStream;
                 
-                // Видео жүктелгенін күту
                 await new Promise(resolve => {
                     loginVideo.onloadedmetadata = () => {
                         loginVideo.play();
@@ -511,12 +556,12 @@
                     };
                 });
                 
-                loginFaceStatus.textContent = '📷 Камера дайын. Бетті тануға болады';
+                loginFaceStatus.textContent = '📷 Камера дайын';
                 loginFaceStatus.className = 'face-status-login success';
                 captureLoginFace.disabled = false;
+                startLoginCam.disabled = true;
                 
             } catch(e) {
-                console.error('Camera error:', e);
                 loginFaceStatus.textContent = '❌ Камераға рұқсат берілмеді';
                 loginFaceStatus.className = 'face-status-login error';
             }
@@ -525,47 +570,28 @@
         // Бетті тану
         captureLoginFace.addEventListener('click', async () => {
             if (!faceApiLoaded) {
-                loginFaceStatus.textContent = '⏳ Модель әлі жүктелуде...';
-                loginFaceStatus.className = 'face-status-login waiting';
+                loginFaceStatus.textContent = '⏳ Модель жүктелуде...';
                 return;
             }
             
-            if (!loginStream) {
-                loginFaceStatus.textContent = '❌ Алдымен камераны қосыңыз';
-                loginFaceStatus.className = 'face-status-login error';
-                return;
-            }
-            
-            loginFaceStatus.textContent = '🔍 Бет ізделуде... Камераға тіке қараңыз';
+            loginFaceStatus.textContent = '🔍 Бет ізделуде...';
             loginFaceStatus.className = 'face-status-login waiting';
             
             try {
-                // Бетті тану
                 const detections = await faceapi.detectAllFaces(
                     loginVideo, 
                     new faceapi.TinyFaceDetectorOptions()
                 ).withFaceLandmarks();
                 
-                if (detections.length === 0) {
-                    throw new Error('Бет табылмады');
-                }
-                
-                if (detections.length > 1) {
-                    throw new Error('Бірнеше бет табылды. Кадрда бір адам болуы керек');
-                }
+                if (detections.length === 0) throw new Error('Бет табылмады');
+                if (detections.length > 1) throw new Error('Бірнеше бет табылды');
                 
                 const detection = detections[0];
-                const score = detection.detection.score;
-                
-                if (score < 0.7) {
-                    throw new Error('Бет анық көрінбейді. Жарықты жақсартыңыз');
-                }
+                if (detection.detection.score < 0.7) throw new Error('Бет анық емес');
                 
                 // Суретке түсіру
                 const canvas = document.createElement('canvas');
                 const box = detection.detection.box;
-                
-                // Бет аймағын үлкейтіп алу
                 const padding = 40;
                 const x = Math.max(0, box.x - padding);
                 const y = Math.max(0, box.y - padding);
@@ -580,48 +606,34 @@
                 loginFaceCaptured = canvas.toDataURL('image/jpeg', 0.9);
                 loginFaceDetected = true;
                 
-                // Превью көрсету
                 facePreview.src = loginFaceCaptured;
                 facePreviewContainer.style.display = 'block';
                 
-                loginFaceStatus.textContent = '✅ Бет сәтті танылды!';
+                loginFaceStatus.textContent = '✅ Бет танылды!';
                 loginFaceStatus.className = 'face-status-login success';
                 finalLoginBtn.disabled = false;
                 
-                // Камераны тоқтату
                 if (loginStream) {
                     loginStream.getTracks().forEach(t => t.stop());
                     loginStream = null;
                 }
                 loginVideo.srcObject = null;
                 captureLoginFace.disabled = true;
-                startLoginCam.disabled = true;
                 
             } catch(e) {
-                console.error('Detection error:', e);
                 loginFaceStatus.textContent = '❌ ' + e.message;
                 loginFaceStatus.className = 'face-status-login error';
             }
         });
         
-        // Кіру батырмасы
+        // Кіру
         finalLoginBtn.addEventListener('click', () => {
             const pass = loginPassword.value.trim();
             
-            if (!loginFaceDetected) { 
-                alert('Алдымен бетіңізді танытыңыз'); 
-                return; 
-            }
+            if (!loginFaceDetected) { alert('Алдымен бетіңізді танытыңыз'); return; }
+            if (pass !== LOGIN_PASSWORD) { alert('Қате пароль! 2510 енгізіңіз'); return; }
             
-            if (pass !== LOGIN_PASSWORD) { 
-                alert('Қате пароль! 2510 енгізіңіз'); 
-                return; 
-            }
-            
-            currentUser = { 
-                face: loginFaceCaptured, 
-                name: 'Қолданушы' 
-            };
+            currentUser = { face: loginFaceCaptured, name: 'Қолданушы' };
             
             loginScreen.classList.add('hidden');
             mainSite.classList.add('visible');
@@ -629,11 +641,8 @@
             updateStats();
         });
         
-        // Пароль енгізу кезінде Enter батырмасы
         loginPassword.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !finalLoginBtn.disabled) {
-                finalLoginBtn.click();
-            }
+            if (e.key === 'Enter' && !finalLoginBtn.disabled) finalLoginBtn.click();
         });
         
         // ========== ТЕСТ ==========
@@ -643,18 +652,13 @@
             const q = QUESTIONS[currentIndex];
             const selected = answers[currentIndex];
             
-            let html = `<div class="question-card">
-                <div class="question-text">${currentIndex+1}. ${q.q}</div>
-                <div class="options-grid">`;
+            let html = `<div class="question-card"><div class="question-text">${currentIndex+1}. ${q.q}</div><div class="options-grid">`;
             
             q.options.forEach((opt, idx) => {
                 let cls = 'option';
                 if (selected !== null) {
-                    if (idx === q.correct) {
-                        cls += ' correct';
-                    } else if (idx === selected) {
-                        cls += ' wrong';
-                    }
+                    if (idx === q.correct) cls += ' correct';
+                    else if (idx === selected) cls += ' wrong';
                     cls += ' disabled';
                 }
                 html += `<div class="${cls}" data-opt="${idx}">${opt}</div>`;
@@ -686,12 +690,12 @@
             renderQuestion();
             updateStats();
             
-            // Автоматты түрде келесі сұраққа өту (міндетті емес)
+            // Келесі сұраққа автоматты өту
             if (currentIndex < 99) {
                 setTimeout(() => {
                     currentIndex++;
                     renderQuestion();
-                }, 300);
+                }, 250);
             }
         }
         
@@ -708,17 +712,26 @@
             const correct = questionStatus.filter(v => v === true).length;
             const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
             
+            // Бұрынғы нәтижелерді алу
             const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            // Жаңа нәтиже қосу
             const record = {
                 id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
                 face: currentUser.face,
-                correct, 
-                wrong, 
+                correct: correct, 
+                wrong: wrong, 
                 total: 100,
                 date: new Date().toLocaleString('kk-KZ')
             };
+            
             results.push(record);
+            
+            // localStorage-ке сақтау
             localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+            
+            console.log('Нәтиже сақталды:', record);
+            console.log('Барлық нәтижелер:', results);
         }
         
         function finishTest() {
@@ -764,6 +777,8 @@
         
         // ========== АДМИН ==========
         const adminModal = document.getElementById('adminModal');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
         
         document.getElementById('showAdminBtn').addEventListener('click', () => {
             adminModal.style.display = 'block';
@@ -794,9 +809,7 @@
         });
         
         document.getElementById('adminPass').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('adminLoginBtn').click();
-            }
+            if (e.key === 'Enter') document.getElementById('adminLoginBtn').click();
         });
         
         function renderAdminTable() {
@@ -806,25 +819,31 @@
             const tbody = document.getElementById('adminTableBody');
             
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = results.reverse().map((r, i) => `
+            // Кері ретпен көрсету (жаңалары жоғарыда)
+            const reversed = [...results].reverse();
+            
+            tbody.innerHTML = reversed.map((r, i) => `
                 <tr>
                     <td>${i+1}</td>
-                    <td>
+                    <td style="cursor:pointer;" onclick="document.getElementById('modalImage').src='${r.face}'; document.getElementById('imageModal').style.display='flex';">
                         ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Бет">` : '📷 Сурет жоқ'}
                     </td>
-                    <td style="color:#00c853;">${r.correct}</td>
-                    <td style="color:#ff3b3b;">${r.wrong}</td>
+                    <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
+                    <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
+                    <td>${r.total || 100}</td>
                     <td>${r.date}</td>
                     <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td>
                 </tr>
             `).join('');
             
+            // Жою батырмаларына оқиға қосу
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     if (confirm('Бұл нәтижені жоюға сенімдісіз бе?')) {
                         const id = e.target.dataset.id;
                         let allResults = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -837,17 +856,27 @@
         }
         
         document.getElementById('clearAllResultsBtn').addEventListener('click', () => {
-            if (confirm('БАРЛЫҚ нәтижелерді жоюға сенімдісіз бе? Бұл әрекетті қайтару мүмкін емес!')) {
+            if (confirm('БАРЛЫҚ нәтижелерді жоюға сенімдісіз бе?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 renderAdminTable();
             }
         });
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && adminModal.style.display === 'block') {
-                adminModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
+            if (e.key === 'Escape') {
+                if (adminModal.style.display === 'block') {
+                    adminModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+                if (imageModal.style.display === 'flex') {
+                    imageModal.style.display = 'none';
+                }
             }
+        });
+        
+        // Сурет модалын жабу
+        imageModal.addEventListener('click', () => {
+            imageModal.style.display = 'none';
         });
         
     })();
