@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>UNSIZ · ТЕСТ 100 · ТҮР + ПАРОЛЬ</title>
-    <!-- Face API -->
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,7 +17,6 @@
         }
         .container { max-width: 1000px; margin: 0 auto; }
         
-        /* ===== КІРУ ЭКРАНЫ ===== */
         .login-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -40,25 +38,10 @@
             padding: 36px 28px;
             box-shadow: 0 20px 0 #05080c;
         }
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        .login-header h2 {
-            font-size: 2.8rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: white;
-            line-height: 1;
-        }
-        .login-header .red-block { color: #cc0000; }
-        .login-sub {
-            color: #8a9ab0;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 3px;
-            margin-top: 8px;
-        }
+        .login-header { text-align: center; margin-bottom: 32px; }
+        .login-header h2 { font-size: 2.8rem; font-weight: 900; text-transform: uppercase; color: white; }
+        .red-block { color: #cc0000; }
+        .login-sub { color: #8a9ab0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; margin-top: 8px; }
         .face-section { margin-bottom: 28px; }
         .video-container {
             position: relative;
@@ -70,19 +53,9 @@
             overflow: hidden;
             background: #000;
         }
-        #loginVideo {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
+        #loginVideo { width: 100%; height: auto; display: block; }
         #loginCanvas { display: none; }
-        .face-status-login {
-            text-align: center;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
+        .face-status-login { text-align: center; padding: 10px; margin: 10px 0; border-radius: 8px; font-size: 0.9rem; }
         .login-btn {
             width: 100%;
             background: transparent;
@@ -93,13 +66,10 @@
             margin-top: 8px;
             cursor: pointer;
             text-transform: uppercase;
-            transition: 0.2s;
         }
         .login-btn:hover { background: #cc0000; }
         .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .password-group {
-            margin-top: 20px;
-        }
+        .password-group { margin-top: 20px; }
         .password-group input {
             width: 100%;
             padding: 16px;
@@ -113,7 +83,6 @@
         .main-site { display: none; }
         .main-site.visible { display: block; }
         
-        /* ===== ТЕСТ СТИЛІ ===== */
         .test-header {
             border-left: 6px solid #cc0000;
             padding-left: 24px;
@@ -135,12 +104,7 @@
         .stat-item { display: flex; flex-direction: column; }
         .stat-label { text-transform: uppercase; font-size: 0.75rem; color: #8e9aaf; }
         .stat-value { font-size: 2.8rem; font-weight: 800; color: white; }
-        .badge {
-            background: #cc0000;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 700;
-        }
+        .badge { background: #cc0000; padding: 8px 20px; border-radius: 40px; font-weight: 700; }
         .question-card {
             background: #10161d;
             border: 1px solid #26303d;
@@ -155,11 +119,7 @@
             padding-bottom: 18px;
             border-bottom: 2px dashed #2e3b4b;
         }
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
+        .options-grid { display: flex; flex-direction: column; gap: 14px; }
         .option {
             background: #1a232e;
             border: 2px solid #2a3645;
@@ -167,7 +127,6 @@
             padding: 18px 20px;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: 0.1s;
             color: #ddd;
         }
         .option:hover { background: #222f3d; border-color: #cc0000; }
@@ -210,7 +169,6 @@
             cursor: pointer;
         }
         
-        /* АДМИН */
         .admin-link {
             position: fixed;
             bottom: 20px; right: 20px;
@@ -243,48 +201,44 @@
         .votes-table td { padding: 10px; border-bottom: 1px solid #222; }
         .delete-btn { background: #cc0000; color: white; border: none; padding: 5px 12px; cursor: pointer; }
         .hidden { display: none !important; }
-        
-        @media (max-width: 600px) {
-            .question-text { font-size: 1.2rem; }
-        }
+        .info { background: #1a1a2a; color: #00aaff; }
+        .success { background: #1a3a1a; color: #00ff00; }
+        .error { background: #3a1a1a; color: #ff0000; }
+        .waiting { background: #1a1a3a; color: #ffaa00; }
     </style>
 </head>
 <body>
 
-<!-- ===== КІРУ ЭКРАНЫ (ТҮР + ПАРОЛЬ 2510) ===== -->
+<!-- КІРУ ЭКРАНЫ -->
 <div class="login-screen" id="loginScreen">
     <div class="login-card">
         <div class="login-header">
             <h2><span class="red-block">ҮНСІЗДІК</span><br>ТЕСТ</h2>
             <div class="login-sub">ТҮР + 2510</div>
         </div>
-        
         <div class="face-section">
             <div class="video-container">
                 <video id="loginVideo" autoplay playsinline></video>
             </div>
             <canvas id="loginCanvas"></canvas>
-            <div id="loginFaceStatus" class="face-status-login info">📷 Камераны қосыңыз</div>
+            <div id="loginFaceStatus" class="face-status-login info">📷 Модель жүктелуде...</div>
             <button class="login-btn" id="startLoginCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
             <button class="login-btn" id="captureLoginFaceBtn" disabled>🔍 БЕТТІ ТАНУ</button>
         </div>
-        
         <div class="password-group">
             <input type="password" id="loginPassword" placeholder="ПАРОЛЬ (2510)" maxlength="10" autocomplete="off">
         </div>
-        
         <button class="login-btn" id="finalLoginBtn" disabled style="background:#cc0000;">КІРУ</button>
         <p style="color:#888; margin-top:16px; text-align:center; font-size:0.8rem;">Бет танытып, 2510 паролін енгізіңіз</p>
     </div>
 </div>
 
-<!-- ===== НЕГІЗГІ САЙТ (ТЕСТ) ===== -->
+<!-- НЕГІЗГІ САЙТ -->
 <div class="main-site" id="mainSite">
     <div class="container">
         <div class="test-header">
             <h1><span class="red-block">ҚАТЕМЕН ЖҰМЫС</span><br>100 СҰРАҚ</h1>
         </div>
-        
         <div class="progress-panel">
             <div class="stats">
                 <div class="stat-item"><span class="stat-label">ДҰРЫС</span><span class="stat-value" id="correctCount">0</span></div>
@@ -292,10 +246,8 @@
             </div>
             <div class="badge"><span id="currentQuestionDisplay">1</span>/100</div>
         </div>
-        
         <div id="testArea"></div>
         <div id="resultArea" class="hidden"></div>
-        
         <div class="nav-buttons" id="navButtons">
             <button class="nav-btn" id="prevBtn" disabled>◀ АЛДЫҢҒЫ</button>
             <button class="nav-btn" id="nextBtn">КЕЛЕСІ ▶</button>
@@ -332,7 +284,7 @@
     (function(){
         "use strict";
         
-        // ---------- 100 СҰРАҚ ----------
+        // ========== 100 СҰРАҚ ==========
         const QUESTIONS = [
             { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
             { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -344,23 +296,105 @@
             { q: "IDE дегеніміз:", options: ["Операциялық жүйе", "Бағдарламалау ортасы", "Вирус", "Драйвер", "Сервер"], correct: 1 },
             { q: "Infinite loop дегеніміз:", options: ["Бір рет орындалатын цикл", "Шексіз цикл", "Қате код", "Айнымалы", "Функция"], correct: 1 },
             { q: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 },
-            // ... (толық 100 сұрақ, дұрыс жауаптар индексі 0-4)
+            { q: "Логикалық қатені табудың ең тиімді жолы:", options: ["Компьютерді өшіру", "Кодты қайта көшіру", "Қадамдап орындау", "Интернетті тексеру", "Принтер қосу"], correct: 2 },
+            { q: "Синтаксистік қате табылғанда:", options: ["Бағдарлама дұрыс жұмыс істейді", "Компиляция тоқтайды", "Нәтиже баяу шығады", "Файл ашылады", "Желі үзіледі"], correct: 1 },
+            { q: "Айнымалы анықталмаса қандай қате шығады?", options: ["Type error", "Name error", "Index error", "Logic error", "Value error"], correct: 1 },
+            { q: "Массив шегінен тыс элементке жүгінсек:", options: ["Name error", "Type error", "Index error", "Syntax error", "Key error"], correct: 2 },
+            { q: "Type error қашан болады?", options: ["Қате атау жазылса", "Түрлер сәйкес келмесе", "Индекс дұрыс болмаса", "Цикл тоқтаса", "Файл жабылса"], correct: 1 },
+            { q: "Қатені қайталамау үшін не істеу керек?", options: ["Кодты тестілеу", "Өшіру", "Компьютер ауыстыру", "Интернет қосу", "Бағдарламаны жасыру"], correct: 0 },
+            { q: "assert командасы не үшін қолданылады?", options: ["Файл ашу", "Мәлімет басу", "Шартты тексеру", "Цикл жасау", "Айнымалы жою"], correct: 2 },
+            { q: "Лог-файл не үшін керек?", options: ["Музыка сақтау", "Қате жазбаларын сақтау", "Видео көру", "Сурет салу", "Интернетке қосылу"], correct: 1 },
+            { q: "Refactoring дегеніміз:", options: ["Кодты жою", "Код құрылымын жақсарту", "Қате қосу", "Файл форматтау", "Компьютер тазалау"], correct: 1 },
+            { q: "Unit тестілеу не тексереді?", options: ["Бүкіл жүйені", "Бір модульді", "Серверді", "Интернетті", "Дизайнды"], correct: 1 },
+            { q: "ValueError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Мәлімет түрі сәйкес келмесе", "Дұрыс емес мән енгізілсе", "Индекс артық болса", "Файл табылмаса"], correct: 2 },
+            { q: "FileNotFoundError қашан шығады?", options: ["Айнымалы жоқ болса", "Файл табылмаса", "Түр сәйкес келмесе", "Шарт қате болса", "Цикл тоқтаса"], correct: 1 },
+            { q: "except блогы қай кезде орындалады?", options: ["Қате болмаса", "Қате пайда болса", "Әрқашан", "Цикл ішінде ғана", "Функция алдында"], correct: 1 },
+            { q: "finally блогы:", options: ["Ешқашан орындалмайды", "Қате болса ғана орындалады", "Әрқашан орындалады", "Цикл жасайды", "Айнымалы құрады"], correct: 2 },
+            { q: "Логикалық қателерді табу үшін:", options: ["Кодты талдау керек", "Компьютер ауыстыру керек", "Файлды жою керек", "Интернетті өшіру керек", "Принтер қосу керек"], correct: 0 },
+            { q: "Breakpoint дегеніміз:", options: ["Қате түрі", "Бағдарламаны тоқтату нүктесі", "Айнымалы", "Цикл", "Файл"], correct: 1 },
+            { q: "Stack trace нені көрсетеді?", options: ["Дизайнды", "Қате шыққан жолды", "Интернет жылдамдығын", "Файл өлшемін", "Процессор түрін"], correct: 1 },
+            { q: "Тестілеудің мақсаты:", options: ["Қате табу", "Кодты жасыру", "Компьютерді өшіру", "Желі қосу", "Файлды көшіру"], correct: 0 },
+            { q: "Қай қате бағдарлама тоқтауына әкелуі мүмкін?", options: ["Логикалық", "Runtime error", "Комментарий қатесі", "Дизайн қатесі", "Стиль қатесі"], correct: 1 },
+            { q: "Debugging процесінің соңғы мақсаты:", options: ["Кодты жою", "Қатені түзету", "Файлды жабу", "Компьютерді өшіру", "Интернетке қосылу"], correct: 1 },
+            { q: "SyntaxError қай кезде шығады?", options: ["Орындау кезінде", "Компиляция кезінде", "Интернет жоқ кезде", "Файл жабылғанда", "Цикл тоқтағанда"], correct: 1 },
+            { q: "ZeroDivisionError қашан пайда болады?", options: ["0-ге бөлгенде", "Айнымалы жоқ болса", "Түр сәйкес келмесе", "Индекс артық болса", "Файл ашылмаса"], correct: 0 },
+            { q: "Кодтағы комментарий не үшін керек?", options: ["Қате шығару", "Түсіндіру жазу", "Файл жою", "Айнымалы құру", "Цикл жасау"], correct: 1 },
+            { q: "Қате табылғаннан кейін бірінші қадам:", options: ["Кодты өшіру", "Себебін анықтау", "Компьютерді өшіру", "Жаңа файл ашу", "Интернет қосу"], correct: 1 },
+            { q: "while циклі тоқтамаса, бұл:", options: ["Syntax error", "Логикалық қате", "Type error", "Name error", "Value error"], correct: 1 },
+            { q: "Функция дұрыс нәтиже бермесе:", options: ["Логикалық қате бар", "Компьютер бұзылған", "Интернет жоқ", "Файл ашылмаған", "Драйвер жоқ"], correct: 0 },
+            { q: "IDE-де қызыл сызық нені білдіреді?", options: ["Дұрыс код", "Синтаксистік қате", "Интернет бар", "Файл сақталған", "Принтер қосылған"], correct: 1 },
+            { q: "Exception дегеніміз:", options: ["Айнымалы", "Қате жағдай", "Цикл", "Функция", "Сервер"], correct: 1 },
+            { q: "Кодты кішкене бөліктермен тексеру:", options: ["Инсталляция", "Модульдік тексеру", "Форматтау", "Архивтеу", "Дизайн"], correct: 1 },
+            { q: "Қай әдіс қателерді азайтады?", options: ["Тестілеу", "Көшіру", "Өшіру", "Форматтамау", "Компьютер ауыстыру"], correct: 0 },
+            { q: "KeyError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Сөздікте жоқ кілт қолданылса", "0-ге бөлгенде", "Түр сәйкес келмесе", "Файл ашылмаса"], correct: 1 },
+            { q: "ImportError дегеніміз:", options: ["Айнымалы қатесі", "Модуль жүктелмесе", "Индекс қатесі", "Логикалық қате", "Шарт қатесі"], correct: 1 },
+            { q: "Кодты қайта қарау (code review) мақсаты:", options: ["Қате табу", "Файл жою", "Интернет қосу", "Компьютер өшіру", "Дизайн өзгерту"], correct: 0 },
+            { q: "Traceback нені көрсетеді?", options: ["Файл көлемін", "Қате шыққан жолдар тізбегін", "Интернет жылдамдығын", "Компьютер жадын", "Экран өлшемін"], correct: 1 },
+            { q: "Бағдарламаны тест мәліметтермен тексеру:", options: ["Архивтеу", "Тестілеу", "Орнату", "Форматтау", "Көшіру"], correct: 1 },
+            { q: "Қай жағдайда try блогы орындалады?", options: ["Қате болса ғана", "Әрқашан бірінші орындалады", "Ешқашан", "Цикл ішінде ғана", "Файл жабылғанда"], correct: 1 },
+            { q: "except бірнешеу болуы мүмкін бе?", options: ["Жоқ", "Иә", "Тек біреу", "Тек циклде", "Тек функцияда"], correct: 1 },
+            { q: "Debugging құралдарының бірі:", options: ["Paint", "Debugger", "Word", "Excel", "Browser"], correct: 1 },
+            { q: "Кодтағы артық жолдарды жою:", options: ["Refactoring", "Компиляция", "Инсталляция", "Архивтеу", "Көшіру"], correct: 0 },
+            { q: "Қате табылған соң не істеу керек?", options: ["Елемеу", "Түзету", "Жою", "Компьютер өшіру", "Файл жабу"], correct: 1 },
+            { q: "AttributeError қашан шығады?", options: ["0-ге бөлгенде", "Объектіде жоқ қасиет шақырылса", "Индекс артық болса", "Файл табылмаса", "Айнымалы жоқ болса"], correct: 1 },
+            { q: "Memory error себебі:", options: ["Жад жетіспеуі", "Интернет жоқ", "Синтаксис қате", "Индекс үлкен", "Файл жабық"], correct: 0 },
+            { q: "Қай әдіс қатені тез табуға көмектеседі?", options: ["Кодты форматтау", "Қадамдап орындау", "Файл көшіру", "Өшіру", "Архивтеу"], correct: 1 },
+            { q: "Тест кейс дегеніміз:", options: ["Қате түрі", "Тексеру сценарийі", "Айнымалы", "Файл", "Сервер"], correct: 1 },
+            { q: "Boundary value testing не тексереді?", options: ["Орта мәндерді", "Шектік мәндерді", "Тек мәтінді", "Дизайнды", "Интернетті"], correct: 1 },
+            { q: "Infinite recursion себебі:", options: ["Шарт жоқ", "Файл жоқ", "Интернет жоқ", "Индекс артық", "Түр сәйкес емес"], correct: 0 },
+            { q: "raise командасы:", options: ["Қате тастау", "Цикл құру", "Айнымалы жою", "Файл ашу", "Мәлімет шығару"], correct: 0 },
+            { q: "Қате туралы хабарлама не үшін маңызды?", options: ["Уақыт өткізу", "Себебін түсіну", "Дизайн көру", "Файл өлшеу", "Интернет тексеру"], correct: 1 },
+            { q: "Regression testing мақсаты:", options: ["Жаңа қате қосу", "Бұрынғы қателер қайталанбауын тексеру", "Файл жою", "Компьютер жаңарту", "Дизайн өзгерту"], correct: 1 },
+            { q: "Кодты жиі сақтау не үшін керек?", options: ["Қате көбейту", "Мәлімет жоғалтпау", "Интернет қосу", "Форматтау", "Архивтеу"], correct: 1 },
+            { q: "Логикалық қате табудың бір жолы:", options: ["Нәтижені күтілген мәнмен салыстыру", "Компьютер өшіру", "Файл жою", "Интернет қосу", "Архивтеу"], correct: 0 },
+            { q: "Exception handling мақсаты:", options: ["Бағдарламаны тоқтату", "Қатені басқару", "Файл ашу", "Айнымалы жою", "Дизайн жасау"], correct: 1 },
+            { q: "Кодтың оқылуын жақсарту:", options: ["Түсінікті атаулар қолдану", "Барлығын бір жолға жазу", "Комментарийсіз жазу", "Форматтамау", "Қысқарту"], correct: 0 },
+            { q: "Unit test қашан жазылады?", options: ["Кодтан кейін", "Кодпен бірге", "Ешқашан", "Орнатқанда", "Архивтегенде"], correct: 1 },
+            { q: "Bug дегеніміз:", options: ["Дұрыс код", "Қате", "Сервер", "Айнымалы", "Файл"], correct: 1 },
+            { q: "Debugging мақсаты:", options: ["Қате қосу", "Қате табу және түзету", "Файл жою", "Интернет өшіру", "Компьютер ауыстыру"], correct: 1 },
+            { q: "try блогында не жазылады?", options: ["Қауіпті код", "Комментарий", "Айнымалы аты", "Файл аты", "Дизайн"], correct: 0 },
+            { q: "finally көбіне не үшін қолданылады?", options: ["Файл жабу", "Қате шығару", "Цикл құру", "Айнымалы жою", "Дизайн жасау"], correct: 0 },
+            { q: "Кодты тексерудің автоматты түрі:", options: ["Manual testing", "Automated testing", "Архивтеу", "Форматтау", "Көшіру"], correct: 1 },
+            { q: "Stack overflow себебі:", options: ["Терең рекурсия", "Интернет жоқ", "Файл жоқ", "Индекс үлкен", "Түр сәйкес емес"], correct: 0 },
+            { q: "Input тексеру не үшін қажет?", options: ["Қате болдырмау", "Интернет қосу", "Файл жою", "Дизайн өзгерту", "Архивтеу"], correct: 0 },
+            { q: "Қате шыққан жолды табу үшін:", options: ["Traceback қарау", "Компьютер өшіру", "Файл жабу", "Интернет тексеру", "Архивтеу"], correct: 0 },
+            { q: "Version control не үшін керек?", options: ["Код нұсқаларын сақтау", "Файл жою", "Интернет қосу", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
+            { q: "Git дегеніміз:", options: ["Операциялық жүйе", "Нұсқа бақылау жүйесі", "Сервер", "Айнымалы", "Қате түрі"], correct: 1 },
+            { q: "Merge conflict қашан болады?", options: ["Бір файлды екі адам өзгерткенде", "Интернет жоқ кезде", "Файл жойылғанда", "Компьютер өшкенде", "Индекс үлкенде"], correct: 0 },
+            { q: "Test coverage нені көрсетеді?", options: ["Код көлемін", "Тестпен қамтылған пайызды", "Интернет жылдамдығын", "Файл өлшемін", "Дизайн сапасын"], correct: 1 },
+            { q: "Кодты форматтау құралы:", options: ["Linter", "Printer", "Scanner", "Monitor", "Router"], correct: 0 },
+            { q: "Static analysis қашан жасалады?", options: ["Орындаусыз", "Орындау кезінде", "Интернетпен", "Серверде", "Принтерде"], correct: 0 },
+            { q: "Dynamic testing қашан жасалады?", options: ["Орындау кезінде", "Код жазғанда", "Форматтағанда", "Архивтегенде", "Дизайнда"], correct: 0 },
+            { q: "Code smell дегеніміз:", options: ["Жақсы код", "Жаман құрылым белгісі", "Қате хабарлама", "Айнымалы", "Файл"], correct: 1 },
+            { q: "Refactoring кезінде:", options: ["Функционал өзгермейді", "Жаңа қате қосылады", "Код жойылады", "Интернет қосылады", "Компьютер өшеді"], correct: 0 },
+            { q: "Қай тест жүйені толық тексереді?", options: ["Unit test", "Integration test", "System test", "Static test", "Manual test"], correct: 2 },
+            { q: "Integration test не тексереді?", options: ["Бір функцияны", "Модульдердің байланысын", "Дизайнды", "Интернетті", "Файлды"], correct: 1 },
+            { q: "Manual testing дегеніміз:", options: ["Қолмен тексеру", "Автоматты тексеру", "Архивтеу", "Форматтау", "Орнату"], correct: 0 },
+            { q: "Automated testing артықшылығы:", options: ["Жылдамдық", "Қате көбейту", "Файл жою", "Интернет өшіру", "Дизайн бұзу"], correct: 0 },
+            { q: "Қате қайталанса:", options: ["Себебін терең талдау керек", "Елемеу керек", "Файл жою керек", "Компьютер ауыстыру керек", "Интернет қосу керек"], correct: 0 },
+            { q: "Clean code мақсаты:", options: ["Оқылуы жеңіл код", "Ұзын код", "Қате код", "Форматсыз код", "Архивтелген код"], correct: 0 },
+            { q: "DRY принципі:", options: ["Қайталауды азайту", "Қате қосу", "Файл жою", "Интернет қосу", "Дизайн өзгерту"], correct: 0 },
+            { q: "SOLID принциптері:", options: ["Дизайн қағидалары", "Қате түрлері", "Файл атауы", "Интернет түрі", "Айнымалы атауы"], correct: 0 },
+            { q: "Код сапасын арттыру үшін:", options: ["Тестілеу жүргізу", "Комментарийсіз жазу", "Барлығын қысқарту", "Форматтамау", "Тексермеу"], correct: 0 },
+            { q: "Exception түрін нақты көрсету:", options: ["Жақсы тәжірибе", "Қате", "Міндет емес", "Интернетке байланысты", "Файлға байланысты"], correct: 0 },
+            { q: "Логикалық қате көбіне:", options: ["Есептеуде болады", "Интернетте болады", "Файлда болады", "Серверде болады", "Принтерде болады"], correct: 0 },
+            { q: "Кодты қайта пайдалану:", options: ["Қайта қолдану", "Жою", "Архивтеу", "Форматтау", "Өшіру"], correct: 0 },
+            { q: "CI/CD мақсаты:", options: ["Автоматты құрастыру және тексеру", "Файл жою", "Интернет өшіру", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
+            { q: "Bug report құрамына кіреді:", options: ["Қате сипаттамасы", "Музыка", "Видео", "Сурет салу", "Архив"], correct: 0 },
+            { q: "Қате табылған орта:", options: ["Production", "Test", "Dev", "Барлығы мүмкін", "Ешқайсысы"], correct: 3 },
+            { q: "Code review кім жасайды?", options: ["Басқа бағдарламашы", "Клиент", "Дизайнер", "Қолданушы", "Принтер"], correct: 0 },
+            { q: "Тестілеу кезеңі:", options: ["Жобалау алдында", "Әзірлеу кезінде және кейін", "Орнатудан кейін ғана", "Архивтегенде", "Форматтағанда"], correct: 1 },
+            { q: "Қатені түзеткен соң:", options: ["Қайта тестілеу керек", "Елемеу керек", "Файл жою керек", "Интернет өшіру керек", "Компьютер ауыстыру керек"], correct: 0 },
+            { q: "Бағдарламалық код сапасының негізгі көрсеткіші:", options: ["Қатесіз жұмыс", "Ұзындығы", "Түсі", "Форматы", "Архив көлемі"], correct: 0 }
         ];
-        // Толық 100 сұрақты генерациялау (дәл осы жерде 100 сұрақ бар деп есептейміз, 
-        // толық тізімді берілген формат бойынша толтырамыз)
-        while(QUESTIONS.length < 100) {
-            QUESTIONS.push({ q: `Сұрақ ${QUESTIONS.length+1}`, options: ["A","B","C","D","E"], correct: 0 });
-        }
         
-        // ---------- САЙТ КҮЙІ ----------
-        let currentUser = null; // { name, faceImage }
+        // ========== КҮЙ ==========
+        let currentUser = null;
         let answers = new Array(100).fill(null);
-        let questionStatus = new Array(100).fill(false); // true дұрыс, false қате
-        
+        let questionStatus = new Array(100).fill(false);
         let currentIndex = 0;
         let testFinished = false;
         
-        // Face API логин
         let loginStream = null;
         let faceApiLoaded = false;
         let loginFaceCaptured = null;
@@ -368,6 +402,7 @@
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
+        const STORAGE_KEY = "unsiz_test_results";
         
         // DOM
         const loginScreen = document.getElementById('loginScreen');
@@ -379,9 +414,329 @@
         const captureLoginFace = document.getElementById('captureLoginFaceBtn');
         const loginPassword = document.getElementById('loginPassword');
         const finalLoginBtn = document.getElementById('finalLoginBtn');
-        
         const testArea = document.getElementById('testArea');
         const resultArea = document.getElementById('resultArea');
         const correctSpan = document.getElementById('correctCount');
         const wrongSpan = document.getElementById('wrongCount');
-        const
+        const currentQSpan = document.getElementById('currentQuestionDisplay');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+        const navButtons = document.getElementById('navButtons');
+        
+        // ========== FACE API ==========
+        async function loadFaceAPI() {
+            if (faceApiLoaded) return;
+            try {
+                loginFaceStatus.textContent = '⏳ Модель жүктелуде...';
+                loginFaceStatus.className = 'face-status-login waiting';
+                await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+                await faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+                faceApiLoaded = true;
+                loginFaceStatus.textContent = '✅ Дайын. Камераны қосыңыз';
+                loginFaceStatus.className = 'face-status-login success';
+            } catch(e) {
+                console.error(e);
+                loginFaceStatus.textContent = '❌ Модель жүктелмеді';
+                loginFaceStatus.className = 'face-status-login error';
+            }
+        }
+        loadFaceAPI();
+        
+        startLoginCam.addEventListener('click', async () => {
+            try {
+                if (loginStream) {
+                    loginStream.getTracks().forEach(t => t.stop());
+                }
+                loginFaceStatus.textContent = '📷 Камера сұралуда...';
+                loginFaceStatus.className = 'face-status-login waiting';
+                
+                loginStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: 640, height: 480 } 
+                });
+                
+                loginVideo.srcObject = loginStream;
+                loginVideo.play();
+                
+                loginFaceStatus.textContent = '📷 Камера дайын. Бетті тануға болады';
+                loginFaceStatus.className = 'face-status-login success';
+                captureLoginFace.disabled = false;
+            } catch(e) {
+                console.error(e);
+                loginFaceStatus.textContent = '❌ Камераға рұқсат берілмеді';
+                loginFaceStatus.className = 'face-status-login error';
+            }
+        });
+        
+        captureLoginFace.addEventListener('click', async () => {
+            if (!faceApiLoaded) {
+                loginFaceStatus.textContent = '⏳ Модель әлі жүктелуде...';
+                return;
+            }
+            if (!loginStream) {
+                loginFaceStatus.textContent = '❌ Алдымен камераны қосыңыз';
+                return;
+            }
+            
+            loginFaceStatus.textContent = '🔍 Бет ізделуде...';
+            loginFaceStatus.className = 'face-status-login waiting';
+            
+            try {
+                const detections = await faceapi.detectAllFaces(
+                    loginVideo, 
+                    new faceapi.TinyFaceDetectorOptions()
+                ).withFaceLandmarks();
+                
+                if (detections.length === 0) {
+                    throw new Error('Бет табылмады');
+                }
+                if (detections.length > 1) {
+                    throw new Error('Бірнеше бет табылды');
+                }
+                
+                const detection = detections[0];
+                const score = detection.detection.score;
+                if (score < 0.7) {
+                    throw new Error('Бет анық көрінбейді');
+                }
+                
+                const ctx = loginCanvas.getContext('2d');
+                loginCanvas.width = loginVideo.videoWidth;
+                loginCanvas.height = loginVideo.videoHeight;
+                ctx.drawImage(loginVideo, 0, 0);
+                
+                // Бет аймағын қиып алу
+                const box = detection.detection.box;
+                const faceCanvas = document.createElement('canvas');
+                faceCanvas.width = 200;
+                faceCanvas.height = 200;
+                const faceCtx = faceCanvas.getContext('2d');
+                faceCtx.drawImage(loginVideo, box.x, box.y, box.width, box.height, 0, 0, 200, 200);
+                
+                loginFaceCaptured = faceCanvas.toDataURL('image/jpeg', 0.85);
+                loginFaceDetected = true;
+                
+                loginFaceStatus.textContent = '✅ Бет танылды!';
+                loginFaceStatus.className = 'face-status-login success';
+                finalLoginBtn.disabled = false;
+                
+                if (loginStream) {
+                    loginStream.getTracks().forEach(t => t.stop());
+                    loginStream = null;
+                }
+                loginVideo.srcObject = null;
+                
+            } catch(e) {
+                console.error(e);
+                loginFaceStatus.textContent = '❌ ' + e.message;
+                loginFaceStatus.className = 'face-status-login error';
+            }
+        });
+        
+        finalLoginBtn.addEventListener('click', () => {
+            const pass = loginPassword.value.trim();
+            if (!loginFaceDetected) { 
+                alert('Алдымен бетіңізді танытыңыз'); 
+                return; 
+            }
+            if (pass !== LOGIN_PASSWORD) { 
+                alert('Қате пароль! 2510 енгізіңіз'); 
+                return; 
+            }
+            
+            currentUser = { 
+                face: loginFaceCaptured, 
+                name: 'Қолданушы' 
+            };
+            
+            loginScreen.classList.add('hidden');
+            mainSite.classList.add('visible');
+            renderQuestion();
+            updateStats();
+        });
+        
+        // ========== ТЕСТ ==========
+        function renderQuestion() {
+            if (testFinished) return;
+            const q = QUESTIONS[currentIndex];
+            const selected = answers[currentIndex];
+            
+            let html = `<div class="question-card">
+                <div class="question-text">${currentIndex+1}. ${q.q}</div>
+                <div class="options-grid">`;
+            
+            q.options.forEach((opt, idx) => {
+                let cls = 'option';
+                if (selected !== null) {
+                    if (idx === q.correct) cls += ' correct';
+                    else if (idx === selected) cls += ' wrong';
+                    cls += ' disabled';
+                }
+                html += `<div class="${cls}" data-opt="${idx}">${opt}</div>`;
+            });
+            
+            html += '</div></div>';
+            testArea.innerHTML = html;
+            
+            if (selected === null) {
+                document.querySelectorAll('.option').forEach(el => {
+                    el.addEventListener('click', () => selectAnswer(parseInt(el.dataset.opt)));
+                });
+            }
+            
+            currentQSpan.textContent = currentIndex + 1;
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === 99;
+        }
+        
+        function selectAnswer(optIdx) {
+            if (answers[currentIndex] !== null) return;
+            
+            const q = QUESTIONS[currentIndex];
+            const isCorrect = (optIdx === q.correct);
+            
+            answers[currentIndex] = optIdx;
+            questionStatus[currentIndex] = isCorrect;
+            
+            renderQuestion();
+            updateStats();
+        }
+        
+        function updateStats() {
+            const correct = questionStatus.filter(v => v === true).length;
+            const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
+            correctSpan.textContent = correct;
+            wrongSpan.textContent = wrong;
+        }
+        
+        function saveResult() {
+            if (!currentUser) return;
+            
+            const correct = questionStatus.filter(v => v === true).length;
+            const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
+            
+            const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const record = {
+                id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                name: currentUser.name,
+                face: currentUser.face,
+                correct, 
+                wrong, 
+                total: 100,
+                date: new Date().toLocaleString('kk-KZ')
+            };
+            results.push(record);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+        }
+        
+        function finishTest() {
+            testFinished = true;
+            saveResult();
+            
+            const correct = questionStatus.filter(v => v === true).length;
+            const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
+            
+            testArea.classList.add('hidden');
+            navButtons.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            
+            resultArea.innerHTML = `
+                <div class="result-screen">
+                    <h2>НӘТИЖЕ</h2>
+                    <div style="font-size:4rem; color:#cc0000;">${correct} / 100</div>
+                    <p style="font-size:1.3rem; margin:20px 0;">Дұрыс: ${correct} | Қате: ${wrong}</p>
+                    <button class="restart-btn" onclick="location.reload()">ҚАЙТАДАН БАСТАУ</button>
+                </div>
+            `;
+        }
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < 99) {
+                currentIndex++;
+                renderQuestion();
+            }
+        });
+        
+        finishBtn.addEventListener('click', finishTest);
+        
+        // ========== АДМИН ==========
+        const adminModal = document.getElementById('adminModal');
+        
+        document.getElementById('showAdminBtn').addEventListener('click', () => {
+            adminModal.style.display = 'block';
+        });
+        
+        document.getElementById('closeAdminBtn').addEventListener('click', () => {
+            adminModal.style.display = 'none';
+        });
+        
+        adminModal.addEventListener('click', (e) => {
+            if (e.target === adminModal) adminModal.style.display = 'none';
+        });
+        
+        document.getElementById('adminLoginBtn').addEventListener('click', () => {
+            if (document.getElementById('adminPass').value === ADMIN_PASS) {
+                document.getElementById('adminPasswordScreen').classList.add('hidden');
+                document.getElementById('adminPanelContent').classList.remove('hidden');
+                renderAdminTable();
+            } else {
+                document.getElementById('adminError').textContent = 'Қате құпия сөз';
+            }
+        });
+        
+        function renderAdminTable() {
+            const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            document.getElementById('adminTotalUsers').textContent = results.length;
+            
+            const tbody = document.getElementById('adminTableBody');
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px;">Нәтиже жоқ</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = results.reverse().map((r, i) => `
+                <tr>
+                    <td>${i+1}</td>
+                    <td>${r.name}</td>
+                    <td><img src="${r.face}" width="40" style="border-radius:8px;"></td>
+                    <td>${r.correct}</td>
+                    <td>${r.wrong}</td>
+                    <td>${r.date}</td>
+                    <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td>
+                </tr>
+            `).join('');
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const filtered = results.filter(r => r.id !== id);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+                    renderAdminTable();
+                });
+            });
+        }
+        
+        document.getElementById('clearAllResultsBtn').addEventListener('click', () => {
+            if (confirm('Барлық нәтижелерді жоюға сенімдісіз бе?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                renderAdminTable();
+            }
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && adminModal.style.display === 'block') {
+                adminModal.style.display = 'none';
+            }
+        });
+        
+    })();
+</script>
+</body>
+</html>
