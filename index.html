@@ -172,7 +172,6 @@
             text-transform: uppercase;
         }
         .nav-btn:hover { background: #cc0000; }
-        .finish-btn { background: #cc0000; }
         .result-screen {
             background: #10161d;
             border-radius: 28px;
@@ -315,7 +314,7 @@
         <div class="nav-buttons" id="navButtons">
             <button class="nav-btn" id="prevBtn" disabled>◀ АЛДЫҢҒЫ</button>
             <button class="nav-btn" id="nextBtn">КЕЛЕСІ ▶</button>
-            <button class="nav-btn finish-btn" id="finishBtn">ТЕСТТІ АЯҚТАУ</button>
+            <!-- ТЕСТТІ АЯҚТАУ БАТЫРМАСЫ ӨШІРІЛДІ -->
         </div>
     </div>
 </div>
@@ -506,7 +505,6 @@
         const currentQSpan = document.getElementById('currentQuestionDisplay');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        const finishBtn = document.getElementById('finishBtn');
         const navButtons = document.getElementById('navButtons');
         
         // ========== FACE API ==========
@@ -676,6 +674,21 @@
             currentQSpan.textContent = currentIndex + 1;
             prevBtn.disabled = currentIndex === 0;
             nextBtn.disabled = currentIndex === 99;
+            
+            // Барлық сұрақтарға жауап берілгенін тексеру
+            checkAllAnswered();
+        }
+        
+        function checkAllAnswered() {
+            const allAnswered = answers.every(a => a !== null);
+            if (allAnswered && !testFinished) {
+                // Барлық сұрақтарға жауап берілгенде автоматты түрде аяқтау
+                setTimeout(() => {
+                    if (!testFinished) {
+                        finishTest();
+                    }
+                }, 500);
+            }
         }
         
         function selectAnswer(optIdx) {
@@ -695,6 +708,11 @@
                 setTimeout(() => {
                     currentIndex++;
                     renderQuestion();
+                }, 250);
+            } else {
+                // Соңғы сұраққа жауап берілгенде тексеру
+                setTimeout(() => {
+                    checkAllAnswered();
                 }, 250);
             }
         }
@@ -735,6 +753,7 @@
         }
         
         function finishTest() {
+            if (testFinished) return;
             testFinished = true;
             saveResult();
             
@@ -772,8 +791,6 @@
                 renderQuestion();
             }
         });
-        
-        finishBtn.addEventListener('click', finishTest);
         
         // ========== АДМИН ==========
         const adminModal = document.getElementById('adminModal');
