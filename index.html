@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>UNSIZ · ТЕСТ 100 · БИОМЕТРИЯ</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- FingerprintJS для идентификации устройства -->
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -294,7 +296,7 @@
             overflow-y: auto;
         }
         .admin-content {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
             background: #111;
             padding: 30px;
@@ -311,12 +313,12 @@
             padding: 12px 8px; 
             color: #cc0000; 
             text-transform: uppercase;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         .votes-table td { 
             padding: 10px 8px; 
             border-bottom: 1px solid #222; 
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .delete-btn { 
             background: #cc0000; 
@@ -340,6 +342,17 @@
             border-radius: 8px; 
             border: 1px solid #cc0000;
         }
+        .fingerprint-thumb {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1a3a1a, #0d3d0d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 2px solid #00ff88;
+        }
         .biometric-badge {
             display: inline-block;
             background: #00ff88;
@@ -360,6 +373,12 @@
             font-weight: bold;
             font-family: monospace;
         }
+        .device-info {
+            font-size: 0.7rem;
+            color: #888;
+            max-width: 150px;
+            word-break: break-word;
+        }
         .shuffle-badge {
             background: #2a1a3a;
             padding: 5px 15px;
@@ -376,6 +395,33 @@
             margin-bottom: 15px;
             color: #00ff88;
             font-size: 0.9rem;
+        }
+        
+        /* Саусақ ізі анимациясы */
+        .fingerprint-scan {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+        }
+        .fingerprint-scan canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .fingerprint-scan-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,255,136,0.1) 70%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.5; }
         }
     </style>
 </head>
@@ -422,6 +468,12 @@
         <div class="auth-panel" id="fingerprintPanel">
             <div class="biometric-info" id="biometricStatus">
                 🖐️ Саусақ ізі арқылы кіру
+            </div>
+            
+            <!-- Саусақ ізі визуализациясы -->
+            <div class="fingerprint-scan" id="fingerprintVisual">
+                <canvas id="fingerprintCanvas" width="100" height="100"></canvas>
+                <div class="fingerprint-scan-inner"></div>
             </div>
             
             <button class="login-btn biometric-btn" id="registerBiometricBtn">
@@ -497,11 +549,12 @@
                         <tr>
                             <th>#</th>
                             <th>БЕТ СУРЕТІ</th>
+                            <th>САУСАҚ ІЗІ</th>
                             <th>КІРУ ӘДІСІ</th>
                             <th>ПАРОЛЬ</th>
+                            <th>ҚҰРЫЛҒЫ</th>
                             <th>ДҰРЫС</th>
                             <th>ҚАТЕ</th>
-                            <th>БАРЛЫҒЫ</th>
                             <th>%</th>
                             <th>УАҚЫТ</th>
                             <th>ӘРЕКЕТ</th>
@@ -664,11 +717,76 @@
         let faceApiLoaded = false;
         let loginFaceCaptured = null;
         let loginFaceDetected = false;
+        let fpInstance = null;
+        let deviceFingerprint = null;
+        let deviceInfo = null;
         
         const ADMIN_PASS = "7777";
         const LOGIN_PASSWORD = "2510";
-        const STORAGE_KEY = "unsiz_test_results_v6";
+        const STORAGE_KEY = "unsiz_test_results_v7";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users";
+        
+        // ========== FINGERPRINTJS ИНИЦИАЛИЗАЦИЯСЫ ==========
+        async function initFingerprint() {
+            try {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
+                deviceFingerprint = result.visitorId;
+                deviceInfo = {
+                    visitorId: result.visitorId,
+                    browser: result.components.browser?.value || 'Белгісіз',
+                    os: result.components.os?.value || 'Белгісіз',
+                    platform: result.components.platform?.value || 'Белгісіз',
+                    screenResolution: result.components.screenResolution?.value || 'Белгісіз',
+                    timezone: result.components.timezone?.value || 'Белгісіз'
+                };
+                return result;
+            } catch(e) {
+                console.error('Fingerprint error:', e);
+                deviceFingerprint = 'fp_' + Date.now() + '_' + Math.random().toString(36);
+                deviceInfo = { visitorId: deviceFingerprint, browser: 'Белгісіз', os: 'Белгісіз' };
+                return null;
+            }
+        }
+        
+        initFingerprint();
+        
+        // ========== САУСАҚ ІЗІ ВИЗУАЛИЗАЦИЯСЫ ==========
+        function drawFingerprintIcon() {
+            const canvas = document.getElementById('fingerprintCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const w = 100, h = 100;
+            
+            // Фон
+            ctx.fillStyle = '#0d1a0d';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Саусақ ізі сызықтары
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 2;
+            
+            // Эллипс тәрізді саусақ ізі
+            for (let i = 0; i < 8; i++) {
+                const scale = 1 - i * 0.1;
+                ctx.beginPath();
+                ctx.ellipse(w/2, h/2 + i*2, 30 * scale, 40 * scale, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.08})`;
+                ctx.stroke();
+            }
+            
+            // Ортасындағы шеңбер
+            ctx.beginPath();
+            ctx.arc(w/2, h/2 + 8, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#00ff88';
+            ctx.shadowColor = '#00ff88';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+        
+        drawFingerprintIcon();
         
         // DOM элементтері
         const loginScreen = document.getElementById('loginScreen');
@@ -778,8 +896,8 @@
                     biometricStatus.className = 'biometric-info success';
                     
                     const ua = navigator.userAgent;
-                    if (ua.includes('Windows')) biometricDevicesInfo.textContent = '🖥️ Windows Hello қолданыңыз';
-                    else if (ua.includes('Mac')) biometricDevicesInfo.textContent = '🍎 Touch ID қолданыңыз';
+                    if (ua.includes('Windows')) biometricDevicesInfo.textContent = '🖥️ Windows Hello';
+                    else if (ua.includes('Mac')) biometricDevicesInfo.textContent = '🍎 Touch ID';
                     else if (ua.includes('Android')) biometricDevicesInfo.textContent = '📱 Саусақ ізі / Бет тану';
                     else if (ua.includes('iPhone') || ua.includes('iPad')) biometricDevicesInfo.textContent = '📱 Face ID / Touch ID';
                     
@@ -797,6 +915,42 @@
         }
         
         checkBiometricSupport();
+        
+        // Саусақ ізінің суретін генерациялау (визуализация үшін)
+        function generateFingerprintImage(seed) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 60;
+            canvas.height = 60;
+            const ctx = canvas.getContext('2d');
+            
+            // Фон
+            ctx.fillStyle = '#0d1a0d';
+            ctx.fillRect(0, 0, 60, 60);
+            
+            // Seed негізінде бірегей саусақ ізі
+            const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 1.5;
+            
+            for (let i = 0; i < 5; i++) {
+                const offset = (hash % 10) + i * 2;
+                ctx.beginPath();
+                ctx.ellipse(30, 30 + i * 3, 20 - i * 3, 25 - i * 3, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 136, ${0.4 + i * 0.1})`;
+                ctx.stroke();
+            }
+            
+            ctx.beginPath();
+            ctx.arc(30, 35, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#00ff88';
+            ctx.shadowColor = '#00ff88';
+            ctx.shadowBlur = 5;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            return canvas.toDataURL('image/png');
+        }
         
         // Саусақ ізін тіркеу
         registerBiometricBtn.addEventListener('click', async () => {
@@ -836,11 +990,15 @@
                 });
                 
                 const credentialId = arrayBufferToBase64(credential.rawId);
+                const fingerprintImage = generateFingerprintImage(credentialId + deviceFingerprint);
                 
                 let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
                 users.push({
                     id: userId,
                     credentialId: credentialId,
+                    fingerprintImage: fingerprintImage,
+                    deviceFingerprint: deviceFingerprint,
+                    deviceInfo: deviceInfo,
                     registeredAt: new Date().toLocaleString('kk-KZ')
                 });
                 localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
@@ -848,7 +1006,7 @@
                 biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
                 biometricStatus.className = 'biometric-info success';
                 
-                proceedToLogin('biometric', null, userId, pass);
+                proceedToLogin('biometric', null, userId, pass, fingerprintImage);
                 
             } catch(e) {
                 console.error('Registration error:', e);
@@ -889,7 +1047,7 @@
                 const user = users.find(u => u.credentialId === credentialId);
                 
                 if (user) {
-                    proceedToLogin('biometric', null, user.id, pass);
+                    proceedToLogin('biometric', null, user.id, pass, user.fingerprintImage);
                 } else {
                     throw new Error('Саусақ ізі танылмады');
                 }
@@ -902,11 +1060,14 @@
         });
         
         // Кіру функциясы
-        function proceedToLogin(method, faceData, biometricId, passwordUsed) {
+        function proceedToLogin(method, faceData, biometricId, passwordUsed, fingerprintImage = null) {
             currentUser = {
                 face: faceData,
                 loginMethod: method,
                 biometricId: biometricId || null,
+                fingerprintImage: fingerprintImage,
+                deviceFingerprint: deviceFingerprint,
+                deviceInfo: deviceInfo,
                 password: passwordUsed || LOGIN_PASSWORD,
                 name: method === 'face' ? 'Бетпен кірді' : 'Саусақ ізімен кірді',
                 loginTime: new Date().toLocaleString('kk-KZ')
@@ -1120,6 +1281,9 @@
                 face: currentUser.face,
                 loginMethod: currentUser.loginMethod,
                 biometricId: currentUser.biometricId,
+                fingerprintImage: currentUser.fingerprintImage,
+                deviceFingerprint: currentUser.deviceFingerprint,
+                deviceInfo: currentUser.deviceInfo,
                 password: currentUser.password,
                 correct: correct, 
                 wrong: wrong, 
@@ -1227,7 +1391,7 @@
             const tbody = document.getElementById('adminTableBody');
             
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
                 return;
             }
             
@@ -1239,17 +1403,26 @@
                     '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>' : 
                     (r.loginMethod === 'face' ? '<span style="color:#888;">📷 БЕТ</span>' : '<span style="color:#666;">❓</span>');
                 
+                const deviceShortInfo = r.deviceInfo ? 
+                    `${r.deviceInfo.browser || ''} / ${r.deviceInfo.os || ''}`.substring(0, 30) : 
+                    (r.deviceFingerprint ? r.deviceFingerprint.substring(0, 12) + '...' : 'Белгісіз');
+                
                 return `
                 <tr>
                     <td>${i+1}</td>
                     <td style="cursor:pointer;" onclick="${r.face ? `document.getElementById('modalImage').src='${r.face}'; document.getElementById('imageModal').style.display='flex';` : ''}">
-                        ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Бет">` : '📷 Сурет жоқ'}
+                        ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Бет">` : '📷 Жоқ'}
+                    </td>
+                    <td style="cursor:pointer;" onclick="${r.fingerprintImage ? `document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';` : ''}">
+                        ${r.fingerprintImage ? 
+                            `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" style="width:40px;height:40px;object-fit:cover;">` : 
+                            (r.loginMethod === 'biometric' ? '<div class="fingerprint-thumb">🖐️</div>' : '—')}
                     </td>
                     <td>${biometricInfo}</td>
                     <td><span class="password-badge">${r.password || '2510'}</span></td>
+                    <td><div class="device-info" title="${r.deviceFingerprint || ''}">${deviceShortInfo}</div></td>
                     <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
                     <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
-                    <td>${r.total || 100}</td>
                     <td style="color:${percentage >= 50 ? '#00c853' : '#ff3b3b'};">${percentage}%</td>
                     <td>${r.date}</td>
                     <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td>
