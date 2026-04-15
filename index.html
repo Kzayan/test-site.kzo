@@ -42,7 +42,6 @@
         .login-header { text-align: center; margin-bottom: 32px; }
         .login-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; color: white; }
         .red-block { color: #cc0000; }
-        .green-block { color: #00ff88; }
         .login-sub { color: #8a9ab0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; margin-top: 8px; }
         
         .auth-tabs {
@@ -300,7 +299,7 @@
             overflow-y: auto;
         }
         .admin-content {
-            max-width: 1500px;
+            max-width: 1600px;
             margin: 0 auto;
             background: #111;
             padding: 30px;
@@ -311,18 +310,20 @@
             width: 100%; 
             border-collapse: collapse; 
             color: white; 
+            font-size: 0.85rem;
         }
         .votes-table th { 
             background: #1a1a1a; 
             padding: 12px 8px; 
             color: #cc0000; 
             text-transform: uppercase;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
         }
         .votes-table td { 
             padding: 10px 8px; 
             border-bottom: 1px solid #222; 
-            font-size: 0.8rem;
+            vertical-align: middle;
         }
         .delete-btn { 
             background: #cc0000; 
@@ -348,12 +349,13 @@
             cursor: pointer;
         }
         .fingerprint-thumb {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
             border-radius: 10px;
             border: 2px solid #00ff88;
             cursor: pointer;
             background: #0d1a0d;
+            object-fit: cover;
         }
         .biometric-badge {
             display: inline-block;
@@ -363,6 +365,7 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: bold;
+            white-space: nowrap;
         }
         .face-badge {
             display: inline-block;
@@ -372,20 +375,15 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: bold;
-        }
-        .device-info-cell {
-            font-size: 0.7rem;
-            color: #aaa;
-            max-width: 140px;
-            line-height: 1.3;
+            white-space: nowrap;
         }
         .device-type-badge {
             display: inline-block;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 8px;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: bold;
-            margin-right: 3px;
+            margin-bottom: 3px;
         }
         .device-mobile { background: #2a1a3a; color: #aa88ff; }
         .device-tablet { background: #1a2a3a; color: #88aaff; }
@@ -408,6 +406,25 @@
             color: #00ff88;
             font-size: 0.9rem;
         }
+        .admin-password-input {
+            padding: 12px; 
+            background: #000; 
+            color: #fff; 
+            border: 1px solid #444; 
+            width: 200px;
+            border-radius: 8px;
+        }
+        .admin-login-btn {
+            background: #cc0000; 
+            color: white;
+            padding: 12px 24px; 
+            margin-left: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .admin-login-btn:hover { background: #990000; }
     </style>
 </head>
 <body>
@@ -435,7 +452,7 @@
                 <div class="video-container">
                     <video id="loginVideo" autoplay playsinline></video>
                 </div>
-                <canvas id="loginCanvas"></canvas>
+                <canvas id="loginCanvas" style="display:none;"></canvas>
                 
                 <div class="face-preview-container" id="facePreviewContainer">
                     <p style="color:#00ff00; margin-bottom:10px;">✅ Түр танылды!</p>
@@ -513,24 +530,26 @@
             <span style="font-size:30px; cursor:pointer;" id="closeAdminBtn">&times;</span>
         </div>
         <div id="adminPasswordScreen">
-            <input type="password" id="adminPass" placeholder="Құпия сөз" style="padding:12px; background:#000; color:#fff; border:1px solid #444; width:200px;">
-            <button id="adminLoginBtn" style="background:#cc0000; padding:12px 24px; margin-left:10px;">КІРУ</button>
+            <input type="password" id="adminPass" placeholder="Құпия сөз (7777)" class="admin-password-input">
+            <button id="adminLoginBtn" class="admin-login-btn">КІРУ</button>
             <div id="adminError" style="color:red; margin-top:10px;"></div>
         </div>
         <div id="adminPanelContent" class="hidden">
             <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <strong style="font-size:1.2rem;">БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong>
-                <button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px 20px; border:none; cursor:pointer;">🗑️ БАРЛЫҒЫН ЖОЮ</button>
+                <button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer;">🗑️ БАРЛЫҒЫН ЖОЮ</button>
             </div>
             <div style="overflow-x:auto;">
                 <table class="votes-table">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>ТҮР</th>
+                            <th>ТҮР СУРЕТІ</th>
                             <th>САУСАҚ ІЗІ</th>
                             <th>КІРУ ӘДІСІ</th>
-                            <th>ҚҰРЫЛҒЫ</th>
+                            <th>ҚҰРЫЛҒЫ ТҮРІ</th>
+                            <th>БРАУЗЕР / ОС</th>
+                            <th>ЭКРАН</th>
                             <th>ДҰРЫС</th>
                             <th>ҚАТЕ</th>
                             <th>%</th>
@@ -633,7 +652,7 @@
             };
         }
         
-        // ========== 100 СҰРАҚ ==========
+        // ========== 100 СҰРАҚ (ТОЛЫҚ) ==========
         const ORIGINAL_QUESTIONS = [
             { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
             { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -737,6 +756,8 @@
             { q: "Бағдарламалық код сапасының негізгі көрсеткіші:", options: ["Қатесіз жұмыс", "Ұзындығы", "Түсі", "Форматы", "Архив көлемі"], correct: 0 }
         ];
         
+        const TOTAL_QUESTIONS = 100;
+        
         // ========== ВАРИАНТТАРДЫ АРАЛАСТЫРУ ==========
         function shuffleArray(arr) {
             for (let i = arr.length - 1; i > 0; i--) {
@@ -765,8 +786,8 @@
         
         // ========== КҮЙ ==========
         let currentUser = null;
-        let answers = new Array(100).fill(null);
-        let questionStatus = new Array(100).fill(false);
+        let answers = new Array(TOTAL_QUESTIONS).fill(null);
+        let questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
         let currentIndex = 0;
         let testFinished = false;
         
@@ -778,8 +799,8 @@
         let fullDeviceInfo = null;
         
         const ADMIN_PASS = "7777";
-        const STORAGE_KEY = "unsiz_test_results_final";
-        const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_final";
+        const STORAGE_KEY = "unsiz_test_results_100";
+        const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_100";
         
         // Құрылғы ақпаратын көрсету
         fullDeviceInfo = getDetailedDeviceInfo();
@@ -905,6 +926,7 @@
         const registerBiometricBtn = document.getElementById('registerBiometricBtn');
         const loginWithBiometricBtn = document.getElementById('loginWithBiometricBtn');
         const biometricDevicesInfo = document.getElementById('biometricDevicesInfo');
+        const shuffleIndicator = document.getElementById('shuffleIndicator');
         
         // ========== ТАБ АУЫСТЫРУ ==========
         document.querySelectorAll('.auth-tab').forEach(tab => {
@@ -1206,14 +1228,15 @@
             };
             
             QUESTIONS = getQuestionsWithShuffledOptions();
-            answers = new Array(100).fill(null);
-            questionStatus = new Array(100).fill(false);
+            answers = new Array(TOTAL_QUESTIONS).fill(null);
+            questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
             currentIndex = 0;
             testFinished = false;
             
             loginScreen.classList.add('hidden');
             mainSite.classList.add('visible');
             userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type}`;
+            shuffleIndicator.textContent = '🔄 ВАРИАНТТАР АРАЛАСТЫ';
             renderQuestion();
             updateStats();
         }
@@ -1248,7 +1271,7 @@
             
             currentQSpan.textContent = currentIndex + 1;
             prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex === 99;
+            nextBtn.disabled = currentIndex === TOTAL_QUESTIONS - 1;
             
             checkAllAnswered();
         }
@@ -1274,7 +1297,7 @@
             renderQuestion();
             updateStats();
             
-            if (currentIndex < 99) {
+            if (currentIndex < TOTAL_QUESTIONS - 1) {
                 setTimeout(() => {
                     currentIndex++;
                     renderQuestion();
@@ -1309,7 +1332,7 @@
                 deviceInfo: currentUser.deviceInfo,
                 correct: correct, 
                 wrong: wrong, 
-                total: 100,
+                total: TOTAL_QUESTIONS,
                 date: new Date().toLocaleString('kk-KZ')
             };
             
@@ -1324,7 +1347,7 @@
             
             const correct = questionStatus.filter(v => v === true).length;
             const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
-            const percentage = Math.round((correct / 100) * 100);
+            const percentage = Math.round((correct / TOTAL_QUESTIONS) * 100);
             
             testArea.classList.add('hidden');
             navButtons.classList.add('hidden');
@@ -1361,7 +1384,7 @@
         });
         
         nextBtn.addEventListener('click', () => {
-            if (currentIndex < 99) {
+            if (currentIndex < TOTAL_QUESTIONS - 1) {
                 currentIndex++;
                 renderQuestion();
             }
@@ -1396,7 +1419,7 @@
                 renderAdminTable();
                 document.getElementById('adminError').textContent = '';
             } else {
-                document.getElementById('adminError').textContent = 'Қате құпия сөз!';
+                document.getElementById('adminError').textContent = 'Қате құпия сөз! (7777)';
             }
         });
         
@@ -1412,7 +1435,7 @@
             const tbody = document.getElementById('adminTableBody');
             
             if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
                 return;
             }
             
@@ -1424,16 +1447,27 @@
                     '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>' : 
                     '<span class="face-badge">📷 ТҮР</span>';
                 
-                let deviceDisplay = '—';
+                let deviceType = '—';
+                let deviceTypeClass = 'device-desktop';
+                let deviceIcon = '💻';
+                let browser = '—';
+                let os = '—';
+                let screen = '—';
+                
                 if (r.deviceInfo) {
-                    const d = r.deviceInfo;
-                    deviceDisplay = `<span class="device-type-badge ${d.typeClass || 'device-desktop'}">${d.typeIcon || '💻'} ${d.type || 'desktop'}</span><br>`;
-                    deviceDisplay += `<small>${d.browser || ''} | ${d.os || ''}<br>${d.screen || ''}</small>`;
+                    deviceType = r.deviceInfo.type || 'desktop';
+                    deviceTypeClass = r.deviceInfo.typeClass || 'device-desktop';
+                    deviceIcon = r.deviceInfo.typeIcon || '💻';
+                    browser = r.deviceInfo.browser || 'Белгісіз';
+                    os = r.deviceInfo.os || 'Белгісіз';
+                    screen = r.deviceInfo.screen || '—';
                 }
                 
                 let fingerprintCell = '—';
                 if (r.loginMethod === 'biometric' && r.fingerprintImage) {
                     fingerprintCell = `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" onclick="document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';">`;
+                } else if (r.loginMethod === 'biometric') {
+                    fingerprintCell = '<div class="fingerprint-thumb" style="display:flex;align-items:center;justify-content:center;">🖐️</div>';
                 }
                 
                 return `
@@ -1444,11 +1478,13 @@
                     </td>
                     <td>${fingerprintCell}</td>
                     <td>${loginMethodBadge}</td>
-                    <td><div class="device-info-cell">${deviceDisplay}</div></td>
+                    <td><span class="device-type-badge ${deviceTypeClass}">${deviceIcon} ${deviceType}</span></td>
+                    <td><small>${browser}<br>${os}</small></td>
+                    <td><small>${screen}</small></td>
                     <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
                     <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
-                    <td style="color:${percentage >= 50 ? '#00c853' : '#ff3b3b'};">${percentage}%</td>
-                    <td>${r.date}</td>
+                    <td style="color:${percentage >= 50 ? '#00c853' : '#ff3b3b'}; font-weight:bold;">${percentage}%</td>
+                    <td><small>${r.date}</small></td>
                     <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td>
                 </tr>
             `}).join('');
