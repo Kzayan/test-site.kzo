@@ -530,7 +530,7 @@
             <span style="font-size:30px; cursor:pointer;" id="closeAdminBtn">&times;</span>
         </div>
         <div id="adminPasswordScreen">
-            <input type="password" id="adminPass" placeholder="Құпия сөз (7777)" class="admin-password-input">
+            <input type="password" id="adminPass" placeholder="Құпия сөз" class="admin-password-input">
             <button id="adminLoginBtn" class="admin-login-btn">КІРУ</button>
             <div id="adminError" style="color:red; margin-top:10px;"></div>
         </div>
@@ -1419,7 +1419,7 @@
                 renderAdminTable();
                 document.getElementById('adminError').textContent = '';
             } else {
-                document.getElementById('adminError').textContent = 'Қате құпия сөз! (7777)';
+                document.getElementById('adminError').textContent = 'Қате құпия сөз!';
             }
         });
         
