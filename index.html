@@ -495,7 +495,7 @@
 (function(){
     "use strict";
     
-    // Құрылғы ақпараты
+    // ========== ҚҰРЫЛҒЫ АҚПАРАТЫ ==========
     function isMobileDevice() { return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768; }
     function detectDeviceType() {
         const ua = navigator.userAgent, w = window.innerWidth;
@@ -511,15 +511,64 @@
     const fullDeviceInfo = { ...detectDeviceType(), browser: getBrowser(), os: getOS() };
     document.getElementById('loginDeviceInfo').innerHTML = `${fullDeviceInfo.icon} ${fullDeviceInfo.type} | ${fullDeviceInfo.browser} | ${fullDeviceInfo.os}`;
     
-    // Бірегей ID
+    // ========== БІРЕГЕЙ ID ГЕНЕРАЦИЯСЫ ==========
     async function generateUniqueId() {
         let fp = 'u_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
         try { const f = await FingerprintJS.load(); const r = await f.get(); fp = 'u_' + r.visitorId.substr(0,10) + '_' + Math.random().toString(36).substr(2,4); } catch(e) {}
         return fp;
     }
     
-    // Видеоқоңырау
-    let peer = null, localStream = null, currentCall = null;
+    // ========== ВИДЕОҚОҢЫРАУ (ТОЛЫҚ ТҮЗЕТІЛГЕН) ==========
+    let peer = null;
+    let localStream = null;
+    let currentCall = null;
+    let isCallActive = false;
+    
+    // Функция: камераны толығымен өшіру және бастапқы қалпына келтіру
+    function resetToInitialState() {
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const statusDiv = document.getElementById('callStatus');
+        const enableCamBtn = document.getElementById('enableCameraBtn');
+        const startCallBtn = document.getElementById('startCallBtn');
+        const endCallBtn = document.getElementById('endCallBtn');
+        const remoteIdInput = document.getElementById('remotePeerIdInput');
+        
+        // Қоңырауды жабу
+        if (currentCall) {
+            currentCall.close();
+            currentCall = null;
+        }
+        
+        // Қашықтағы видео ағынын тоқтату
+        if (remoteVideo.srcObject) {
+            remoteVideo.srcObject.getTracks().forEach(track => track.stop());
+            remoteVideo.srcObject = null;
+        }
+        
+        // Жергілікті камераны ТОЛЫҒЫМЕН өшіру
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            localStream = null;
+        }
+        localVideo.srcObject = null;
+        
+        // Барлық батырмаларды бастапқы қалпына келтіру
+        enableCamBtn.disabled = false;
+        enableCamBtn.textContent = '📷 КАМЕРА';
+        startCallBtn.disabled = true;
+        endCallBtn.disabled = true;
+        
+        // Күй айнымалыларын жаңарту
+        isCallActive = false;
+        
+        // Статусты жаңарту
+        statusDiv.innerHTML = '📷 Камераны қосыңыз';
+        statusDiv.className = 'call-status waiting';
+        
+        // Енгізу өрісін тазалау
+        remoteIdInput.value = '';
+    }
     
     async function initVideoCall() {
         const myIdSpan = document.getElementById('myPeerId');
@@ -539,7 +588,7 @@
             config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] }
         });
         
-        peer.on('open', () => { statusDiv.innerHTML = '✅ Серверге қосылды'; statusDiv.className = 'call-status success'; });
+        peer.on('open', () => { statusDiv.innerHTML = '✅ Серверге қосылды. Камераны қосыңыз.'; statusDiv.className = 'call-status success'; });
         peer.on('error', (e) => { statusDiv.innerHTML = '❌ Қате: ' + e.type; statusDiv.className = 'call-status error'; });
         
         peer.on('call', async (call) => {
@@ -551,10 +600,26 @@
             modal.innerHTML = `<h3>📞 ҚОҢЫРАУ</h3><p>${call.peer.substr(0,20)}...</p><div class="incoming-call-buttons"><button class="call-accept">✅ ҚАБЫЛДАУ</button><button class="call-reject">❌ БАС ТАРТУ</button></div>`;
             document.body.appendChild(modal);
             
-            modal.querySelector('.call-accept').onclick = () => { modal.remove(); if(!localStream) { alert('Камераны қосыңыз'); return; } call.answer(localStream); setupCall(call); };
-            modal.querySelector('.call-reject').onclick = () => { modal.remove(); call.close(); statusDiv.innerHTML = '📷 Бас тартылды'; };
+            modal.querySelector('.call-accept').onclick = () => { 
+                modal.remove(); 
+                if(!localStream) { 
+                    alert('Алдымен камераны қосыңыз!'); 
+                    call.close();
+                    return; 
+                } 
+                call.answer(localStream); 
+                setupCallHandlers(call); 
+            };
+            
+            modal.querySelector('.call-reject').onclick = () => { 
+                modal.remove(); 
+                call.close(); 
+                statusDiv.innerHTML = '📷 Қоңырау бас тартылды'; 
+                statusDiv.className = 'call-status waiting'; 
+            };
         });
         
+        // КАМЕРАНЫ ҚОСУ
         enableCamBtn.onclick = async () => {
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -562,37 +627,69 @@
                 enableCamBtn.disabled = true;
                 enableCamBtn.textContent = '✅ КАМЕРА ҚОСЫЛДЫ';
                 startCallBtn.disabled = false;
-                statusDiv.innerHTML = '📷 Дайын';
+                statusDiv.innerHTML = '📷 Камера дайын. Қоңырау шалуға болады.';
                 statusDiv.className = 'call-status success';
-            } catch(e) { statusDiv.innerHTML = '❌ Камера жоқ'; }
+            } catch(e) { 
+                statusDiv.innerHTML = '❌ Камераға рұқсат берілмеді'; 
+                statusDiv.className = 'call-status error';
+            }
         };
         
+        // ҚОҢЫРАУ ШАЛУ
         startCallBtn.onclick = () => {
-            const rid = remoteIdInput.value.trim();
-            if(!rid) { alert('ID енгізіңіз'); return; }
-            if(!localStream) { alert('Камераны қосыңыз'); return; }
+            const remoteId = remoteIdInput.value.trim();
+            if(!remoteId) { alert('ID енгізіңіз'); return; }
+            if(!localStream) { alert('Алдымен камераны қосыңыз'); return; }
+            
             statusDiv.innerHTML = '📞 Қоңырау шалуда...';
             statusDiv.className = 'call-status calling';
-            try { setupCall(peer.call(rid, localStream)); } catch(e) { statusDiv.innerHTML = '❌ Қате'; }
+            
+            try {
+                const call = peer.call(remoteId, localStream);
+                setupCallHandlers(call);
+            } catch(e) {
+                statusDiv.innerHTML = '❌ Қоңырау шалу қатесі';
+                statusDiv.className = 'call-status error';
+            }
         };
         
-        function setupCall(call) {
+        function setupCallHandlers(call) {
             currentCall = call;
+            isCallActive = true;
             endCallBtn.disabled = false;
             startCallBtn.disabled = true;
-            call.on('stream', s => { remoteVideo.srcObject = s; statusDiv.innerHTML = '🟢 БЕЛСЕНДІ'; statusDiv.className = 'call-status connected'; });
-            call.on('close', () => { remoteVideo.srcObject = null; statusDiv.innerHTML = '📷 Аяқталды'; statusDiv.className = 'call-status waiting'; endCallBtn.disabled = true; startCallBtn.disabled = !localStream; });
-            call.on('error', () => { statusDiv.innerHTML = '❌ Қате'; });
+            
+            call.on('stream', (remoteStream) => {
+                remoteVideo.srcObject = remoteStream;
+                statusDiv.innerHTML = '🟢 ҚОҢЫРАУ БЕЛСЕНДІ';
+                statusDiv.className = 'call-status connected';
+            });
+            
+            call.on('close', () => {
+                // Қарсы жақ қоңырауды аяқтағанда
+                resetToInitialState();
+            });
+            
+            call.on('error', () => {
+                statusDiv.innerHTML = '❌ Қоңырау қатесі';
+                statusDiv.className = 'call-status error';
+                resetToInitialState();
+            });
         }
         
-        endCallBtn.onclick = () => { if(currentCall) currentCall.close(); };
+        // АЯҚТАУ БАТЫРМАСЫ - ТОЛЫҒЫМЕН БАСТАПҚЫ ҚАЛПЫНА КЕЛТІРУ
+        endCallBtn.onclick = () => {
+            resetToInitialState();
+        };
     }
     
+    // ID көшіру
     window.copyMyId = function() {
         const id = document.getElementById('myPeerId').textContent;
         if(id && id !== 'Жүктелуде...') navigator.clipboard?.writeText(id).then(() => alert('✅ ID көшірілді!'));
     };
     
+    // Панельді жасыру/көрсету
     document.addEventListener('click', (e) => {
         if(e.target.id === 'toggleCallPanelBtn') {
             const c = document.getElementById('callPanelContent');
@@ -601,7 +698,7 @@
         }
     });
     
-    // 100 СҰРАҚ
+    // ========== 100 СҰРАҚ (ТОЛЫҚ ТІЗІМ) ==========
     const ORIGINAL_QUESTIONS = [
         { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
         { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -710,7 +807,7 @@
     function shuffleOptions(q){ const w=q.options.map((o,i)=>({o,i})); const s=shuffle([...w]); return { q:q.q, options:s.map(x=>x.o), correct:s.findIndex(x=>x.i===q.correct) }; }
     let QUESTIONS = ORIGINAL_QUESTIONS.map(q=>shuffleOptions(q));
     
-    // Тест күйі
+    // ========== ТЕСТ КҮЙІ ==========
     let currentUser = null, answers = new Array(TOTAL).fill(null), questionStatus = new Array(TOTAL).fill(false);
     let currentIndex = 0, testFinished = false;
     let loginStream = null, faceApiLoaded = false, loginFaceCaptured = null, loginFaceDetected = false;
@@ -718,7 +815,7 @@
     let adminTapEnabled = true, tapCount = 0, tapTimer = null;
     const ADMIN_PASS = '7777', STORAGE_KEY = 'unsiz_results', BIO_KEY = 'unsiz_bio';
     
-    // Саусақ ізі
+    // ========== САУСАҚ ІЗІ ==========
     function drawFingerprint(s){
         const c=document.getElementById('fingerprintCanvas'); if(!c)return;
         const x=c.getContext('2d'), h=s.split('').reduce((a,b)=>a+b.charCodeAt(0),0);
@@ -730,7 +827,7 @@
     }
     drawFingerprint('default');
     
-    // DOM
+    // ========== DOM ЭЛЕМЕНТТЕРІ ==========
     const loginScreen=document.getElementById('loginScreen'), mainSite=document.getElementById('mainSite');
     const loginVideo=document.getElementById('loginVideo'), loginFaceStatus=document.getElementById('loginFaceStatus');
     const startCam=document.getElementById('startLoginCameraBtn'), captureFace=document.getElementById('captureLoginFaceBtn'), faceLogin=document.getElementById('faceLoginBtn');
@@ -742,7 +839,7 @@
     const registerBio=document.getElementById('registerBiometricBtn'), loginBio=document.getElementById('loginWithBiometricBtn');
     const clapStatus=document.getElementById('clapStatus'), startClap=document.getElementById('startClapDetectionBtn'), clapLoginBtn=document.getElementById('clapLoginBtn'), clapCountSpan=document.getElementById('clapCount');
     
-    // Табтар
+    // ========== ТАБТАР ==========
     document.querySelectorAll('.auth-tab').forEach(t=>t.addEventListener('click',()=>{
         document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
         document.querySelectorAll('.auth-panel').forEach(x=>x.classList.remove('active'));
@@ -750,11 +847,11 @@
         document.getElementById(t.dataset.tab==='face'?'facePanel':t.dataset.tab==='fingerprint'?'fingerprintPanel':'clapPanel').classList.add('active');
     }));
     
-    // Face API
+    // ========== FACE API ==========
     async function loadFace(){ if(faceApiLoaded)return; try{ loginFaceStatus.textContent='⏳ Жүктелуде...'; await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models'); await faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models'); faceApiLoaded=true; loginFaceStatus.textContent='✅ Дайын'; }catch(e){ loginFaceStatus.textContent='❌ Қате'; } }
     loadFace();
     
-    // Биометрия
+    // ========== БИОМЕТРИЯ ==========
     function ab2b64(b){ return btoa(String.fromCharCode(...new Uint8Array(b))); }
     async function checkBio(){ if(!window.PublicKeyCredential)return false; try{ return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }catch{ return false; } }
     registerBio.addEventListener('click', async ()=>{
@@ -775,7 +872,7 @@
         }catch(e){ biometricStatus.textContent='❌ Қате'; }
     });
     
-    // Шапалақ
+    // ========== ШАПАЛАҚ ==========
     async function startClapDetect(){ try{ clapStatus.textContent='🎤 Рұқсат сұралуда...'; clapStream=await navigator.mediaDevices.getUserMedia({ audio:true }); clapAudioCtx=new (window.AudioContext||window.webkitAudioContext)(); const src=clapAudioCtx.createMediaStreamSource(clapStream), analyser=clapAudioCtx.createAnalyser(); analyser.fftSize=256; const data=new Uint8Array(analyser.frequencyBinCount); src.connect(analyser); clapStatus.textContent='👏 2 рет шапалақтаңыз'; clapActive=true; clapCount=0; clapCountSpan.textContent='0/2'; startClap.disabled=true; let last=0;
         (function detect(){ if(!clapActive)return; analyser.getByteFrequencyData(data); const avg=data.reduce((a,b)=>a+b,0)/data.length, now=Date.now(); if(avg/255>0.3&&now-last>500){ last=now; clapCount++; clapCountSpan.textContent=`${clapCount}/2`; if(clapCount>=2){ clapDetected=true; clapStatus.textContent='✅ Дайын!'; clapLoginBtn.disabled=false; stopClap(); } } requestAnimationFrame(detect); })();
     }catch(e){ clapStatus.textContent='❌ Рұқсат жоқ'; startClap.disabled=false; } }
@@ -783,12 +880,12 @@
     startClap.addEventListener('click',startClapDetect);
     clapLoginBtn.addEventListener('click',()=>{ if(!clapDetected){ alert('Алдымен шапалақтаңыз'); return; } const c=document.createElement('canvas'); c.width=c.height=150; const x=c.getContext('2d'); x.fillStyle='#2a1a0a'; x.fillRect(0,0,150,150); x.font='60px Arial'; x.textAlign='center'; x.fillStyle='#fff'; x.fillText('👏',75,75); proceedToLogin('clap',null,c.toDataURL()); });
     
-    // Камера (кіру)
+    // ========== КАМЕРА (КІРУ ҮШІН) ==========
     startCam.addEventListener('click', async ()=>{ try{ if(loginStream)loginStream.getTracks().forEach(t=>t.stop()); loginStream=await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user' } }); loginVideo.srcObject=loginStream; await new Promise(r=>{ loginVideo.onloadedmetadata=()=>{ loginVideo.play(); r(); }; }); loginFaceStatus.textContent='📷 Дайын'; captureFace.disabled=false; startCam.disabled=true; }catch(e){ loginFaceStatus.textContent='❌ Камера жоқ'; } });
     captureFace.addEventListener('click', async ()=>{ if(!faceApiLoaded)return; try{ const det=await faceapi.detectAllFaces(loginVideo, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks(); if(det.length!==1||det[0].detection.score<0.7)throw new Error('Түр табылмады'); const box=det[0].detection.box, c=document.createElement('canvas'); c.width=c.height=200; c.getContext('2d').drawImage(loginVideo, Math.max(0,box.x-40), Math.max(0,box.y-40), Math.min(box.width+80,loginVideo.videoWidth), Math.min(box.height+80,loginVideo.videoHeight),0,0,200,200); loginFaceCaptured=c.toDataURL('image/jpeg',0.9); loginFaceDetected=true; facePreview.src=loginFaceCaptured; facePreviewCont.style.display='block'; loginFaceStatus.textContent='✅ Танылды'; faceLogin.disabled=false; if(loginStream)loginStream.getTracks().forEach(t=>t.stop()); loginVideo.srcObject=null; }catch(e){ loginFaceStatus.textContent='❌ '+e.message; } });
     faceLogin.addEventListener('click', ()=>{ if(!loginFaceDetected)return; proceedToLogin('face',loginFaceCaptured,null); });
     
-    // Кіру
+    // ========== КІРУ ==========
     function proceedToLogin(method, face, img){
         adminTapEnabled=false; tapCount=0; if(tapTimer)clearTimeout(tapTimer);
         if(loginStream)loginStream.getTracks().forEach(t=>t.stop()); stopClap();
@@ -800,7 +897,7 @@
         initVideoCall();
     }
     
-    // Тест
+    // ========== ТЕСТ ==========
     function renderQuestion(){ if(testFinished)return; const q=QUESTIONS[currentIndex], sel=answers[currentIndex]; let h=`<div class="question-card"><div class="question-text">${currentIndex+1}. ${q.q}</div><div class="options-grid">`; q.options.forEach((o,i)=>{ let c='option'; if(sel!==null){ if(i===q.correct)c+=' correct'; else if(i===sel)c+=' wrong'; c+=' disabled'; } h+=`<div class="${c}" data-opt="${i}">${o}</div>`; }); testArea.innerHTML=h+'</div></div>'; if(sel===null)document.querySelectorAll('.option').forEach(el=>el.addEventListener('click',()=>selectAnswer(parseInt(el.dataset.opt)))); currentQSpan.textContent=currentIndex+1; prevBtn.disabled=currentIndex===0; nextBtn.disabled=currentIndex===TOTAL-1; if(answers.every(a=>a!==null)&&!testFinished)setTimeout(()=>{ if(!testFinished)finishTest(); },500); }
     function selectAnswer(idx){ if(answers[currentIndex]!==null)return; const q=QUESTIONS[currentIndex]; answers[currentIndex]=idx; questionStatus[currentIndex]=idx===q.correct; renderQuestion(); updateStats(); if(currentIndex<TOTAL-1)setTimeout(()=>{ currentIndex++; renderQuestion(); },250); else setTimeout(()=>{ if(answers.every(a=>a!==null))finishTest(); },250); }
     function updateStats(){ correctSpan.textContent=questionStatus.filter(v=>v).length; wrongSpan.textContent=answers.filter((a,i)=>a!==null&&!questionStatus[i]).length; }
@@ -808,12 +905,12 @@
     prevBtn.addEventListener('click', ()=>{ if(currentIndex>0){ currentIndex--; renderQuestion(); } });
     nextBtn.addEventListener('click', ()=>{ if(currentIndex<TOTAL-1){ currentIndex++; renderQuestion(); } });
     
-    // Админ
+    // ========== АДМИН ==========
     document.body.addEventListener('click', e=>{ if(!isMobileDevice()||!adminTapEnabled)return; if(e.target.tagName==='BUTTON'||e.target.tagName==='INPUT'||e.target.classList.contains('option'))return; tapCount++; if(tapTimer)clearTimeout(tapTimer); tapTimer=setTimeout(()=>tapCount=0,800); if(tapCount>=5){ tapCount=0; clearTimeout(tapTimer); openAdmin(); } });
     function openAdmin(){ document.getElementById('adminModal').style.display='block'; document.getElementById('adminPasswordScreen').classList.remove('hidden'); document.getElementById('adminPanelContent').classList.add('hidden'); }
     document.getElementById('closeAdminBtn').addEventListener('click', ()=>document.getElementById('adminModal').style.display='none');
     document.getElementById('adminLoginBtn').addEventListener('click', ()=>{ if(document.getElementById('adminPass').value===ADMIN_PASS){ document.getElementById('adminPasswordScreen').classList.add('hidden'); document.getElementById('adminPanelContent').classList.remove('hidden'); renderAdminTable(); } else document.getElementById('adminError').textContent='Қате құпия сөз'; });
-    function renderAdminTable(){ const results=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); document.getElementById('adminTotalUsers').textContent=results.length; const tbody=document.getElementById('adminTableBody'); if(!results.length){ tbody.innerHTML='<tr><td colspan="8">Нәтиже жоқ</td></tr>'; return; } tbody.innerHTML=results.reverse().map((r,i)=>{ const p=Math.round(r.correct/r.total*100); let badge=r.loginMethod==='biometric'?'🖐️ САУСАҚ':r.loginMethod==='clap'?'👏 ШАПАЛАҚ':'📷 ТҮР'; return `<tr><td>${i+1}</td><td>${badge}</td><td>${r.device?.icon||'📱'} ${r.device?.type||''}</td><td style="color:#0c0;">${r.correct}</td><td style="color:#f00;">${r.wrong}</td><td>${p}%</td><td>${r.date}</td><td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td></tr>`; }).join(''); document.querySelectorAll('.delete-btn').forEach(b=>b.addEventListener('click', e=>{ if(confirm('Жою?')){ let all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); all=all.filter(x=>x.id!==e.target.dataset.id); localStorage.setItem(STORAGE_KEY,JSON.stringify(all)); renderAdminTable(); } })); }
+    function renderAdminTable(){ const results=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); document.getElementById('adminTotalUsers').textContent=results.length; const tbody=document.getElementById('adminTableBody'); if(!results.length){ tbody.innerHTML='<tr><td colspan="8">Нәтиже жоқ</td></tr>'; return; } tbody.innerHTML=results.reverse().map((r,i)=>{ const p=Math.round(r.correct/r.total*100); let badge=r.loginMethod==='biometric'?'🖐️':r.loginMethod==='clap'?'👏':'📷'; return `<tr><td>${i+1}</td><td>${badge}</td><td>${r.device?.icon||'📱'} ${r.device?.type||''}</td><td style="color:#0c0;">${r.correct}</td><td style="color:#f00;">${r.wrong}</td><td>${p}%</td><td>${r.date}</td><td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td></tr>`; }).join(''); document.querySelectorAll('.delete-btn').forEach(b=>b.addEventListener('click', e=>{ if(confirm('Жою?')){ let all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); all=all.filter(x=>x.id!==e.target.dataset.id); localStorage.setItem(STORAGE_KEY,JSON.stringify(all)); renderAdminTable(); } })); }
     document.getElementById('clearAllResultsBtn').addEventListener('click', ()=>{ if(confirm('Барлығын жою?')){ localStorage.removeItem(STORAGE_KEY); renderAdminTable(); } });
     document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.getElementById('adminModal').style.display='none'; });
     
