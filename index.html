@@ -160,7 +160,7 @@
         .clap-hands {
             font-size: 4rem;
             user-select: none;
-            pointer-events: none; /* БАСУ ФУНКЦИЯСЫН ӨШІРУ */
+            pointer-events: none;
         }
         .clap-indicator {
             position: absolute;
@@ -328,17 +328,7 @@
         }
         .restart-btn:hover { background: #990000; }
         
-        .admin-link {
-            position: fixed;
-            bottom: 20px; right: 20px;
-            background: #1a1a1a;
-            color: #888;
-            padding: 10px 18px;
-            border: 1px solid #333;
-            cursor: pointer;
-            z-index: 1500;
-            text-transform: uppercase;
-        }
+        /* Админ панелі - жасырын */
         .admin-modal {
             display: none;
             position: fixed;
@@ -475,6 +465,16 @@
             font-weight: bold;
         }
         .admin-login-btn:hover { background: #990000; }
+        
+        /* Құпия пернелер тіркесімі туралы хабарлама */
+        .secret-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
     </style>
 </head>
 <body>
@@ -539,7 +539,7 @@
             <div id="biometricDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;"></div>
         </div>
 
-        <!-- Шапалақ панелі - ТЕК МИКРОФОН АРҚЫЛЫ -->
+        <!-- Шапалақ панелі -->
         <div class="auth-panel" id="clapPanel">
             <div class="clap-visual">
                 <div class="clap-indicator"></div>
@@ -600,8 +600,7 @@
     </div>
 </div>
 
-<!-- АДМИН -->
-<div class="admin-link" id="showAdminBtn">● АДМИН</div>
+<!-- АДМИН МОДАЛЫ (батырмасыз, тек пернелер тіркесімі арқылы ашылады) -->
 <div class="admin-modal" id="adminModal">
     <div class="admin-content">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -643,6 +642,7 @@
     </div>
 </div>
 
+<!-- Суретті үлкейтіп көру модалы -->
 <div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:4000; justify-content:center; align-items:center;" onclick="this.style.display='none'">
     <img id="modalImage" style="max-width:90%; max-height:90%; border:2px solid #cc0000; border-radius:10px;">
 </div>
@@ -888,6 +888,10 @@
         const ADMIN_PASS = "7777";
         const STORAGE_KEY = "unsiz_test_results_100";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_100";
+        
+        // Админ пернелер тіркесімі үшін
+        let adminKeySequence = [];
+        const ADMIN_KEY_COMBO = ['A', 'D', 'M', 'I', 'N'];
         
         // Құрылғы ақпаратын көрсету
         fullDeviceInfo = getDetailedDeviceInfo();
@@ -1210,7 +1214,7 @@
             }
         });
         
-        // ========== ШАПАЛАҚ ТАНУ (ТЕК МИКРОФОН АРҚЫЛЫ) ==========
+        // ========== ШАПАЛАҚ ТАНУ ==========
         async function startClapDetection() {
             try {
                 clapStatus.textContent = '🎤 Микрофонға рұқсат сұралуда...';
@@ -1610,15 +1614,59 @@
             }
         });
         
-        // ========== АДМИН ==========
+        // ========== АДМИН ПАНЕЛІ (ЖАСЫРЫН, ТЕК ПЕРНЕЛЕР ТІРКЕСІМІ АРҚЫЛЫ) ==========
         const adminModal = document.getElementById('adminModal');
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         
-        document.getElementById('showAdminBtn').addEventListener('click', () => {
+        // Пернелер тіркесімін тыңдау (ADMIN әріптерін ретімен басу)
+        document.addEventListener('keydown', (e) => {
+            // Егер модал ашық болса, әдеттегідей Escape жұмыс істейді
+            if (e.key === 'Escape') {
+                if (adminModal.style.display === 'block') {
+                    adminModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+                if (imageModal.style.display === 'flex') {
+                    imageModal.style.display = 'none';
+                }
+                adminKeySequence = []; // Тізбекті тазалау
+                return;
+            }
+            
+            // Бас әріптерді тексеру (A, D, M, I, N)
+            const key = e.key.toUpperCase();
+            if (['A', 'D', 'M', 'I', 'N'].includes(key)) {
+                adminKeySequence.push(key);
+                
+                // Тек соңғы 5 пернені сақтау
+                if (adminKeySequence.length > 5) {
+                    adminKeySequence.shift();
+                }
+                
+                // Тізбекті тексеру
+                if (adminKeySequence.length === 5) {
+                    const sequence = adminKeySequence.join('');
+                    if (sequence === 'ADMIN') {
+                        openAdminModal();
+                        adminKeySequence = []; // Тізбекті тазалау
+                    }
+                }
+            } else {
+                // Басқа перне басылса, тізбекті тазалау
+                adminKeySequence = [];
+            }
+        });
+        
+        function openAdminModal() {
             adminModal.style.display = 'block';
             document.body.style.overflow = 'hidden';
-        });
+            // Құпия сөз енгізу экранын көрсету
+            document.getElementById('adminPasswordScreen').classList.remove('hidden');
+            document.getElementById('adminPanelContent').classList.add('hidden');
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminError').textContent = '';
+        }
         
         document.getElementById('closeAdminBtn').addEventListener('click', () => {
             adminModal.style.display = 'none';
@@ -1736,18 +1784,6 @@
             if (confirm('БАРЛЫҚ нәтижелерді жоюға сенімдісіз бе?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 renderAdminTable();
-            }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (adminModal.style.display === 'block') {
-                    adminModal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-                if (imageModal.style.display === 'flex') {
-                    imageModal.style.display = 'none';
-                }
             }
         });
         
