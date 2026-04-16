@@ -159,12 +159,8 @@
         }
         .clap-hands {
             font-size: 4rem;
-            cursor: pointer;
-            transition: transform 0.1s;
             user-select: none;
-        }
-        .clap-hands:active {
-            transform: scale(0.9);
+            pointer-events: none; /* БАСУ ФУНКЦИЯСЫН ӨШІРУ */
         }
         .clap-indicator {
             position: absolute;
@@ -543,7 +539,7 @@
             <div id="biometricDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;"></div>
         </div>
 
-        <!-- Шапалақ панелі -->
+        <!-- Шапалақ панелі - ТЕК МИКРОФОН АРҚЫЛЫ -->
         <div class="auth-panel" id="clapPanel">
             <div class="clap-visual">
                 <div class="clap-indicator"></div>
@@ -567,7 +563,7 @@
             </div>
             
             <div id="clapDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;">
-                Микрофон арқылы шапалақ дыбысын тану
+                🎤 Микрофон арқылы 2 рет шапалақтаңыз
             </div>
         </div>
         
@@ -1214,7 +1210,7 @@
             }
         });
         
-        // ========== ШАПАЛАҚ ТАНУ ==========
+        // ========== ШАПАЛАҚ ТАНУ (ТЕК МИКРОФОН АРҚЫЛЫ) ==========
         async function startClapDetection() {
             try {
                 clapStatus.textContent = '🎤 Микрофонға рұқсат сұралуда...';
@@ -1232,7 +1228,7 @@
                 
                 source.connect(analyser);
                 
-                clapStatus.textContent = '👏 Микрофон дайын. Шапалақтаңыз!';
+                clapStatus.textContent = '👏 Микрофон дайын. 2 рет шапалақтаңыз!';
                 clapStatus.className = 'clap-info success';
                 clapDetectionActive = true;
                 clapCount = 0;
@@ -1333,25 +1329,6 @@
         
         startClapDetectionBtn.addEventListener('click', startClapDetection);
         clapLoginBtn.addEventListener('click', clapLogin);
-        
-        clapHands.addEventListener('click', () => {
-            if (clapDetectionActive) return;
-            
-            clapCount++;
-            clapCountSpan.textContent = `${clapCount}/${CLAP_REQUIRED}`;
-            
-            clapHands.style.transform = 'scale(0.8)';
-            setTimeout(() => clapHands.style.transform = 'scale(1)', 100);
-            
-            clapStatus.textContent = `👏 Қолмен шапалақ (${clapCount}/${CLAP_REQUIRED})`;
-            
-            if (clapCount >= CLAP_REQUIRED) {
-                clapDetected = true;
-                clapStatus.textContent = '✅ Шапалақпен кіруге дайын!';
-                clapStatus.className = 'clap-info success';
-                clapLoginBtn.disabled = false;
-            }
-        });
         
         // ========== КАМЕРА ==========
         startLoginCam.addEventListener('click', async () => {
