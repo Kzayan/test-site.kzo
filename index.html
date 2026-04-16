@@ -641,7 +641,19 @@
     (function(){
         "use strict";
         
-        // ========== ҚҰРЫЛҒЫНЫ АВТОМАТТЫ АНЫҚТАУ ==========
+        // ========== ҚҰРЫЛҒЫ ТҮРІН АНЫҚТАУ ==========
+        function isMobileDevice() {
+            const ua = navigator.userAgent;
+            const width = window.innerWidth;
+            
+            // Мобильді құрылғыларды анықтау
+            const isMobileUA = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua);
+            const isTabletUA = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
+            const isSmallScreen = width <= 768;
+            
+            return isMobileUA || isTabletUA || isSmallScreen;
+        }
+        
         function detectDeviceType() {
             const ua = navigator.userAgent;
             const width = window.innerWidth;
@@ -1031,9 +1043,12 @@
             });
         });
         
-        // ========== АДМИН ПАНЕЛІН АШУ (ТЕК КІРУ ЭКРАНЫНДА) ==========
+        // ========== АДМИН ПАНЕЛІН АШУ (ТЕК ТЕЛЕФОНДА ЖӘНЕ КІРУ ЭКРАНЫНДА) ==========
         function handleAdminTap(e) {
-            if (!adminTapEnabled) return; // Тестке кіргеннен кейін өшіріледі
+            // ТЕК ТЕЛЕФОНДА ЖҰМЫС ІСТЕЙДІ
+            if (!isMobileDevice()) return;
+            
+            if (!adminTapEnabled) return;
             
             // Егер админ модалы ашық болса, түртуді санамау
             if (document.getElementById('adminModal').style.display === 'block') return;
@@ -1044,15 +1059,12 @@
             
             tapCount++;
             
-            // Алдыңғы таймерді тазалау
             if (tapTimer) clearTimeout(tapTimer);
             
-            // Таймер қою - егер 800мс ішінде 5 рет түртілмесе, санағышты тазалау
             tapTimer = setTimeout(() => {
                 tapCount = 0;
             }, TAP_TIMEOUT);
             
-            // 5 рет түртілсе, админ панелін ашу
             if (tapCount >= TAP_REQUIRED) {
                 tapCount = 0;
                 clearTimeout(tapTimer);
@@ -1062,41 +1074,6 @@
         
         // Кіру экранында түртуді тыңдау
         document.body.addEventListener('click', handleAdminTap);
-        
-        // Компьютер үшін пернетақта тіркесімі (A-D-M-I-N) - тек кіру экранында
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (adminModal.style.display === 'block') {
-                    adminModal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-                if (imageModal.style.display === 'flex') {
-                    imageModal.style.display = 'none';
-                }
-                return;
-            }
-            
-            // Тек кіру экранында жұмыс істейді
-            if (!adminTapEnabled) return;
-            
-            // Пернелер тіркесімі: A, D, M, I, N
-            const key = e.key.toUpperCase();
-            if (['A', 'D', 'M', 'I', 'N'].includes(key)) {
-                if (!window.adminKeySequence) window.adminKeySequence = [];
-                window.adminKeySequence.push(key);
-                
-                if (window.adminKeySequence.length > 5) {
-                    window.adminKeySequence.shift();
-                }
-                
-                if (window.adminKeySequence.length === 5 && window.adminKeySequence.join('') === 'ADMIN') {
-                    openAdminModal();
-                    window.adminKeySequence = [];
-                }
-            } else {
-                window.adminKeySequence = [];
-            }
-        });
         
         function openAdminModal() {
             const adminModal = document.getElementById('adminModal');
@@ -1815,6 +1792,19 @@
         
         imageModal.addEventListener('click', () => {
             imageModal.style.display = 'none';
+        });
+        
+        // Escape пернесімен жабу
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (adminModal.style.display === 'block') {
+                    adminModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+                if (imageModal.style.display === 'flex') {
+                    imageModal.style.display = 'none';
+                }
+            }
         });
         
         window.addEventListener('beforeunload', () => {
