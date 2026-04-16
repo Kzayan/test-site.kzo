@@ -465,16 +465,6 @@
             font-weight: bold;
         }
         .admin-login-btn:hover { background: #990000; }
-        
-        /* Құпия пернелер тіркесімі туралы хабарлама */
-        .secret-hint {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
     </style>
 </head>
 <body>
@@ -600,7 +590,7 @@
     </div>
 </div>
 
-<!-- АДМИН МОДАЛЫ (батырмасыз, тек пернелер тіркесімі арқылы ашылады) -->
+<!-- АДМИН МОДАЛЫ -->
 <div class="admin-modal" id="adminModal">
     <div class="admin-content">
         <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -889,9 +879,11 @@
         const STORAGE_KEY = "unsiz_test_results_100";
         const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_100";
         
-        // Админ пернелер тіркесімі үшін
-        let adminKeySequence = [];
-        const ADMIN_KEY_COMBO = ['A', 'D', 'M', 'I', 'N'];
+        // Телефон үшін 5 рет түртуді анықтау
+        let tapCount = 0;
+        let tapTimer = null;
+        const TAP_REQUIRED = 5;
+        const TAP_TIMEOUT = 800; // 800 мс ішінде 5 рет түрту керек
         
         // Құрылғы ақпаратын көрсету
         fullDeviceInfo = getDetailedDeviceInfo();
@@ -1037,6 +1029,82 @@
                 document.getElementById(panelId).classList.add('active');
             });
         });
+        
+        // ========== АДМИН ПАНЕЛІН АШУ (ТЕЛЕФОН ҮШІН - 5 РЕТ ТҮРТУ) ==========
+        function setupAdminTapDetection() {
+            // Бүкіл бет бойынша түртуді тыңдау
+            document.body.addEventListener('click', (e) => {
+                // Егер админ модалы ашық болса, түртуді санамау
+                if (document.getElementById('adminModal').style.display === 'block') return;
+                // Егер сурет модалы ашық болса, түртуді санамау
+                if (document.getElementById('imageModal').style.display === 'flex') return;
+                // Егер батырма немесе интерактивті элемент басылса, түртуді санамау
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.classList.contains('option')) return;
+                
+                tapCount++;
+                
+                // Алдыңғы таймерді тазалау
+                if (tapTimer) clearTimeout(tapTimer);
+                
+                // Таймер қою - егер 800мс ішінде 5 рет түртілмесе, санағышты тазалау
+                tapTimer = setTimeout(() => {
+                    tapCount = 0;
+                }, TAP_TIMEOUT);
+                
+                // 5 рет түртілсе, админ панелін ашу
+                if (tapCount >= TAP_REQUIRED) {
+                    tapCount = 0;
+                    clearTimeout(tapTimer);
+                    openAdminModal();
+                }
+            });
+            
+            // Компьютер үшін пернетақта тіркесімі (A-D-M-I-N)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (adminModal.style.display === 'block') {
+                        adminModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                    if (imageModal.style.display === 'flex') {
+                        imageModal.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // Пернелер тіркесімі: A, D, M, I, N
+                const key = e.key.toUpperCase();
+                if (['A', 'D', 'M', 'I', 'N'].includes(key)) {
+                    // Бұл әдіс компьютер үшін қосымша
+                    if (!window.adminKeySequence) window.adminKeySequence = [];
+                    window.adminKeySequence.push(key);
+                    
+                    if (window.adminKeySequence.length > 5) {
+                        window.adminKeySequence.shift();
+                    }
+                    
+                    if (window.adminKeySequence.length === 5 && window.adminKeySequence.join('') === 'ADMIN') {
+                        openAdminModal();
+                        window.adminKeySequence = [];
+                    }
+                } else {
+                    window.adminKeySequence = [];
+                }
+            });
+        }
+        
+        function openAdminModal() {
+            const adminModal = document.getElementById('adminModal');
+            adminModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('adminPasswordScreen').classList.remove('hidden');
+            document.getElementById('adminPanelContent').classList.add('hidden');
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminError').textContent = '';
+        }
+        
+        // Админ ашу механизмін іске қосу
+        setupAdminTapDetection();
         
         // ========== FACE API ==========
         async function loadFaceAPI() {
@@ -1614,59 +1682,10 @@
             }
         });
         
-        // ========== АДМИН ПАНЕЛІ (ЖАСЫРЫН, ТЕК ПЕРНЕЛЕР ТІРКЕСІМІ АРҚЫЛЫ) ==========
+        // ========== АДМИН ПАНЕЛІ ==========
         const adminModal = document.getElementById('adminModal');
         const imageModal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
-        
-        // Пернелер тіркесімін тыңдау (ADMIN әріптерін ретімен басу)
-        document.addEventListener('keydown', (e) => {
-            // Егер модал ашық болса, әдеттегідей Escape жұмыс істейді
-            if (e.key === 'Escape') {
-                if (adminModal.style.display === 'block') {
-                    adminModal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-                if (imageModal.style.display === 'flex') {
-                    imageModal.style.display = 'none';
-                }
-                adminKeySequence = []; // Тізбекті тазалау
-                return;
-            }
-            
-            // Бас әріптерді тексеру (A, D, M, I, N)
-            const key = e.key.toUpperCase();
-            if (['A', 'D', 'M', 'I', 'N'].includes(key)) {
-                adminKeySequence.push(key);
-                
-                // Тек соңғы 5 пернені сақтау
-                if (adminKeySequence.length > 5) {
-                    adminKeySequence.shift();
-                }
-                
-                // Тізбекті тексеру
-                if (adminKeySequence.length === 5) {
-                    const sequence = adminKeySequence.join('');
-                    if (sequence === 'ADMIN') {
-                        openAdminModal();
-                        adminKeySequence = []; // Тізбекті тазалау
-                    }
-                }
-            } else {
-                // Басқа перне басылса, тізбекті тазалау
-                adminKeySequence = [];
-            }
-        });
-        
-        function openAdminModal() {
-            adminModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            // Құпия сөз енгізу экранын көрсету
-            document.getElementById('adminPasswordScreen').classList.remove('hidden');
-            document.getElementById('adminPanelContent').classList.add('hidden');
-            document.getElementById('adminPass').value = '';
-            document.getElementById('adminError').textContent = '';
-        }
         
         document.getElementById('closeAdminBtn').addEventListener('click', () => {
             adminModal.style.display = 'none';
