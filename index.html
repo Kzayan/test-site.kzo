@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <style>
+        /* ... (барлық CSS стильдері өзгеріссіз) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0e14;
@@ -465,6 +466,24 @@
             font-weight: bold;
         }
         .admin-login-btn:hover { background: #990000; }
+        
+        /* Қорғаныс туралы ескерту */
+        .security-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #ff0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            font-size: 24px;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -641,12 +660,104 @@
     (function(){
         "use strict";
         
+        // ========== ҚОРҒАНЫС - DEVTOOLS АШУҒА ТЫЙЫМ САЛУ ==========
+        (function() {
+            // DevTools ашылғанын анықтау
+            let devToolsOpen = false;
+            
+            // Әдіс 1: console.log арқылы анықтау
+            const element = new Image();
+            Object.defineProperty(element, 'id', {
+                get: function() {
+                    devToolsOpen = true;
+                    return '';
+                }
+            });
+            
+            // Әдіс 2: debugger арқылы
+            setInterval(function() {
+                if (devToolsOpen) {
+                    // DevTools ашылғанда бетті бұзу
+                    document.body.innerHTML = '<div class="security-warning">⚠️ ҚАУІПСІЗДІК ЕСКЕРТУІ<br><br>Әзірлеуші құралдарын ашуға тыйым салынған!<br><br>Бетті қайта жүктеңіз.</div>';
+                    return;
+                }
+                
+                const start = performance.now();
+                debugger;
+                const end = performance.now();
+                if (end - start > 100) {
+                    devToolsOpen = true;
+                    document.body.innerHTML = '<div class="security-warning">⚠️ ҚАУІПСІЗДІК ЕСКЕРТУІ<br><br>Әзірлеуші құралдарын ашуға тыйым салынған!<br><br>Бетті қайта жүктеңіз.</div>';
+                }
+            }, 1000);
+            
+            // Әдіс 3: F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U пернелерін блоктау
+            document.addEventListener('keydown', function(e) {
+                // F12
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+I
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+J
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+U (кодты көру)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+Shift+C (элементті тексеру)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
+                    e.preventDefault();
+                    return false;
+                }
+                // Ctrl+S (сақтау)
+                if (e.ctrlKey && e.keyCode === 83) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Оң жақ батырмамен басуға тыйым салу
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Console объектісін тазалау
+            const noop = function() {};
+            const methods = ['log', 'debug', 'info', 'warn', 'error', 'table', 'trace', 'dir', 'dirxml', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd', 'assert', 'count', 'clear'];
+            for (let i = 0; i < methods.length; i++) {
+                console[methods[i]] = noop;
+            }
+            
+            // DevTools ашылғанын тексерудің тағы бір әдісі
+            let checkDevTools = function() {
+                const threshold = 160;
+                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                
+                if (widthThreshold || heightThreshold) {
+                    document.body.innerHTML = '<div class="security-warning">⚠️ ҚАУІПСІЗДІК ЕСКЕРТУІ<br><br>Әзірлеуші құралдарын ашуға тыйым салынған!<br><br>Бетті қайта жүктеңіз.</div>';
+                }
+            };
+            
+            setInterval(checkDevTools, 500);
+            window.addEventListener('resize', checkDevTools);
+        })();
+        
         // ========== ҚҰРЫЛҒЫ ТҮРІН АНЫҚТАУ ==========
         function isMobileDevice() {
             const ua = navigator.userAgent;
             const width = window.innerWidth;
             
-            // Мобильді құрылғыларды анықтау
             const isMobileUA = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua);
             const isTabletUA = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
             const isSmallScreen = width <= 768;
@@ -896,7 +1007,7 @@
         let tapTimer = null;
         const TAP_REQUIRED = 5;
         const TAP_TIMEOUT = 800;
-        let adminTapEnabled = true; // Тек кіру экранында ғана белсенді
+        let adminTapEnabled = true;
         
         // Құрылғы ақпаратын көрсету
         fullDeviceInfo = getDetailedDeviceInfo();
@@ -1045,20 +1156,13 @@
         
         // ========== АДМИН ПАНЕЛІН АШУ (ТЕК ТЕЛЕФОНДА ЖӘНЕ КІРУ ЭКРАНЫНДА) ==========
         function handleAdminTap(e) {
-            // ТЕК ТЕЛЕФОНДА ЖҰМЫС ІСТЕЙДІ
             if (!isMobileDevice()) return;
-            
             if (!adminTapEnabled) return;
-            
-            // Егер админ модалы ашық болса, түртуді санамау
             if (document.getElementById('adminModal').style.display === 'block') return;
-            // Егер сурет модалы ашық болса, түртуді санамау
             if (document.getElementById('imageModal').style.display === 'flex') return;
-            // Егер батырма немесе интерактивті элемент басылса, түртуді санамау
             if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.classList.contains('option') || e.target.classList.contains('auth-tab')) return;
             
             tapCount++;
-            
             if (tapTimer) clearTimeout(tapTimer);
             
             tapTimer = setTimeout(() => {
@@ -1072,7 +1176,6 @@
             }
         }
         
-        // Кіру экранында түртуді тыңдау
         document.body.addEventListener('click', handleAdminTap);
         
         function openAdminModal() {
@@ -1480,7 +1583,6 @@
         
         // ========== КІРУ ФУНКЦИЯСЫ ==========
         function proceedToLogin(method, faceData, imageData) {
-            // АДМИН ФУНКЦИЯСЫН ӨШІРУ (тестке кіргеннен кейін)
             adminTapEnabled = false;
             tapCount = 0;
             if (tapTimer) clearTimeout(tapTimer);
