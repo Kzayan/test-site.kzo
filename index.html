@@ -366,6 +366,17 @@
             font-size: 0.8rem;
         }
         .delete-btn:hover { background: #990000; }
+        .download-btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        .download-btn:hover { background: #0055aa; }
         .hidden { display: none !important; }
         .info { background: #1a1a2a; color: #00aaff; }
         .success { background: #1a3a1a; color: #00ff00; }
@@ -379,6 +390,7 @@
             border: 1px solid #cc0000;
             cursor: pointer;
         }
+        .face-thumb:hover { opacity: 0.8; }
         .fingerprint-thumb {
             width: 50px;
             height: 50px;
@@ -388,6 +400,7 @@
             background: #0d1a0d;
             object-fit: cover;
         }
+        .fingerprint-thumb:hover { opacity: 0.8; }
         .biometric-badge {
             display: inline-block;
             background: #00ff88;
@@ -471,6 +484,43 @@
             padding: 20px;
             flex-direction: column;
         }
+        
+        /* Сурет модалы */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .image-modal img {
+            max-width: 90%;
+            max-height: 80%;
+            border: 2px solid #cc0000;
+            border-radius: 10px;
+        }
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
+        .image-modal-download {
+            margin-top: 20px;
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .image-modal-download:hover { background: #990000; }
     </style>
 </head>
 <body>
@@ -592,7 +642,7 @@
                 <table class="votes-table">
                     <thead>
                         <tr>
-                            <th>#</th><th>ТҮР</th><th>САУСАҚ ІЗІ</th><th>КІРУ ӘДІСІ</th><th>ҚҰРЫЛҒЫ</th>
+                            <th>#</th><th>ТҮР</th><th>САУСАҚ ІЗІ/ШАПАЛАҚ</th><th>КІРУ ӘДІСІ</th><th>ҚҰРЫЛҒЫ</th>
                             <th>БРАУЗЕР/ОС</th><th>ЭКРАН</th><th>ДҰРЫС</th><th>ҚАТЕ</th><th>%</th><th>УАҚЫТ</th><th>ӘРЕКЕТ</th>
                         </tr>
                     </thead>
@@ -604,8 +654,10 @@
 </div>
 
 <!-- СУРЕТ МОДАЛЫ -->
-<div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:4000; justify-content:center; align-items:center;" onclick="this.style.display='none'">
-    <img id="modalImage" style="max-width:90%; max-height:90%; border:2px solid #cc0000; border-radius:10px;">
+<div class="image-modal" id="imageModal">
+    <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+    <img id="modalImage" alt="Сурет">
+    <button class="image-modal-download" id="downloadImageBtn">📥 СУРЕТТІ ЖҮКТЕП АЛУ</button>
 </div>
 
 <script>
@@ -617,7 +669,6 @@
         const warning = document.getElementById('securityWarning');
         let devToolsOpen = false;
         
-        // Пернелерді блоктау
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.keyCode === 123) e.preventDefault();
@@ -628,7 +679,6 @@
             if (e.ctrlKey && e.keyCode === 83) e.preventDefault();
         });
         
-        // DevTools анықтау
         setInterval(() => {
             if (devToolsOpen) return;
             const start = performance.now();
@@ -652,11 +702,41 @@
         setInterval(checkSize, 500);
         window.addEventListener('resize', checkSize);
         
-        // Console тазалау
         if (window.console) {
             ['log','debug','info','warn','error','table','trace','dir','clear'].forEach(m => console[m] = ()=> {});
         }
     })();
+    
+    // ========== СУРЕТ МОДАЛЫ ФУНКЦИЯЛАРЫ ==========
+    let currentModalImage = null;
+    
+    window.showImage = function(src) {
+        currentModalImage = src;
+        document.getElementById('modalImage').src = src;
+        document.getElementById('imageModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    };
+    
+    window.closeImageModal = function() {
+        document.getElementById('imageModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        currentModalImage = null;
+    };
+    
+    document.getElementById('downloadImageBtn').addEventListener('click', function() {
+        if (currentModalImage) {
+            const link = document.createElement('a');
+            link.href = currentModalImage;
+            link.download = 'unsiz_image_' + Date.now() + '.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+    
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) closeImageModal();
+    });
     
     // ========== КӨМЕКШІ ФУНКЦИЯЛАР ==========
     function isMobileDevice() {
@@ -1139,9 +1219,16 @@
             const p = Math.round(r.correct/r.total*100);
             let badge = r.loginMethod==='biometric'?'🖐️ САУСАҚ':r.loginMethod==='clap'?'👏 ШАПАЛАҚ':'📷 ТҮР';
             let fpCell = '—';
-            if (r.loginMethod==='biometric' && r.fpImg) fpCell = `<img src="${r.fpImg}" class="fingerprint-thumb">`;
-            else if (r.loginMethod==='clap' && r.clapImg) fpCell = `<img src="${r.clapImg}" class="fingerprint-thumb" style="border-color:#ffaa00;">`;
-            return `<tr><td>${i+1}</td><td>${r.face?`<img src="${r.face}" class="face-thumb">`:'—'}</td><td>${fpCell}</td><td>${badge}</td>
+            if (r.loginMethod==='biometric' && r.fpImg) {
+                fpCell = `<img src="${r.fpImg}" class="fingerprint-thumb" onclick="showImage('${r.fpImg}')" style="cursor:pointer;">`;
+            } else if (r.loginMethod==='clap' && r.clapImg) {
+                fpCell = `<img src="${r.clapImg}" class="fingerprint-thumb" onclick="showImage('${r.clapImg}')" style="border-color:#ffaa00; cursor:pointer;">`;
+            }
+            let faceCell = '—';
+            if (r.face) {
+                faceCell = `<img src="${r.face}" class="face-thumb" onclick="showImage('${r.face}')" style="cursor:pointer;">`;
+            }
+            return `<tr><td>${i+1}</td><td>${faceCell}</td><td>${fpCell}</td><td>${badge}</td>
                 <td>${r.device?.icon||'📱'} ${r.device?.type||''}</td><td>${r.device?.browser||''}<br>${r.device?.os||''}</td><td>${r.device?.screen||''}</td>
                 <td style="color:#0c0;">${r.correct}</td><td style="color:#f00;">${r.wrong}</td><td>${p}%</td><td>${r.date}</td>
                 <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td></tr>`;
@@ -1160,8 +1247,10 @@
         if (confirm('Барлығын жою?')) { localStorage.removeItem(STORAGE_KEY); renderAdminTable(); }
     });
     
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('adminModal').style.display = 'none'; });
-    document.getElementById('imageModal').addEventListener('click', function() { this.style.display = 'none'; });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { 
+        document.getElementById('adminModal').style.display = 'none'; 
+        closeImageModal();
+    }});
     
 })();
 </script>
