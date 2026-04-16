@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>UNSIZ · ТЕСТ 100 · ТҮР + САУСАҚ ІЗІ + ШАПАЛАҚ</title>
+    <title>UNSIZ · ТЕСТ 100 · ҚОРҒАЛҒАН</title>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <style>
-        /* ... (барлық CSS стильдері өзгеріссіз) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #0a0e14;
@@ -137,20 +136,15 @@
             border: 2px solid #00ff88;
             color: #00ff88;
         }
-        .biometric-btn:hover {
-            background: #00ff88;
-            color: #0a0e14;
-        }
+        .biometric-btn:hover { background: #00ff88; color: #0a0e14; }
         
         .clap-btn {
             background: transparent;
             border: 2px solid #ffaa00;
             color: #ffaa00;
         }
-        .clap-btn:hover {
-            background: #ffaa00;
-            color: #0a0e14;
-        }
+        .clap-btn:hover { background: #ffaa00; color: #0a0e14; }
+        
         .clap-visual {
             display: flex;
             justify-content: center;
@@ -222,10 +216,7 @@
         }
         .fingerprint-animation {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             border-radius: 20px;
             background: radial-gradient(circle, transparent 30%, rgba(0,255,136,0.15) 70%);
             animation: pulse 2s infinite;
@@ -329,7 +320,6 @@
         }
         .restart-btn:hover { background: #990000; }
         
-        /* Админ панелі - жасырын */
         .admin-modal {
             display: none;
             position: fixed;
@@ -467,26 +457,31 @@
         }
         .admin-login-btn:hover { background: #990000; }
         
-        /* Қорғаныс туралы ескерту */
         .security-warning {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             color: #ff0000;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 99999;
             font-size: 24px;
             text-align: center;
             padding: 20px;
+            flex-direction: column;
         }
     </style>
 </head>
 <body>
+
+<!-- ҚАУІПСІЗДІК ЕСКЕРТУ ЭКРАНЫ -->
+<div id="securityWarning" class="security-warning">
+    <div style="font-size: 60px; margin-bottom: 20px;">⚠️</div>
+    <div>ҚАУІПСІЗДІК ЕСКЕРТУІ</div>
+    <div style="font-size: 16px; margin-top: 20px; color: #888;">Әзірлеуші құралдарын ашуға тыйым салынған</div>
+    <div style="font-size: 14px; margin-top: 10px; color: #666;">Бетті қайта жүктеңіз</div>
+</div>
 
 <!-- КІРУ ЭКРАНЫ -->
 <div class="login-screen" id="loginScreen">
@@ -501,24 +496,20 @@
         </div>
         
         <div class="auth-tabs">
-            <button class="auth-tab active" data-tab="face">📷 ТҮР (БЕТ ТАНУ)</button>
+            <button class="auth-tab active" data-tab="face">📷 ТҮР</button>
             <button class="auth-tab green" data-tab="fingerprint">🖐️ САУСАҚ ІЗІ</button>
             <button class="auth-tab clap" data-tab="clap">👏 ШАПАЛАҚ</button>
         </div>
         
-        <!-- Түр (бет тану) панелі -->
         <div class="auth-panel active" id="facePanel">
             <div class="face-section">
                 <div class="video-container">
                     <video id="loginVideo" autoplay playsinline></video>
                 </div>
-                <canvas id="loginCanvas" style="display:none;"></canvas>
-                
                 <div class="face-preview-container" id="facePreviewContainer">
                     <p style="color:#00ff00; margin-bottom:10px;">✅ Түр танылды!</p>
-                    <img id="facePreview" alt="Түр суреті">
+                    <img id="facePreview" alt="Түр">
                 </div>
-                
                 <div id="loginFaceStatus" class="face-status-login info">📷 Модель жүктелуде...</div>
                 <button class="login-btn" id="startLoginCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
                 <button class="login-btn" id="captureLoginFaceBtn" disabled>🔍 ТҮРДІ ТАНУ</button>
@@ -526,54 +517,27 @@
             <button class="login-btn" id="faceLoginBtn" disabled style="background:#cc0000;">ТҮРМЕН КІРУ</button>
         </div>
         
-        <!-- Саусақ ізі панелі -->
         <div class="auth-panel" id="fingerprintPanel">
-            <div class="fingerprint-scan" id="fingerprintVisual">
+            <div class="fingerprint-scan">
                 <canvas id="fingerprintCanvas" width="150" height="150"></canvas>
                 <div class="fingerprint-animation"></div>
             </div>
-            
-            <div class="biometric-info" id="biometricStatus">
-                🖐️ Кіру үшін саусақ ізіңізді тіркеңіз
-            </div>
-            
-            <button class="login-btn biometric-btn" id="registerBiometricBtn">
-                🖐️ САУСАҚ ІЗІН ТІРКЕУ
-            </button>
-            
-            <button class="login-btn biometric-btn" id="loginWithBiometricBtn" style="margin-top:15px;">
-                🔓 САУСАҚ ІЗІМЕН КІРУ
-            </button>
-            
+            <div class="biometric-info" id="biometricStatus">🖐️ Кіру үшін саусақ ізіңізді тіркеңіз</div>
+            <button class="login-btn biometric-btn" id="registerBiometricBtn">🖐️ САУСАҚ ІЗІН ТІРКЕУ</button>
+            <button class="login-btn biometric-btn" id="loginWithBiometricBtn" style="margin-top:15px;">🔓 САУСАҚ ІЗІМЕН КІРУ</button>
             <div id="biometricDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;"></div>
         </div>
 
-        <!-- Шапалақ панелі -->
         <div class="auth-panel" id="clapPanel">
             <div class="clap-visual">
                 <div class="clap-indicator"></div>
-                <div class="clap-hands" id="clapHands">👏</div>
+                <div class="clap-hands">👏</div>
             </div>
-            
-            <div class="clap-info" id="clapStatus">
-                👏 Шапалақтау арқылы кіру
-            </div>
-            
-            <button class="login-btn clap-btn" id="startClapDetectionBtn">
-                🎤 МИКРОФОНДЫ ҚОСУ
-            </button>
-            
-            <button class="login-btn clap-btn" id="clapLoginBtn" disabled style="margin-top:15px;">
-                👏 ШАПАЛАҚПЕН КІРУ
-            </button>
-            
-            <div id="clapCounter" style="color:#ffaa00; text-align:center; margin-top:15px; font-size:1.2rem;">
-                Шапалақ: <span id="clapCount">0</span>/2
-            </div>
-            
-            <div id="clapDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;">
-                🎤 Микрофон арқылы 2 рет шапалақтаңыз
-            </div>
+            <div class="clap-info" id="clapStatus">👏 Шапалақтау арқылы кіру</div>
+            <button class="login-btn clap-btn" id="startClapDetectionBtn">🎤 МИКРОФОНДЫ ҚОСУ</button>
+            <button class="login-btn clap-btn" id="clapLoginBtn" disabled style="margin-top:15px;">👏 ШАПАЛАҚПЕН КІРУ</button>
+            <div id="clapCounter" style="color:#ffaa00; text-align:center; margin-top:15px; font-size:1.2rem;">Шапалақ: <span id="clapCount">0</span>/2</div>
+            <div style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;">🎤 Микрофон арқылы 2 рет шапалақтаңыз</div>
         </div>
         
         <p style="color:#888; margin-top:16px; text-align:center; font-size:0.8rem;">
@@ -590,9 +554,7 @@
                 <span class="shuffle-badge" id="shuffleIndicator">🔄 ВАРИАНТТАР АРАЛАСТЫ</span>
             </h1>
         </div>
-        <div class="user-info-bar" id="userInfoBar">
-            👤 Қолданушы
-        </div>
+        <div class="user-info-bar" id="userInfoBar">👤 Қолданушы</div>
         <div class="progress-panel">
             <div class="stats">
                 <div class="stat-item"><span class="stat-label">ДҰРЫС</span><span class="stat-value" id="correctCount">0</span></div>
@@ -623,25 +585,15 @@
         </div>
         <div id="adminPanelContent" class="hidden">
             <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-                <strong style="font-size:1.2rem;">БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong>
+                <strong>БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong>
                 <button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer;">🗑️ БАРЛЫҒЫН ЖОЮ</button>
             </div>
             <div style="overflow-x:auto;">
                 <table class="votes-table">
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>ТҮР СУРЕТІ</th>
-                            <th>САУСАҚ ІЗІ</th>
-                            <th>КІРУ ӘДІСІ</th>
-                            <th>ҚҰРЫЛҒЫ ТҮРІ</th>
-                            <th>БРАУЗЕР / ОС</th>
-                            <th>ЭКРАН</th>
-                            <th>ДҰРЫС</th>
-                            <th>ҚАТЕ</th>
-                            <th>%</th>
-                            <th>УАҚЫТ</th>
-                            <th>ӘРЕКЕТ</th>
+                            <th>#</th><th>ТҮР</th><th>САУСАҚ ІЗІ</th><th>КІРУ ӘДІСІ</th><th>ҚҰРЫЛҒЫ</th>
+                            <th>БРАУЗЕР/ОС</th><th>ЭКРАН</th><th>ДҰРЫС</th><th>ҚАТЕ</th><th>%</th><th>УАҚЫТ</th><th>ӘРЕКЕТ</th>
                         </tr>
                     </thead>
                     <tbody id="adminTableBody"></tbody>
@@ -651,1272 +603,567 @@
     </div>
 </div>
 
-<!-- Суретті үлкейтіп көру модалы -->
+<!-- СУРЕТ МОДАЛЫ -->
 <div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:4000; justify-content:center; align-items:center;" onclick="this.style.display='none'">
     <img id="modalImage" style="max-width:90%; max-height:90%; border:2px solid #cc0000; border-radius:10px;">
 </div>
 
 <script>
+(function(){
+    "use strict";
+    
+    // ========== ҚОРҒАНЫС ==========
     (function(){
-        "use strict";
+        const warning = document.getElementById('securityWarning');
+        let devToolsOpen = false;
         
-        // ========== ҚОРҒАНЫС - DEVTOOLS АШУҒА ТЫЙЫМ САЛУ ==========
-        (function() {
-            // DevTools ашылғанын анықтау
-            let devToolsOpen = false;
-            
-            // Әдіс 1: console.log арқылы анықтау
-            const element = new Image();
-            Object.defineProperty(element, 'id', {
-                get: function() {
-                    devToolsOpen = true;
-                    return '';
-                }
-            });
-            
-            // Әдіс 2: debugger арқылы
-            setInterval(function() {
-                if (devToolsOpen) {
-                    // DevTools ашылғанда бетті бұзу
-                    document.body.innerHTML = '<div class="security-warning">⚠️ ҚАУІПСІЗДІК ЕСКЕРТУІ<br><br>Әзірлеуші құралдарын ашуға тыйым салынған!<br><br>Бетті қайта жүктеңіз.</div>';
-                    return;
-                }
-                
-                const start = performance.now();
-                debugger;
-                const end = performance.now();
-                if (end - start > 100) {
-                    devToolsOpen = true;
-                    document.body.innerHTML = '<div class="security-warning">⚠️ ҚАУІПСІЗДІК ЕСКЕРТУІ<br><br>Әзірлеуші құралдарын ашуға тыйым салынған!<br><br>Бетті қайта жүктеңіз.</div>';
-                }
-            }, 1000);
-            
-            // Әдіс 3: F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U пернелерін блоктау
-            document.addEventListener('keydown', function(e) {
-                // F12
-                if (e.keyCode === 123) {
-                    e.preventDefault();
-                    return false;
-                }
-                // Ctrl+Shift+I
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-                    e.preventDefault();
-                    return false;
-                }
-                // Ctrl+Shift+J
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
-                    e.preventDefault();
-                    return false;
-                }
-                // Ctrl+U (кодты көру)
-                if (e.ctrlKey && e.keyCode === 85) {
-                    e.preventDefault();
-                    return false;
-                }
-                // Ctrl+Shift+C (элементті тексеру)
-                if (e.ctrlKey && e.shiftKey && e.keyCode === 67) {
-                    e.preventDefault();
-                    return false;
-                }
-                // Ctrl+S (сақтау)
-                if (e.ctrlKey && e.keyCode === 83) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-            
-            // Оң жақ батырмамен басуға тыйым салу
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
-            // Console объектісін тазалау
-            const noop = function() {};
-            const methods = ['log', 'debug', 'info', 'warn', 'error', 'table', 'trace', 'dir', 'dirxml', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd', 'assert', 'count', 'clear'];
-            for (let i = 0; i < methods.length; i++) {
-                console[methods[i]] = noop;
-            }
-            
-            // DevTools ашылғанын тексерудің тағы бір әдісі
-            let checkDevTools = function() {
-                const threshold = 160;
-                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                
-                if (widthThreshold || heightThreshold) {
-                    document.body.innerHTML = '<div class="security-warning">⚠️ ҚАУІПСІЗДІК ЕСКЕРТУІ<br><br>Әзірлеуші құралдарын ашуға тыйым салынған!<br><br>Бетті қайта жүктеңіз.</div>';
-                }
-            };
-            
-            setInterval(checkDevTools, 500);
-            window.addEventListener('resize', checkDevTools);
-        })();
-        
-        // ========== ҚҰРЫЛҒЫ ТҮРІН АНЫҚТАУ ==========
-        function isMobileDevice() {
-            const ua = navigator.userAgent;
-            const width = window.innerWidth;
-            
-            const isMobileUA = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua);
-            const isTabletUA = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
-            const isSmallScreen = width <= 768;
-            
-            return isMobileUA || isTabletUA || isSmallScreen;
-        }
-        
-        function detectDeviceType() {
-            const ua = navigator.userAgent;
-            const width = window.innerWidth;
-            
-            let deviceType = 'desktop';
-            let deviceIcon = '💻';
-            let deviceClass = 'device-desktop';
-            
-            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-                deviceType = 'tablet';
-                deviceIcon = '📱';
-                deviceClass = 'device-tablet';
-            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-                deviceType = 'mobile';
-                deviceIcon = '📱';
-                deviceClass = 'device-mobile';
-            } else if (/(Macintosh|MacIntel|MacPPC|Mac68K|Mac OS X)/i.test(ua) && !/(iPhone|iPad|iPod)/i.test(ua)) {
-                deviceType = 'laptop';
-                deviceIcon = '💻';
-                deviceClass = 'device-laptop';
-            } else if (/(Win64|WOW64|Win32)/i.test(ua)) {
-                deviceType = 'desktop';
-                deviceIcon = '🖥️';
-                deviceClass = 'device-desktop';
-            }
-            
-            if (width <= 480) {
-                deviceType = 'mobile';
-                deviceIcon = '📱';
-                deviceClass = 'device-mobile';
-            } else if (width <= 768) {
-                deviceType = 'tablet';
-                deviceIcon = '📱';
-                deviceClass = 'device-tablet';
-            }
-            
-            return { deviceType, deviceIcon, deviceClass };
-        }
-        
-        function getBrowserInfo() {
-            const ua = navigator.userAgent;
-            let browser = 'Белгісіз';
-            if (ua.includes('Edg/')) browser = 'Edge';
-            else if (ua.includes('OPR/') || ua.includes('Opera')) browser = 'Opera';
-            else if (ua.includes('Chrome/')) browser = 'Chrome';
-            else if (ua.includes('Safari/') && !ua.includes('Chrome')) browser = 'Safari';
-            else if (ua.includes('Firefox/')) browser = 'Firefox';
-            return browser;
-        }
-        
-        function getOSInfo() {
-            const ua = navigator.userAgent;
-            let os = 'Белгісіз';
-            if (ua.includes('Windows NT 10.0')) os = 'Windows 10/11';
-            else if (ua.includes('Windows')) os = 'Windows';
-            else if (ua.includes('Mac OS X')) os = 'macOS';
-            else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-            else if (ua.includes('Android')) os = 'Android';
-            else if (ua.includes('Linux')) os = 'Linux';
-            return os;
-        }
-        
-        function getDetailedDeviceInfo() {
-            const device = detectDeviceType();
-            const browser = getBrowserInfo();
-            const os = getOSInfo();
-            const screenRes = `${window.screen.width}x${window.screen.height}`;
-            return {
-                type: device.deviceType,
-                typeIcon: device.deviceIcon,
-                typeClass: device.deviceClass,
-                browser: browser,
-                os: os,
-                screen: screenRes,
-                fullInfo: `${device.deviceIcon} ${device.deviceType} | ${browser} | ${os} | ${screenRes}`
-            };
-        }
-        
-        // ========== 100 СҰРАҚ (ТОЛЫҚ ТІЗІМ) ==========
-        const ORIGINAL_QUESTIONS = [
-            { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
-            { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
-            { q: "Логикалық қате кезінде:", options: ["Бағдарлама мүлде ашылмайды", "Қате нәтиже береді", "Компьютер өшеді", "Файл жойылады", "Желі үзіледі"], correct: 1 },
-            { q: "Runtime error қашан пайда болады?", options: ["Код жазу кезінде", "Компиляция кезінде", "Орындау кезінде", "Жобалау кезінде", "Орнату кезінде"], correct: 2 },
-            { q: "Debugger не үшін керек?", options: ["Код жазу", "Қате іздеу", "Сурет салу", "Файл сақтау", "Интернетке шығу"], correct: 1 },
-            { q: "print() функциясы не үшін қолданылады?", options: ["Қате жою", "Мәлімет шығару", "Файл ашу", "Желіге қосылу", "Код жою"], correct: 1 },
-            { q: "try-except блогы не үшін керек?", options: ["Цикл құру", "Шарт жазу", "Қателерді өңдеу", "Айнымалы құру", "Файл жою"], correct: 2 },
-            { q: "IDE дегеніміз:", options: ["Операциялық жүйе", "Бағдарламалау ортасы", "Вирус", "Драйвер", "Сервер"], correct: 1 },
-            { q: "Infinite loop дегеніміз:", options: ["Бір рет орындалатын цикл", "Шексіз цикл", "Қате код", "Айнымалы", "Функция"], correct: 1 },
-            { q: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 },
-            { q: "Логикалық қатені табудың ең тиімді жолы:", options: ["Компьютерді өшіру", "Кодты қайта көшіру", "Қадамдап орындау", "Интернетті тексеру", "Принтер қосу"], correct: 2 },
-            { q: "Синтаксистік қате табылғанда:", options: ["Бағдарлама дұрыс жұмыс істейді", "Компиляция тоқтайды", "Нәтиже баяу шығады", "Файл ашылады", "Желі үзіледі"], correct: 1 },
-            { q: "Айнымалы анықталмаса қандай қате шығады?", options: ["Type error", "Name error", "Index error", "Logic error", "Value error"], correct: 1 },
-            { q: "Массив шегінен тыс элементке жүгінсек:", options: ["Name error", "Type error", "Index error", "Syntax error", "Key error"], correct: 2 },
-            { q: "Type error қашан болады?", options: ["Қате атау жазылса", "Түрлер сәйкес келмесе", "Индекс дұрыс болмаса", "Цикл тоқтаса", "Файл жабылса"], correct: 1 },
-            { q: "Қатені қайталамау үшін не істеу керек?", options: ["Кодты тестілеу", "Өшіру", "Компьютер ауыстыру", "Интернет қосу", "Бағдарламаны жасыру"], correct: 0 },
-            { q: "assert командасы не үшін қолданылады?", options: ["Файл ашу", "Мәлімет басу", "Шартты тексеру", "Цикл жасау", "Айнымалы жою"], correct: 2 },
-            { q: "Лог-файл не үшін керек?", options: ["Музыка сақтау", "Қате жазбаларын сақтау", "Видео көру", "Сурет салу", "Интернетке қосылу"], correct: 1 },
-            { q: "Refactoring дегеніміз:", options: ["Кодты жою", "Код құрылымын жақсарту", "Қате қосу", "Файл форматтау", "Компьютер тазалау"], correct: 1 },
-            { q: "Unit тестілеу не тексереді?", options: ["Бүкіл жүйені", "Бір модульді", "Серверді", "Интернетті", "Дизайнды"], correct: 1 },
-            { q: "ValueError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Мәлімет түрі сәйкес келмесе", "Дұрыс емес мән енгізілсе", "Индекс артық болса", "Файл табылмаса"], correct: 2 },
-            { q: "FileNotFoundError қашан шығады?", options: ["Айнымалы жоқ болса", "Файл табылмаса", "Түр сәйкес келмесе", "Шарт қате болса", "Цикл тоқтаса"], correct: 1 },
-            { q: "except блогы қай кезде орындалады?", options: ["Қате болмаса", "Қате пайда болса", "Әрқашан", "Цикл ішінде ғана", "Функция алдында"], correct: 1 },
-            { q: "finally блогы:", options: ["Ешқашан орындалмайды", "Қате болса ғана орындалады", "Әрқашан орындалады", "Цикл жасайды", "Айнымалы құрады"], correct: 2 },
-            { q: "Логикалық қателерді табу үшін:", options: ["Кодты талдау керек", "Компьютер ауыстыру керек", "Файлды жою керек", "Интернетті өшіру керек", "Принтер қосу керек"], correct: 0 },
-            { q: "Breakpoint дегеніміз:", options: ["Қате түрі", "Бағдарламаны тоқтату нүктесі", "Айнымалы", "Цикл", "Файл"], correct: 1 },
-            { q: "Stack trace нені көрсетеді?", options: ["Дизайнды", "Қате шыққан жолды", "Интернет жылдамдығын", "Файл өлшемін", "Процессор түрін"], correct: 1 },
-            { q: "Тестілеудің мақсаты:", options: ["Қате табу", "Кодты жасыру", "Компьютерді өшіру", "Желі қосу", "Файлды көшіру"], correct: 0 },
-            { q: "Қай қате бағдарлама тоқтауына әкелуі мүмкін?", options: ["Логикалық", "Runtime error", "Комментарий қатесі", "Дизайн қатесі", "Стиль қатесі"], correct: 1 },
-            { q: "Debugging процесінің соңғы мақсаты:", options: ["Кодты жою", "Қатені түзету", "Файлды жабу", "Компьютерді өшіру", "Интернетке қосылу"], correct: 1 },
-            { q: "SyntaxError қай кезде шығады?", options: ["Орындау кезінде", "Компиляция кезінде", "Интернет жоқ кезде", "Файл жабылғанда", "Цикл тоқтағанда"], correct: 1 },
-            { q: "ZeroDivisionError қашан пайда болады?", options: ["0-ге бөлгенде", "Айнымалы жоқ болса", "Түр сәйкес келмесе", "Индекс артық болса", "Файл ашылмаса"], correct: 0 },
-            { q: "Кодтағы комментарий не үшін керек?", options: ["Қате шығару", "Түсіндіру жазу", "Файл жою", "Айнымалы құру", "Цикл жасау"], correct: 1 },
-            { q: "Қате табылғаннан кейін бірінші қадам:", options: ["Кодты өшіру", "Себебін анықтау", "Компьютерді өшіру", "Жаңа файл ашу", "Интернет қосу"], correct: 1 },
-            { q: "while циклі тоқтамаса, бұл:", options: ["Syntax error", "Логикалық қате", "Type error", "Name error", "Value error"], correct: 1 },
-            { q: "Функция дұрыс нәтиже бермесе:", options: ["Логикалық қате бар", "Компьютер бұзылған", "Интернет жоқ", "Файл ашылмаған", "Драйвер жоқ"], correct: 0 },
-            { q: "IDE-де қызыл сызық нені білдіреді?", options: ["Дұрыс код", "Синтаксистік қате", "Интернет бар", "Файл сақталған", "Принтер қосылған"], correct: 1 },
-            { q: "Exception дегеніміз:", options: ["Айнымалы", "Қате жағдай", "Цикл", "Функция", "Сервер"], correct: 1 },
-            { q: "Кодты кішкене бөліктермен тексеру:", options: ["Инсталляция", "Модульдік тексеру", "Форматтау", "Архивтеу", "Дизайн"], correct: 1 },
-            { q: "Қай әдіс қателерді азайтады?", options: ["Тестілеу", "Көшіру", "Өшіру", "Форматтамау", "Компьютер ауыстыру"], correct: 0 },
-            { q: "KeyError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Сөздікте жоқ кілт қолданылса", "0-ге бөлгенде", "Түр сәйкес келмесе", "Файл ашылмаса"], correct: 1 },
-            { q: "ImportError дегеніміз:", options: ["Айнымалы қатесі", "Модуль жүктелмесе", "Индекс қатесі", "Логикалық қате", "Шарт қатесі"], correct: 1 },
-            { q: "Кодты қайта қарау (code review) мақсаты:", options: ["Қате табу", "Файл жою", "Интернет қосу", "Компьютер өшіру", "Дизайн өзгерту"], correct: 0 },
-            { q: "Traceback нені көрсетеді?", options: ["Файл көлемін", "Қате шыққан жолдар тізбегін", "Интернет жылдамдығын", "Компьютер жадын", "Экран өлшемін"], correct: 1 },
-            { q: "Бағдарламаны тест мәліметтермен тексеру:", options: ["Архивтеу", "Тестілеу", "Орнату", "Форматтау", "Көшіру"], correct: 1 },
-            { q: "Қай жағдайда try блогы орындалады?", options: ["Қате болса ғана", "Әрқашан бірінші орындалады", "Ешқашан", "Цикл ішінде ғана", "Файл жабылғанда"], correct: 1 },
-            { q: "except бірнешеу болуы мүмкін бе?", options: ["Жоқ", "Иә", "Тек біреу", "Тек циклде", "Тек функцияда"], correct: 1 },
-            { q: "Debugging құралдарының бірі:", options: ["Paint", "Debugger", "Word", "Excel", "Browser"], correct: 1 },
-            { q: "Кодтағы артық жолдарды жою:", options: ["Refactoring", "Компиляция", "Инсталляция", "Архивтеу", "Көшіру"], correct: 0 },
-            { q: "Қате табылған соң не істеу керек?", options: ["Елемеу", "Түзету", "Жою", "Компьютер өшіру", "Файл жабу"], correct: 1 },
-            { q: "AttributeError қашан шығады?", options: ["0-ге бөлгенде", "Объектіде жоқ қасиет шақырылса", "Индекс артық болса", "Файл табылмаса", "Айнымалы жоқ болса"], correct: 1 },
-            { q: "Memory error себебі:", options: ["Жад жетіспеуі", "Интернет жоқ", "Синтаксис қате", "Индекс үлкен", "Файл жабық"], correct: 0 },
-            { q: "Қай әдіс қатені тез табуға көмектеседі?", options: ["Кодты форматтау", "Қадамдап орындау", "Файл көшіру", "Өшіру", "Архивтеу"], correct: 1 },
-            { q: "Тест кейс дегеніміз:", options: ["Қате түрі", "Тексеру сценарийі", "Айнымалы", "Файл", "Сервер"], correct: 1 },
-            { q: "Boundary value testing не тексереді?", options: ["Орта мәндерді", "Шектік мәндерді", "Тек мәтінді", "Дизайнды", "Интернетті"], correct: 1 },
-            { q: "Infinite recursion себебі:", options: ["Шарт жоқ", "Файл жоқ", "Интернет жоқ", "Индекс артық", "Түр сәйкес емес"], correct: 0 },
-            { q: "raise командасы:", options: ["Қате тастау", "Цикл құру", "Айнымалы жою", "Файл ашу", "Мәлімет шығару"], correct: 0 },
-            { q: "Қате туралы хабарлама не үшін маңызды?", options: ["Уақыт өткізу", "Себебін түсіну", "Дизайн көру", "Файл өлшеу", "Интернет тексеру"], correct: 1 },
-            { q: "Regression testing мақсаты:", options: ["Жаңа қате қосу", "Бұрынғы қателер қайталанбауын тексеру", "Файл жою", "Компьютер жаңарту", "Дизайн өзгерту"], correct: 1 },
-            { q: "Кодты жиі сақтау не үшін керек?", options: ["Қате көбейту", "Мәлімет жоғалтпау", "Интернет қосу", "Форматтау", "Архивтеу"], correct: 1 },
-            { q: "Логикалық қате табудың бір жолы:", options: ["Нәтижені күтілген мәнмен салыстыру", "Компьютер өшіру", "Файл жою", "Интернет қосу", "Архивтеу"], correct: 0 },
-            { q: "Exception handling мақсаты:", options: ["Бағдарламаны тоқтату", "Қатені басқару", "Файл ашу", "Айнымалы жою", "Дизайн жасау"], correct: 1 },
-            { q: "Кодтың оқылуын жақсарту:", options: ["Түсінікті атаулар қолдану", "Барлығын бір жолға жазу", "Комментарийсіз жазу", "Форматтамау", "Қысқарту"], correct: 0 },
-            { q: "Unit test қашан жазылады?", options: ["Кодтан кейін", "Кодпен бірге", "Ешқашан", "Орнатқанда", "Архивтегенде"], correct: 1 },
-            { q: "Bug дегеніміз:", options: ["Дұрыс код", "Қате", "Сервер", "Айнымалы", "Файл"], correct: 1 },
-            { q: "Debugging мақсаты:", options: ["Қате қосу", "Қате табу және түзету", "Файл жою", "Интернет өшіру", "Компьютер ауыстыру"], correct: 1 },
-            { q: "try блогында не жазылады?", options: ["Қауіпті код", "Комментарий", "Айнымалы аты", "Файл аты", "Дизайн"], correct: 0 },
-            { q: "finally көбіне не үшін қолданылады?", options: ["Файл жабу", "Қате шығару", "Цикл құру", "Айнымалы жою", "Дизайн жасау"], correct: 0 },
-            { q: "Кодты тексерудің автоматты түрі:", options: ["Manual testing", "Automated testing", "Архивтеу", "Форматтау", "Көшіру"], correct: 1 },
-            { q: "Stack overflow себебі:", options: ["Терең рекурсия", "Интернет жоқ", "Файл жоқ", "Индекс үлкен", "Түр сәйкес емес"], correct: 0 },
-            { q: "Input тексеру не үшін қажет?", options: ["Қате болдырмау", "Интернет қосу", "Файл жою", "Дизайн өзгерту", "Архивтеу"], correct: 0 },
-            { q: "Қате шыққан жолды табу үшін:", options: ["Traceback қарау", "Компьютер өшіру", "Файл жабу", "Интернет тексеру", "Архивтеу"], correct: 0 },
-            { q: "Version control не үшін керек?", options: ["Код нұсқаларын сақтау", "Файл жою", "Интернет қосу", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
-            { q: "Git дегеніміз:", options: ["Операциялық жүйе", "Нұсқа бақылау жүйесі", "Сервер", "Айнымалы", "Қате түрі"], correct: 1 },
-            { q: "Merge conflict қашан болады?", options: ["Бір файлды екі адам өзгерткенде", "Интернет жоқ кезде", "Файл жойылғанда", "Компьютер өшкенде", "Индекс үлкенде"], correct: 0 },
-            { q: "Test coverage нені көрсетеді?", options: ["Код көлемін", "Тестпен қамтылған пайызды", "Интернет жылдамдығын", "Файл өлшемін", "Дизайн сапасын"], correct: 1 },
-            { q: "Кодты форматтау құралы:", options: ["Linter", "Printer", "Scanner", "Monitor", "Router"], correct: 0 },
-            { q: "Static analysis қашан жасалады?", options: ["Орындаусыз", "Орындау кезінде", "Интернетпен", "Серверде", "Принтерде"], correct: 0 },
-            { q: "Dynamic testing қашан жасалады?", options: ["Орындау кезінде", "Код жазғанда", "Форматтағанда", "Архивтегенде", "Дизайнда"], correct: 0 },
-            { q: "Code smell дегеніміз:", options: ["Жақсы код", "Жаман құрылым белгісі", "Қате хабарлама", "Айнымалы", "Файл"], correct: 1 },
-            { q: "Refactoring кезінде:", options: ["Функционал өзгермейді", "Жаңа қате қосылады", "Код жойылады", "Интернет қосылады", "Компьютер өшеді"], correct: 0 },
-            { q: "Қай тест жүйені толық тексереді?", options: ["Unit test", "Integration test", "System test", "Static test", "Manual test"], correct: 2 },
-            { q: "Integration test не тексереді?", options: ["Бір функцияны", "Модульдердің байланысын", "Дизайнды", "Интернетті", "Файлды"], correct: 1 },
-            { q: "Manual testing дегеніміз:", options: ["Қолмен тексеру", "Автоматты тексеру", "Архивтеу", "Форматтау", "Орнату"], correct: 0 },
-            { q: "Automated testing артықшылығы:", options: ["Жылдамдық", "Қате көбейту", "Файл жою", "Интернет өшіру", "Дизайн бұзу"], correct: 0 },
-            { q: "Қате қайталанса:", options: ["Себебін терең талдау керек", "Елемеу керек", "Файл жою керек", "Компьютер ауыстыру керек", "Интернет қосу керек"], correct: 0 },
-            { q: "Clean code мақсаты:", options: ["Оқылуы жеңіл код", "Ұзын код", "Қате код", "Форматсыз код", "Архивтелген код"], correct: 0 },
-            { q: "DRY принципі:", options: ["Қайталауды азайту", "Қате қосу", "Файл жою", "Интернет қосу", "Дизайн өзгерту"], correct: 0 },
-            { q: "SOLID принциптері:", options: ["Дизайн қағидалары", "Қате түрлері", "Файл атауы", "Интернет түрі", "Айнымалы атауы"], correct: 0 },
-            { q: "Код сапасын арттыру үшін:", options: ["Тестілеу жүргізу", "Комментарийсіз жазу", "Барлығын қысқарту", "Форматтамау", "Тексермеу"], correct: 0 },
-            { q: "Exception түрін нақты көрсету:", options: ["Жақсы тәжірибе", "Қате", "Міндет емес", "Интернетке байланысты", "Файлға байланысты"], correct: 0 },
-            { q: "Логикалық қате көбіне:", options: ["Есептеуде болады", "Интернетте болады", "Файлда болады", "Серверде болады", "Принтерде болады"], correct: 0 },
-            { q: "Кодты қайта пайдалану:", options: ["Қайта қолдану", "Жою", "Архивтеу", "Форматтау", "Өшіру"], correct: 0 },
-            { q: "CI/CD мақсаты:", options: ["Автоматты құрастыру және тексеру", "Файл жою", "Интернет өшіру", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
-            { q: "Bug report құрамына кіреді:", options: ["Қате сипаттамасы", "Музыка", "Видео", "Сурет салу", "Архив"], correct: 0 },
-            { q: "Қате табылған орта:", options: ["Production", "Test", "Dev", "Барлығы мүмкін", "Ешқайсысы"], correct: 3 },
-            { q: "Code review кім жасайды?", options: ["Басқа бағдарламашы", "Клиент", "Дизайнер", "Қолданушы", "Принтер"], correct: 0 },
-            { q: "Тестілеу кезеңі:", options: ["Жобалау алдында", "Әзірлеу кезінде және кейін", "Орнатудан кейін ғана", "Архивтегенде", "Форматтағанда"], correct: 1 },
-            { q: "Қатені түзеткен соң:", options: ["Қайта тестілеу керек", "Елемеу керек", "Файл жою керек", "Интернет өшіру керек", "Компьютер ауыстыру керек"], correct: 0 },
-            { q: "Бағдарламалық код сапасының негізгі көрсеткіші:", options: ["Қатесіз жұмыс", "Ұзындығы", "Түсі", "Форматы", "Архив көлемі"], correct: 0 }
-        ];
-        
-        const TOTAL_QUESTIONS = 100;
-        
-        // ========== ВАРИАНТТАРДЫ АРАЛАСТЫРУ ==========
-        function shuffleArray(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-        
-        function shuffleQuestionOptions(question) {
-            const optionsWithIndex = question.options.map((opt, idx) => ({ opt, originalIndex: idx }));
-            const shuffled = shuffleArray([...optionsWithIndex]);
-            const newCorrectIndex = shuffled.findIndex(item => item.originalIndex === question.correct);
-            return {
-                q: question.q,
-                options: shuffled.map(item => item.opt),
-                correct: newCorrectIndex
-            };
-        }
-        
-        function getQuestionsWithShuffledOptions() {
-            return ORIGINAL_QUESTIONS.map(q => shuffleQuestionOptions(q));
-        }
-        
-        let QUESTIONS = getQuestionsWithShuffledOptions();
-        
-        // ========== КҮЙ ==========
-        let currentUser = null;
-        let answers = new Array(TOTAL_QUESTIONS).fill(null);
-        let questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
-        let currentIndex = 0;
-        let testFinished = false;
-        
-        let loginStream = null;
-        let faceApiLoaded = false;
-        let loginFaceCaptured = null;
-        let loginFaceDetected = false;
-        let deviceFingerprint = null;
-        let fullDeviceInfo = null;
-        
-        // Шапалақ тану үшін айнымалылар
-        let clapAudioContext = null;
-        let clapStream = null;
-        let clapDetected = false;
-        let clapDetectionActive = false;
-        let clapCount = 0;
-        const CLAP_THRESHOLD = 0.3;
-        const CLAP_REQUIRED = 2;
-        
-        const ADMIN_PASS = "7777";
-        const STORAGE_KEY = "unsiz_test_results_100";
-        const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_100";
-        
-        // Телефон үшін 5 рет түртуді анықтау
-        let tapCount = 0;
-        let tapTimer = null;
-        const TAP_REQUIRED = 5;
-        const TAP_TIMEOUT = 800;
-        let adminTapEnabled = true;
-        
-        // Құрылғы ақпаратын көрсету
-        fullDeviceInfo = getDetailedDeviceInfo();
-        document.getElementById('loginDeviceInfo').innerHTML = 
-            `${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type} | ${fullDeviceInfo.browser} | ${fullDeviceInfo.os} | ${fullDeviceInfo.screen}`;
-        
-        // ========== САУСАҚ ІЗІ СУРЕТІН ГЕНЕРАЦИЯЛАУ ==========
-        function generateFingerprintImage(seed) {
-            const canvas = document.createElement('canvas');
-            canvas.width = 150;
-            canvas.height = 150;
-            const ctx = canvas.getContext('2d');
-            
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, '#0d1a0d');
-            gradient.addColorStop(1, '#1a2a1a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-            const centerX = 75;
-            const centerY = 75;
-            
-            const numLines = 10 + (hash % 6);
-            for (let i = 0; i < numLines; i++) {
-                ctx.beginPath();
-                ctx.ellipse(centerX + (hash % 7) - 3, centerY + (hash % 5) - 2 + i * 0.5, 50 - i * 3 + (hash % 10), 60 - i * 3 + ((hash * 2) % 8), (hash % 10) * 0.1, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.06})`;
-                ctx.lineWidth = 2.5 - i * 0.12;
-                ctx.stroke();
-            }
-            
-            ctx.beginPath();
-            ctx.arc(centerX, centerY + 5, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#00ff88';
-            ctx.shadowColor = '#00ff88';
-            ctx.shadowBlur = 15;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            ctx.strokeStyle = '#00ff88';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(0, 0, canvas.width, canvas.height);
-            
-            return canvas.toDataURL('image/png');
-        }
-        
-        function drawFingerprintOnCanvas(seed) {
-            const canvas = document.getElementById('fingerprintCanvas');
-            if (!canvas) return;
-            
-            const ctx = canvas.getContext('2d');
-            const hash = seed.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-            const centerX = 75;
-            const centerY = 75;
-            
-            const gradient = ctx.createLinearGradient(0, 0, 150, 150);
-            gradient.addColorStop(0, '#0d1a0d');
-            gradient.addColorStop(1, '#1a2a1a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 150, 150);
-            
-            const numLines = 10 + (hash % 6);
-            for (let i = 0; i < numLines; i++) {
-                ctx.beginPath();
-                ctx.ellipse(centerX + (hash % 7) - 3, centerY + (hash % 5) - 2 + i * 0.5, 50 - i * 3 + (hash % 10), 60 - i * 3 + ((hash * 2) % 8), (hash % 10) * 0.1, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(0, 255, 136, ${0.3 + i * 0.06})`;
-                ctx.lineWidth = 2.5 - i * 0.12;
-                ctx.stroke();
-            }
-            
-            ctx.beginPath();
-            ctx.arc(centerX, centerY + 5, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#00ff88';
-            ctx.shadowColor = '#00ff88';
-            ctx.shadowBlur = 15;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            ctx.strokeStyle = '#00ff88';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(0, 0, 150, 150);
-        }
-        
-        const defaultSeed = 'default_' + Date.now();
-        drawFingerprintOnCanvas(defaultSeed);
-        
-        // ========== FINGERPRINTJS ==========
-        async function initFingerprint() {
-            try {
-                const fp = await FingerprintJS.load();
-                const result = await fp.get();
-                deviceFingerprint = result.visitorId;
-                return result;
-            } catch(e) {
-                deviceFingerprint = 'fp_' + Date.now() + '_' + Math.random().toString(36);
-                return null;
-            }
-        }
-        
-        initFingerprint();
-        
-        // DOM элементтері
-        const loginScreen = document.getElementById('loginScreen');
-        const mainSite = document.getElementById('mainSite');
-        const loginVideo = document.getElementById('loginVideo');
-        const loginFaceStatus = document.getElementById('loginFaceStatus');
-        const startLoginCam = document.getElementById('startLoginCameraBtn');
-        const captureLoginFace = document.getElementById('captureLoginFaceBtn');
-        const faceLoginBtn = document.getElementById('faceLoginBtn');
-        const facePreviewContainer = document.getElementById('facePreviewContainer');
-        const facePreview = document.getElementById('facePreview');
-        const testArea = document.getElementById('testArea');
-        const resultArea = document.getElementById('resultArea');
-        const correctSpan = document.getElementById('correctCount');
-        const wrongSpan = document.getElementById('wrongCount');
-        const currentQSpan = document.getElementById('currentQuestionDisplay');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const navButtons = document.getElementById('navButtons');
-        const userInfoBar = document.getElementById('userInfoBar');
-        const biometricStatus = document.getElementById('biometricStatus');
-        const registerBiometricBtn = document.getElementById('registerBiometricBtn');
-        const loginWithBiometricBtn = document.getElementById('loginWithBiometricBtn');
-        const biometricDevicesInfo = document.getElementById('biometricDevicesInfo');
-        const shuffleIndicator = document.getElementById('shuffleIndicator');
-        
-        // Шапалақ DOM элементтері
-        const clapHands = document.getElementById('clapHands');
-        const clapStatus = document.getElementById('clapStatus');
-        const startClapDetectionBtn = document.getElementById('startClapDetectionBtn');
-        const clapLoginBtn = document.getElementById('clapLoginBtn');
-        const clapCountSpan = document.getElementById('clapCount');
-        
-        // ========== ТАБ АУЫСТЫРУ ==========
-        document.querySelectorAll('.auth-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
-                tab.classList.add('active');
-                const panelId = tab.dataset.tab === 'face' ? 'facePanel' : 
-                               tab.dataset.tab === 'fingerprint' ? 'fingerprintPanel' : 'clapPanel';
-                document.getElementById(panelId).classList.add('active');
-            });
+        // Пернелерді блоктау
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.keyCode === 123) e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 73) e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 74) e.preventDefault();
+            if (e.ctrlKey && e.keyCode === 85) e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && e.keyCode === 67) e.preventDefault();
+            if (e.ctrlKey && e.keyCode === 83) e.preventDefault();
         });
         
-        // ========== АДМИН ПАНЕЛІН АШУ (ТЕК ТЕЛЕФОНДА ЖӘНЕ КІРУ ЭКРАНЫНДА) ==========
-        function handleAdminTap(e) {
-            if (!isMobileDevice()) return;
-            if (!adminTapEnabled) return;
-            if (document.getElementById('adminModal').style.display === 'block') return;
-            if (document.getElementById('imageModal').style.display === 'flex') return;
-            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.classList.contains('option') || e.target.classList.contains('auth-tab')) return;
-            
-            tapCount++;
-            if (tapTimer) clearTimeout(tapTimer);
-            
-            tapTimer = setTimeout(() => {
-                tapCount = 0;
-            }, TAP_TIMEOUT);
-            
-            if (tapCount >= TAP_REQUIRED) {
-                tapCount = 0;
-                clearTimeout(tapTimer);
-                openAdminModal();
+        // DevTools анықтау
+        setInterval(() => {
+            if (devToolsOpen) return;
+            const start = performance.now();
+            debugger;
+            const end = performance.now();
+            if (end - start > 100) {
+                devToolsOpen = true;
+                warning.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             }
+        }, 1000);
+        
+        const checkSize = () => {
+            const t = 160;
+            if (window.outerWidth - window.innerWidth > t || window.outerHeight - window.innerHeight > t) {
+                devToolsOpen = true;
+                warning.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        };
+        setInterval(checkSize, 500);
+        window.addEventListener('resize', checkSize);
+        
+        // Console тазалау
+        if (window.console) {
+            ['log','debug','info','warn','error','table','trace','dir','clear'].forEach(m => console[m] = ()=> {});
         }
-        
-        document.body.addEventListener('click', handleAdminTap);
-        
-        function openAdminModal() {
-            const adminModal = document.getElementById('adminModal');
-            adminModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            document.getElementById('adminPasswordScreen').classList.remove('hidden');
-            document.getElementById('adminPanelContent').classList.add('hidden');
-            document.getElementById('adminPass').value = '';
-            document.getElementById('adminError').textContent = '';
-        }
-        
-        // ========== FACE API ==========
-        async function loadFaceAPI() {
-            if (faceApiLoaded) return;
-            try {
-                loginFaceStatus.textContent = '⏳ Модель жүктелуде...';
-                loginFaceStatus.className = 'face-status-login waiting';
-                
-                const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
-                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
-                
-                faceApiLoaded = true;
-                loginFaceStatus.textContent = '✅ Дайын. Камераны қосыңыз';
-                loginFaceStatus.className = 'face-status-login success';
-            } catch(e) {
-                loginFaceStatus.textContent = '❌ Модель жүктелмеді';
-                loginFaceStatus.className = 'face-status-login error';
-            }
-        }
-        
-        loadFaceAPI();
-        
-        // ========== БИОМЕТРИЯ ==========
-        function base64ToArrayBuffer(base64) {
-            const binary = atob(base64);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-            return bytes.buffer;
-        }
-        
-        function arrayBufferToBase64(buffer) {
-            const bytes = new Uint8Array(buffer);
-            let binary = '';
-            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-            return btoa(binary);
-        }
-        
-        async function checkBiometricSupport() {
-            if (!window.PublicKeyCredential) {
-                biometricStatus.innerHTML = '❌ Браузер биометрияны қолдамайды';
-                biometricStatus.className = 'biometric-info error';
-                return false;
-            }
-            
-            try {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                if (available) {
-                    biometricStatus.innerHTML = '✅ Саусақ ізі / Бет тану қолжетімді';
-                    biometricStatus.className = 'biometric-info success';
-                    
-                    const ua = navigator.userAgent;
-                    if (ua.includes('Windows')) biometricDevicesInfo.innerHTML = '🖥️ Windows Hello қолданыңыз';
-                    else if (ua.includes('Mac')) biometricDevicesInfo.innerHTML = '🍎 Touch ID қолданыңыз';
-                    else if (ua.includes('Android')) biometricDevicesInfo.innerHTML = '📱 Саусақ ізі қолданыңыз';
-                    else if (ua.includes('iPhone') || ua.includes('iPad')) biometricDevicesInfo.innerHTML = '📱 Face ID / Touch ID';
-                    
-                    return true;
-                } else {
-                    biometricStatus.innerHTML = '⚠️ Биометрия құрылғысы табылмады';
-                    biometricStatus.className = 'biometric-info waiting';
-                    return false;
-                }
-            } catch(e) {
-                biometricStatus.innerHTML = '❌ Биометрия тексеру қатесі';
-                biometricStatus.className = 'biometric-info error';
-                return false;
-            }
-        }
-        
-        checkBiometricSupport();
-        
-        registerBiometricBtn.addEventListener('click', async () => {
-            const isSupported = await checkBiometricSupport();
-            if (!isSupported) {
-                alert('Құрылғыңыз биометрияны қолдамайды. Түр (бет тану) әдісін қолданыңыз.');
-                return;
-            }
-            
-            try {
-                biometricStatus.innerHTML = '🖐️ Саусақ ізіңізді сканерлеңіз...';
-                biometricStatus.className = 'biometric-info waiting';
-                
-                const userId = 'user_' + Date.now();
-                const challenge = new Uint8Array(32);
-                crypto.getRandomValues(challenge);
-                
-                const publicKey = {
-                    challenge: challenge,
-                    rp: { name: "UNSIZ Test" },
-                    user: {
-                        id: new TextEncoder().encode(userId),
-                        name: 'user@unsiz.kz',
-                        displayName: 'UNSIZ User'
-                    },
-                    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
-                    authenticatorSelection: {
-                        authenticatorAttachment: "platform",
-                        userVerification: "required",
-                        residentKey: "required"
-                    },
-                    timeout: 60000,
-                    attestation: "none"
-                };
-                
-                const credential = await navigator.credentials.create({ publicKey });
-                const credentialId = arrayBufferToBase64(credential.rawId);
-                const fingerprintImage = generateFingerprintImage(credentialId + deviceFingerprint);
-                drawFingerprintOnCanvas(credentialId + deviceFingerprint);
-                
-                let users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
-                users.push({
-                    id: userId,
-                    credentialId: credentialId,
-                    fingerprintImage: fingerprintImage,
-                    deviceInfo: fullDeviceInfo,
-                    registeredAt: new Date().toLocaleString('kk-KZ')
-                });
-                localStorage.setItem(BIOMETRIC_STORAGE_KEY, JSON.stringify(users));
-                
-                biometricStatus.innerHTML = '✅ Саусақ ізі сәтті тіркелді!';
-                biometricStatus.className = 'biometric-info success';
-                
-                setTimeout(() => {
-                    proceedToLogin('biometric', null, fingerprintImage);
-                }, 1000);
-                
-            } catch(e) {
-                console.error('Registration error:', e);
-                biometricStatus.innerHTML = '❌ Тіркеу қатесі: ' + (e.message || 'Қайталап көріңіз');
-                biometricStatus.className = 'biometric-info error';
-            }
-        });
-        
-        loginWithBiometricBtn.addEventListener('click', async () => {
-            const isSupported = await checkBiometricSupport();
-            if (!isSupported) {
-                alert('Құрылғыңыз биометрияны қолдамайды. Түр (бет тану) әдісін қолданыңыз.');
-                return;
-            }
-            
-            try {
-                biometricStatus.innerHTML = '🖐️ Кіру үшін саусақ ізіңізді тексеріңіз...';
-                biometricStatus.className = 'biometric-info waiting';
-                
-                const challenge = new Uint8Array(32);
-                crypto.getRandomValues(challenge);
-                
-                const publicKey = {
-                    challenge: challenge,
-                    timeout: 60000,
-                    userVerification: "required"
-                };
-                
-                const assertion = await navigator.credentials.get({ publicKey });
-                const credentialId = arrayBufferToBase64(assertion.rawId);
-                const users = JSON.parse(localStorage.getItem(BIOMETRIC_STORAGE_KEY) || '[]');
-                const user = users.find(u => u.credentialId === credentialId);
-                
-                if (user) {
-                    biometricStatus.innerHTML = '✅ Кіру сәтті!';
-                    biometricStatus.className = 'biometric-info success';
-                    drawFingerprintOnCanvas(user.credentialId + deviceFingerprint);
-                    setTimeout(() => {
-                        proceedToLogin('biometric', null, user.fingerprintImage);
-                    }, 500);
-                } else {
-                    throw new Error('Саусақ ізі танылмады');
-                }
-                
-            } catch(e) {
-                console.error('Login error:', e);
-                biometricStatus.innerHTML = '❌ Кіру қатесі: Саусақ ізі расталмады';
-                biometricStatus.className = 'biometric-info error';
-            }
-        });
-        
-        // ========== ШАПАЛАҚ ТАНУ ==========
-        async function startClapDetection() {
-            try {
-                clapStatus.textContent = '🎤 Микрофонға рұқсат сұралуда...';
-                clapStatus.className = 'clap-info waiting';
-                
-                clapStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                clapAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = clapAudioContext.createMediaStreamSource(clapStream);
-                
-                const analyser = clapAudioContext.createAnalyser();
-                analyser.fftSize = 256;
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                
-                source.connect(analyser);
-                
-                clapStatus.textContent = '👏 Микрофон дайын. 2 рет шапалақтаңыз!';
-                clapStatus.className = 'clap-info success';
-                clapDetectionActive = true;
-                clapCount = 0;
-                clapCountSpan.textContent = `0/${CLAP_REQUIRED}`;
-                startClapDetectionBtn.disabled = true;
-                
-                let lastClapTime = 0;
-                const CLAP_COOLDOWN = 500;
-                
-                function detectClap() {
-                    if (!clapDetectionActive) return;
-                    
-                    analyser.getByteFrequencyData(dataArray);
-                    
-                    let sum = 0;
-                    for (let i = 0; i < bufferLength; i++) {
-                        sum += dataArray[i];
-                    }
-                    const average = sum / bufferLength;
-                    const normalizedVolume = average / 255;
-                    
-                    const now = Date.now();
-                    if (normalizedVolume > CLAP_THRESHOLD && (now - lastClapTime) > CLAP_COOLDOWN) {
-                        lastClapTime = now;
-                        clapCount++;
-                        clapCountSpan.textContent = `${clapCount}/${CLAP_REQUIRED}`;
-                        
-                        clapHands.style.transform = 'scale(0.8)';
-                        setTimeout(() => clapHands.style.transform = 'scale(1)', 100);
-                        
-                        clapStatus.textContent = `👏 Шапалақ анықталды! (${clapCount}/${CLAP_REQUIRED})`;
-                        
-                        if (clapCount >= CLAP_REQUIRED) {
-                            clapDetected = true;
-                            clapStatus.textContent = '✅ Шапалақпен кіруге дайын!';
-                            clapStatus.className = 'clap-info success';
-                            clapLoginBtn.disabled = false;
-                            stopClapDetection();
-                        }
-                    }
-                    
-                    requestAnimationFrame(detectClap);
-                }
-                
-                detectClap();
-                
-            } catch (error) {
-                console.error('Микрофон қатесі:', error);
-                clapStatus.textContent = '❌ Микрофонға рұқсат берілмеді';
-                clapStatus.className = 'clap-info error';
-                startClapDetectionBtn.disabled = false;
-            }
-        }
-        
-        function stopClapDetection() {
-            clapDetectionActive = false;
-            if (clapStream) {
-                clapStream.getTracks().forEach(track => track.stop());
-                clapStream = null;
-            }
-            if (clapAudioContext) {
-                clapAudioContext.close();
-                clapAudioContext = null;
-            }
-        }
-        
-        function clapLogin() {
-            if (!clapDetected) {
-                alert('Алдымен шапалақтап, дыбысты танытыңыз');
-                return;
-            }
-            
-            const clapCanvas = document.createElement('canvas');
-            clapCanvas.width = 150;
-            clapCanvas.height = 150;
-            const ctx = clapCanvas.getContext('2d');
-            
-            const gradient = ctx.createRadialGradient(75, 75, 0, 75, 75, 75);
-            gradient.addColorStop(0, '#ffaa00');
-            gradient.addColorStop(1, '#2a1a0a');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 150, 150);
-            
-            ctx.font = '60px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('👏', 75, 75);
-            
-            ctx.strokeStyle = '#ffaa00';
-            ctx.lineWidth = 3;
-            ctx.strokeRect(0, 0, 150, 150);
-            
-            const clapImage = clapCanvas.toDataURL('image/png');
-            
-            proceedToLogin('clap', null, clapImage);
-        }
-        
-        startClapDetectionBtn.addEventListener('click', startClapDetection);
-        clapLoginBtn.addEventListener('click', clapLogin);
-        
-        // ========== КАМЕРА ==========
-        startLoginCam.addEventListener('click', async () => {
-            try {
-                if (loginStream) {
-                    loginStream.getTracks().forEach(t => t.stop());
-                    loginStream = null;
-                }
-                
-                loginFaceStatus.textContent = '📷 Камера сұралуда...';
-                loginFaceStatus.className = 'face-status-login waiting';
-                
-                loginStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'user', width: 640, height: 480 } 
-                });
-                
-                loginVideo.srcObject = loginStream;
-                
-                await new Promise(resolve => {
-                    loginVideo.onloadedmetadata = () => {
-                        loginVideo.play();
-                        resolve();
-                    };
-                });
-                
-                loginFaceStatus.textContent = '📷 Камера дайын';
-                loginFaceStatus.className = 'face-status-login success';
-                captureLoginFace.disabled = false;
-                startLoginCam.disabled = true;
-                
-            } catch(e) {
-                loginFaceStatus.textContent = '❌ Камераға рұқсат берілмеді';
-                loginFaceStatus.className = 'face-status-login error';
-            }
-        });
-        
-        captureLoginFace.addEventListener('click', async () => {
-            if (!faceApiLoaded) {
-                loginFaceStatus.textContent = '⏳ Модель жүктелуде...';
-                return;
-            }
-            
-            loginFaceStatus.textContent = '🔍 Түр ізделуде...';
-            loginFaceStatus.className = 'face-status-login waiting';
-            
-            try {
-                const detections = await faceapi.detectAllFaces(
-                    loginVideo, 
-                    new faceapi.TinyFaceDetectorOptions()
-                ).withFaceLandmarks();
-                
-                if (detections.length === 0) throw new Error('Түр табылмады');
-                if (detections.length > 1) throw new Error('Бірнеше түр табылды');
-                
-                const detection = detections[0];
-                if (detection.detection.score < 0.7) throw new Error('Түр анық емес');
-                
-                const canvas = document.createElement('canvas');
-                const box = detection.detection.box;
-                const padding = 40;
-                const x = Math.max(0, box.x - padding);
-                const y = Math.max(0, box.y - padding);
-                const width = Math.min(box.width + padding * 2, loginVideo.videoWidth - x);
-                const height = Math.min(box.height + padding * 2, loginVideo.videoHeight - y);
-                
-                canvas.width = 200;
-                canvas.height = 200;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(loginVideo, x, y, width, height, 0, 0, 200, 200);
-                
-                loginFaceCaptured = canvas.toDataURL('image/jpeg', 0.9);
-                loginFaceDetected = true;
-                
-                facePreview.src = loginFaceCaptured;
-                facePreviewContainer.style.display = 'block';
-                
-                loginFaceStatus.textContent = '✅ Түр танылды!';
-                loginFaceStatus.className = 'face-status-login success';
-                faceLoginBtn.disabled = false;
-                
-                if (loginStream) {
-                    loginStream.getTracks().forEach(t => t.stop());
-                    loginStream = null;
-                }
-                loginVideo.srcObject = null;
-                captureLoginFace.disabled = true;
-                
-            } catch(e) {
-                loginFaceStatus.textContent = '❌ ' + e.message;
-                loginFaceStatus.className = 'face-status-login error';
-            }
-        });
-        
-        faceLoginBtn.addEventListener('click', () => {
-            if (!loginFaceDetected) { alert('Алдымен түріңізді танытыңыз'); return; }
-            proceedToLogin('face', loginFaceCaptured, null);
-        });
-        
-        // ========== КІРУ ФУНКЦИЯСЫ ==========
-        function proceedToLogin(method, faceData, imageData) {
-            adminTapEnabled = false;
-            tapCount = 0;
-            if (tapTimer) clearTimeout(tapTimer);
-            
-            if (loginStream) {
-                loginStream.getTracks().forEach(t => t.stop());
-                loginStream = null;
-            }
-            stopClapDetection();
-            
-            currentUser = {
-                face: faceData,
-                loginMethod: method,
-                fingerprintImage: method === 'biometric' ? imageData : null,
-                clapImage: method === 'clap' ? imageData : null,
-                deviceInfo: fullDeviceInfo,
-                name: method === 'face' ? 'Түрмен кірді' : 
-                      method === 'biometric' ? 'Саусақ ізімен кірді' : 'Шапалақпен кірді',
-                loginTime: new Date().toLocaleString('kk-KZ')
-            };
-            
-            QUESTIONS = getQuestionsWithShuffledOptions();
-            answers = new Array(TOTAL_QUESTIONS).fill(null);
-            questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
-            currentIndex = 0;
-            testFinished = false;
-            
-            loginScreen.classList.add('hidden');
-            mainSite.classList.add('visible');
-            userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type}`;
-            shuffleIndicator.textContent = '🔄 ВАРИАНТТАР АРАЛАСТЫ';
-            renderQuestion();
-            updateStats();
-        }
-        
-        // ========== ТЕСТ ==========
-        function renderQuestion() {
-            if (testFinished) return;
-            
-            const q = QUESTIONS[currentIndex];
-            const selected = answers[currentIndex];
-            
-            let html = `<div class="question-card"><div class="question-text">${currentIndex+1}. ${q.q}</div><div class="options-grid">`;
-            
-            q.options.forEach((opt, idx) => {
-                let cls = 'option';
-                if (selected !== null) {
-                    if (idx === q.correct) cls += ' correct';
-                    else if (idx === selected) cls += ' wrong';
-                    cls += ' disabled';
-                }
-                html += `<div class="${cls}" data-opt="${idx}">${opt}</div>`;
-            });
-            
-            html += '</div></div>';
-            testArea.innerHTML = html;
-            
-            if (selected === null) {
-                document.querySelectorAll('.option').forEach(el => {
-                    el.addEventListener('click', () => selectAnswer(parseInt(el.dataset.opt)));
-                });
-            }
-            
-            currentQSpan.textContent = currentIndex + 1;
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex === TOTAL_QUESTIONS - 1;
-            
-            checkAllAnswered();
-        }
-        
-        function checkAllAnswered() {
-            const allAnswered = answers.every(a => a !== null);
-            if (allAnswered && !testFinished) {
-                setTimeout(() => {
-                    if (!testFinished) finishTest();
-                }, 500);
-            }
-        }
-        
-        function selectAnswer(optIdx) {
-            if (answers[currentIndex] !== null) return;
-            
-            const q = QUESTIONS[currentIndex];
-            const isCorrect = (optIdx === q.correct);
-            
-            answers[currentIndex] = optIdx;
-            questionStatus[currentIndex] = isCorrect;
-            
-            renderQuestion();
-            updateStats();
-            
-            if (currentIndex < TOTAL_QUESTIONS - 1) {
-                setTimeout(() => {
-                    currentIndex++;
-                    renderQuestion();
-                }, 250);
-            } else {
-                setTimeout(() => {
-                    checkAllAnswered();
-                }, 250);
-            }
-        }
-        
-        function updateStats() {
-            const correct = questionStatus.filter(v => v === true).length;
-            const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
-            correctSpan.textContent = correct;
-            wrongSpan.textContent = wrong;
-        }
-        
-        function saveResult() {
-            if (!currentUser) return;
-            
-            const correct = questionStatus.filter(v => v === true).length;
-            const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
-            
-            const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            
-            const record = {
-                id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
-                face: currentUser.face,
-                loginMethod: currentUser.loginMethod,
-                fingerprintImage: currentUser.fingerprintImage,
-                clapImage: currentUser.clapImage,
-                deviceInfo: currentUser.deviceInfo,
-                correct: correct, 
-                wrong: wrong, 
-                total: TOTAL_QUESTIONS,
-                date: new Date().toLocaleString('kk-KZ')
-            };
-            
-            results.push(record);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-        }
-        
-        function finishTest() {
-            if (testFinished) return;
-            testFinished = true;
-            saveResult();
-            
-            const correct = questionStatus.filter(v => v === true).length;
-            const wrong = answers.filter((a, i) => a !== null && !questionStatus[i]).length;
-            const percentage = Math.round((correct / TOTAL_QUESTIONS) * 100);
-            
-            testArea.classList.add('hidden');
-            navButtons.classList.add('hidden');
-            resultArea.classList.remove('hidden');
-            
-            let resultMessage = '';
-            if (percentage >= 90) resultMessage = '🎉 КЕРЕМЕТ!';
-            else if (percentage >= 75) resultMessage = '👍 ЖАҚСЫ!';
-            else if (percentage >= 50) resultMessage = '📚 ОРТАША';
-            else resultMessage = '💪 ТАҒЫ ДА ТЫРЫСЫҢЫЗ';
-            
-            resultArea.innerHTML = `
-                <div class="result-screen">
-                    <h2>${resultMessage}</h2>
-                    <div style="font-size:5rem; color:#cc0000; font-weight:900;">${correct}</div>
-                    <p style="font-size:1.3rem; margin:20px 0;">100 сұрақтың ішінен</p>
-                    <div style="display:flex; justify-content:center; gap:40px; margin:30px 0;">
-                        <div><span style="color:#00c853;">✔ Дұрыс:</span> ${correct}</div>
-                        <div><span style="color:#ff3b3b;">✖ Қате:</span> ${wrong}</div>
-                    </div>
-                    <div style="font-size:1.2rem; color:#8a9ab0; margin-bottom:20px;">
-                        Пайыз: ${percentage}%
-                    </div>
-                    <button class="restart-btn" onclick="location.reload()">ҚАЙТАДАН БАСТАУ</button>
-                </div>
-            `;
-        }
-        
-        prevBtn.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderQuestion();
-            }
-        });
-        
-        nextBtn.addEventListener('click', () => {
-            if (currentIndex < TOTAL_QUESTIONS - 1) {
-                currentIndex++;
-                renderQuestion();
-            }
-        });
-        
-        // ========== АДМИН ПАНЕЛІ ==========
-        const adminModal = document.getElementById('adminModal');
-        const imageModal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        
-        document.getElementById('closeAdminBtn').addEventListener('click', () => {
-            adminModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-        
-        adminModal.addEventListener('click', (e) => {
-            if (e.target === adminModal) {
-                adminModal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        document.getElementById('adminLoginBtn').addEventListener('click', () => {
-            if (document.getElementById('adminPass').value === ADMIN_PASS) {
-                document.getElementById('adminPasswordScreen').classList.add('hidden');
-                document.getElementById('adminPanelContent').classList.remove('hidden');
-                renderAdminTable();
-                document.getElementById('adminError').textContent = '';
-            } else {
-                document.getElementById('adminError').textContent = 'Қате құпия сөз!';
-            }
-        });
-        
-        document.getElementById('adminPass').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') document.getElementById('adminLoginBtn').click();
-        });
-        
-        function renderAdminTable() {
-            const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            
-            document.getElementById('adminTotalUsers').textContent = results.length;
-            
-            const tbody = document.getElementById('adminTableBody');
-            
-            if (results.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="12" style="text-align:center; padding:40px;">Әзірге нәтиже жоқ</td></tr>';
-                return;
-            }
-            
-            const reversed = [...results].reverse();
-            
-            tbody.innerHTML = reversed.map((r, i) => {
-                const percentage = Math.round((r.correct / r.total) * 100);
-                let loginMethodBadge = '';
-                if (r.loginMethod === 'biometric') {
-                    loginMethodBadge = '<span class="biometric-badge">🖐️ САУСАҚ ІЗІ</span>';
-                } else if (r.loginMethod === 'clap') {
-                    loginMethodBadge = '<span style="display:inline-block; background:#ffaa00; color:#0a0e14; padding:4px 10px; border-radius:12px; font-size:0.75rem; font-weight:bold;">👏 ШАПАЛАҚ</span>';
-                } else {
-                    loginMethodBadge = '<span class="face-badge">📷 ТҮР</span>';
-                }
-                
-                let deviceType = '—';
-                let deviceTypeClass = 'device-desktop';
-                let deviceIcon = '💻';
-                let browser = '—';
-                let os = '—';
-                let screen = '—';
-                
-                if (r.deviceInfo) {
-                    deviceType = r.deviceInfo.type || 'desktop';
-                    deviceTypeClass = r.deviceInfo.typeClass || 'device-desktop';
-                    deviceIcon = r.deviceInfo.typeIcon || '💻';
-                    browser = r.deviceInfo.browser || 'Белгісіз';
-                    os = r.deviceInfo.os || 'Белгісіз';
-                    screen = r.deviceInfo.screen || '—';
-                }
-                
-                let fingerprintCell = '—';
-                if (r.loginMethod === 'biometric' && r.fingerprintImage) {
-                    fingerprintCell = `<img src="${r.fingerprintImage}" class="fingerprint-thumb" alt="Саусақ ізі" onclick="document.getElementById('modalImage').src='${r.fingerprintImage}'; document.getElementById('imageModal').style.display='flex';">`;
-                } else if (r.loginMethod === 'clap' && r.clapImage) {
-                    fingerprintCell = `<img src="${r.clapImage}" class="fingerprint-thumb" style="border-color:#ffaa00;" alt="Шапалақ" onclick="document.getElementById('modalImage').src='${r.clapImage}'; document.getElementById('imageModal').style.display='flex';">`;
-                } else if (r.loginMethod === 'biometric') {
-                    fingerprintCell = '<div class="fingerprint-thumb" style="display:flex;align-items:center;justify-content:center;">🖐️</div>';
-                } else if (r.loginMethod === 'clap') {
-                    fingerprintCell = '<div class="fingerprint-thumb" style="display:flex;align-items:center;justify-content:center;border-color:#ffaa00;">👏</div>';
-                }
-                
-                return `
-                <tr>
-                    <td>${i+1}</td>
-                    <td style="cursor:pointer;" onclick="${r.face ? `document.getElementById('modalImage').src='${r.face}'; document.getElementById('imageModal').style.display='flex';` : ''}">
-                        ${r.face ? `<img src="${r.face}" class="face-thumb" alt="Түр">` : '—'}
-                    </td>
-                    <td>${fingerprintCell}</td>
-                    <td>${loginMethodBadge}</td>
-                    <td><span class="device-type-badge ${deviceTypeClass}">${deviceIcon} ${deviceType}</span></td>
-                    <td><small>${browser}<br>${os}</small></td>
-                    <td><small>${screen}</small></td>
-                    <td style="color:#00c853; font-weight:bold;">${r.correct}</td>
-                    <td style="color:#ff3b3b; font-weight:bold;">${r.wrong}</td>
-                    <td style="color:${percentage >= 50 ? '#00c853' : '#ff3b3b'}; font-weight:bold;">${percentage}%</td>
-                    <td><small>${r.date}</small></td>
-                    <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td>
-                </tr>
-            `}).join('');
-            
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm('Бұл нәтижені жоюға сенімдісіз бе?')) {
-                        const id = e.target.dataset.id;
-                        let allResults = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                        allResults = allResults.filter(r => r.id !== id);
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(allResults));
-                        renderAdminTable();
-                    }
-                });
-            });
-        }
-        
-        document.getElementById('clearAllResultsBtn').addEventListener('click', () => {
-            if (confirm('БАРЛЫҚ нәтижелерді жоюға сенімдісіз бе?')) {
-                localStorage.removeItem(STORAGE_KEY);
-                renderAdminTable();
-            }
-        });
-        
-        imageModal.addEventListener('click', () => {
-            imageModal.style.display = 'none';
-        });
-        
-        // Escape пернесімен жабу
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (adminModal.style.display === 'block') {
-                    adminModal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-                if (imageModal.style.display === 'flex') {
-                    imageModal.style.display = 'none';
-                }
-            }
-        });
-        
-        window.addEventListener('beforeunload', () => {
-            if (loginStream) {
-                loginStream.getTracks().forEach(t => t.stop());
-            }
-            stopClapDetection();
-        });
-        
     })();
+    
+    // ========== КӨМЕКШІ ФУНКЦИЯЛАР ==========
+    function isMobileDevice() {
+        return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    }
+    
+    function detectDeviceType() {
+        const ua = navigator.userAgent, w = window.innerWidth;
+        let t = 'desktop', i = '💻', c = 'device-desktop';
+        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) { t = 'tablet'; i = '📱'; c = 'device-tablet'; }
+        else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry/i.test(ua)) { t = 'mobile'; i = '📱'; c = 'device-mobile'; }
+        if (w <= 480) { t = 'mobile'; i = '📱'; c = 'device-mobile'; }
+        else if (w <= 768) { t = 'tablet'; i = '📱'; c = 'device-tablet'; }
+        return { type: t, icon: i, class: c };
+    }
+    
+    function getBrowser() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Edg/')) return 'Edge';
+        if (ua.includes('OPR/')||ua.includes('Opera')) return 'Opera';
+        if (ua.includes('Chrome/')) return 'Chrome';
+        if (ua.includes('Safari/')&&!ua.includes('Chrome')) return 'Safari';
+        if (ua.includes('Firefox/')) return 'Firefox';
+        return 'Белгісіз';
+    }
+    
+    function getOS() {
+        const ua = navigator.userAgent;
+        if (ua.includes('Windows NT 10.0')) return 'Windows 10/11';
+        if (ua.includes('Windows')) return 'Windows';
+        if (ua.includes('Mac OS X')) return 'macOS';
+        if (ua.includes('iPhone')||ua.includes('iPad')) return 'iOS';
+        if (ua.includes('Android')) return 'Android';
+        return 'Белгісіз';
+    }
+    
+    const fullDeviceInfo = (() => {
+        const d = detectDeviceType();
+        return { ...d, browser: getBrowser(), os: getOS(), screen: `${screen.width}x${screen.height}` };
+    })();
+    
+    document.getElementById('loginDeviceInfo').innerHTML = `${fullDeviceInfo.icon} ${fullDeviceInfo.type} | ${fullDeviceInfo.browser} | ${fullDeviceInfo.os}`;
+    
+    // ========== 100 СҰРАҚ ==========
+    const ORIGINAL_QUESTIONS = [
+        { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
+        { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
+        { q: "Логикалық қате кезінде:", options: ["Бағдарлама мүлде ашылмайды", "Қате нәтиже береді", "Компьютер өшеді", "Файл жойылады", "Желі үзіледі"], correct: 1 },
+        { q: "Runtime error қашан пайда болады?", options: ["Код жазу кезінде", "Компиляция кезінде", "Орындау кезінде", "Жобалау кезінде", "Орнату кезінде"], correct: 2 },
+        { q: "Debugger не үшін керек?", options: ["Код жазу", "Қате іздеу", "Сурет салу", "Файл сақтау", "Интернетке шығу"], correct: 1 },
+        { q: "print() функциясы не үшін қолданылады?", options: ["Қате жою", "Мәлімет шығару", "Файл ашу", "Желіге қосылу", "Код жою"], correct: 1 },
+        { q: "try-except блогы не үшін керек?", options: ["Цикл құру", "Шарт жазу", "Қателерді өңдеу", "Айнымалы құру", "Файл жою"], correct: 2 },
+        { q: "IDE дегеніміз:", options: ["Операциялық жүйе", "Бағдарламалау ортасы", "Вирус", "Драйвер", "Сервер"], correct: 1 },
+        { q: "Infinite loop дегеніміз:", options: ["Бір рет орындалатын цикл", "Шексіз цикл", "Қате код", "Айнымалы", "Функция"], correct: 1 },
+        { q: "Null мәні дегеніміз:", options: ["0 саны", "Бос мән", "1 саны", "Теріс сан", "Символ"], correct: 1 },
+        { q: "Логикалық қатені табудың ең тиімді жолы:", options: ["Компьютерді өшіру", "Кодты қайта көшіру", "Қадамдап орындау", "Интернетті тексеру", "Принтер қосу"], correct: 2 },
+        { q: "Синтаксистік қате табылғанда:", options: ["Бағдарлама дұрыс жұмыс істейді", "Компиляция тоқтайды", "Нәтиже баяу шығады", "Файл ашылады", "Желі үзіледі"], correct: 1 },
+        { q: "Айнымалы анықталмаса қандай қате шығады?", options: ["Type error", "Name error", "Index error", "Logic error", "Value error"], correct: 1 },
+        { q: "Массив шегінен тыс элементке жүгінсек:", options: ["Name error", "Type error", "Index error", "Syntax error", "Key error"], correct: 2 },
+        { q: "Type error қашан болады?", options: ["Қате атау жазылса", "Түрлер сәйкес келмесе", "Индекс дұрыс болмаса", "Цикл тоқтаса", "Файл жабылса"], correct: 1 },
+        { q: "Қатені қайталамау үшін не істеу керек?", options: ["Кодты тестілеу", "Өшіру", "Компьютер ауыстыру", "Интернет қосу", "Бағдарламаны жасыру"], correct: 0 },
+        { q: "assert командасы не үшін қолданылады?", options: ["Файл ашу", "Мәлімет басу", "Шартты тексеру", "Цикл жасау", "Айнымалы жою"], correct: 2 },
+        { q: "Лог-файл не үшін керек?", options: ["Музыка сақтау", "Қате жазбаларын сақтау", "Видео көру", "Сурет салу", "Интернетке қосылу"], correct: 1 },
+        { q: "Refactoring дегеніміз:", options: ["Кодты жою", "Код құрылымын жақсарту", "Қате қосу", "Файл форматтау", "Компьютер тазалау"], correct: 1 },
+        { q: "Unit тестілеу не тексереді?", options: ["Бүкіл жүйені", "Бір модульді", "Серверді", "Интернетті", "Дизайнды"], correct: 1 },
+        { q: "ValueError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Мәлімет түрі сәйкес келмесе", "Дұрыс емес мән енгізілсе", "Индекс артық болса", "Файл табылмаса"], correct: 2 },
+        { q: "FileNotFoundError қашан шығады?", options: ["Айнымалы жоқ болса", "Файл табылмаса", "Түр сәйкес келмесе", "Шарт қате болса", "Цикл тоқтаса"], correct: 1 },
+        { q: "except блогы қай кезде орындалады?", options: ["Қате болмаса", "Қате пайда болса", "Әрқашан", "Цикл ішінде ғана", "Функция алдында"], correct: 1 },
+        { q: "finally блогы:", options: ["Ешқашан орындалмайды", "Қате болса ғана орындалады", "Әрқашан орындалады", "Цикл жасайды", "Айнымалы құрады"], correct: 2 },
+        { q: "Логикалық қателерді табу үшін:", options: ["Кодты талдау керек", "Компьютер ауыстыру керек", "Файлды жою керек", "Интернетті өшіру керек", "Принтер қосу керек"], correct: 0 },
+        { q: "Breakpoint дегеніміз:", options: ["Қате түрі", "Бағдарламаны тоқтату нүктесі", "Айнымалы", "Цикл", "Файл"], correct: 1 },
+        { q: "Stack trace нені көрсетеді?", options: ["Дизайнды", "Қате шыққан жолды", "Интернет жылдамдығын", "Файл өлшемін", "Процессор түрін"], correct: 1 },
+        { q: "Тестілеудің мақсаты:", options: ["Қате табу", "Кодты жасыру", "Компьютерді өшіру", "Желі қосу", "Файлды көшіру"], correct: 0 },
+        { q: "Қай қате бағдарлама тоқтауына әкелуі мүмкін?", options: ["Логикалық", "Runtime error", "Комментарий қатесі", "Дизайн қатесі", "Стиль қатесі"], correct: 1 },
+        { q: "Debugging процесінің соңғы мақсаты:", options: ["Кодты жою", "Қатені түзету", "Файлды жабу", "Компьютерді өшіру", "Интернетке қосылу"], correct: 1 },
+        { q: "SyntaxError қай кезде шығады?", options: ["Орындау кезінде", "Компиляция кезінде", "Интернет жоқ кезде", "Файл жабылғанда", "Цикл тоқтағанда"], correct: 1 },
+        { q: "ZeroDivisionError қашан пайда болады?", options: ["0-ге бөлгенде", "Айнымалы жоқ болса", "Түр сәйкес келмесе", "Индекс артық болса", "Файл ашылмаса"], correct: 0 },
+        { q: "Кодтағы комментарий не үшін керек?", options: ["Қате шығару", "Түсіндіру жазу", "Файл жою", "Айнымалы құру", "Цикл жасау"], correct: 1 },
+        { q: "Қате табылғаннан кейін бірінші қадам:", options: ["Кодты өшіру", "Себебін анықтау", "Компьютерді өшіру", "Жаңа файл ашу", "Интернет қосу"], correct: 1 },
+        { q: "while циклі тоқтамаса, бұл:", options: ["Syntax error", "Логикалық қате", "Type error", "Name error", "Value error"], correct: 1 },
+        { q: "Функция дұрыс нәтиже бермесе:", options: ["Логикалық қате бар", "Компьютер бұзылған", "Интернет жоқ", "Файл ашылмаған", "Драйвер жоқ"], correct: 0 },
+        { q: "IDE-де қызыл сызық нені білдіреді?", options: ["Дұрыс код", "Синтаксистік қате", "Интернет бар", "Файл сақталған", "Принтер қосылған"], correct: 1 },
+        { q: "Exception дегеніміз:", options: ["Айнымалы", "Қате жағдай", "Цикл", "Функция", "Сервер"], correct: 1 },
+        { q: "Кодты кішкене бөліктермен тексеру:", options: ["Инсталляция", "Модульдік тексеру", "Форматтау", "Архивтеу", "Дизайн"], correct: 1 },
+        { q: "Қай әдіс қателерді азайтады?", options: ["Тестілеу", "Көшіру", "Өшіру", "Форматтамау", "Компьютер ауыстыру"], correct: 0 },
+        { q: "KeyError қашан пайда болады?", options: ["Айнымалы жоқ болса", "Сөздікте жоқ кілт қолданылса", "0-ге бөлгенде", "Түр сәйкес келмесе", "Файл ашылмаса"], correct: 1 },
+        { q: "ImportError дегеніміз:", options: ["Айнымалы қатесі", "Модуль жүктелмесе", "Индекс қатесі", "Логикалық қате", "Шарт қатесі"], correct: 1 },
+        { q: "Кодты қайта қарау (code review) мақсаты:", options: ["Қате табу", "Файл жою", "Интернет қосу", "Компьютер өшіру", "Дизайн өзгерту"], correct: 0 },
+        { q: "Traceback нені көрсетеді?", options: ["Файл көлемін", "Қате шыққан жолдар тізбегін", "Интернет жылдамдығын", "Компьютер жадын", "Экран өлшемін"], correct: 1 },
+        { q: "Бағдарламаны тест мәліметтермен тексеру:", options: ["Архивтеу", "Тестілеу", "Орнату", "Форматтау", "Көшіру"], correct: 1 },
+        { q: "Қай жағдайда try блогы орындалады?", options: ["Қате болса ғана", "Әрқашан бірінші орындалады", "Ешқашан", "Цикл ішінде ғана", "Файл жабылғанда"], correct: 1 },
+        { q: "except бірнешеу болуы мүмкін бе?", options: ["Жоқ", "Иә", "Тек біреу", "Тек циклде", "Тек функцияда"], correct: 1 },
+        { q: "Debugging құралдарының бірі:", options: ["Paint", "Debugger", "Word", "Excel", "Browser"], correct: 1 },
+        { q: "Кодтағы артық жолдарды жою:", options: ["Refactoring", "Компиляция", "Инсталляция", "Архивтеу", "Көшіру"], correct: 0 },
+        { q: "Қате табылған соң не істеу керек?", options: ["Елемеу", "Түзету", "Жою", "Компьютер өшіру", "Файл жабу"], correct: 1 },
+        { q: "AttributeError қашан шығады?", options: ["0-ге бөлгенде", "Объектіде жоқ қасиет шақырылса", "Индекс артық болса", "Файл табылмаса", "Айнымалы жоқ болса"], correct: 1 },
+        { q: "Memory error себебі:", options: ["Жад жетіспеуі", "Интернет жоқ", "Синтаксис қате", "Индекс үлкен", "Файл жабық"], correct: 0 },
+        { q: "Қай әдіс қатені тез табуға көмектеседі?", options: ["Кодты форматтау", "Қадамдап орындау", "Файл көшіру", "Өшіру", "Архивтеу"], correct: 1 },
+        { q: "Тест кейс дегеніміз:", options: ["Қате түрі", "Тексеру сценарийі", "Айнымалы", "Файл", "Сервер"], correct: 1 },
+        { q: "Boundary value testing не тексереді?", options: ["Орта мәндерді", "Шектік мәндерді", "Тек мәтінді", "Дизайнды", "Интернетті"], correct: 1 },
+        { q: "Infinite recursion себебі:", options: ["Шарт жоқ", "Файл жоқ", "Интернет жоқ", "Индекс артық", "Түр сәйкес емес"], correct: 0 },
+        { q: "raise командасы:", options: ["Қате тастау", "Цикл құру", "Айнымалы жою", "Файл ашу", "Мәлімет шығару"], correct: 0 },
+        { q: "Қате туралы хабарлама не үшін маңызды?", options: ["Уақыт өткізу", "Себебін түсіну", "Дизайн көру", "Файл өлшеу", "Интернет тексеру"], correct: 1 },
+        { q: "Regression testing мақсаты:", options: ["Жаңа қате қосу", "Бұрынғы қателер қайталанбауын тексеру", "Файл жою", "Компьютер жаңарту", "Дизайн өзгерту"], correct: 1 },
+        { q: "Кодты жиі сақтау не үшін керек?", options: ["Қате көбейту", "Мәлімет жоғалтпау", "Интернет қосу", "Форматтау", "Архивтеу"], correct: 1 },
+        { q: "Логикалық қате табудың бір жолы:", options: ["Нәтижені күтілген мәнмен салыстыру", "Компьютер өшіру", "Файл жою", "Интернет қосу", "Архивтеу"], correct: 0 },
+        { q: "Exception handling мақсаты:", options: ["Бағдарламаны тоқтату", "Қатені басқару", "Файл ашу", "Айнымалы жою", "Дизайн жасау"], correct: 1 },
+        { q: "Кодтың оқылуын жақсарту:", options: ["Түсінікті атаулар қолдану", "Барлығын бір жолға жазу", "Комментарийсіз жазу", "Форматтамау", "Қысқарту"], correct: 0 },
+        { q: "Unit test қашан жазылады?", options: ["Кодтан кейін", "Кодпен бірге", "Ешқашан", "Орнатқанда", "Архивтегенде"], correct: 1 },
+        { q: "Bug дегеніміз:", options: ["Дұрыс код", "Қате", "Сервер", "Айнымалы", "Файл"], correct: 1 },
+        { q: "Debugging мақсаты:", options: ["Қате қосу", "Қате табу және түзету", "Файл жою", "Интернет өшіру", "Компьютер ауыстыру"], correct: 1 },
+        { q: "try блогында не жазылады?", options: ["Қауіпті код", "Комментарий", "Айнымалы аты", "Файл аты", "Дизайн"], correct: 0 },
+        { q: "finally көбіне не үшін қолданылады?", options: ["Файл жабу", "Қате шығару", "Цикл құру", "Айнымалы жою", "Дизайн жасау"], correct: 0 },
+        { q: "Кодты тексерудің автоматты түрі:", options: ["Manual testing", "Automated testing", "Архивтеу", "Форматтау", "Көшіру"], correct: 1 },
+        { q: "Stack overflow себебі:", options: ["Терең рекурсия", "Интернет жоқ", "Файл жоқ", "Индекс үлкен", "Түр сәйкес емес"], correct: 0 },
+        { q: "Input тексеру не үшін қажет?", options: ["Қате болдырмау", "Интернет қосу", "Файл жою", "Дизайн өзгерту", "Архивтеу"], correct: 0 },
+        { q: "Қате шыққан жолды табу үшін:", options: ["Traceback қарау", "Компьютер өшіру", "Файл жабу", "Интернет тексеру", "Архивтеу"], correct: 0 },
+        { q: "Version control не үшін керек?", options: ["Код нұсқаларын сақтау", "Файл жою", "Интернет қосу", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
+        { q: "Git дегеніміз:", options: ["Операциялық жүйе", "Нұсқа бақылау жүйесі", "Сервер", "Айнымалы", "Қате түрі"], correct: 1 },
+        { q: "Merge conflict қашан болады?", options: ["Бір файлды екі адам өзгерткенде", "Интернет жоқ кезде", "Файл жойылғанда", "Компьютер өшкенде", "Индекс үлкенде"], correct: 0 },
+        { q: "Test coverage нені көрсетеді?", options: ["Код көлемін", "Тестпен қамтылған пайызды", "Интернет жылдамдығын", "Файл өлшемін", "Дизайн сапасын"], correct: 1 },
+        { q: "Кодты форматтау құралы:", options: ["Linter", "Printer", "Scanner", "Monitor", "Router"], correct: 0 },
+        { q: "Static analysis қашан жасалады?", options: ["Орындаусыз", "Орындау кезінде", "Интернетпен", "Серверде", "Принтерде"], correct: 0 },
+        { q: "Dynamic testing қашан жасалады?", options: ["Орындау кезінде", "Код жазғанда", "Форматтағанда", "Архивтегенде", "Дизайнда"], correct: 0 },
+        { q: "Code smell дегеніміз:", options: ["Жақсы код", "Жаман құрылым белгісі", "Қате хабарлама", "Айнымалы", "Файл"], correct: 1 },
+        { q: "Refactoring кезінде:", options: ["Функционал өзгермейді", "Жаңа қате қосылады", "Код жойылады", "Интернет қосылады", "Компьютер өшеді"], correct: 0 },
+        { q: "Қай тест жүйені толық тексереді?", options: ["Unit test", "Integration test", "System test", "Static test", "Manual test"], correct: 2 },
+        { q: "Integration test не тексереді?", options: ["Бір функцияны", "Модульдердің байланысын", "Дизайнды", "Интернетті", "Файлды"], correct: 1 },
+        { q: "Manual testing дегеніміз:", options: ["Қолмен тексеру", "Автоматты тексеру", "Архивтеу", "Форматтау", "Орнату"], correct: 0 },
+        { q: "Automated testing артықшылығы:", options: ["Жылдамдық", "Қате көбейту", "Файл жою", "Интернет өшіру", "Дизайн бұзу"], correct: 0 },
+        { q: "Қате қайталанса:", options: ["Себебін терең талдау керек", "Елемеу керек", "Файл жою керек", "Компьютер ауыстыру керек", "Интернет қосу керек"], correct: 0 },
+        { q: "Clean code мақсаты:", options: ["Оқылуы жеңіл код", "Ұзын код", "Қате код", "Форматсыз код", "Архивтелген код"], correct: 0 },
+        { q: "DRY принципі:", options: ["Қайталауды азайту", "Қате қосу", "Файл жою", "Интернет қосу", "Дизайн өзгерту"], correct: 0 },
+        { q: "SOLID принциптері:", options: ["Дизайн қағидалары", "Қате түрлері", "Файл атауы", "Интернет түрі", "Айнымалы атауы"], correct: 0 },
+        { q: "Код сапасын арттыру үшін:", options: ["Тестілеу жүргізу", "Комментарийсіз жазу", "Барлығын қысқарту", "Форматтамау", "Тексермеу"], correct: 0 },
+        { q: "Exception түрін нақты көрсету:", options: ["Жақсы тәжірибе", "Қате", "Міндет емес", "Интернетке байланысты", "Файлға байланысты"], correct: 0 },
+        { q: "Логикалық қате көбіне:", options: ["Есептеуде болады", "Интернетте болады", "Файлда болады", "Серверде болады", "Принтерде болады"], correct: 0 },
+        { q: "Кодты қайта пайдалану:", options: ["Қайта қолдану", "Жою", "Архивтеу", "Форматтау", "Өшіру"], correct: 0 },
+        { q: "CI/CD мақсаты:", options: ["Автоматты құрастыру және тексеру", "Файл жою", "Интернет өшіру", "Дизайн өзгерту", "Компьютер өшіру"], correct: 0 },
+        { q: "Bug report құрамына кіреді:", options: ["Қате сипаттамасы", "Музыка", "Видео", "Сурет салу", "Архив"], correct: 0 },
+        { q: "Қате табылған орта:", options: ["Production", "Test", "Dev", "Барлығы мүмкін", "Ешқайсысы"], correct: 3 },
+        { q: "Code review кім жасайды?", options: ["Басқа бағдарламашы", "Клиент", "Дизайнер", "Қолданушы", "Принтер"], correct: 0 },
+        { q: "Тестілеу кезеңі:", options: ["Жобалау алдында", "Әзірлеу кезінде және кейін", "Орнатудан кейін ғана", "Архивтегенде", "Форматтағанда"], correct: 1 },
+        { q: "Қатені түзеткен соң:", options: ["Қайта тестілеу керек", "Елемеу керек", "Файл жою керек", "Интернет өшіру керек", "Компьютер ауыстыру керек"], correct: 0 },
+        { q: "Бағдарламалық код сапасының негізгі көрсеткіші:", options: ["Қатесіз жұмыс", "Ұзындығы", "Түсі", "Форматы", "Архив көлемі"], correct: 0 }
+    ];
+    
+    const TOTAL = 100;
+    
+    function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+    
+    function shuffleOptions(q) {
+        const withIdx = q.options.map((o, i) => ({ o, i }));
+        const sh = shuffle([...withIdx]);
+        return {
+            q: q.q,
+            options: sh.map(x => x.o),
+            correct: sh.findIndex(x => x.i === q.correct)
+        };
+    }
+    
+    let QUESTIONS = ORIGINAL_QUESTIONS.map(q => shuffleOptions(q));
+    
+    // Күй
+    let currentUser = null;
+    let answers = new Array(TOTAL).fill(null);
+    let questionStatus = new Array(TOTAL).fill(false);
+    let currentIndex = 0;
+    let testFinished = false;
+    let loginStream = null, faceApiLoaded = false, loginFaceCaptured = null, loginFaceDetected = false;
+    let clapAudioCtx = null, clapStream = null, clapDetected = false, clapActive = false, clapCount = 0;
+    let deviceFingerprint = null;
+    let adminTapEnabled = true, tapCount = 0, tapTimer = null;
+    
+    const ADMIN_PASS = '7777', STORAGE_KEY = 'unsiz_test_results', BIO_KEY = 'unsiz_biometric';
+    
+    // Саусақ ізі суреті
+    function drawFingerprint(seed) {
+        const c = document.getElementById('fingerprintCanvas');
+        if (!c) return;
+        const ctx = c.getContext('2d');
+        const hash = seed.split('').reduce((a,b) => a + b.charCodeAt(0), 0);
+        const g = ctx.createLinearGradient(0,0,150,150);
+        g.addColorStop(0,'#0d1a0d'); g.addColorStop(1,'#1a2a1a');
+        ctx.fillStyle = g; ctx.fillRect(0,0,150,150);
+        for (let i=0; i<12; i++) {
+            ctx.beginPath();
+            ctx.ellipse(75+(hash%7)-3, 75+(hash%5)-2+i*0.5, 50-i*3+(hash%10), 60-i*3+((hash*2)%8), (hash%10)*0.1, 0, Math.PI*2);
+            ctx.strokeStyle = `rgba(0,255,136,${0.3+i*0.06})`;
+            ctx.lineWidth = 2.5 - i*0.12;
+            ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(75,80,8,0,Math.PI*2); ctx.fillStyle='#00ff88'; ctx.shadowColor='#00ff88'; ctx.shadowBlur=15; ctx.fill();
+        ctx.shadowBlur=0; ctx.strokeStyle='#00ff88'; ctx.lineWidth=2; ctx.strokeRect(0,0,150,150);
+    }
+    drawFingerprint('default');
+    
+    // FingerprintJS
+    (async () => { try { const fp = await FingerprintJS.load(); const r = await fp.get(); deviceFingerprint = r.visitorId; } catch(e) { deviceFingerprint = 'fp_'+Date.now(); } })();
+    
+    // DOM
+    const loginScreen = document.getElementById('loginScreen');
+    const mainSite = document.getElementById('mainSite');
+    const loginVideo = document.getElementById('loginVideo');
+    const loginFaceStatus = document.getElementById('loginFaceStatus');
+    const startCam = document.getElementById('startLoginCameraBtn');
+    const captureFace = document.getElementById('captureLoginFaceBtn');
+    const faceLogin = document.getElementById('faceLoginBtn');
+    const facePreview = document.getElementById('facePreview');
+    const facePreviewCont = document.getElementById('facePreviewContainer');
+    const testArea = document.getElementById('testArea');
+    const resultArea = document.getElementById('resultArea');
+    const correctSpan = document.getElementById('correctCount');
+    const wrongSpan = document.getElementById('wrongCount');
+    const currentQSpan = document.getElementById('currentQuestionDisplay');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const navButtons = document.getElementById('navButtons');
+    const userInfoBar = document.getElementById('userInfoBar');
+    const biometricStatus = document.getElementById('biometricStatus');
+    const registerBio = document.getElementById('registerBiometricBtn');
+    const loginBio = document.getElementById('loginWithBiometricBtn');
+    const clapStatus = document.getElementById('clapStatus');
+    const startClap = document.getElementById('startClapDetectionBtn');
+    const clapLoginBtn = document.getElementById('clapLoginBtn');
+    const clapCountSpan = document.getElementById('clapCount');
+    
+    // Табтар
+    document.querySelectorAll('.auth-tab').forEach(t => {
+        t.addEventListener('click', () => {
+            document.querySelectorAll('.auth-tab').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.auth-panel').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            document.getElementById(t.dataset.tab === 'face' ? 'facePanel' : t.dataset.tab === 'fingerprint' ? 'fingerprintPanel' : 'clapPanel').classList.add('active');
+        });
+    });
+    
+    // Face API
+    async function loadFace() {
+        if (faceApiLoaded) return;
+        try {
+            loginFaceStatus.textContent = '⏳ Модель жүктелуде...';
+            await faceapi.nets.tinyFaceDetector.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('https://justadudewhohacks.github.io/face-api.js/models');
+            faceApiLoaded = true;
+            loginFaceStatus.textContent = '✅ Дайын';
+        } catch(e) { loginFaceStatus.textContent = '❌ Қате'; }
+    }
+    loadFace();
+    
+    // Биометрия
+    function ab2b64(b) { return btoa(String.fromCharCode(...new Uint8Array(b))); }
+    function b642ab(s) { return Uint8Array.from(atob(s), c => c.charCodeAt(0)).buffer; }
+    
+    async function checkBio() {
+        if (!window.PublicKeyCredential) return false;
+        try { return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); } catch { return false; }
+    }
+    
+    registerBio.addEventListener('click', async () => {
+        if (!await checkBio()) { alert('Қолдамайды'); return; }
+        try {
+            biometricStatus.textContent = '🖐️ Сканерлеңіз...';
+            const cred = await navigator.credentials.create({ publicKey: {
+                challenge: crypto.getRandomValues(new Uint8Array(32)),
+                rp: { name: 'UNSIZ' },
+                user: { id: new TextEncoder().encode('u_'+Date.now()), name: 'user', displayName: 'User' },
+                pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
+                authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'required' },
+                timeout: 60000, attestation: 'none'
+            }});
+            const id = ab2b64(cred.rawId);
+            const img = (() => { const c=document.createElement('canvas'); c.width=c.height=150; const x=c.getContext('2d'); x.fillStyle='#0d1a0d'; x.fillRect(0,0,150,150); x.strokeStyle='#00ff88'; x.lineWidth=2; x.strokeRect(0,0,150,150); return c.toDataURL(); })();
+            drawFingerprint(id + deviceFingerprint);
+            let users = JSON.parse(localStorage.getItem(BIO_KEY) || '[]');
+            users.push({ id: 'u_'+Date.now(), credId: id, img, device: fullDeviceInfo });
+            localStorage.setItem(BIO_KEY, JSON.stringify(users));
+            biometricStatus.textContent = '✅ Тіркелді!';
+            setTimeout(() => proceedToLogin('biometric', null, img), 1000);
+        } catch(e) { biometricStatus.textContent = '❌ Қате'; }
+    });
+    
+    loginBio.addEventListener('click', async () => {
+        if (!await checkBio()) { alert('Қолдамайды'); return; }
+        try {
+            biometricStatus.textContent = '🖐️ Тексерілуде...';
+            const assert = await navigator.credentials.get({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), timeout: 60000, userVerification: 'required' } });
+            const id = ab2b64(assert.rawId);
+            const users = JSON.parse(localStorage.getItem(BIO_KEY) || '[]');
+            const user = users.find(u => u.credId === id);
+            if (user) {
+                drawFingerprint(user.credId + deviceFingerprint);
+                biometricStatus.textContent = '✅ Сәтті!';
+                setTimeout(() => proceedToLogin('biometric', null, user.img), 500);
+            } else throw new Error('Танылмады');
+        } catch(e) { biometricStatus.textContent = '❌ Қате'; }
+    });
+    
+    // Шапалақ
+    async function startClapDetect() {
+        try {
+            clapStatus.textContent = '🎤 Рұқсат сұралуда...';
+            clapStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            clapAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const src = clapAudioCtx.createMediaStreamSource(clapStream);
+            const analyser = clapAudioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            const data = new Uint8Array(analyser.frequencyBinCount);
+            src.connect(analyser);
+            clapStatus.textContent = '👏 2 рет шапалақтаңыз';
+            clapActive = true; clapCount = 0; clapCountSpan.textContent = '0/2';
+            startClap.disabled = true;
+            let last = 0;
+            (function detect() {
+                if (!clapActive) return;
+                analyser.getByteFrequencyData(data);
+                const avg = data.reduce((a,b)=>a+b,0)/data.length;
+                const now = Date.now();
+                if (avg/255 > 0.3 && now - last > 500) {
+                    last = now; clapCount++; clapCountSpan.textContent = `${clapCount}/2`;
+                    if (clapCount >= 2) {
+                        clapDetected = true; clapStatus.textContent = '✅ Дайын!';
+                        clapLoginBtn.disabled = false; stopClap();
+                    }
+                }
+                requestAnimationFrame(detect);
+            })();
+        } catch(e) { clapStatus.textContent = '❌ Рұқсат жоқ'; startClap.disabled = false; }
+    }
+    function stopClap() { clapActive = false; if(clapStream) clapStream.getTracks().forEach(t=>t.stop()); if(clapAudioCtx) clapAudioCtx.close(); }
+    startClap.addEventListener('click', startClapDetect);
+    clapLoginBtn.addEventListener('click', () => {
+        if (!clapDetected) { alert('Алдымен шапалақтаңыз'); return; }
+        const c = document.createElement('canvas'); c.width=c.height=150; const x=c.getContext('2d');
+        x.fillStyle='#2a1a0a'; x.fillRect(0,0,150,150); x.font='60px Arial'; x.textAlign='center'; x.fillStyle='#fff'; x.fillText('👏',75,75);
+        proceedToLogin('clap', null, c.toDataURL());
+    });
+    
+    // Камера
+    startCam.addEventListener('click', async () => {
+        try {
+            if (loginStream) loginStream.getTracks().forEach(t=>t.stop());
+            loginStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+            loginVideo.srcObject = loginStream;
+            await new Promise(r => { loginVideo.onloadedmetadata = () => { loginVideo.play(); r(); }; });
+            loginFaceStatus.textContent = '📷 Дайын';
+            captureFace.disabled = false;
+            startCam.disabled = true;
+        } catch(e) { loginFaceStatus.textContent = '❌ Камера жоқ'; }
+    });
+    
+    captureFace.addEventListener('click', async () => {
+        if (!faceApiLoaded) return;
+        try {
+            const det = await faceapi.detectAllFaces(loginVideo, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+            if (det.length !== 1 || det[0].detection.score < 0.7) throw new Error('Түр табылмады');
+            const box = det[0].detection.box;
+            const c = document.createElement('canvas'); c.width=c.height=200;
+            c.getContext('2d').drawImage(loginVideo, Math.max(0,box.x-40), Math.max(0,box.y-40), Math.min(box.width+80, loginVideo.videoWidth), Math.min(box.height+80, loginVideo.videoHeight), 0,0,200,200);
+            loginFaceCaptured = c.toDataURL('image/jpeg', 0.9);
+            loginFaceDetected = true;
+            facePreview.src = loginFaceCaptured;
+            facePreviewCont.style.display = 'block';
+            loginFaceStatus.textContent = '✅ Танылды';
+            faceLogin.disabled = false;
+            if (loginStream) loginStream.getTracks().forEach(t=>t.stop());
+            loginVideo.srcObject = null;
+        } catch(e) { loginFaceStatus.textContent = '❌ '+e.message; }
+    });
+    
+    faceLogin.addEventListener('click', () => {
+        if (!loginFaceDetected) return;
+        proceedToLogin('face', loginFaceCaptured, null);
+    });
+    
+    // Кіру
+    function proceedToLogin(method, face, img) {
+        adminTapEnabled = false; tapCount = 0; if(tapTimer) clearTimeout(tapTimer);
+        if(loginStream) loginStream.getTracks().forEach(t=>t.stop());
+        stopClap();
+        currentUser = { face, loginMethod: method, fpImg: method==='biometric'?img:null, clapImg: method==='clap'?img:null, device: fullDeviceInfo,
+            name: method==='face'?'Түрмен':method==='biometric'?'Саусақ ізімен':'Шапалақпен' };
+        QUESTIONS = ORIGINAL_QUESTIONS.map(q => shuffleOptions(q));
+        answers = new Array(TOTAL).fill(null); questionStatus = new Array(TOTAL).fill(false);
+        currentIndex = 0; testFinished = false;
+        loginScreen.classList.add('hidden'); mainSite.classList.add('visible');
+        userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.icon} ${fullDeviceInfo.type}`;
+        renderQuestion(); updateStats();
+    }
+    
+    // Тест
+    function renderQuestion() {
+        if (testFinished) return;
+        const q = QUESTIONS[currentIndex];
+        const sel = answers[currentIndex];
+        let h = `<div class="question-card"><div class="question-text">${currentIndex+1}. ${q.q}</div><div class="options-grid">`;
+        q.options.forEach((o,i) => {
+            let c = 'option';
+            if (sel !== null) { if (i === q.correct) c += ' correct'; else if (i === sel) c += ' wrong'; c += ' disabled'; }
+            h += `<div class="${c}" data-opt="${i}">${o}</div>`;
+        });
+        testArea.innerHTML = h + '</div></div>';
+        if (sel === null) document.querySelectorAll('.option').forEach(el => el.addEventListener('click', () => selectAnswer(parseInt(el.dataset.opt))));
+        currentQSpan.textContent = currentIndex+1;
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === TOTAL-1;
+        if (answers.every(a => a !== null) && !testFinished) setTimeout(() => { if (!testFinished) finishTest(); }, 500);
+    }
+    
+    function selectAnswer(idx) {
+        if (answers[currentIndex] !== null) return;
+        const q = QUESTIONS[currentIndex];
+        answers[currentIndex] = idx;
+        questionStatus[currentIndex] = idx === q.correct;
+        renderQuestion(); updateStats();
+        if (currentIndex < TOTAL-1) setTimeout(() => { currentIndex++; renderQuestion(); }, 250);
+        else setTimeout(() => { if (answers.every(a => a !== null)) finishTest(); }, 250);
+    }
+    
+    function updateStats() {
+        correctSpan.textContent = questionStatus.filter(v=>v).length;
+        wrongSpan.textContent = answers.filter((a,i)=>a!==null && !questionStatus[i]).length;
+    }
+    
+    function finishTest() {
+        testFinished = true;
+        const correct = questionStatus.filter(v=>v).length;
+        const wrong = answers.filter((a,i)=>a!==null && !questionStatus[i]).length;
+        const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        results.push({ id: Date.now()+'-'+Math.random().toString(36), face: currentUser.face, loginMethod: currentUser.loginMethod,
+            fpImg: currentUser.fpImg, clapImg: currentUser.clapImg, device: currentUser.device, correct, wrong, total: TOTAL, date: new Date().toLocaleString('kk-KZ') });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+        testArea.classList.add('hidden'); navButtons.classList.add('hidden'); resultArea.classList.remove('hidden');
+        resultArea.innerHTML = `<div class="result-screen"><h2>${correct>=90?'🎉 КЕРЕМЕТ!':correct>=75?'👍 ЖАҚСЫ!':correct>=50?'📚 ОРТАША':'💪 ТЫРЫСЫҢЫЗ'}</h2>
+            <div style="font-size:5rem;color:#cc0000;">${correct}</div><p>100 сұрақтың ішінен</p>
+            <div>✔ ${correct} | ✖ ${wrong} | ${Math.round(correct/TOTAL*100)}%</div>
+            <button class="restart-btn" onclick="location.reload()">ҚАЙТАДАН БАСТАУ</button></div>`;
+    }
+    
+    prevBtn.addEventListener('click', () => { if (currentIndex > 0) { currentIndex--; renderQuestion(); } });
+    nextBtn.addEventListener('click', () => { if (currentIndex < TOTAL-1) { currentIndex++; renderQuestion(); } });
+    
+    // Админ (телефонда 5 түрту)
+    document.body.addEventListener('click', e => {
+        if (!isMobileDevice() || !adminTapEnabled) return;
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.classList.contains('option')) return;
+        tapCount++; if(tapTimer) clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => tapCount=0, 800);
+        if (tapCount >= 5) { tapCount=0; clearTimeout(tapTimer); openAdmin(); }
+    });
+    
+    function openAdmin() {
+        document.getElementById('adminModal').style.display = 'block';
+        document.getElementById('adminPasswordScreen').classList.remove('hidden');
+        document.getElementById('adminPanelContent').classList.add('hidden');
+        document.getElementById('adminPass').value = '';
+    }
+    
+    document.getElementById('closeAdminBtn').addEventListener('click', () => document.getElementById('adminModal').style.display = 'none');
+    document.getElementById('adminLoginBtn').addEventListener('click', () => {
+        if (document.getElementById('adminPass').value === ADMIN_PASS) {
+            document.getElementById('adminPasswordScreen').classList.add('hidden');
+            document.getElementById('adminPanelContent').classList.remove('hidden');
+            renderAdminTable();
+        } else document.getElementById('adminError').textContent = 'Қате құпия сөз';
+    });
+    
+    function renderAdminTable() {
+        const results = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        document.getElementById('adminTotalUsers').textContent = results.length;
+        const tbody = document.getElementById('adminTableBody');
+        if (!results.length) { tbody.innerHTML = '<tr><td colspan="12">Нәтиже жоқ</td></tr>'; return; }
+        tbody.innerHTML = results.reverse().map((r,i) => {
+            const p = Math.round(r.correct/r.total*100);
+            let badge = r.loginMethod==='biometric'?'🖐️ САУСАҚ':r.loginMethod==='clap'?'👏 ШАПАЛАҚ':'📷 ТҮР';
+            let fpCell = '—';
+            if (r.loginMethod==='biometric' && r.fpImg) fpCell = `<img src="${r.fpImg}" class="fingerprint-thumb">`;
+            else if (r.loginMethod==='clap' && r.clapImg) fpCell = `<img src="${r.clapImg}" class="fingerprint-thumb" style="border-color:#ffaa00;">`;
+            return `<tr><td>${i+1}</td><td>${r.face?`<img src="${r.face}" class="face-thumb">`:'—'}</td><td>${fpCell}</td><td>${badge}</td>
+                <td>${r.device?.icon||'📱'} ${r.device?.type||''}</td><td>${r.device?.browser||''}<br>${r.device?.os||''}</td><td>${r.device?.screen||''}</td>
+                <td style="color:#0c0;">${r.correct}</td><td style="color:#f00;">${r.wrong}</td><td>${p}%</td><td>${r.date}</td>
+                <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td></tr>`;
+        }).join('');
+        document.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', e => {
+            if (confirm('Жою?')) {
+                let all = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                all = all.filter(x => x.id !== e.target.dataset.id);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+                renderAdminTable();
+            }
+        }));
+    }
+    
+    document.getElementById('clearAllResultsBtn').addEventListener('click', () => {
+        if (confirm('Барлығын жою?')) { localStorage.removeItem(STORAGE_KEY); renderAdminTable(); }
+    });
+    
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('adminModal').style.display = 'none'; });
+    document.getElementById('imageModal').addEventListener('click', function() { this.style.display = 'none'; });
+    
+})();
 </script>
 </body>
 </html>
