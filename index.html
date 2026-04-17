@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>UNSIZ · ТЕСТ 100 + АУДИО/ВИДЕО ҚОҢЫРАУ</title>
+    <title>UNSIZ · ТЕСТ 100 + ВИДЕОҚОҢЫРАУ</title>
     
     <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
@@ -11,19 +11,47 @@
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0e14; color: #eef2fb; font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; padding: 20px 16px; line-height: 1.5; }
+        body {
+            background: #0a0e14;
+            color: #eef2fb;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            line-height: 1.5;
+        }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        .login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0e14; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0e14;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
         .login-screen.hidden { display: none !important; }
-        .login-card { max-width: 550px; width: 100%; background: #111a24; border: 2px solid #cc0000; border-radius: 32px; padding: 36px 28px; box-shadow: 0 20px 0 #05080c; }
+        .login-card {
+            max-width: 550px;
+            width: 100%;
+            background: #111a24;
+            border: 2px solid #cc0000;
+            border-radius: 32px;
+            padding: 36px 28px;
+            box-shadow: 0 20px 0 #05080c;
+        }
         .login-header { text-align: center; margin-bottom: 32px; }
         .login-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; color: white; }
         .red-block { color: #cc0000; }
         .login-sub { color: #8a9ab0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; margin-top: 8px; }
         
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid #2a3340; flex-wrap: wrap; }
-        .auth-tab { flex: 1; background: transparent; border: none; color: #8a9ab0; padding: 12px 8px; cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; border-bottom: 2px solid transparent; }
+        .auth-tab {
+            flex: 1; background: transparent; border: none; color: #8a9ab0; padding: 12px 8px;
+            cursor: pointer; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; border-bottom: 2px solid transparent;
+        }
         .auth-tab.active { color: #cc0000; border-bottom: 2px solid #cc0000; }
         .auth-tab.green.active { color: #00ff88; border-bottom: 2px solid #00ff88; }
         .auth-tab.clap.active { color: #ffaa00; border-bottom: 2px solid #ffaa00; }
@@ -38,7 +66,10 @@
         .face-preview-container img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid #cc0000; object-fit: cover; }
         .face-status-login { text-align: center; padding: 10px; margin: 10px 0; border-radius: 8px; font-size: 0.9rem; }
         
-        .login-btn { width: 100%; background: transparent; border: 2px solid #cc0000; color: white; font-weight: 700; padding: 14px; margin-top: 8px; cursor: pointer; text-transform: uppercase; border-radius: 12px; }
+        .login-btn {
+            width: 100%; background: transparent; border: 2px solid #cc0000; color: white;
+            font-weight: 700; padding: 14px; margin-top: 8px; cursor: pointer; text-transform: uppercase; border-radius: 12px;
+        }
         .login-btn:hover { background: #cc0000; }
         .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
@@ -49,8 +80,13 @@
         
         .clap-visual { display: flex; justify-content: center; align-items: center; margin: 30px 0; position: relative; }
         .clap-hands { font-size: 4rem; user-select: none; pointer-events: none; }
-        .clap-indicator { position: absolute; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(255,170,0,0.2) 0%, transparent 70%); animation: clapPulse 1.5s infinite; }
-        @keyframes clapPulse { 0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0.2; } 100% { transform: scale(1); opacity: 0.5; } }
+        .clap-indicator {
+            position: absolute; width: 120px; height: 120px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,170,0,0.2) 0%, transparent 70%); animation: clapPulse 1.5s infinite;
+        }
+        @keyframes clapPulse {
+            0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 0.2; } 100% { transform: scale(1); opacity: 0.5; }
+        }
         
         .biometric-info { background: #1a2a1a; border: 1px solid #00ff88; border-radius: 12px; padding: 20px; margin: 20px 0; color: #00ff88; text-align: center; }
         .clap-info { background: #2a1a0a; border: 1px solid #ffaa00; border-radius: 12px; padding: 20px; margin: 20px 0; color: #ffaa00; text-align: center; }
@@ -58,8 +94,13 @@
         
         .fingerprint-scan { position: relative; width: 150px; height: 150px; margin: 25px auto; }
         .fingerprint-scan canvas { width: 100%; height: 100%; border-radius: 20px; }
-        .fingerprint-animation { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 20px; background: radial-gradient(circle, transparent 30%, rgba(0,255,136,0.15) 70%); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.05); opacity: 0.6; } 100% { transform: scale(1); opacity: 0.3; } }
+        .fingerprint-animation {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 20px;
+            background: radial-gradient(circle, transparent 30%, rgba(0,255,136,0.15) 70%); animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.05); opacity: 0.6; } 100% { transform: scale(1); opacity: 0.3; }
+        }
         
         .main-site { display: none; }
         .main-site.visible { display: block; }
@@ -73,16 +114,9 @@
         .my-id-box { background: #1a232e; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         .my-id-label { color: #8a9ab0; }
         .my-id-value { font-family: monospace; font-size: 1.2rem; color: #00ff88; background: #0d1a0d; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
-        
-        .call-type-selector { display: flex; gap: 10px; margin-bottom: 15px; }
-        .call-type-btn { flex: 1; background: #1a232e; border: 2px solid #2a3645; color: #8a9ab0; padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; text-align: center; }
-        .call-type-btn.audio.active { background: #00aa55; border-color: #00ff88; color: white; }
-        .call-type-btn.video.active { background: #0066cc; border-color: #00aaff; color: white; }
-        
         .video-call-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
         .video-input { flex: 1; min-width: 200px; padding: 15px; background: #0d1117; border: 2px solid #2a3645; border-radius: 12px; color: white; font-size: 1rem; }
         .video-btn { background: #00aa55; color: white; border: none; padding: 15px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .video-btn.blue { background: #0066cc; }
         .video-btn.red { background: #cc0000; }
         .video-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
@@ -126,24 +160,35 @@
         .votes-table th { background: #1a1a1a; padding: 12px 8px; color: #cc0000; text-transform: uppercase; font-size: 0.75rem; }
         .votes-table td { padding: 10px 8px; border-bottom: 1px solid #222; vertical-align: middle; }
         .delete-btn { background: #cc0000; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 6px; }
+        .download-btn { background: #0066cc; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 0.7rem; margin-left: 5px; }
         .hidden { display: none !important; }
         .user-info-bar { background: #1a2a1a; padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 15px; color: #00ff88; }
         .shuffle-badge { background: #2a1a3a; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: #aa88ff; margin-left: 15px; }
         
-        .incoming-call-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111a24; border: 3px solid #00ff88; border-radius: 20px; padding: 30px; z-index: 5000; text-align: center; }
+        .incoming-call-modal {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #111a24; border: 3px solid #00ff88; border-radius: 20px; padding: 30px; z-index: 5000; text-align: center;
+        }
         .incoming-call-modal h3 { color: #00ff88; font-size: 1.5rem; margin-bottom: 20px; }
         .incoming-call-modal p { color: white; margin-bottom: 30px; }
         .incoming-call-buttons { display: flex; gap: 20px; justify-content: center; }
         .call-accept { background: #00aa55; color: white; border: none; padding: 15px 30px; border-radius: 40px; cursor: pointer; }
         .call-reject { background: #cc0000; color: white; border: none; padding: 15px 30px; border-radius: 40px; cursor: pointer; }
         
-        .image-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; flex-direction: column; }
+        .image-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 4000; justify-content: center; align-items: center; flex-direction: column;
+        }
         .image-modal img { max-width: 90%; max-height: 80%; border: 2px solid #cc0000; border-radius: 10px; }
         .image-modal-close { position: absolute; top: 20px; right: 40px; font-size: 40px; color: white; cursor: pointer; }
         .image-modal-download { margin-top: 20px; background: #cc0000; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; }
-        .face-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #cc0000; cursor: pointer; }
         
-        @media (max-width: 768px) { .video-container-call { grid-template-columns: 1fr; } }
+        .face-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #cc0000; cursor: pointer; }
+        .face-thumb:hover { opacity: 0.8; }
+        
+        @media (max-width: 768px) {
+            .video-container-call { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -153,7 +198,7 @@
     <div class="login-card">
         <div class="login-header">
             <h2><span class="red-block">ҮНСІЗДІК</span><br>ТЕСТ</h2>
-            <div class="login-sub">ТҮР + САУСАҚ + ШАПАЛАҚ + АУДИО/ВИДЕО</div>
+            <div class="login-sub">ТҮР + САУСАҚ + ШАПАЛАҚ + ҚОҢЫРАУ</div>
         </div>
         <div class="device-info-bar" id="loginDeviceInfo">📱 Құрылғы анықталуда...</div>
         
@@ -166,7 +211,10 @@
         <div class="auth-panel active" id="facePanel">
             <div class="face-section">
                 <div class="video-container"><video id="loginVideo" autoplay playsinline></video></div>
-                <div class="face-preview-container" id="facePreviewContainer"><p style="color:#00ff00;">✅ Түр танылды!</p><img id="facePreview" alt="Түр"></div>
+                <div class="face-preview-container" id="facePreviewContainer">
+                    <p style="color:#00ff00;">✅ Түр танылды!</p>
+                    <img id="facePreview" alt="Түр">
+                </div>
                 <div id="loginFaceStatus" class="face-status-login info">📷 Модель жүктелуде...</div>
                 <button class="login-btn" id="startLoginCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
                 <button class="login-btn" id="captureLoginFaceBtn" disabled>🔍 ТҮРДІ ТАНУ</button>
@@ -175,7 +223,10 @@
         </div>
         
         <div class="auth-panel" id="fingerprintPanel">
-            <div class="fingerprint-scan"><canvas id="fingerprintCanvas" width="150" height="150"></canvas><div class="fingerprint-animation"></div></div>
+            <div class="fingerprint-scan">
+                <canvas id="fingerprintCanvas" width="150" height="150"></canvas>
+                <div class="fingerprint-animation"></div>
+            </div>
             <div class="biometric-info" id="biometricStatus">🖐️ Кіру үшін саусақ ізіңізді тіркеңіз</div>
             <button class="login-btn biometric-btn" id="registerBiometricBtn">🖐️ САУСАҚ ІЗІН ТІРКЕУ</button>
             <button class="login-btn biometric-btn" id="loginWithBiometricBtn" style="margin-top:15px;">🔓 САУСАҚ ІЗІМЕН КІРУ</button>
@@ -195,59 +246,101 @@
 <!-- НЕГІЗГІ САЙТ -->
 <div class="main-site" id="mainSite">
     <div class="container">
-        <div class="test-header"><h1><span class="red-block">ҚАТЕМЕН ЖҰМЫС</span><br>100 СҰРАҚ<span class="shuffle-badge" id="shuffleIndicator">🔄 ВАРИАНТТАР АРАЛАСТЫ</span></h1></div>
+        <div class="test-header">
+            <h1><span class="red-block">ҚАТЕМЕН ЖҰМЫС</span><br>100 СҰРАҚ
+                <span class="shuffle-badge" id="shuffleIndicator">🔄 ВАРИАНТТАР АРАЛАСТЫ</span>
+            </h1>
+        </div>
         <div class="user-info-bar" id="userInfoBar">👤 Қолданушы</div>
         
-        <!-- АУДИО/ВИДЕО ҚОҢЫРАУ ПАНЕЛІ -->
+        <!-- ВИДЕОҚОҢЫРАУ ПАНЕЛІ -->
         <div class="video-call-panel">
-            <div class="video-call-header"><h3>📞 АУДИО/ВИДЕО ҚОҢЫРАУ</h3><button class="video-btn" id="toggleCallPanelBtn" style="padding:10px 20px;">▼ ЖАСЫРУ</button></div>
+            <div class="video-call-header">
+                <h3>📹 ВИДЕОҚОҢЫРАУ</h3>
+                <button class="video-btn" id="toggleCallPanelBtn" style="padding:10px 20px;">▼ ЖАСЫРУ</button>
+            </div>
             <div id="callPanelContent">
-                <div class="my-id-box"><span class="my-id-label">🔑 Сіздің ID-іңіз:</span><span class="my-id-value" id="myPeerId" onclick="copyMyId()">Жүктелуде...</span></div>
-                
-                <div class="call-type-selector">
-                    <div class="call-type-btn audio active" data-type="audio">🎵 АУДИО ҚОҢЫРАУ</div>
-                    <div class="call-type-btn video" data-type="video">📹 ВИДЕО ҚОҢЫРАУ</div>
+                <div class="my-id-box">
+                    <span class="my-id-label">🔑 Сіздің ID-іңіз:</span>
+                    <span class="my-id-value" id="myPeerId" onclick="copyMyId()">Жүктелуде...</span>
                 </div>
-                
                 <div class="video-call-controls">
                     <input type="text" class="video-input" id="remotePeerIdInput" placeholder="Қоңырау шалатын ID">
-                    <button class="video-btn" id="enableMediaBtn">🎤 МЕДИА ҚОСУ</button>
-                    <button class="video-btn blue" id="startCallBtn" disabled>📞 ҚОҢЫРАУ ШАЛУ</button>
+                    <button class="video-btn" id="enableCameraBtn">📷 КАМЕРА</button>
+                    <button class="video-btn" id="startCallBtn" disabled>📹 ҚОҢЫРАУ</button>
                     <button class="video-btn red" id="endCallBtn" disabled>🔴 АЯҚТАУ</button>
                 </div>
                 <div class="video-container-call">
                     <div class="video-box"><video id="localVideo" autoplay muted playsinline></video><span class="video-label">Сіз</span></div>
                     <div class="video-box"><video id="remoteVideo" autoplay playsinline></video><span class="video-label">Қоңырау шалушы</span></div>
                 </div>
-                <div id="callStatus" class="call-status waiting">🎤 Медиа қосыңыз</div>
+                <div id="callStatus" class="call-status waiting">📷 Камераны қосыңыз</div>
             </div>
         </div>
         
-        <div class="progress-panel"><div class="stats"><div class="stat-item"><span class="stat-label">ДҰРЫС</span><span class="stat-value" id="correctCount">0</span></div><div class="stat-item"><span class="stat-label">ҚАТЕ</span><span class="stat-value" id="wrongCount">0</span></div></div><div class="badge"><span id="currentQuestionDisplay">1</span>/100</div></div>
+        <div class="progress-panel">
+            <div class="stats">
+                <div class="stat-item"><span class="stat-label">ДҰРЫС</span><span class="stat-value" id="correctCount">0</span></div>
+                <div class="stat-item"><span class="stat-label">ҚАТЕ</span><span class="stat-value" id="wrongCount">0</span></div>
+            </div>
+            <div class="badge"><span id="currentQuestionDisplay">1</span>/100</div>
+        </div>
         <div id="testArea"></div>
         <div id="resultArea" class="hidden"></div>
-        <div class="nav-buttons" id="navButtons"><button class="nav-btn" id="prevBtn" disabled>◀ АЛДЫҢҒЫ</button><button class="nav-btn" id="nextBtn">КЕЛЕСІ ▶</button></div>
+        <div class="nav-buttons" id="navButtons">
+            <button class="nav-btn" id="prevBtn" disabled>◀ АЛДЫҢҒЫ</button>
+            <button class="nav-btn" id="nextBtn">КЕЛЕСІ ▶</button>
+        </div>
     </div>
 </div>
 
 <!-- АДМИН МОДАЛЫ -->
 <div class="admin-modal" id="adminModal">
     <div class="admin-content">
-        <div style="display:flex; justify-content:space-between;"><h2 style="color:#cc0000;">АДМИН ПАНЕЛЬ</h2><span style="font-size:30px; cursor:pointer;" id="closeAdminBtn">&times;</span></div>
+        <div style="display:flex; justify-content:space-between;">
+            <h2 style="color:#cc0000;">АДМИН ПАНЕЛЬ</h2>
+            <span style="font-size:30px; cursor:pointer;" id="closeAdminBtn">&times;</span>
+        </div>
         <div id="adminPasswordScreen">
             <input type="password" id="adminPass" placeholder="Құпия сөз" style="padding:12px; background:#000; color:#fff; border:1px solid #444; width:200px; border-radius:8px;">
             <button id="adminLoginBtn" style="background:#cc0000; color:white; padding:12px 24px; margin-left:10px; border:none; border-radius:8px;">КІРУ</button>
             <div id="adminError" style="color:red; margin-top:10px;"></div>
         </div>
         <div id="adminPanelContent" class="hidden">
-            <div style="margin:20px 0; display:flex; justify-content:space-between;"><strong>БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong><button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px 20px; border:none; border-radius:8px;">🗑️ БАРЛЫҒЫН ЖОЮ</button></div>
-            <div style="overflow-x:auto;"><table class="votes-table"><thead><tr><th>#</th><th>ТҮР</th><th>САУСАҚ</th><th>КІРУ</th><th>ҚҰРЫЛҒЫ</th><th>ДҰРЫС</th><th>ҚАТЕ</th><th>%</th><th>УАҚЫТ</th><th>ӘРЕКЕТ</th></tr></thead><tbody id="adminTableBody"></tbody></table></div>
+            <div style="margin:20px 0; display:flex; justify-content:space-between;">
+                <strong>БАРЛЫҚ НӘТИЖЕЛЕР: <span id="adminTotalUsers">0</span></strong>
+                <button id="clearAllResultsBtn" style="background:#550000; color:white; padding:10px 20px; border:none; border-radius:8px;">🗑️ БАРЛЫҒЫН ЖОЮ</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="votes-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ТҮР СУРЕТІ</th>
+                            <th>САУСАҚ/ШАПАЛАҚ</th>
+                            <th>КІРУ ӘДІСІ</th>
+                            <th>ҚҰРЫЛҒЫ</th>
+                            <th>БРАУЗЕР/ОС</th>
+                            <th>ДҰРЫС</th>
+                            <th>ҚАТЕ</th>
+                            <th>%</th>
+                            <th>УАҚЫТ</th>
+                            <th>ӘРЕКЕТ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- СУРЕТ МОДАЛЫ -->
-<div class="image-modal" id="imageModal"><span class="image-modal-close" onclick="closeImageModal()">&times;</span><img id="modalImage" alt="Сурет"><button class="image-modal-download" id="downloadImageBtn">📥 СУРЕТТІ ЖҮКТЕП АЛУ</button></div>
+<div class="image-modal" id="imageModal">
+    <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+    <img id="modalImage" alt="Сурет">
+    <button class="image-modal-download" id="downloadImageBtn">📥 СУРЕТТІ ЖҮКТЕП АЛУ</button>
+</div>
 
 <script>
 (function(){
@@ -256,8 +349,8 @@
     // ========== СУРЕТ МОДАЛЫ ==========
     let currentModalImage = null;
     window.showImage = function(src) { currentModalImage = src; document.getElementById('modalImage').src = src; document.getElementById('imageModal').style.display = 'flex'; document.body.style.overflow = 'hidden'; };
-    window.closeImageModal = function() { document.getElementById('imageModal').style.display = 'none'; document.body.style.overflow = 'auto'; };
-    document.getElementById('downloadImageBtn').addEventListener('click', ()=>{ if(currentModalImage){ const a=document.createElement('a'); a.href=currentModalImage; a.download='unsiz_'+Date.now()+'.png'; a.click(); } });
+    window.closeImageModal = function() { document.getElementById('imageModal').style.display = 'none'; document.body.style.overflow = 'auto'; currentModalImage = null; };
+    document.getElementById('downloadImageBtn').addEventListener('click', function() { if(currentModalImage) { const a=document.createElement('a'); a.href=currentModalImage; a.download='unsiz_tur_'+Date.now()+'.png'; a.click(); } });
     document.getElementById('imageModal').addEventListener('click', function(e) { if(e.target === this) closeImageModal(); });
     
     // ========== ҚҰРЫЛҒЫ АҚПАРАТЫ ==========
@@ -268,89 +361,54 @@
     const fullDeviceInfo = {...detectDeviceType(), browser:getBrowser(), os:getOS()};
     document.getElementById('loginDeviceInfo').innerHTML = `${fullDeviceInfo.icon} ${fullDeviceInfo.type} | ${fullDeviceInfo.browser} | ${fullDeviceInfo.os}`;
     
-    // ========== БІРЕГЕЙ ID ГЕНЕРАЦИЯСЫ ==========
+    // ========== БІРЕГЕЙ ID ==========
     async function generateUniqueId() { let fp='u_'+Date.now()+'_'+Math.random().toString(36).substr(2,6); try{ const f=await FingerprintJS.load(); const r=await f.get(); fp='u_'+r.visitorId.substr(0,10)+'_'+Math.random().toString(36).substr(2,4); }catch(e){} return fp; }
     
-    // ========== АУДИО/ВИДЕО ҚОҢЫРАУ ЖҮЙЕСІ ==========
-    let peer=null, localStream=null, currentCall=null, callType='audio';
-    
-    document.querySelectorAll('.call-type-btn').forEach(btn => { btn.addEventListener('click', ()=>{ document.querySelectorAll('.call-type-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); callType=btn.dataset.type; }); });
-    
+    // ========== ВИДЕОҚОҢЫРАУ ==========
+    let peer=null, localStream=null, currentCall=null;
     function resetToInitialState() {
         const localVideo=document.getElementById('localVideo'), remoteVideo=document.getElementById('remoteVideo'), statusDiv=document.getElementById('callStatus');
-        const enableMediaBtn=document.getElementById('enableMediaBtn'), startCallBtn=document.getElementById('startCallBtn'), endCallBtn=document.getElementById('endCallBtn');
+        const enableCamBtn=document.getElementById('enableCameraBtn'), startCallBtn=document.getElementById('startCallBtn'), endCallBtn=document.getElementById('endCallBtn');
         const remoteIdInput=document.getElementById('remotePeerIdInput');
         if(currentCall){ currentCall.close(); currentCall=null; }
         if(remoteVideo.srcObject){ remoteVideo.srcObject.getTracks().forEach(t=>t.stop()); remoteVideo.srcObject=null; }
         if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-        localVideo.srcObject=null; localVideo.style.display='block';
-        enableMediaBtn.disabled=false; enableMediaBtn.textContent='🎤 МЕДИА ҚОСУ';
+        localVideo.srcObject=null;
+        enableCamBtn.disabled=false; enableCamBtn.textContent='📷 КАМЕРА';
         startCallBtn.disabled=true; endCallBtn.disabled=true;
-        statusDiv.innerHTML='🎤 Медиа қосыңыз'; statusDiv.className='call-status waiting';
+        statusDiv.innerHTML='📷 Камераны қосыңыз'; statusDiv.className='call-status waiting';
         remoteIdInput.value='';
     }
     
-    async function initCall() {
+    async function initVideoCall() {
         const myIdSpan=document.getElementById('myPeerId'), statusDiv=document.getElementById('callStatus');
-        const enableMediaBtn=document.getElementById('enableMediaBtn'), startCallBtn=document.getElementById('startCallBtn'), endCallBtn=document.getElementById('endCallBtn');
+        const enableCamBtn=document.getElementById('enableCameraBtn'), startCallBtn=document.getElementById('startCallBtn'), endCallBtn=document.getElementById('endCallBtn');
         const remoteIdInput=document.getElementById('remotePeerIdInput'), localVideo=document.getElementById('localVideo'), remoteVideo=document.getElementById('remoteVideo');
         
         const uniqueId=await generateUniqueId(); myIdSpan.textContent=uniqueId;
         peer=new Peer(uniqueId, { host:'0.peerjs.com', port:443, secure:true, debug:0, config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]} });
         
-        peer.on('open', ()=>{ statusDiv.innerHTML='✅ Серверге қосылды. Медиа қосыңыз.'; statusDiv.className='call-status success'; });
+        peer.on('open', ()=>{ statusDiv.innerHTML='✅ Серверге қосылды. Камераны қосыңыз.'; statusDiv.className='call-status success'; });
         peer.on('error', e=>{ statusDiv.innerHTML='❌ Қате: '+e.type; statusDiv.className='call-status error'; });
         peer.on('call', async call=>{
             statusDiv.innerHTML='📞 Қоңырау келіп түсті'; statusDiv.className='call-status waiting';
-            const callTypeInfo = call.metadata?.type === 'video' ? '📹 ВИДЕО' : '🎵 АУДИО';
             const modal=document.createElement('div'); modal.className='incoming-call-modal';
-            modal.innerHTML=`<h3>📞 ҚОҢЫРАУ (${callTypeInfo})</h3><p>${call.peer.substr(0,20)}...</p><div class="incoming-call-buttons"><button class="call-accept">✅ ҚАБЫЛДАУ</button><button class="call-reject">❌ БАС ТАРТУ</button></div>`;
+            modal.innerHTML=`<h3>📞 ҚОҢЫРАУ</h3><p>${call.peer.substr(0,20)}...</p><div class="incoming-call-buttons"><button class="call-accept">✅ ҚАБЫЛДАУ</button><button class="call-reject">❌ БАС ТАРТУ</button></div>`;
             document.body.appendChild(modal);
-            
-            modal.querySelector('.call-accept').onclick=async ()=>{
-                modal.remove();
-                if(!localStream){
-                    const isVideo = call.metadata?.type === 'video';
-                    try { localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true }); localVideo.srcObject = localStream; if(!isVideo) localVideo.style.display = 'none'; } 
-                    catch(e) { alert('Медиа рұқсаты қажет'); call.close(); return; }
-                }
-                call.answer(localStream); setupCall(call);
-            };
-            modal.querySelector('.call-reject').onclick=()=>{ modal.remove(); call.close(); statusDiv.innerHTML='📞 Бас тартылды'; statusDiv.className='call-status waiting'; };
+            modal.querySelector('.call-accept').onclick=()=>{ modal.remove(); if(!localStream){ alert('Камераны қосыңыз'); call.close(); return; } call.answer(localStream); setupCall(call); };
+            modal.querySelector('.call-reject').onclick=()=>{ modal.remove(); call.close(); statusDiv.innerHTML='📷 Бас тартылды'; statusDiv.className='call-status waiting'; };
         });
         
-        enableMediaBtn.onclick=async ()=>{
-            const isVideo = callType === 'video';
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
-                localVideo.srcObject = localStream;
-                if(!isVideo) localVideo.style.display = 'none'; else localVideo.style.display = 'block';
-                enableMediaBtn.disabled = true; enableMediaBtn.textContent = isVideo ? '✅ ВИДЕО ҚОСЫЛДЫ' : '✅ АУДИО ҚОСЫЛДЫ';
-                startCallBtn.disabled = false;
-                statusDiv.innerHTML = isVideo ? '📹 Видео дайын' : '🎵 Аудио дайын'; statusDiv.className = 'call-status success';
-            } catch(e) { statusDiv.innerHTML = '❌ Медиа рұқсаты жоқ'; statusDiv.className = 'call-status error'; }
-        };
-        
-        startCallBtn.onclick=()=>{
-            const rid=remoteIdInput.value.trim();
-            if(!rid||!localStream){ alert('ID енгізіңіз және медиа қосыңыз'); return; }
-            statusDiv.innerHTML='📞 Қоңырау шалуда...'; statusDiv.className='call-status waiting';
-            try { const call = peer.call(rid, localStream, { metadata: { type: callType } }); setupCall(call); } 
-            catch(e) { statusDiv.innerHTML='❌ Қате'; statusDiv.className='call-status error'; }
-        };
-        
-        function setupCall(call){
-            currentCall=call; endCallBtn.disabled=false; startCallBtn.disabled=true;
-            call.on('stream', s=>{ remoteVideo.srcObject=s; statusDiv.innerHTML=callType==='video'?'🟢 ВИДЕО БЕЛСЕНДІ':'🟢 АУДИО БЕЛСЕНДІ'; statusDiv.className='call-status connected'; });
-            call.on('close', ()=>resetToInitialState()); call.on('error', ()=>resetToInitialState());
-        }
+        enableCamBtn.onclick=async ()=>{ try{ localStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true}); localVideo.srcObject=localStream; enableCamBtn.disabled=true; enableCamBtn.textContent='✅ КАМЕРА ҚОСЫЛДЫ'; startCallBtn.disabled=false; statusDiv.innerHTML='📷 Дайын'; statusDiv.className='call-status success'; }catch(e){ statusDiv.innerHTML='❌ Камера жоқ'; } };
+        startCallBtn.onclick=()=>{ const rid=remoteIdInput.value.trim(); if(!rid||!localStream){ alert('ID енгізіңіз және камераны қосыңыз'); return; } statusDiv.innerHTML='📞 Қоңырау шалуда...'; statusDiv.className='call-status waiting'; try{ setupCall(peer.call(rid, localStream)); }catch(e){ statusDiv.innerHTML='❌ Қате'; } };
+        function setupCall(call){ currentCall=call; endCallBtn.disabled=false; startCallBtn.disabled=true; call.on('stream', s=>{ remoteVideo.srcObject=s; statusDiv.innerHTML='🟢 БЕЛСЕНДІ'; statusDiv.className='call-status connected'; }); call.on('close', ()=>resetToInitialState()); call.on('error', ()=>resetToInitialState()); }
         endCallBtn.onclick=()=>resetToInitialState();
     }
     
     window.copyMyId = function() { const id=document.getElementById('myPeerId').textContent; if(id&&id!=='Жүктелуде...') navigator.clipboard?.writeText(id).then(()=>alert('✅ ID көшірілді!')); };
     document.addEventListener('click', e=>{ if(e.target.id==='toggleCallPanelBtn'){ const c=document.getElementById('callPanelContent'); c.style.display=c.style.display==='none'?'block':'none'; e.target.textContent=c.style.display==='none'?'▶ КӨРСЕТУ':'▼ ЖАСЫРУ'; } });
     
-    // ========== 100 СҰРАҚ (ТОЛЫҚ ТІЗІМ) ==========
+    // ========== 100 СҰРАҚ ==========
     const ORIGINAL_QUESTIONS = [
         { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
         { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
@@ -479,7 +537,7 @@
     }
     drawFingerprint('default');
     
-    // ========== DOM ЭЛЕМЕНТТЕРІ ==========
+    // ========== DOM ==========
     const loginScreen=document.getElementById('loginScreen'), mainSite=document.getElementById('mainSite');
     const loginVideo=document.getElementById('loginVideo'), loginFaceStatus=document.getElementById('loginFaceStatus');
     const startCam=document.getElementById('startLoginCameraBtn'), captureFace=document.getElementById('captureLoginFaceBtn'), faceLogin=document.getElementById('faceLoginBtn');
@@ -546,7 +604,7 @@
         loginScreen.classList.add('hidden'); mainSite.classList.add('visible');
         userInfoBar.innerHTML=`👤 ${currentUser.name} | ${fullDeviceInfo.icon} ${fullDeviceInfo.type}`;
         renderQuestion(); updateStats();
-        initCall();
+        initVideoCall();
     }
     
     // ========== ТЕСТ ==========
@@ -567,16 +625,28 @@
         const results=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
         document.getElementById('adminTotalUsers').textContent=results.length;
         const tbody=document.getElementById('adminTableBody');
-        if(!results.length){ tbody.innerHTML='<tr><td colspan="10">Нәтиже жоқ</td></tr>'; return; }
+        if(!results.length){ tbody.innerHTML='<tr><td colspan="11">Нәтиже жоқ</td></tr>'; return; }
         tbody.innerHTML=results.reverse().map((r,i)=>{
             const p=Math.round(r.correct/r.total*100);
             let badge=r.loginMethod==='biometric'?'🖐️ САУСАҚ':r.loginMethod==='clap'?'👏 ШАПАЛАҚ':'📷 ТҮР';
             let fpCell='—';
-            if(r.loginMethod==='biometric'&&r.fpImg) fpCell=`<img src="${r.fpImg}" class="face-thumb" onclick="showImage('${r.fpImg}')">`;
-            else if(r.loginMethod==='clap'&&r.clapImg) fpCell=`<img src="${r.clapImg}" class="face-thumb" onclick="showImage('${r.clapImg}')">`;
+            if(r.loginMethod==='biometric'&&r.fpImg) fpCell=`<img src="${r.fpImg}" class="face-thumb" onclick="showImage('${r.fpImg}')" style="cursor:pointer;">`;
+            else if(r.loginMethod==='clap'&&r.clapImg) fpCell=`<img src="${r.clapImg}" class="face-thumb" onclick="showImage('${r.clapImg}')" style="cursor:pointer;">`;
             let faceCell='—';
-            if(r.face) faceCell=`<img src="${r.face}" class="face-thumb" onclick="showImage('${r.face}')">`;
-            return `<tr><td>${i+1}</td><td>${faceCell}</td><td>${fpCell}</td><td>${badge}</td><td>${r.device?.icon||'📱'} ${r.device?.type||''}</td><td style="color:#0c0;">${r.correct}</td><td style="color:#f00;">${r.wrong}</td><td>${p}%</td><td>${r.date}</td><td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td></tr>`;
+            if(r.face) faceCell=`<img src="${r.face}" class="face-thumb" onclick="showImage('${r.face}')" style="cursor:pointer;">`;
+            return `<tr>
+                <td>${i+1}</td>
+                <td>${faceCell}</td>
+                <td>${fpCell}</td>
+                <td>${badge}</td>
+                <td>${r.device?.icon||'📱'} ${r.device?.type||''}</td>
+                <td>${r.device?.browser||''}<br>${r.device?.os||''}</td>
+                <td style="color:#0c0;">${r.correct}</td>
+                <td style="color:#f00;">${r.wrong}</td>
+                <td>${p}%</td>
+                <td>${r.date}</td>
+                <td><button class="delete-btn" data-id="${r.id}">ЖОЮ</button></td>
+            </tr>`;
         }).join('');
         document.querySelectorAll('.delete-btn').forEach(b=>b.addEventListener('click', e=>{ if(confirm('Жою?')){ let all=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); all=all.filter(x=>x.id!==e.target.dataset.id); localStorage.setItem(STORAGE_KEY,JSON.stringify(all)); renderAdminTable(); } }));
     }
