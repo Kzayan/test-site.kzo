@@ -108,45 +108,178 @@
         .test-header { border-left: 6px solid #cc0000; padding-left: 24px; margin-bottom: 30px; }
         .test-header h1 { font-size: 2.5rem; font-weight: 800; text-transform: uppercase; }
         
-        .video-call-panel { background: #111a24; border: 3px solid #00ff88; border-radius: 20px; padding: 25px; margin-bottom: 30px; }
-        .video-call-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .video-call-header h3 { color: #00ff88; font-size: 1.5rem; }
-        .my-id-box { background: #1a232e; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .my-id-label { color: #8a9ab0; }
-        .my-id-value { font-family: monospace; font-size: 1.2rem; color: #00ff88; background: #0d1a0d; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
-        .video-call-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .video-input { flex: 1; min-width: 200px; padding: 15px; background: #0d1117; border: 2px solid #2a3645; border-radius: 12px; color: white; font-size: 1rem; }
-        .video-btn { background: #00aa55; color: white; border: none; padding: 15px 25px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .video-btn.red { background: #cc0000; }
-        .video-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .video-btn.audio { background: #9b59b6; }
-        .video-btn.audio:hover { background: #8e44ad; }
-        
-        .video-container-call { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .video-box { position: relative; background: #0d1117; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; }
-        .video-box video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        .video-box .video-label { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 15px; border-radius: 20px; }
-        
-        /* Аудио ғана режимінде бейне контейнерін жасыру */
-        .video-box.audio-only-mode { background: #1a1a2a; }
-        .video-box.audio-only-mode video { display: none; }
-        .video-box.audio-only-mode::after {
-            content: "🎤 АУДИО ҒАНА";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #9b59b6;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
+        /* ҚОҢЫРАУ ТАҚТАЙШАЛАРЫН БӨЛЕК ОРНАЛАСТЫРУ */
+        .call-panels-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
-        .call-status { margin-top: 15px; padding: 15px; border-radius: 12px; text-align: center; }
+        .video-call-panel {
+            background: #111a24;
+            border: 3px solid #00ff88;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        
+        .audio-call-panel {
+            background: #111a24;
+            border: 3px solid #9b59b6;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .panel-header h3 { 
+            color: #00ff88; 
+            font-size: 1.3rem; 
+        }
+        .audio-call-panel .panel-header h3 { 
+            color: #d4a5ff; 
+        }
+        
+        .my-id-box { 
+            background: #1a232e; 
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            margin-bottom: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            flex-wrap: wrap; 
+        }
+        .my-id-label { color: #8a9ab0; font-size: 0.9rem; }
+        .my-id-value { 
+            font-family: monospace; 
+            font-size: 1rem; 
+            color: #00ff88; 
+            background: #0d1a0d; 
+            padding: 6px 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+        }
+        .audio-call-panel .my-id-value { 
+            color: #d4a5ff; 
+            background: #1a1a2a; 
+        }
+        
+        .call-controls { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+            margin-bottom: 15px; 
+        }
+        .call-input { 
+            flex: 1; 
+            min-width: 150px; 
+            padding: 12px; 
+            background: #0d1117; 
+            border: 2px solid #2a3645; 
+            border-radius: 12px; 
+            color: white; 
+            font-size: 0.9rem; 
+        }
+        .call-btn { 
+            background: #00aa55; 
+            color: white; 
+            border: none; 
+            padding: 12px 18px; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 0.85rem;
+        }
+        .call-btn.red { background: #cc0000; }
+        .call-btn.audio { background: #9b59b6; }
+        .call-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .video-container-call { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            margin-top: 15px; 
+        }
+        .video-box { 
+            position: relative; 
+            background: #0d1117; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            aspect-ratio: 4/3; 
+        }
+        .video-box video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transform: scaleX(-1); 
+        }
+        .video-box .video-label { 
+            position: absolute; 
+            bottom: 10px; 
+            left: 10px; 
+            background: rgba(0,0,0,0.7); 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 0.8rem;
+        }
+        
+        /* Аудио ғана режимі */
+        .audio-only-box {
+            background: #1a1a2a;
+            border-radius: 16px;
+            aspect-ratio: 4/3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #d4a5ff;
+            border: 2px dashed #9b59b6;
+        }
+        .audio-only-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 40px;
+            margin-top: 10px;
+        }
+        .audio-wave span {
+            width: 4px;
+            height: 20px;
+            background: #9b59b6;
+            border-radius: 2px;
+            animation: audioWave 1s ease-in-out infinite;
+        }
+        .audio-wave span:nth-child(2) { animation-delay: 0.1s; height: 30px; }
+        .audio-wave span:nth-child(3) { animation-delay: 0.2s; height: 40px; }
+        .audio-wave span:nth-child(4) { animation-delay: 0.3s; height: 30px; }
+        .audio-wave span:nth-child(5) { animation-delay: 0.4s; height: 20px; }
+        @keyframes audioWave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+        
+        .call-status { 
+            margin-top: 15px; 
+            padding: 12px; 
+            border-radius: 12px; 
+            text-align: center; 
+            font-size: 0.9rem;
+        }
         .call-status.waiting { background: #1a1a3a; color: #ffaa00; }
         .call-status.connected { background: #1a3a1a; color: #00ff88; }
         .call-status.error { background: #3a1a1a; color: #ff0000; }
         .call-status.audio { background: #2a1a3a; color: #d4a5ff; }
+        .call-status.success { background: #1a3a1a; color: #00ff88; }
         
         .progress-panel { background: #151b23; border: 1px solid #2a3340; border-radius: 20px; padding: 20px 24px; margin-bottom: 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
         .stats { display: flex; gap: 32px; }
@@ -188,10 +321,13 @@
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: #111a24; border: 3px solid #00ff88; border-radius: 20px; padding: 30px; z-index: 5000; text-align: center;
         }
+        .incoming-call-modal.audio { border-color: #9b59b6; }
         .incoming-call-modal h3 { color: #00ff88; font-size: 1.5rem; margin-bottom: 20px; }
+        .incoming-call-modal.audio h3 { color: #d4a5ff; }
         .incoming-call-modal p { color: white; margin-bottom: 30px; }
         .incoming-call-buttons { display: flex; gap: 20px; justify-content: center; }
         .call-accept { background: #00aa55; color: white; border: none; padding: 15px 30px; border-radius: 40px; cursor: pointer; }
+        .call-accept.audio { background: #9b59b6; }
         .call-reject { background: #cc0000; color: white; border: none; padding: 15px 30px; border-radius: 40px; cursor: pointer; }
         
         .image-modal {
@@ -205,41 +341,10 @@
         .face-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #cc0000; cursor: pointer; }
         .face-thumb:hover { opacity: 0.8; }
         
-        /* Аудио қоңырау индикаторы */
-        .audio-call-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            background: #2a1a3a;
-            border-radius: 12px;
-            margin-top: 15px;
-        }
-        .audio-wave {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            height: 40px;
-        }
-        .audio-wave span {
-            width: 4px;
-            height: 20px;
-            background: #9b59b6;
-            border-radius: 2px;
-            animation: audioWave 1s ease-in-out infinite;
-        }
-        .audio-wave span:nth-child(2) { animation-delay: 0.1s; height: 30px; }
-        .audio-wave span:nth-child(3) { animation-delay: 0.2s; height: 40px; }
-        .audio-wave span:nth-child(4) { animation-delay: 0.3s; height: 30px; }
-        .audio-wave span:nth-child(5) { animation-delay: 0.4s; height: 20px; }
-        @keyframes audioWave {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(1.5); }
-        }
+        .toggle-icon { cursor: pointer; font-size: 1.2rem; }
         
         @media (max-width: 768px) {
-            .video-container-call { grid-template-columns: 1fr; }
+            .call-panels-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -305,34 +410,58 @@
         </div>
         <div class="user-info-bar" id="userInfoBar">👤 Қолданушы</div>
         
-        <!-- ВИДЕОҚОҢЫРАУ ПАНЕЛІ -->
-        <div class="video-call-panel">
-            <div class="video-call-header">
-                <h3>📹 ВИДЕОҚОҢЫРАУ</h3>
-                <button class="video-btn" id="toggleCallPanelBtn" style="padding:10px 20px;">▼ ЖАСЫРУ</button>
-            </div>
-            <div id="callPanelContent">
-                <div class="my-id-box">
-                    <span class="my-id-label">🔑 Сіздің ID-іңіз:</span>
-                    <span class="my-id-value" id="myPeerId" onclick="copyMyId()">Жүктелуде...</span>
+        <!-- БӨЛЕК ҚОҢЫРАУ ПАНЕЛЬДЕРІ -->
+        <div class="call-panels-container">
+            <!-- ВИДЕО ҚОҢЫРАУ ПАНЕЛІ -->
+            <div class="video-call-panel" id="videoCallPanel">
+                <div class="panel-header">
+                    <h3>📹 ВИДЕО ҚОҢЫРАУ</h3>
+                    <span class="toggle-icon" id="toggleVideoPanelBtn">▼</span>
                 </div>
-                <div class="video-call-controls">
-                    <input type="text" class="video-input" id="remotePeerIdInput" placeholder="Қоңырау шалатын ID">
-                    <button class="video-btn" id="enableCameraBtn">📷 КАМЕРА</button>
-                    <button class="video-btn" id="startCallBtn" disabled>📹 ҚОҢЫРАУ</button>
-                    <button class="video-btn audio" id="startAudioCallBtn" disabled>🎤 АУДИО ҚОҢЫРАУ</button>
-                    <button class="video-btn red" id="endCallBtn" disabled>🔴 АЯҚТАУ</button>
-                </div>
-                <div class="video-container-call" id="videoContainerCall">
-                    <div class="video-box" id="localVideoBox"><video id="localVideo" autoplay muted playsinline></video><span class="video-label" id="localVideoLabel">Сіз</span></div>
-                    <div class="video-box" id="remoteVideoBox"><video id="remoteVideo" autoplay playsinline></video><span class="video-label" id="remoteVideoLabel">Қоңырау шалушы</span></div>
-                </div>
-                <div id="callStatus" class="call-status waiting">📷 Камераны қосыңыз</div>
-                <div id="audioCallIndicator" class="audio-call-indicator" style="display: none;">
-                    <span style="color: #d4a5ff;">🎤 АУДИО БЕЛСЕНДІ</span>
-                    <div class="audio-wave">
-                        <span></span><span></span><span></span><span></span><span></span>
+                <div id="videoPanelContent">
+                    <div class="my-id-box">
+                        <span class="my-id-label">🔑 ID:</span>
+                        <span class="my-id-value" id="myVideoPeerId" onclick="copyVideoId()">Жүктелуде...</span>
                     </div>
+                    <div class="call-controls">
+                        <input type="text" class="call-input" id="videoRemoteIdInput" placeholder="Қоңырау шалатын ID">
+                        <button class="call-btn" id="enableVideoCameraBtn">📷 КАМЕРА</button>
+                        <button class="call-btn" id="startVideoCallBtn" disabled>📹 ҚОҢЫРАУ</button>
+                        <button class="call-btn red" id="endVideoCallBtn" disabled>🔴 АЯҚТАУ</button>
+                    </div>
+                    <div class="video-container-call">
+                        <div class="video-box"><video id="localVideo" autoplay muted playsinline></video><span class="video-label">Сіз</span></div>
+                        <div class="video-box"><video id="remoteVideo" autoplay playsinline></video><span class="video-label">Қоңырау шалушы</span></div>
+                    </div>
+                    <div id="videoCallStatus" class="call-status waiting">📷 Камераны қосыңыз</div>
+                </div>
+            </div>
+            
+            <!-- АУДИО ҚОҢЫРАУ ПАНЕЛІ -->
+            <div class="audio-call-panel" id="audioCallPanel">
+                <div class="panel-header">
+                    <h3>🎤 АУДИО ҚОҢЫРАУ</h3>
+                    <span class="toggle-icon" id="toggleAudioPanelBtn">▼</span>
+                </div>
+                <div id="audioPanelContent">
+                    <div class="my-id-box">
+                        <span class="my-id-label">🔑 ID:</span>
+                        <span class="my-id-value" id="myAudioPeerId" onclick="copyAudioId()">Жүктелуде...</span>
+                    </div>
+                    <div class="call-controls">
+                        <input type="text" class="call-input" id="audioRemoteIdInput" placeholder="Қоңырау шалатын ID">
+                        <button class="call-btn audio" id="enableAudioMicBtn">🎤 МИКРОФОН</button>
+                        <button class="call-btn audio" id="startAudioCallBtn" disabled>🎤 ҚОҢЫРАУ</button>
+                        <button class="call-btn red" id="endAudioCallBtn" disabled>🔴 АЯҚТАУ</button>
+                    </div>
+                    <div class="audio-only-box" id="audioCallBox">
+                        <div class="audio-only-icon">🎤</div>
+                        <div>АУДИО ҚОҢЫРАУ</div>
+                        <div class="audio-wave" id="audioWaveIndicator" style="display: none;">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div id="audioCallStatus" class="call-status waiting">🎤 Микрофонды қосыңыз</div>
                 </div>
             </div>
         </div>
@@ -423,236 +552,247 @@
     // ========== БІРЕГЕЙ ID ==========
     async function generateUniqueId() { let fp='u_'+Date.now()+'_'+Math.random().toString(36).substr(2,6); try{ const f=await FingerprintJS.load(); const r=await f.get(); fp='u_'+r.visitorId.substr(0,10)+'_'+Math.random().toString(36).substr(2,4); }catch(e){} return fp; }
     
-    // ========== ВИДЕОҚОҢЫРАУ (АУДИО ҚОСЫЛҒАН, ВИДЕО АҒЫНЫНСЫЗ) ==========
-    let peer=null, localStream=null, currentCall=null, isAudioOnly = false;
-    let localAudioOnlyStream = null; // Тек аудио үшін бөлек ағын
+    // ========== ВИДЕО ЖӘНЕ АУДИО ҚОҢЫРАУ (БӨЛЕК) ==========
+    let videoPeer = null, audioPeer = null;
+    let videoLocalStream = null, audioLocalStream = null;
+    let currentVideoCall = null, currentAudioCall = null;
     
-    function resetToInitialState() {
-        const localVideo=document.getElementById('localVideo'), remoteVideo=document.getElementById('remoteVideo'), statusDiv=document.getElementById('callStatus');
-        const enableCamBtn=document.getElementById('enableCameraBtn'), startCallBtn=document.getElementById('startCallBtn'), endCallBtn=document.getElementById('endCallBtn');
-        const startAudioCallBtn = document.getElementById('startAudioCallBtn');
-        const remoteIdInput=document.getElementById('remotePeerIdInput');
-        const audioIndicator = document.getElementById('audioCallIndicator');
-        const localVideoBox = document.getElementById('localVideoBox');
-        const remoteVideoBox = document.getElementById('remoteVideoBox');
-        const localVideoLabel = document.getElementById('localVideoLabel');
-        const remoteVideoLabel = document.getElementById('remoteVideoLabel');
+    // Видео қоңырау үшін
+    function resetVideoCall() {
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const statusDiv = document.getElementById('videoCallStatus');
+        const enableCamBtn = document.getElementById('enableVideoCameraBtn');
+        const startCallBtn = document.getElementById('startVideoCallBtn');
+        const endCallBtn = document.getElementById('endVideoCallBtn');
         
-        if(currentCall){ currentCall.close(); currentCall=null; }
-        if(remoteVideo.srcObject){ remoteVideo.srcObject.getTracks().forEach(t=>t.stop()); remoteVideo.srcObject=null; }
-        if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-        if(localAudioOnlyStream){ localAudioOnlyStream.getTracks().forEach(t=>t.stop()); localAudioOnlyStream=null; }
+        if (currentVideoCall) { currentVideoCall.close(); currentVideoCall = null; }
+        if (remoteVideo.srcObject) { remoteVideo.srcObject.getTracks().forEach(t => t.stop()); remoteVideo.srcObject = null; }
+        if (videoLocalStream) { videoLocalStream.getTracks().forEach(t => t.stop()); videoLocalStream = null; }
+        localVideo.srcObject = null;
         
-        localVideo.srcObject=null;
-        localVideo.style.display = 'block';
-        remoteVideo.style.display = 'block';
-        localVideoBox.classList.remove('audio-only-mode');
-        remoteVideoBox.classList.remove('audio-only-mode');
-        localVideoLabel.textContent = 'Сіз';
-        remoteVideoLabel.textContent = 'Қоңырау шалушы';
-        
-        enableCamBtn.disabled=false; enableCamBtn.textContent='📷 КАМЕРА';
-        startCallBtn.disabled=true; endCallBtn.disabled=true;
-        if(startAudioCallBtn) startAudioCallBtn.disabled = true;
-        statusDiv.innerHTML='📷 Камераны қосыңыз'; statusDiv.className='call-status waiting';
-        remoteIdInput.value='';
-        isAudioOnly = false;
-        if(audioIndicator) audioIndicator.style.display = 'none';
+        enableCamBtn.disabled = false;
+        enableCamBtn.textContent = '📷 КАМЕРА';
+        startCallBtn.disabled = true;
+        endCallBtn.disabled = true;
+        statusDiv.innerHTML = '📷 Камераны қосыңыз';
+        statusDiv.className = 'call-status waiting';
+        document.getElementById('videoRemoteIdInput').value = '';
     }
     
-    async function initVideoCall() {
-        const myIdSpan=document.getElementById('myPeerId'), statusDiv=document.getElementById('callStatus');
-        const enableCamBtn=document.getElementById('enableCameraBtn'), startCallBtn=document.getElementById('startCallBtn'), endCallBtn=document.getElementById('endCallBtn');
-        const startAudioCallBtn = document.getElementById('startAudioCallBtn');
-        const remoteIdInput=document.getElementById('remotePeerIdInput'), localVideo=document.getElementById('localVideo'), remoteVideo=document.getElementById('remoteVideo');
-        const audioIndicator = document.getElementById('audioCallIndicator');
-        const localVideoBox = document.getElementById('localVideoBox');
-        const remoteVideoBox = document.getElementById('remoteVideoBox');
-        const localVideoLabel = document.getElementById('localVideoLabel');
-        const remoteVideoLabel = document.getElementById('remoteVideoLabel');
+    // Аудио қоңырау үшін
+    function resetAudioCall() {
+        const statusDiv = document.getElementById('audioCallStatus');
+        const enableMicBtn = document.getElementById('enableAudioMicBtn');
+        const startCallBtn = document.getElementById('startAudioCallBtn');
+        const endCallBtn = document.getElementById('endAudioCallBtn');
+        const waveIndicator = document.getElementById('audioWaveIndicator');
         
-        const uniqueId=await generateUniqueId(); myIdSpan.textContent=uniqueId;
-        peer=new Peer(uniqueId, { host:'0.peerjs.com', port:443, secure:true, debug:0, config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]} });
+        if (currentAudioCall) { currentAudioCall.close(); currentAudioCall = null; }
+        if (audioLocalStream) { audioLocalStream.getTracks().forEach(t => t.stop()); audioLocalStream = null; }
         
-        peer.on('open', ()=>{ statusDiv.innerHTML='✅ Серверге қосылды. Камераны қосыңыз.'; statusDiv.className='call-status success'; });
-        peer.on('error', e=>{ statusDiv.innerHTML='❌ Қате: '+e.type; statusDiv.className='call-status error'; });
-        peer.on('call', async call=>{
-            const isAudio = call.metadata && call.metadata.audioOnly;
-            statusDiv.innerHTML=isAudio ? '🎤 Аудио қоңырау келіп түсті' : '📞 Қоңырау келіп түсті';
-            statusDiv.className='call-status waiting';
-            const modal=document.createElement('div'); modal.className='incoming-call-modal';
-            modal.innerHTML=`<h3>${isAudio ? '🎤 АУДИО ҚОҢЫРАУ' : '📞 ҚОҢЫРАУ'}</h3><p>${call.peer.substr(0,20)}...</p><div class="incoming-call-buttons"><button class="call-accept">✅ ҚАБЫЛДАУ</button><button class="call-reject">❌ БАС ТАРТУ</button></div>`;
+        enableMicBtn.disabled = false;
+        enableMicBtn.textContent = '🎤 МИКРОФОН';
+        startCallBtn.disabled = true;
+        endCallBtn.disabled = true;
+        statusDiv.innerHTML = '🎤 Микрофонды қосыңыз';
+        statusDiv.className = 'call-status waiting';
+        document.getElementById('audioRemoteIdInput').value = '';
+        waveIndicator.style.display = 'none';
+    }
+    
+    // Екі қоңырауды да бастау
+    async function initCallSystem() {
+        // Видео PeerJS
+        const videoIdSpan = document.getElementById('myVideoPeerId');
+        const videoUniqueId = await generateUniqueId();
+        videoIdSpan.textContent = videoUniqueId;
+        
+        videoPeer = new Peer(videoUniqueId, { host: '0.peerjs.com', port: 443, secure: true, debug: 0, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] } });
+        
+        videoPeer.on('open', () => {
+            document.getElementById('videoCallStatus').innerHTML = '✅ Серверге қосылды';
+            document.getElementById('videoCallStatus').className = 'call-status success';
+        });
+        videoPeer.on('error', e => {
+            document.getElementById('videoCallStatus').innerHTML = '❌ Қате: ' + e.type;
+            document.getElementById('videoCallStatus').className = 'call-status error';
+        });
+        videoPeer.on('call', async call => {
+            const statusDiv = document.getElementById('videoCallStatus');
+            statusDiv.innerHTML = '📞 Видео қоңырау келіп түсті';
+            statusDiv.className = 'call-status waiting';
+            
+            const modal = document.createElement('div');
+            modal.className = 'incoming-call-modal';
+            modal.innerHTML = `<h3>📞 ВИДЕО ҚОҢЫРАУ</h3><p>${call.peer.substr(0, 20)}...</p><div class="incoming-call-buttons"><button class="call-accept">✅ ҚАБЫЛДАУ</button><button class="call-reject">❌ БАС ТАРТУ</button></div>`;
             document.body.appendChild(modal);
-            modal.querySelector('.call-accept').onclick=()=>{ 
-                modal.remove(); 
-                if(isAudio && !localAudioOnlyStream){ 
-                    alert('Алдымен аудио қоңырау батырмасын басып микрофонды қосыңыз'); 
-                    call.close(); 
-                    return; 
-                }
-                if(!isAudio && !localStream){ 
-                    alert('Камераны қосыңыз'); 
-                    call.close(); 
-                    return; 
-                }
-                
-                // Жауап беру кезінде сәйкес ағынды қолдану
-                const streamToAnswer = isAudio ? localAudioOnlyStream : localStream;
-                call.answer(streamToAnswer); 
-                setupCall(call, isAudio); 
+            
+            modal.querySelector('.call-accept').onclick = () => {
+                modal.remove();
+                if (!videoLocalStream) { alert('Камераны қосыңыз'); call.close(); return; }
+                call.answer(videoLocalStream);
+                setupVideoCall(call);
             };
-            modal.querySelector('.call-reject').onclick=()=>{ modal.remove(); call.close(); statusDiv.innerHTML=isAudio ? '🎤 Бас тартылды' : '📷 Бас тартылды'; statusDiv.className='call-status waiting'; };
+            modal.querySelector('.call-reject').onclick = () => { modal.remove(); call.close(); statusDiv.innerHTML = '📷 Бас тартылды'; statusDiv.className = 'call-status waiting'; };
         });
         
-        enableCamBtn.onclick = async () => {
-            try {
-                // Видео және аудио алу
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localVideo.srcObject = localStream;
-                localVideo.style.display = 'block';
-                localVideoBox.classList.remove('audio-only-mode');
-                localVideoLabel.textContent = 'Сіз';
-                
-                enableCamBtn.disabled = true;
-                enableCamBtn.textContent = '✅ КАМЕРА ҚОСЫЛДЫ';
-                startCallBtn.disabled = false;
-                if (startAudioCallBtn) startAudioCallBtn.disabled = false;
-                statusDiv.innerHTML = '📷 Дайын';
-                statusDiv.className = 'call-status success';
-                isAudioOnly = false;
-                if(audioIndicator) audioIndicator.style.display = 'none';
-            } catch (e) {
-                statusDiv.innerHTML = '❌ Камера/микрофон жоқ';
-                statusDiv.className = 'call-status error';
-            }
-        };
+        // Аудио PeerJS (бөлек ID)
+        const audioIdSpan = document.getElementById('myAudioPeerId');
+        const audioUniqueId = await generateUniqueId() + '_audio';
+        audioIdSpan.textContent = audioUniqueId;
         
-        // Аудио ғана қоңырау - ВИДЕО АҒЫНЫНСЫЗ
-        if (startAudioCallBtn) {
-            startAudioCallBtn.onclick = async () => {
-                try {
-                    // ТЕК АУДИО ағынын алу, видео сұралмайды
-                    if (localAudioOnlyStream) {
-                        localAudioOnlyStream.getTracks().forEach(t => t.stop());
-                    }
-                    localAudioOnlyStream = await navigator.mediaDevices.getUserMedia({ 
-                        video: false,  // Видео мүлдем сұралмайды
-                        audio: true 
-                    });
-                    
-                    // Бейне көрсетілмейді
-                    localVideo.srcObject = null;
-                    localVideo.style.display = 'none';
-                    localVideoBox.classList.add('audio-only-mode');
-                    localVideoLabel.textContent = '🎤 Сіз (Аудио)';
-                    
-                    isAudioOnly = true;
-                    if (audioIndicator) audioIndicator.style.display = 'flex';
-                    
-                    enableCamBtn.disabled = true;
-                    startCallBtn.disabled = true;
-                    startAudioCallBtn.disabled = true;
-                    startAudioCallBtn.textContent = '✅ МИКРОФОН ДАЙЫН';
-                    
-                    statusDiv.innerHTML = '🎤 Аудио дайын, ID енгізіп қоңырау шалыңыз';
-                    statusDiv.className = 'call-status audio';
-                } catch (e) {
-                    statusDiv.innerHTML = '❌ Микрофон жоқ';
-                    statusDiv.className = 'call-status error';
-                }
+        audioPeer = new Peer(audioUniqueId, { host: '0.peerjs.com', port: 443, secure: true, debug: 0, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] } });
+        
+        audioPeer.on('open', () => {
+            document.getElementById('audioCallStatus').innerHTML = '✅ Серверге қосылды';
+            document.getElementById('audioCallStatus').className = 'call-status success';
+        });
+        audioPeer.on('error', e => {
+            document.getElementById('audioCallStatus').innerHTML = '❌ Қате: ' + e.type;
+            document.getElementById('audioCallStatus').className = 'call-status error';
+        });
+        audioPeer.on('call', async call => {
+            const statusDiv = document.getElementById('audioCallStatus');
+            statusDiv.innerHTML = '🎤 Аудио қоңырау келіп түсті';
+            statusDiv.className = 'call-status waiting';
+            
+            const modal = document.createElement('div');
+            modal.className = 'incoming-call-modal audio';
+            modal.innerHTML = `<h3>🎤 АУДИО ҚОҢЫРАУ</h3><p>${call.peer.substr(0, 20)}...</p><div class="incoming-call-buttons"><button class="call-accept audio">✅ ҚАБЫЛДАУ</button><button class="call-reject">❌ БАС ТАРТУ</button></div>`;
+            document.body.appendChild(modal);
+            
+            modal.querySelector('.call-accept').onclick = () => {
+                modal.remove();
+                if (!audioLocalStream) { alert('Микрофонды қосыңыз'); call.close(); return; }
+                call.answer(audioLocalStream);
+                setupAudioCall(call);
             };
-        }
+            modal.querySelector('.call-reject').onclick = () => { modal.remove(); call.close(); statusDiv.innerHTML = '🎤 Бас тартылды'; statusDiv.className = 'call-status waiting'; };
+        });
         
-        startCallBtn.onclick = () => {
-            const rid = remoteIdInput.value.trim();
-            if (!rid || !localStream) { alert('ID енгізіңіз және камераны қосыңыз'); return; }
-            statusDiv.innerHTML = '📞 Қоңырау шалуда...';
-            statusDiv.className = 'call-status waiting';
+        // Видео батырмалары
+        document.getElementById('enableVideoCameraBtn').onclick = async () => {
             try {
-                setupCall(peer.call(rid, localStream, { metadata: { audioOnly: false } }), false);
+                videoLocalStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = videoLocalStream;
+                document.getElementById('enableVideoCameraBtn').disabled = true;
+                document.getElementById('enableVideoCameraBtn').textContent = '✅ КАМЕРА ҚОСЫЛДЫ';
+                document.getElementById('startVideoCallBtn').disabled = false;
+                document.getElementById('videoCallStatus').innerHTML = '📷 Дайын';
+                document.getElementById('videoCallStatus').className = 'call-status success';
             } catch (e) {
-                statusDiv.innerHTML = '❌ Қате';
-                statusDiv.className = 'call-status error';
+                document.getElementById('videoCallStatus').innerHTML = '❌ Камера жоқ';
+                document.getElementById('videoCallStatus').className = 'call-status error';
             }
         };
         
-        // Жаңа аудио қоңырау шалу функциясы
-        const audioCallHandler = () => {
-            const rid = remoteIdInput.value.trim();
-            if (!rid) { alert('ID енгізіңіз'); return; }
-            if (!localAudioOnlyStream) { 
-                alert('Алдымен "АУДИО ҚОҢЫРАУ" батырмасын басыңыз'); 
-                return; 
-            }
-            
-            statusDiv.innerHTML = '🎤 Аудио қоңырау шалуда...';
-            statusDiv.className = 'call-status waiting';
+        document.getElementById('startVideoCallBtn').onclick = () => {
+            const remoteId = document.getElementById('videoRemoteIdInput').value.trim();
+            if (!remoteId || !videoLocalStream) { alert('ID енгізіңіз және камераны қосыңыз'); return; }
+            document.getElementById('videoCallStatus').innerHTML = '📞 Қоңырау шалуда...';
+            document.getElementById('videoCallStatus').className = 'call-status waiting';
             try {
-                const call = peer.call(rid, localAudioOnlyStream, { metadata: { audioOnly: true } });
-                setupCall(call, true);
+                setupVideoCall(videoPeer.call(remoteId, videoLocalStream));
             } catch (e) {
-                statusDiv.innerHTML = '❌ Қате';
-                statusDiv.className = 'call-status error';
+                document.getElementById('videoCallStatus').innerHTML = '❌ Қате';
+                document.getElementById('videoCallStatus').className = 'call-status error';
             }
         };
         
-        if (startAudioCallBtn) {
-            // Ескі listener-ді алып тастап, жаңасын қосу
-            startAudioCallBtn.replaceWith(startAudioCallBtn.cloneNode(true));
-            const newAudioBtn = document.getElementById('startAudioCallBtn');
-            newAudioBtn.addEventListener('click', audioCallHandler);
-        }
+        document.getElementById('endVideoCallBtn').onclick = () => resetVideoCall();
         
-        function setupCall(call, audioOnly) {
-            currentCall = call;
-            endCallBtn.disabled = false;
-            startCallBtn.disabled = true;
-            if (startAudioCallBtn) {
-                startAudioCallBtn.disabled = true;
-            }
-            
-            const remoteVideo = document.getElementById('remoteVideo');
-            const remoteVideoBox = document.getElementById('remoteVideoBox');
-            const remoteVideoLabel = document.getElementById('remoteVideoLabel');
-            
-            if (audioOnly) {
-                statusDiv.innerHTML = '🎤 АУДИО БЕЛСЕНДІ';
-                statusDiv.className = 'call-status audio';
-                if (audioIndicator) audioIndicator.style.display = 'flex';
-                
-                // Қашықтағы бейнені жасыру
-                remoteVideo.style.display = 'none';
-                remoteVideoBox.classList.add('audio-only-mode');
-                remoteVideoLabel.textContent = '🎤 Қоңырау шалушы (Аудио)';
-            } else {
-                if (audioIndicator) audioIndicator.style.display = 'none';
-                remoteVideo.style.display = 'block';
-                remoteVideoBox.classList.remove('audio-only-mode');
-                remoteVideoLabel.textContent = 'Қоңырау шалушы';
-            }
+        function setupVideoCall(call) {
+            currentVideoCall = call;
+            document.getElementById('endVideoCallBtn').disabled = false;
+            document.getElementById('startVideoCallBtn').disabled = true;
             
             call.on('stream', s => {
-                remoteVideo.srcObject = s;
-                
-                // Егер аудио ғана болса, бейнені жасыру
-                if (audioOnly) {
-                    remoteVideo.style.display = 'none';
-                } else {
-                    remoteVideo.style.display = 'block';
-                    statusDiv.innerHTML = '🟢 БЕЛСЕНДІ';
-                    statusDiv.className = 'call-status connected';
-                }
+                document.getElementById('remoteVideo').srcObject = s;
+                document.getElementById('videoCallStatus').innerHTML = '🟢 БЕЛСЕНДІ';
+                document.getElementById('videoCallStatus').className = 'call-status connected';
             });
-            
-            call.on('close', () => resetToInitialState());
-            call.on('error', () => resetToInitialState());
+            call.on('close', () => resetVideoCall());
+            call.on('error', () => resetVideoCall());
         }
         
-        endCallBtn.onclick = () => resetToInitialState();
+        // Аудио батырмалары
+        document.getElementById('enableAudioMicBtn').onclick = async () => {
+            try {
+                audioLocalStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+                document.getElementById('enableAudioMicBtn').disabled = true;
+                document.getElementById('enableAudioMicBtn').textContent = '✅ МИКРОФОН ҚОСЫЛДЫ';
+                document.getElementById('startAudioCallBtn').disabled = false;
+                document.getElementById('audioCallStatus').innerHTML = '🎤 Дайын';
+                document.getElementById('audioCallStatus').className = 'call-status success';
+                document.getElementById('audioWaveIndicator').style.display = 'flex';
+            } catch (e) {
+                document.getElementById('audioCallStatus').innerHTML = '❌ Микрофон жоқ';
+                document.getElementById('audioCallStatus').className = 'call-status error';
+            }
+        };
+        
+        document.getElementById('startAudioCallBtn').onclick = () => {
+            const remoteId = document.getElementById('audioRemoteIdInput').value.trim();
+            if (!remoteId || !audioLocalStream) { alert('ID енгізіңіз және микрофонды қосыңыз'); return; }
+            document.getElementById('audioCallStatus').innerHTML = '🎤 Қоңырау шалуда...';
+            document.getElementById('audioCallStatus').className = 'call-status waiting';
+            try {
+                setupAudioCall(audioPeer.call(remoteId, audioLocalStream));
+            } catch (e) {
+                document.getElementById('audioCallStatus').innerHTML = '❌ Қате';
+                document.getElementById('audioCallStatus').className = 'call-status error';
+            }
+        };
+        
+        document.getElementById('endAudioCallBtn').onclick = () => resetAudioCall();
+        
+        function setupAudioCall(call) {
+            currentAudioCall = call;
+            document.getElementById('endAudioCallBtn').disabled = false;
+            document.getElementById('startAudioCallBtn').disabled = true;
+            document.getElementById('audioCallStatus').innerHTML = '🎤 АУДИО БЕЛСЕНДІ';
+            document.getElementById('audioCallStatus').className = 'call-status audio';
+            
+            call.on('close', () => resetAudioCall());
+            call.on('error', () => resetAudioCall());
+        }
+        
+        // Панельдерді жасыру/көрсету
+        document.getElementById('toggleVideoPanelBtn').onclick = () => {
+            const content = document.getElementById('videoPanelContent');
+            const icon = document.getElementById('toggleVideoPanelBtn');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        };
+        
+        document.getElementById('toggleAudioPanelBtn').onclick = () => {
+            const content = document.getElementById('audioPanelContent');
+            const icon = document.getElementById('toggleAudioPanelBtn');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▶';
+            }
+        };
     }
     
-    window.copyMyId = function() { const id=document.getElementById('myPeerId').textContent; if(id&&id!=='Жүктелуде...') navigator.clipboard?.writeText(id).then(()=>alert('✅ ID көшірілді!')); };
-    document.addEventListener('click', e=>{ if(e.target.id==='toggleCallPanelBtn'){ const c=document.getElementById('callPanelContent'); c.style.display=c.style.display==='none'?'block':'none'; e.target.textContent=c.style.display==='none'?'▶ КӨРСЕТУ':'▼ ЖАСЫРУ'; } });
+    window.copyVideoId = function() {
+        const id = document.getElementById('myVideoPeerId').textContent;
+        if (id && id !== 'Жүктелуде...') navigator.clipboard?.writeText(id).then(() => alert('✅ Видео ID көшірілді!'));
+    };
+    
+    window.copyAudioId = function() {
+        const id = document.getElementById('myAudioPeerId').textContent;
+        if (id && id !== 'Жүктелуде...') navigator.clipboard?.writeText(id).then(() => alert('✅ Аудио ID көшірілді!'));
+    };
     
     // ========== 100 СҰРАҚ (өзгеріссіз) ==========
     const ORIGINAL_QUESTIONS = [
@@ -850,7 +990,7 @@
         loginScreen.classList.add('hidden'); mainSite.classList.add('visible');
         userInfoBar.innerHTML=`👤 ${currentUser.name} | ${fullDeviceInfo.icon} ${fullDeviceInfo.type}`;
         renderQuestion(); updateStats();
-        initVideoCall();
+        initCallSystem();
     }
     
     // ========== ТЕСТ ==========
