@@ -1,0 +1,2810 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNSIZ - Тест Платформасы</title>
+
+<!-- Face-API.js CDN -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<style>
+/* ============================================
+   ГЛОБАЛЬДЫ СТИЛЬДЕР
+   ============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+  --bg-main: #0a0e14;
+  --bg-card: #10161d;
+  --bg-card2: #151b23;
+  --red-main: #cc0000;
+  --red-error: #ff3b3b;
+  --green-correct: #00c853;
+  --border: #2a3340;
+  --border2: #3a4a5e;
+  --text: #eef2fb;
+  --text-muted: #8899aa;
+  --radius-card: 28px;
+  --radius-btn: 40px;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ============================================
+   ЭКРАНДАР (SCREENS)
+   ============================================ */
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 1000px;
+  animation: fadeIn 0.4s ease;
+}
+
+.screen.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   ЛОГОТИП
+   ============================================ */
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo h1 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  color: var(--text);
+  text-transform: uppercase;
+}
+
+.logo h1 span {
+  color: var(--red-main);
+}
+
+.logo p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  margin-top: 5px;
+}
+
+/* ============================================
+   КІРУ ЭКРАНЫ (LOGIN)
+   ============================================ */
+#loginScreen {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 40px;
+}
+
+/* Face ID секция */
+.face-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: var(--red-main);
+  border-radius: 2px;
+}
+
+/* Камера контейнері */
+.camera-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #05080c;
+  border: 2px dashed var(--border2);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#cameraVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Айналы көрініс */
+  display: none;
+}
+
+#cameraCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scaleX(-1);
+  display: none;
+}
+
+.camera-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+}
+
+.camera-placeholder svg {
+  opacity: 0.4;
+}
+
+.camera-placeholder p {
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Face preview (дөңгелек) */
+.face-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.face-preview {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid var(--green-correct);
+  object-fit: cover;
+  display: none;
+  box-shadow: 0 0 20px rgba(0,200,83,0.3);
+}
+
+.face-status {
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.face-status.success { color: var(--green-correct); }
+.face-status.error   { color: var(--red-error); }
+.face-status.loading { color: #f0a500; }
+
+/* Жүктеу индикаторы */
+.loader-ring {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(240,165,0,0.3);
+  border-top-color: #f0a500;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Камера батырмалары */
+.camera-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* Пароль секция */
+.password-section {
+  margin-bottom: 25px;
+}
+
+.pin-input-wrap {
+  position: relative;
+}
+
+.pin-input {
+  width: 100%;
+  background: var(--bg-card2);
+  border: 1.5px solid var(--border2);
+  border-radius: 14px;
+  padding: 14px 50px 14px 18px;
+  color: var(--text);
+  font-size: 1.4rem;
+  letter-spacing: 10px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pin-input:focus {
+  border-color: var(--red-main);
+}
+
+.pin-input.error {
+  border-color: var(--red-error);
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-6px); }
+  40%,80%  { transform: translateX(6px); }
+}
+
+.pin-error-msg {
+  color: var(--red-error);
+  font-size: 0.8rem;
+  margin-top: 8px;
+  display: none;
+  text-align: center;
+}
+
+/* Батырмалар */
+.btn {
+  padding: 13px 28px;
+  border-radius: var(--radius-btn);
+  border: none;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+.btn-primary {
+  background: var(--red-main);
+  color: #fff;
+  width: 100%;
+  justify-content: center;
+  font-size: 0.95rem;
+  padding: 15px;
+}
+
+.btn-primary:not(:disabled):hover {
+  background: #e00000;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(204,0,0,0.35);
+}
+
+.btn-secondary {
+  background: var(--bg-card2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+.btn-danger {
+  background: rgba(255,59,59,0.12);
+  color: var(--red-error);
+  border: 1px solid rgba(255,59,59,0.3);
+}
+
+.btn-danger:hover {
+  background: rgba(255,59,59,0.2);
+}
+
+.btn-green {
+  background: var(--green-correct);
+  color: #000;
+  font-weight: 700;
+}
+
+.btn-green:hover {
+  background: #00e060;
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  border-radius: 20px;
+}
+
+/* ============================================
+   ТЕСТ ЭКРАНЫ
+   ============================================ */
+#testScreen {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Прогресс жолағы */
+.progress-bar-wrap {
+  background: var(--bg-card2);
+  border-radius: 10px;
+  height: 8px;
+  margin-bottom: 25px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-main), #ff4444);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Статистика панель */
+.stats-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px 22px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.stat-number.correct { color: var(--green-correct); }
+.stat-number.wrong   { color: var(--red-error); }
+.stat-number.current { color: var(--text); }
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Сұрақ карточкасы */
+.question-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 35px;
+  margin-bottom: 20px;
+}
+
+.question-number-badge {
+  display: inline-block;
+  background: rgba(204,0,0,0.15);
+  color: var(--red-main);
+  border: 1px solid rgba(204,0,0,0.3);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 18px;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: var(--text);
+  margin-bottom: 25px;
+}
+
+/* Жауап нұсқалары */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  background: var(--bg-card2);
+  border: 1.5px solid var(--border2);
+  border-radius: 14px;
+  padding: 14px 18px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.93rem;
+}
+
+.option-btn:not(.answered):hover {
+  border-color: var(--red-main);
+  background: rgba(204,0,0,0.08);
+  transform: translateX(4px);
+}
+
+.option-letter {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+
+/* Дұрыс жауап */
+.option-btn.correct {
+  border-color: var(--green-correct);
+  background: rgba(0,200,83,0.1);
+  cursor: default;
+}
+
+.option-btn.correct .option-letter {
+  background: var(--green-correct);
+  color: #000;
+}
+
+/* Қате жауап */
+.option-btn.wrong {
+  border-color: var(--red-error);
+  background: rgba(255,59,59,0.1);
+  cursor: default;
+}
+
+.option-btn.wrong .option-letter {
+  background: var(--red-error);
+  color: #fff;
+}
+
+.option-btn.answered {
+  cursor: default;
+}
+
+/* Навигация батырмалары */
+.nav-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.nav-controls .left-btns,
+.nav-controls .right-btns {
+  display: flex;
+  gap: 10px;
+}
+
+/* ============================================
+   НӘТИЖЕ ЭКРАНЫ
+   ============================================ */
+#resultScreen {
+  max-width: 550px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.result-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 50px 40px;
+}
+
+.result-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.result-score {
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.result-score span {
+  font-size: 2rem;
+  color: var(--text-muted);
+}
+
+.result-grade {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.result-breakdown {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 35px;
+  background: var(--bg-card2);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.breakdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.breakdown-num {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.breakdown-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* ============================================
+   АДМИН ПАНЕЛЬ
+   ============================================ */
+.admin-btn-fixed {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(10,14,20,0.9);
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  z-index: 100;
+}
+
+.admin-btn-fixed:hover {
+  border-color: var(--red-main);
+  color: var(--red-main);
+}
+
+/* Модаль */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-card);
+  padding: 35px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  border-color: var(--red-error);
+  color: var(--red-error);
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.modal-input {
+  width: 100%;
+  background: var(--bg-card2);
+  border: 1.5px solid var(--border2);
+  border-radius: 12px;
+  padding: 13px 16px;
+  color: var(--text);
+  font-size: 1.2rem;
+  letter-spacing: 6px;
+  text-align: center;
+  outline: none;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus {
+  border-color: var(--red-main);
+}
+
+.modal-error {
+  color: var(--red-error);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-bottom: 15px;
+  display: none;
+}
+
+/* ============================================
+   АДМИН ПАНЕЛЬ (толық экран)
+   ============================================ */
+#adminPanel {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.admin-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge-count {
+  background: var(--red-main);
+  color: #fff;
+  border-radius: 20px;
+  padding: 2px 12px;
+  font-size: 0.8rem;
+}
+
+.admin-table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 650px;
+}
+
+thead tr {
+  background: var(--bg-card2);
+}
+
+th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+/* Бет суреті */
+.face-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.face-thumb:hover {
+  border-color: var(--red-main);
+  transform: scale(1.1);
+}
+
+.no-face {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-card2);
+  border: 2px dashed var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+/* Сан бейджі */
+.num-badge {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.num-badge.correct { color: var(--green-correct); }
+.num-badge.wrong   { color: var(--red-error); }
+.num-badge.total   { color: var(--text-muted); }
+
+/* Бос кесте */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state svg {
+  opacity: 0.3;
+  margin-bottom: 15px;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+}
+
+/* Суретті үлкейту модалі */
+.img-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.img-modal.active { display: flex; }
+
+.img-modal img {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--red-main);
+  box-shadow: 0 0 50px rgba(204,0,0,0.4);
+}
+
+/* ============================================
+   RESPONSIVE (МОБИЛЬДІ)
+   ============================================ */
+@media (max-width: 600px) {
+  .login-card { padding: 25px 20px; }
+  .question-card { padding: 22px 18px; }
+  .result-card { padding: 35px 20px; }
+  .logo h1 { font-size: 2rem; }
+  .result-score { font-size: 3.5rem; }
+  .stats-panel { padding: 12px 14px; }
+  .stat-number { font-size: 1.2rem; }
+  .nav-controls { flex-direction: column; }
+  .nav-controls .left-btns,
+  .nav-controls .right-btns { width: 100%; }
+  .admin-header { flex-direction: column; align-items: flex-start; }
+}
+
+/* ============================================
+   УТИЛИТЫ
+   ============================================ */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 25px 0;
+}
+
+.text-center { text-align: center; }
+.mt-10 { margin-top: 10px; }
+.mt-15 { margin-top: 15px; }
+
+/* Суреттің бар/жоқтығы белгісі */
+.face-required-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 12px;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================
+     🔐 КІРУ ЭКРАНЫ (LOGIN SCREEN)
+     ============================================ -->
+<div id="loginScreen" class="screen active">
+  <div class="logo">
+    <h1>UN<span>SIZ</span></h1>
+    <p>ТЕСТ ПЛАТФОРМАСЫ</p>
+  </div>
+
+  <div class="login-card">
+    <!-- Face ID секция -->
+    <div class="face-section">
+      <div class="section-title">Face ID верификация</div>
+
+      <div class="camera-wrapper" id="cameraWrapper">
+        <!-- Видео элементі -->
+        <video id="cameraVideo" autoplay muted playsinline></video>
+        <!-- Canvas (бет анықтауға арналған) -->
+        <canvas id="cameraCanvas"></canvas>
+
+        <!-- Placeholder (камера іске қоспаған кезде) -->
+        <div class="camera-placeholder" id="cameraPlaceholder">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <p>Камераны іске қосыңыз</p>
+        </div>
+      </div>
+
+      <!-- Камера батырмалары -->
+      <div class="camera-controls">
+        <button class="btn btn-secondary" id="startCameraBtn" onclick="startCamera()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+          </svg>
+          Камераны қосу
+        </button>
+        <button class="btn btn-secondary" id="stopCameraBtn" onclick="stopCamera()" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><rect x="9" y="9" width="6" height="6"/>
+          </svg>
+          Өшіру
+        </button>
+        <button class="btn btn-secondary" id="captureBtn" onclick="captureFace()" style="display:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Бетті сканерлеу
+        </button>
+      </div>
+
+      <!-- Face статусы -->
+      <div class="face-preview-wrap">
+        <img id="facePreview" class="face-preview" alt="Бет суреті" />
+        <div id="faceStatus" class="face-status" style="display:none"></div>
+      </div>
+
+      <p class="face-required-note">⚠️ Кіру үшін бет сканерлеу міндетті</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Пароль секция -->
+    <div class="password-section">
+      <div class="section-title">Пароль енгізу</div>
+      <div class="pin-input-wrap">
+        <input
+          type="password"
+          id="pinInput"
+          class="pin-input"
+          maxlength="4"
+          placeholder="••••"
+          inputmode="numeric"
+          autocomplete="off"
+          onkeydown="handlePinKey(event)"
+          oninput="onPinInput()"
+        />
+      </div>
+      <div id="pinError" class="pin-error-msg">❌ Пароль қате! 4 санды дұрыс енгізіңіз.</div>
+    </div>
+
+    <!-- Кіру батырмасы -->
+    <button class="btn btn-primary" id="loginBtn" disabled onclick="attemptLogin()">
+      🔓 Кіру
+    </button>
+
+    <p class="face-required-note mt-10">Бет сканерленіп, пароль дұрыс болғанда кіруге болады</p>
+  </div>
+</div>
+
+<!-- ============================================
+     📝 ТЕСТ ЭКРАНЫ (TEST SCREEN)
+     ============================================ -->
+<div id="testScreen" class="screen">
+  <div class="logo" style="margin-bottom:15px">
+    <h1>UN<span>SIZ</span></h1>
+  </div>
+
+  <!-- Прогресс жолағы -->
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- Статистика панель -->
+  <div class="stats-panel">
+    <div class="stat-item">
+      <div class="stat-number correct" id="correctCount">0</div>
+      <div class="stat-label">✅ Дұрыс</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number current" id="questionNum">1/100</div>
+      <div class="stat-label">Сұрақ</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number wrong" id="wrongCount">0</div>
+      <div class="stat-label">❌ Қате</div>
+    </div>
+  </div>
+
+  <!-- Сұрақ карточкасы -->
+  <div class="question-card">
+    <div class="question-number-badge" id="qBadge">СҰРАҚ #1</div>
+    <div class="question-text" id="questionText">Сұрақ жүктелуде...</div>
+    <div class="options-list" id="optionsList"></div>
+  </div>
+
+  <!-- Навигация -->
+  <div class="nav-controls">
+    <div class="left-btns">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">
+        ← Алдыңғы
+      </button>
+    </div>
+    <div class="right-btns">
+      <button class="btn btn-secondary" id="nextBtn" onclick="nextQuestion()">
+        Келесі →
+      </button>
+      <button class="btn btn-danger" onclick="confirmFinish()">
+        🏁 Аяқтау
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     🏆 НӘТИЖЕ ЭКРАНЫ (RESULT SCREEN)
+     ============================================ -->
+<div id="resultScreen" class="screen">
+  <div class="logo">
+    <h1>UN<span>SIZ</span></h1>
+  </div>
+  <div class="result-card">
+    <div class="result-icon" id="resultIcon">🎯</div>
+    <div class="result-score" id="resultScore">
+      0 <span>/ 100</span>
+    </div>
+    <div class="result-grade" id="resultGrade"></div>
+
+    <div class="result-breakdown">
+      <div class="breakdown-item">
+        <div class="breakdown-num" style="color:var(--green-correct)" id="rCorrect">0</div>
+        <div class="breakdown-label">✅ Дұрыс</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-num" style="color:var(--red-error)" id="rWrong">0</div>
+        <div class="breakdown-label">❌ Қате</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-num" style="color:var(--text-muted)">100</div>
+        <div class="breakdown-label">📊 Барлығы</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="restartTest()">
+      🔄 Қайтадан бастау
+    </button>
+  </div>
+</div>
+
+<!-- ============================================
+     ⚙️ АДМИН ПАНЕЛЬ (ADMIN PANEL)
+     ============================================ -->
+<div id="adminPanel" class="screen">
+  <div class="admin-header">
+    <div class="admin-title">
+      ⚙️ Админ Панель
+      <span class="badge-count" id="totalCount">0</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-danger btn-sm" onclick="clearAllResults()">
+        🗑️ Барлығын жою
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="closeAdmin()">
+        ✕ Жабу
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Бет суреті</th>
+            <th>✅ Дұрыс</th>
+            <th>❌ Қате</th>
+            <th>📊 Барлық</th>
+            <th>🕐 Уақыты</th>
+            <th>Әрекет</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody">
+          <!-- JS арқылы толтырылады -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================
+     МОДАЛЬДАР (MODALS)
+     ============================================ -->
+
+<!-- Админ кіру модалі -->
+<div class="modal-overlay" id="adminLoginModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAdminModal()">✕</button>
+    <div class="modal-title">🔐 Админ Кіру</div>
+    <input
+      type="password"
+      id="adminPinInput"
+      class="modal-input"
+      maxlength="4"
+      placeholder="••••"
+      inputmode="numeric"
+      onkeydown="handleAdminPinKey(event)"
+    />
+    <div id="adminPinError" class="modal-error">❌ Құпия сөз қате!</div>
+    <button class="btn btn-primary" onclick="checkAdminPin()">
+      Кіру
+    </button>
+  </div>
+</div>
+
+<!-- Тестті аяқтау растау модалі -->
+<div class="modal-overlay" id="finishConfirmModal">
+  <div class="modal-box" style="text-align:center">
+    <button class="modal-close" onclick="closeModal('finishConfirmModal')">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:15px">⚠️</div>
+    <div class="modal-title">Тестті аяқтау?</div>
+    <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:25px" id="finishModalText">
+      Сіз барлық сұрақтарға жауап бердіңіз бе?
+    </p>
+    <div style="display:flex;gap:12px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('finishConfirmModal')">Жоқ</button>
+      <button class="btn btn-primary" style="flex:1" onclick="finishTest()">Иә, аяқтау</button>
+    </div>
+  </div>
+</div>
+
+<!-- Жою растау модалі -->
+<div class="modal-overlay" id="deleteConfirmModal">
+  <div class="modal-box" style="text-align:center">
+    <button class="modal-close" onclick="closeModal('deleteConfirmModal')">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:15px">🗑️</div>
+    <div class="modal-title">Жоюды растаңыз</div>
+    <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:25px">
+      Бұл нәтиже жойылады. Қайтаруға болмайды!
+    </p>
+    <div style="display:flex;gap:12px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('deleteConfirmModal')">Жоқ</button>
+      <button class="btn btn-danger" style="flex:1" id="confirmDeleteBtn">Иә, жою</button>
+    </div>
+  </div>
+</div>
+
+<!-- Барлығын жою растау модалі -->
+<div class="modal-overlay" id="clearAllModal">
+  <div class="modal-box" style="text-align:center">
+    <button class="modal-close" onclick="closeModal('clearAllModal')">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:15px">⚠️🗑️</div>
+    <div class="modal-title" style="color:var(--red-error)">Барлығын жою!</div>
+    <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:10px">
+      Барлық нәтижелер жойылады!
+    </p>
+    <p style="color:var(--red-error);font-size:0.82rem;margin-bottom:25px;font-weight:600">
+      Бұл әрекетті кері қайтару мүмкін емес!
+    </p>
+    <div style="display:flex;gap:12px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('clearAllModal')">Жоқ</button>
+      <button class="btn btn-danger" style="flex:1" onclick="executeDeleteAll()">Иә, барлығын жою</button>
+    </div>
+  </div>
+</div>
+
+<!-- Бет суретін үлкейту модалі -->
+<div class="img-modal" id="imgViewModal" onclick="this.classList.remove('active')">
+  <img id="imgViewImg" src="" alt="Бет суреті" />
+</div>
+
+<!-- ============================================
+     АДМИН БАТЫРМАСЫ (FIXED)
+     ============================================ -->
+<button class="admin-btn-fixed" onclick="openAdminModal()">● АДМИН</button>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+'use strict';
+
+/* ============================================
+   1. ГЛОБАЛЬДЫ АЙНЫМАЛЫЛАР
+   ============================================ */
+
+// localStorage кілті
+const STORAGE_KEY = 'unsiz_test_results_final';
+
+// Тест жағдайы
+let currentQuestion = 0;   // Ағымдағы сұрақ индексі
+let correctCount = 0;      // Дұрыс жауап саны
+let wrongCount = 0;        // Қате жауап саны
+let userAnswers = [];      // Қолданушы жауаптары [true/false/null]
+
+// Аутентификация жағдайы
+let faceDetected = false;       // Бет табылды ма
+let faceImageBase64 = null;     // Бет суреті (Base64)
+let correctPin = '2510';        // Пароль
+let pinCorrect = false;         // Пароль дұрыс па
+
+// Камера
+let cameraStream = null;        // MediaStream
+let detectionInterval = null;   // Бет анықтау интервалы
+let modelsLoaded = false;       // Модельдер жүктелді ме
+
+// Жою үшін уақытша сақтау
+let pendingDeleteId = null;
+
+/* ============================================
+   2. 100 СҰРАҚ МАССИВІ
+   ============================================ */
+const questions = [
+  // ---- 1-20: Debugging (Отладка) тақырыбы ----
+  {
+    q: "Программадағы синтаксис қателерін анықтау үшін қандай құрал қолданылады?",
+    opts: ["Компилятор немесе интерпретатор", "Текстік редактор", "Веб-браузер", "Файл менеджері", "Операциялық жүйе"],
+    a: 0
+  },
+  {
+    q: "\"Syntax Error\" дегеніміз не?",
+    opts: ["Логикалық қате", "Код жазылу ережелерін бұзу", "Жады қатесі", "Желі қатесі", "Деректер базасы қатесі"],
+    a: 1
+  },
+  {
+    q: "\"Logic Error\" немесе логикалық қатенің негізгі белгісі қандай?",
+    opts: ["Программа іске қоспайды", "Программа жұмыс істейді бірақ нәтиже қате", "Код компиляцияланбайды", "Экран қараяды", "Файл жойылады"],
+    a: 1
+  },
+  {
+    q: "Debugging (отладка) дегеніміз не?",
+    opts: ["Жаңа код жазу", "Программадан қателерді табу және жою процесі", "Деректерді сақтау", "Интерфейс жасау", "Тест жазу"],
+    a: 1
+  },
+  {
+    q: "\"Runtime Error\" қашан орын алады?",
+    opts: ["Код жазылу кезінде", "Компиляция кезінде", "Программа орындалу барысында", "Файл сақтану кезінде", "Интернет қосылу кезінде"],
+    a: 2
+  },
+  {
+    q: "Python-да 'NameError' қатесі нені білдіреді?",
+    opts: ["Массив шегінен шығу", "Анықталмаған айнымалыны пайдалану", "Файл табылмады", "Жады жетіспеді", "Тип қатесі"],
+    a: 1
+  },
+  {
+    q: "Stack Overflow (стек толуы) қатесі қандай жағдайда болады?",
+    opts: ["Файл жоқ болса", "Шексіз рекурсия кезінде", "Интернет жоқ болса", "Экран өшсе", "Пернетақта жұмыс істемесе"],
+    a: 1
+  },
+  {
+    q: "Debugging кезінде 'Breakpoint' не үшін қолданылады?",
+    opts: ["Кодты жылдамдату үшін", "Белгілі бір жолда орындалуды тоқтату үшін", "Файлды жабу үшін", "Деректерді жою үшін", "Жаңа функция қосу үшін"],
+    a: 1
+  },
+  {
+    q: "JavaScript-те 'undefined' мен 'null' айырмашылығы қандай?",
+    opts: ["Олар бірдей", "undefined - мән берілмеген, null - мән жоқ деп белгіленген", "null - сан, undefined - жол", "undefined - объект, null - массив", "Ешқандай айырмашылығы жоқ"],
+    a: 1
+  },
+  {
+    q: "\"TypeError\" қатесі не кезінде шығады?",
+    opts: ["Файл жойылғанда", "Дұрыс емес типтегі деректерге операция жасағанда", "Интернет болмағанда", "Экран өшкенде", "Батарея бітченде"],
+    a: 1
+  },
+  {
+    q: "Код редакторындағы 'Linter' не үшін қолданылады?",
+    opts: ["Кодты іске қосу үшін", "Синтаксис және стиль қателерін тексеру үшін", "Деректерді сақтау үшін", "Суреттерді өңдеу үшін", "Желіге қосылу үшін"],
+    a: 1
+  },
+  {
+    q: "Python-да 'IndentationError' нені білдіреді?",
+    opts: ["Айнымалы жоқ", "Шегіністер дұрыс емес", "Файл табылмады", "Жады жетіспеді", "Модуль жоқ"],
+    a: 1
+  },
+  {
+    q: "\"NullPointerException\" қатесі қай тілде жиі кездеседі?",
+    opts: ["Python", "JavaScript", "Java", "HTML", "CSS"],
+    a: 2
+  },
+  {
+    q: "Debugging кезінде 'console.log()' не үшін қолданылады?",
+    opts: ["Файл жасау үшін", "Айнымалы мәнін консольге шығару үшін", "Кодты тоқтату үшін", "Желіге сұраныс жіберу үшін", "Стиль қосу үшін"],
+    a: 1
+  },
+  {
+    q: "\"Off-by-one error\" дегеніміз не?",
+    opts: ["Файл табылмау қатесі", "Цикл немесе массив шегінде 1-ге қате есептеу", "Жады толу қатесі", "Тип қатесі", "Желі қатесі"],
+    a: 1
+  },
+  {
+    q: "Try-Catch блогы не үшін қолданылады?",
+    opts: ["Кодты жылдамдату", "Қателерді ұстап, өңдеу үшін", "Деректерді шифрлау", "Суреттерді жүктеу", "Анимация жасау"],
+    a: 1
+  },
+  {
+    q: "\"Infinite Loop\" (шексіз цикл) қандай проблема туғызады?",
+    opts: ["Деректер жойылады", "Программа жауап бермейді немесе тоңып қалады", "Файл сақталмайды", "Сурет жүктелмейді", "Дыбыс шықпайды"],
+    a: 1
+  },
+  {
+    q: "Unit Test не үшін жазылады?",
+    opts: ["Дизайн жасау үшін", "Кодтың жеке бөліктерін тексеру үшін", "Деректерді сақтау үшін", "Интернетке қосылу үшін", "Файлдарды жою үшін"],
+    a: 1
+  },
+  {
+    q: "\"Regression\" қатесі дегеніміз не?",
+    opts: ["Жаңа қате", "Бұрын жұмыс істеген функцияның жаңа өзгерістен кейін бұзылуы", "Жады қатесі", "Желі қатесі", "Тип қатесі"],
+    a: 1
+  },
+  {
+    q: "Git-те 'git blame' командасы не үшін қолданылады?",
+    opts: ["Кодты жою үшін", "Әр жолды кім өзгерткенін көру үшін", "Жаңа тармақ жасау үшін", "Код синхрондау үшін", "Файл жабу үшін"],
+    a: 1
+  },
+
+  // ---- 21-40: Бағдарламалау негіздері ----
+  {
+    q: "HTML-де <div> тегі не үшін қолданылады?",
+    opts: ["Сурет қосу үшін", "Блоктық контейнер жасау үшін", "Сілтеме қосу үшін", "Кесте жасау үшін", "Форма жасау үшін"],
+    a: 1
+  },
+  {
+    q: "CSS-те 'box-model' нені қамтиды?",
+    opts: ["Тек margin", "Content, Padding, Border, Margin", "Тек Border", "Width және Height ғана", "Color және Font"],
+    a: 1
+  },
+  {
+    q: "JavaScript-те 'var', 'let', 'const' айырмашылықтарының ең дұрыс сипаттамасы:",
+    opts: [
+      "Барлығы бірдей",
+      "var - функция аясы, let - блок аясы, const - тұрақты мән",
+      "let - глобальды, const - локальды",
+      "var - жаңа, let - ескі нұсқа",
+      "const - айнымалы, var - тұрақты"
+    ],
+    a: 1
+  },
+  {
+    q: "Python-да list (тізім) пен tuple (кортеж) айырмашылығы:",
+    opts: ["Олар бірдей", "List өзгертілуі мүмкін, tuple өзгертілмейді", "Tuple үлкен деректер үшін", "List тек сандар үшін", "Tuple жылдамырақ оқылады тек"],
+    a: 1
+  },
+  {
+    q: "Объектіге бағытталған бағдарламалаудың (OOP) 4 принципі:",
+    opts: [
+      "Жылдамдық, Қауіпсіздік, Дизайн, Тест",
+      "Инкапсуляция, Мұрагерлік, Полиморфизм, Абстракция",
+      "Класс, Объект, Метод, Атрибут",
+      "Функция, Айнымалы, Цикл, Шарт",
+      "HTML, CSS, JS, Python"
+    ],
+    a: 1
+  },
+  {
+    q: "SQL-де 'SELECT * FROM users WHERE age > 18' сұранысы не қайтарады?",
+    opts: ["Барлық пайдаланушылар", "Жасы 18-ден үлкен пайдаланушылар", "Жасы 18 пайдаланушылар", "Жасы 18-ден кіші пайдаланушылар", "Ешнәрсе қайтармайды"],
+    a: 1
+  },
+  {
+    q: "HTTP және HTTPS айырмашылығы:",
+    opts: ["Ешқандай айырмашылық жоқ", "HTTPS шифрланған (SSL/TLS), HTTP шифрланбаған", "HTTP жылдамырақ", "HTTPS тек мобильде жұмыс істейді", "HTTP жаңа, HTTPS ескі нұсқа"],
+    a: 1
+  },
+  {
+    q: "REST API-де 'GET' сұранысы не үшін қолданылады?",
+    opts: ["Деректерді жою үшін", "Деректерді алу үшін", "Деректерді жаңарту үшін", "Жаңа дерек жасау үшін", "Аутентификация үшін"],
+    a: 1
+  },
+  {
+    q: "JSON форматы нені білдіреді?",
+    opts: ["Java Script Object Node", "JavaScript Object Notation", "Java Serialized Object Network", "JSON Simple Object Name", "Java Standard Output Notation"],
+    a: 1
+  },
+  {
+    q: "Git-те 'commit' не жасайды?",
+    opts: ["Файлды жояды", "Өзгерістерді репозиторийге сақтайды", "Жаңа тармақ жасайды", "Кодты іске қосады", "Серверге жіберед"],
+    a: 1
+  },
+  {
+    q: "Рекурсия дегеніміз не?",
+    opts: ["Функция ішінде цикл", "Функцияның өзін-өзі шақыруы", "Массивпен жұмыс", "Кластан мұрагерлік алу", "Сыртқы API шақыру"],
+    a: 1
+  },
+  {
+    q: "Big O нотациясы O(n²) нені білдіреді?",
+    opts: ["Тұрақты уақыт", "Сызықтық уақыт", "Квадраттық уақыт (nested loops)", "Логарифмдік уақыт", "Экспоненциальды уақыт"],
+    a: 2
+  },
+  {
+    q: "CSS Flexbox-та 'justify-content: center' не жасайды?",
+    opts: ["Элементтерді тігінен ортаға қояды", "Элементтерді көлденеңінен ортаға қояды", "Элементтерді жою", "Элементтерді үлкейтеді", "Элементтерді жасырады"],
+    a: 1
+  },
+  {
+    q: "localStorage пен sessionStorage айырмашылығы:",
+    opts: ["Олар бірдей", "localStorage браузер жабылғаннан кейін сақталады, sessionStorage - жойылады", "sessionStorage үлкенірек", "localStorage тек Chrome-да жұмыс істейді", "sessionStorage жылдамырақ"],
+    a: 1
+  },
+  {
+    q: "Асинхронды программалаудағы 'Promise' не үшін қолданылады?",
+    opts: ["Синхронды код жазу үшін", "Болашақта орындалатын операцияны басқару үшін", "Айнымалы жариялау үшін", "Класс жасау үшін", "Массив сорттау үшін"],
+    a: 1
+  },
+  {
+    q: "Python-да '__init__' методы не үшін қолданылады?",
+    opts: ["Класты жою үшін", "Объект жасалғанда автоматты шақырылатын конструктор", "Файл ашу үшін", "Желіге қосылу үшін", "Деректерді шифрлау үшін"],
+    a: 1
+  },
+  {
+    q: "SQL-де 'JOIN' операторы не жасайды?",
+    opts: ["Кестені жояды", "Екі немесе одан көп кестені біріктіреді", "Жаңа баған қосады", "Деректерді сорттайды", "Деректерді топтайды"],
+    a: 1
+  },
+  {
+    q: "CSS-те 'z-index' нені басқарады?",
+    opts: ["Элемент өлшемін", "Элементтердің тігінен орналасу ретін (қабаттасу)", "Элемент түсін", "Элемент қаріпін", "Элемент шекарасын"],
+    a: 1
+  },
+  {
+    q: "JavaScript-те 'closure' (тұйықталу) дегеніміз не?",
+    opts: ["Цикл тоқтату", "Функция өзі жасалған аймақтағы айнымалыларды есте сақтауы", "Объектіні жасыру", "Файлды жабу", "Желіні өшіру"],
+    a: 1
+  },
+  {
+    q: "Agile методологиясындағы 'Sprint' не?",
+    opts: ["Жаңа программа", "Белгілі мерзімге (1-4 апта) жоспарланған жұмыс цикілі", "Тестілеу кезеңі", "Презентация", "Кодты жою кезеңі"],
+    a: 1
+  },
+
+  // ---- 41-60: Деректер құрылымы және алгоритмдер ----
+  {
+    q: "Stack (стек) деректер құрылымы қандай принципте жұмыс істейді?",
+    opts: ["FIFO (First In First Out)", "LIFO (Last In First Out)", "Random Access", "Sorted Order", "Indexed Access"],
+    a: 1
+  },
+  {
+    q: "Queue (кезек) деректер құрылымы қандай принципте жұмыс істейді?",
+    opts: ["LIFO", "FIFO (First In First Out)", "Random", "Sorted", "Reversed"],
+    a: 1
+  },
+  {
+    q: "Binary Search алгоритмі үшін массив қандай болуы керек?",
+    opts: ["Кез-келген тәртіпте", "Сортталған (өсу немесе кему тәртібінде)", "Тек сандардан тұратын", "Бос болуы тиіс", "Жұп ұзындықты"],
+    a: 1
+  },
+  {
+    q: "Linked List (байланысты тізім) массивтен қалай ерекшеленеді?",
+    opts: [
+      "Linked List жылдамырақ оқылады",
+      "Linked List элементтері жадыда байланысқан, массив - тізбекті",
+      "Linked List тек сандар сақтайды",
+      "Массив кез-келген өлшемде болады",
+      "Linked List тек Python-да бар"
+    ],
+    a: 1
+  },
+  {
+    q: "Hash Table (хэш-кесте) элементті іздеудің орташа уақыты:",
+    opts: ["O(n)", "O(log n)", "O(1)", "O(n²)", "O(n log n)"],
+    a: 2
+  },
+  {
+    q: "Bubble Sort алгоритмінің уақыт күрделілігі (worst case):",
+    opts: ["O(1)", "O(log n)", "O(n)", "O(n²)", "O(n log n)"],
+    a: 3
+  },
+  {
+    q: "Binary Tree (бинарлы ағаш) дегеніміз не?",
+    opts: ["Екі массивтен тұратын құрылым", "Әр тораптың максимум 2 баласы бар ағаш", "Тек сандарды сақтайтын тізім", "Стек пен кезектің комбинациясы", "Сорттаңдан деректер құрылымы"],
+    a: 1
+  },
+  {
+    q: "Merge Sort алгоритмінің уақыт күрделілігі:",
+    opts: ["O(1)", "O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+    a: 2
+  },
+  {
+    q: "Graph (граф) деректер құрылымында 'Vertex' (төбе) дегеніміз не?",
+    opts: ["Қосылыс (Edge)", "Граф торабы (Node)", "Граф салмағы", "Граф бағыты", "Граф тереңдігі"],
+    a: 1
+  },
+  {
+    q: "DFS (Depth First Search) алгоритмі не үшін қолданылады?",
+    opts: ["Массивті сорттау", "Граф немесе ағашты тереңдігі бойынша шарлау", "Хэш жасау", "Жад бөлу", "Желіге қосылу"],
+    a: 1
+  },
+  {
+    q: "Dynamic Programming (динамикалық программалау) не?",
+    opts: [
+      "Веб-сайт жасау",
+      "Күрделі есептерді ішкі есептерге бөліп, нәтижелерді кэштеу",
+      "Деректерді шифрлау",
+      "Желіні оңтайландыру",
+      "Объектіге бағытталған программалау"
+    ],
+    a: 1
+  },
+  {
+    q: "Greedy Algorithm (ашкөз алгоритм) не?",
+    opts: [
+      "Барлық мүмкіндіктерді тексеретін алгоритм",
+      "Әр қадамда жергілікті оңтайлы шешімді таңдайтын алгоритм",
+      "Тек рекурсия қолданатын алгоритм",
+      "Параллельді есептеу алгоритмі",
+      "Кездейсоқ таңдау алгоритмі"
+    ],
+    a: 1
+  },
+  {
+    q: "Деректер базасындағы 'Index' не үшін қолданылады?",
+    opts: ["Деректерді жою", "Деректерді іздеу жылдамдығын арттыру", "Деректерді шифрлау", "Кестелерді байланыстыру", "Деректерді сақтық көшіру"],
+    a: 1
+  },
+  {
+    q: "Fibonacci санын рекурсиямен есептеудің мәселесі не?",
+    opts: [
+      "Рекурсия жұмыс істемейді",
+      "Бірдей есептеулер қайталана береді (экспоненциальды уақыт)",
+      "Тек үлкен сандар үшін жұмыс істейді",
+      "Python-да ғана жұмыс істейді",
+      "Жад жетіспейді"
+    ],
+    a: 1
+  },
+  {
+    q: "AVL Tree не үшін ерекше?",
+    opts: [
+      "Тек сандарды сақтайды",
+      "Теңдестірілген бинарлы іздеу ағашы - тереңдік бойынша теңестіріледі",
+      "Графтарды өңдейді",
+      "Тек 2 элемент сақтайды",
+      "Хэш-кестенің бір түрі"
+    ],
+    a: 1
+  },
+  {
+    q: "Quick Sort алгоритмінің орташа уақыт күрделілігі:",
+    opts: ["O(1)", "O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+    a: 2
+  },
+  {
+    q: "Trie деректер құрылымы не үшін тиімді?",
+    opts: [
+      "Сандарды сорттау",
+      "Жолдарды іздеу және автотолтыру (prefix search)",
+      "Графтарды шарлау",
+      "Математикалық есептеулер",
+      "Сурет сақтау"
+    ],
+    a: 1
+  },
+  {
+    q: "Деректер базасындағы ACID принципіндегі 'A' нені білдіреді?",
+    opts: ["Authorization", "Atomicity (атомарлылық)", "Authentication", "Aggregation", "Allocation"],
+    a: 1
+  },
+  {
+    q: "NoSQL деректер базасы SQL-ден қалай ерекшеленеді?",
+    opts: [
+      "NoSQL жылдамырақ",
+      "NoSQL икемді схема, горизонтальды масштабталу, JSON-тәрізді деректер",
+      "SQL тек веб үшін",
+      "NoSQL тек мобильде жұмыс істейді",
+      "SQL деректерді шифрлайды"
+    ],
+    a: 1
+  },
+  {
+    q: "Heap деректер құрылымының ең жиі қолданылуы:",
+    opts: ["Сызықтық іздеу", "Priority Queue (басымдықтар кезегі) жасау", "Жол сақтау", "Граф шарлау", "Хэш жасау"],
+    a: 1
+  },
+
+  // ---- 61-80: Веб-технологиялар және фреймворктар ----
+  {
+    q: "React-та 'useState' hook не үшін қолданылады?",
+    opts: ["HTTP сұранысы жіберу", "Компонент күйін (state) басқару", "Стиль қосу", "Роутинг", "Деректер базасына қосылу"],
+    a: 1
+  },
+  {
+    q: "Node.js не?",
+    opts: ["Браузер", "JavaScript-тің серверлік орталарда жұмыс істеуіне мүмкіндік беретін орта", "Деректер базасы", "CSS фреймворк", "Тест құралы"],
+    a: 1
+  },
+  {
+    q: "API (Application Programming Interface) дегеніміз не?",
+    opts: [
+      "Программалау тілі",
+      "Бағдарламалар арасындағы байланыс интерфейсі",
+      "Деректер базасы",
+      "Операциялық жүйе",
+      "Желілік протокол"
+    ],
+    a: 1
+  },
+  {
+    q: "CSS Grid пен Flexbox айырмашылығы:",
+    opts: [
+      "Олар бірдей",
+      "Grid 2D (жол+баған), Flexbox 1D (бір бағыт) орналасуы",
+      "Flexbox тек мобильде",
+      "Grid тек Desktop-та",
+      "Grid жылдамырақ"
+    ],
+    a: 1
+  },
+  {
+    q: "CORS (Cross-Origin Resource Sharing) не?",
+    opts: [
+      "Деректерді шифрлау",
+      "Браузердің әртүрлі доменнен ресурс сұрауын басқаратын механизм",
+      "CSS анимация",
+      "JavaScript API",
+      "Деректер базасы протоколы"
+    ],
+    a: 1
+  },
+  {
+    q: "WebSocket HTTP-тен қалай ерекшеленеді?",
+    opts: [
+      "WebSocket жылдамырақ",
+      "WebSocket екі бағытты тұрақты байланыс орнатады, HTTP - сұраныс-жауап",
+      "HTTP тек суреттер үшін",
+      "WebSocket тек мобильде",
+      "HTTP шифрланған"
+    ],
+    a: 1
+  },
+  {
+    q: "Docker не үшін қолданылады?",
+    opts: [
+      "Веб-сайт жасау",
+      "Қосымшаларды контейнерлерде оқшаулап іске қосу",
+      "Код жазу",
+      "Тест жазу",
+      "Деректерді шифрлау"
+    ],
+    a: 1
+  },
+  {
+    q: "Kubernetes не?",
+    opts: [
+      "Программалау тілі",
+      "Docker контейнерлерін оркестрациялайтын жүйе",
+      "Деректер базасы",
+      "Желілік протокол",
+      "CSS фреймворк"
+    ],
+    a: 1
+  },
+  {
+    q: "GraphQL REST-тен қалай ерекшеленеді?",
+    opts: [
+      "GraphQL жылдамырақ",
+      "GraphQL клиентке дәл қажетті деректерді сұрауға мүмкіндік береді",
+      "REST тек мобильде",
+      "GraphQL тек Facebook үшін",
+      "REST деректерді шифрлайды"
+    ],
+    a: 1
+  },
+  {
+    q: "PWA (Progressive Web App) не?",
+    opts: [
+      "Жаңа программалау тілі",
+      "Нативті қосымша тәрізді жұмыс істейтін веб-қосымша",
+      "Python веб-фреймворк",
+      "Деректер базасы жүйесі",
+      "CSS методологиясы"
+    ],
+    a: 1
+  },
+  {
+    q: "TypeScript JavaScript-тен не қосады?",
+    opts: [
+      "Жаңа функциялар",
+      "Статикалық типтерді тексеру (type checking)",
+      "Жылдамдық",
+      "Деректер базасы қолдауы",
+      "Мобильді қолдау"
+    ],
+    a: 1
+  },
+  {
+    q: "CI/CD (Continuous Integration/Continuous Deployment) не?",
+    opts: [
+      "Программалау тілі",
+      "Код өзгерістерін автоматты тестілеп, деплой ететін процесс",
+      "Деректер базасы",
+      "Желілік протокол",
+      "CSS анимация"
+    ],
+    a: 1
+  },
+  {
+    q: "Microservices архитектурасы монолитттен қалай ерекшеленеді?",
+    opts: [
+      "Microservices жылдамырақ",
+      "Microservices кішкентай, тәуелсіз жұмыс істейтін сервистерден тұрады",
+      "Монолит жаңа технология",
+      "Microservices тек мобильде",
+      "Монолит қауіпсіздеу"
+    ],
+    a: 1
+  },
+  {
+    q: "Redis не үшін қолданылады?",
+    opts: [
+      "HTML рендеринг",
+      "In-memory деректер кэші және дерекқор",
+      "CSS компиляция",
+      "Файлдарды сақтау",
+      "Email жіберу"
+    ],
+    a: 1
+  },
+  {
+    q: "OAuth 2.0 не?",
+    opts: [
+      "Деректерді шифрлау стандарты",
+      "Үшінші тарап арқылы авторизациялау протоколы",
+      "Желілік протокол",
+      "Деректер базасы",
+      "Программалау тілі"
+    ],
+    a: 1
+  },
+  {
+    q: "JWT (JSON Web Token) не үшін қолданылады?",
+    opts: [
+      "Суреттерді сақтау",
+      "Аутентификация мен авторизация үшін токен беру",
+      "CSS анимация",
+      "Деректер базасы сұранысы",
+      "HTML рендеринг"
+    ],
+    a: 1
+  },
+  {
+    q: "Load Balancer (жүктемені теңгеру) не?",
+    opts: [
+      "Деректерді шифрлайтын құрал",
+      "Сұраныстарды бірнеше серверге бөлетін жүйе",
+      "Деректер базасы",
+      "CSS фреймворк",
+      "Тест құралы"
+    ],
+    a: 1
+  },
+  {
+    q: "CDN (Content Delivery Network) не?",
+    opts: [
+      "Программалау тілі",
+      "Ресурстарды пайдаланушыға жақын серверлерден жеткізетін желі",
+      "Деректер базасы",
+      "Email сервисі",
+      "Кодты тестілеу жүйесі"
+    ],
+    a: 1
+  },
+  {
+    q: "SQL Injection шабуылынан қорғану үшін не қолданылады?",
+    opts: [
+      "Шифрлау",
+      "Параметрлі сұраныстар (Prepared Statements)",
+      "Firewall",
+      "HTTPS",
+      "Antivirus"
+    ],
+    a: 1
+  },
+  {
+    q: "XSS (Cross-Site Scripting) шабуылы не?",
+    opts: [
+      "Сервер бұзу",
+      "Зиянды скриптті веб-бетке енгізу",
+      "Желіні өшіру",
+      "Деректерді ұрлау тікелей",
+      "Email жіберу"
+    ],
+    a: 1
+  },
+
+  // ---- 81-100: Жалпы IT білімі ----
+  {
+    q: "Машиналық оқыту (Machine Learning) дегеніміз не?",
+    opts: [
+      "Компьютерді жинау",
+      "Компьютерлерге мысалдардан үйрену мүмкіндігін беретін AI тармағы",
+      "Программалау тілі",
+      "Веб-технология",
+      "Деректер базасы"
+    ],
+    a: 1
+  },
+  {
+    q: "Blockchain технологиясының негізгі артықшылығы:",
+    opts: [
+      "Жылдамдығы",
+      "Децентрализация және өзгертуге болмайтын тіркеу",
+      "Арзандығы",
+      "Қарапайымдылығы",
+      "Жад үнемдеу"
+    ],
+    a: 1
+  },
+  {
+    q: "Cloud Computing (бұлтты есептеу) артықшылығы:",
+    opts: [
+      "Жоғары қауіпсіздік тек",
+      "Масштабталу, икемділік, шығынды үнемдеу",
+      "Тек үлкен компаниялар үшін",
+      "Интернетсіз жұмыс",
+      "Жылдамдық тек"
+    ],
+    a: 1
+  },
+  {
+    q: "DevOps дегеніміз не?",
+    opts: [
+      "Программалау тілі",
+      "Разработка мен операциялар командаларын біріктіретін тәсіл",
+      "Деректер базасы жүйесі",
+      "Желілік протокол",
+      "CSS методологиясы"
+    ],
+    a: 1
+  },
+  {
+    q: "SOLID принциптерінің 'S' нені білдіреді?",
+    opts: [
+      "Security (Қауіпсіздік)",
+      "Single Responsibility Principle (бір жауапкершілік принципі)",
+      "Scalability (масштабталу)",
+      "Speed (жылдамдық)",
+      "Syntax (синтаксис)"
+    ],
+    a: 1
+  },
+  {
+    q: "IPv4 мен IPv6 айырмашылығы:",
+    opts: [
+      "IPv6 жылдамырақ",
+      "IPv6 үлкенірек адрес кеңістігі (128 бит vs 32 бит)",
+      "IPv4 жаңа нұсқа",
+      "IPv6 тек мобильде",
+      "IPv4 шифрланған"
+    ],
+    a: 1
+  },
+  {
+    q: "DNS (Domain Name System) не жасайды?",
+    opts: [
+      "Деректерді шифрлайды",
+      "Домен атын IP-адреске аударады",
+      "Email жібереді",
+      "Файлдарды сақтайды",
+      "Желіні қорғайды"
+    ],
+    a: 1
+  },
+  {
+    q: "Шифрлаудағы 'Public Key' (ашық кілт) не үшін қолданылады?",
+    opts: ["Шифрді ашу үшін", "Деректерді шифрлау үшін", "Жойылатын деректер", "Файлдарды сақтау", "Тест жасау"],
+    a: 1
+  },
+  {
+    q: "Agile-дегі 'Scrum' методологиясындағы 'Daily Standup' не?",
+    opts: [
+      "Апталық есеп",
+      "Ай сайынғы жиналыс",
+      "Күнделікті 15 минуттық команда жиналысы",
+      "Тоқсандық жоспарлау",
+      "Жылдық бағалау"
+    ],
+    a: 2
+  },
+  {
+    q: "Open Source (ашық бастапқы код) дегеніміз не?",
+    opts: [
+      "Тек компания ішінде қолданылатын код",
+      "Бастапқы коды еркін қолжетімді, өзгертуге болатын программа",
+      "Шифрланған код",
+      "Тек оқуға болатын код",
+      "Коммерциялық программа"
+    ],
+    a: 1
+  },
+  {
+    q: "Virtualization (виртуализация) не?",
+    opts: [
+      "Бағдарламалау тілі",
+      "Физикалық ресурстарды бөліп, виртуальды орта жасау технологиясы",
+      "CSS технологиясы",
+      "Деректер базасы",
+      "Email протоколы"
+    ],
+    a: 1
+  },
+  {
+    q: "TCP/IP моделіндегі қабаттар саны:",
+    opts: ["3", "4", "5", "7", "2"],
+    a: 1
+  },
+  {
+    q: "Firewall (брандмауэр) не?",
+    opts: [
+      "Вирус жою программасы",
+      "Желілік трафикті бақылап, рұқсатсыз кіруден қорғайтын жүйе",
+      "Деректер базасы",
+      "Email сервисі",
+      "CSS фреймворк"
+    ],
+    a: 1
+  },
+  {
+    q: "2FA (Two-Factor Authentication) не?",
+    opts: [
+      "Екі пароль қолдану",
+      "Екі түрлі аутентификация факторын қолдану (мысалы, пароль + SMS код)",
+      "Екі аккаунт болу",
+      "Екі браузер ашу",
+      "Екі рет кіру"
+    ],
+    a: 1
+  },
+  {
+    q: "Responsive Design (жауап беретін дизайн) не?",
+    opts: [
+      "Анимация қосу",
+      "Сайттың әртүрлі экран өлшемдеріне бейімделуі",
+      "Жылдам жүктелу",
+      "Түс палитрасы",
+      "Шрифт таңдау"
+    ],
+    a: 1
+  },
+  {
+    q: "Компьютер архитектурасындағы RAM не?",
+    opts: [
+      "Тұрақты сақтау жады",
+      "Жедел (оперативті) жады - уақытша деректер сақталады",
+      "Процессор",
+      "Желілік карта",
+      "Бейнекарта"
+    ],
+    a: 1
+  },
+  {
+    q: "Бинарлы санау жүйесінде 1010 ондық жүйеде қанша?",
+    opts: ["8", "10", "12", "16", "6"],
+    a: 1
+  },
+  {
+    q: "UX (User Experience) дизайнының мақсаты:",
+    opts: [
+      "Сайтты жылдамдату",
+      "Пайдаланушыға тиімді, ыңғайлы тәжірибе жасау",
+      "Кодты оңтайландыру",
+      "Деректерді қорғау",
+      "Анимация қосу"
+    ],
+    a: 1
+  },
+  {
+    q: "Scrum-дағы 'Product Backlog' не?",
+    opts: [
+      "Орындалған тапсырмалар тізімі",
+      "Өнімге қажетті барлық тапсырмалар мен функциялардың басымдықпен реттелген тізімі",
+      "Команда мүшелері тізімі",
+      "Апталық жоспар",
+      "Тест нәтижелері"
+    ],
+    a: 1
+  },
+  {
+    q: "Бағдарламашының DRY принципі нені білдіреді?",
+    opts: [
+      "Don't Run Yourself",
+      "Don't Repeat Yourself - кодты қайталамау",
+      "Do Run Your tests",
+      "Design Robust Yield",
+      "Deploy Rapidly Yesterday"
+    ],
+    a: 1
+  }
+];
+
+/* ============================================
+   3. УТИЛИТА ФУНКЦИЯЛАРЫ
+   ============================================ */
+
+/**
+ * Экранды ауыстыру
+ * @param {string} screenId - Белсендірілетін экранның ID-і
+ */
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+/**
+ * Модаль ашу
+ * @param {string} modalId - Модаль ID-і
+ */
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('active');
+}
+
+/**
+ * Модаль жабу
+ * @param {string} modalId - Модаль ID-і
+ */
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('active');
+}
+
+/**
+ * Күн/уақыт форматтау
+ * @returns {string} - "15.04.2025 14:30" форматы
+ */
+function formatDateTime() {
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2, '0');
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const y = now.getFullYear();
+  const h = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  return `${d}.${m}.${y} ${h}:${min}`;
+}
+
+/**
+ * Бірегей ID жасау
+ * @returns {string}
+ */
+function generateId() {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+/* ============================================
+   4. КАМЕРА ЖӘНЕ FACE ID ФУНКЦИЯЛАРЫ
+   ============================================ */
+
+/**
+ * Face-API.js модельдерін жүктеу
+ */
+async function loadFaceModels() {
+  setFaceStatus('loading', 'Бет тану модельдері жүктелуде...');
+
+  try {
+    const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+    ]);
+    modelsLoaded = true;
+    setFaceStatus('success', '✅ Модель жүктелді. Камераны іске қосыңыз.');
+  } catch (err) {
+    console.error('Модель жүктелу қатесі:', err);
+    setFaceStatus('error', '❌ Модель жүктелмеді. Интернет байланысын тексеріңіз.');
+  }
+}
+
+/**
+ * Бет статус хабарламасын орнату
+ * @param {string} type - 'loading' | 'success' | 'error'
+ * @param {string} msg - Хабарлама мәтіні
+ */
+function setFaceStatus(type, msg) {
+  const el = document.getElementById('faceStatus');
+  el.style.display = 'flex';
+  el.className = `face-status ${type}`;
+
+  if (type === 'loading') {
+    el.innerHTML = `<span class="loader-ring"></span> ${msg}`;
+  } else {
+    el.textContent = msg;
+  }
+}
+
+/**
+ * Камераны іске қосу
+ */
+async function startCamera() {
+  try {
+    // Камераға рұқсат сұрау
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: { ideal: 640 },
+        height: { ideal: 480 },
+        facingMode: 'user' // Алдыңғы камера
+      }
+    });
+
+    const video = document.getElementById('cameraVideo');
+    video.srcObject = cameraStream;
+    video.style.display = 'block';
+
+    document.getElementById('cameraPlaceholder').style.display = 'none';
+    document.getElementById('startCameraBtn').style.display = 'none';
+    document.getElementById('stopCameraBtn').style.display = 'flex';
+    document.getElementById('captureBtn').style.display = 'flex';
+
+    // Модельдер жүктелмеген болса - жүктеу
+    if (!modelsLoaded) {
+      await loadFaceModels();
+    }
+
+    // Бет анықтауды автоматты іске қосу
+    if (modelsLoaded) {
+      startFaceDetection();
+    }
+
+  } catch (err) {
+    console.error('Камера қатесі:', err);
+    if (err.name === 'NotAllowedError') {
+      setFaceStatus('error', '❌ Камераға рұқсат берілмеді. Браузер рұқсаттарын тексеріңіз.');
+    } else if (err.name === 'NotFoundError') {
+      setFaceStatus('error', '❌ Камера табылмады.');
+    } else {
+      setFaceStatus('error', `❌ Камера қатесі: ${err.message}`);
+    }
+  }
+}
+
+/**
+ * Камераны өшіру
+ */
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+
+  if (detectionInterval) {
+    clearInterval(detectionInterval);
+    detectionInterval = null;
+  }
+
+  const video = document.getElementById('cameraVideo');
+  video.srcObject = null;
+  video.style.display = 'none';
+  document.getElementById('cameraCanvas').style.display = 'none';
+  document.getElementById('cameraPlaceholder').style.display = 'flex';
+  document.getElementById('startCameraBtn').style.display = 'flex';
+  document.getElementById('stopCameraBtn').style.display = 'none';
+  document.getElementById('captureBtn').style.display = 'none';
+
+  setFaceStatus('loading', 'Камера өшірілді.');
+}
+
+/**
+ * Бет анықтауды автоматты іске қосу (нақты уақытта)
+ */
+function startFaceDetection() {
+  const video = document.getElementById('cameraVideo');
+
+  detectionInterval = setInterval(async () => {
+    if (!video.readyState || video.readyState < 2) return;
+    if (faceDetected) return; // Бет танылған болса тоқтату
+
+    try {
+      const detection = await faceapi.detectSingleFace(
+        video,
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })
+      );
+
+      if (detection) {
+        setFaceStatus('success', '😊 Бет анықталды! "Бетті сканерлеу" батырмасын басыңыз.');
+      } else {
+        setFaceStatus('loading', '🔍 Бет іздеуде... Камерага қараңыз.');
+      }
+    } catch (e) {
+      // Жүктелу кезіндегі аз қателерді елемеу
+    }
+  }, 600);
+}
+
+/**
+ * Бетті сканерлеу және суретін сақтау
+ */
+async function captureFace() {
+  const video = document.getElementById('cameraVideo');
+
+  if (!video.readyState || video.readyState < 2) {
+    setFaceStatus('error', '❌ Камера дайын емес. Күте тұрыңыз.');
+    return;
+  }
+
+  setFaceStatus('loading', '🔍 Бет анықталуда...');
+
+  try {
+    // Бет анықтау
+    const detection = await faceapi.detectSingleFace(
+      video,
+      new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 })
+    );
+
+    if (!detection) {
+      setFaceStatus('error', '❌ Бет табылмады. Камерага жақынырақ отырыңыз және қайталаңыз.');
+      return;
+    }
+
+    // Суретті Canvas-қа салу
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+
+    // Айналы суретті тікелей сақтау
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, -canvas.width, 0);
+
+    // Base64 форматына айналдыру
+    faceImageBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+    // Превьюді көрсету
+    const preview = document.getElementById('facePreview');
+    preview.src = faceImageBase64;
+    preview.style.display = 'block';
+
+    faceDetected = true;
+    setFaceStatus('success', '✅ Бет сәтті сканерленді!');
+
+    // Кіру батырмасын тексеру
+    checkLoginReady();
+
+    // Камераны автоматты өшіру (опционал)
+    if (detectionInterval) {
+      clearInterval(detectionInterval);
+      detectionInterval = null;
+    }
+
+  } catch (err) {
+    console.error('Сканерлеу қатесі:', err);
+    setFaceStatus('error', '❌ Сканерлеу қатесі. Қайталап көріңіз.');
+  }
+}
+
+/* ============================================
+   5. КІРУ (LOGIN) ФУНКЦИЯЛАРЫ
+   ============================================ */
+
+/**
+ * PIN енгізу кезіндегі оқиға
+ */
+function onPinInput() {
+  const input = document.getElementById('pinInput');
+  // Тек сандарды қабылдау
+  input.value = input.value.replace(/[^0-9]/g, '');
+  // Қате стилін жою
+  input.classList.remove('error');
+  document.getElementById('pinError').style.display = 'none';
+  // Кіру батырмасын тексеру
+  checkLoginReady();
+}
+
+/**
+ * Enter пернесі арқылы кіру
+ * @param {KeyboardEvent} event
+ */
+function handlePinKey(event) {
+  if (event.key === 'Enter') {
+    attemptLogin();
+  }
+}
+
+/**
+ * Кіру батырмасын тексеру
+ */
+function checkLoginReady() {
+  const pin = document.getElementById('pinInput').value;
+  const loginBtn = document.getElementById('loginBtn');
+  // Екі шарт: бет танылды + 4 сан енгізілді
+  const ready = faceDetected && pin.length === 4;
+  loginBtn.disabled = !ready;
+}
+
+/**
+ * Кіруге әрекет жасау
+ */
+function attemptLogin() {
+  const pin = document.getElementById('pinInput').value;
+  const pinInput = document.getElementById('pinInput');
+  const pinError = document.getElementById('pinError');
+
+  if (!faceDetected) {
+    setFaceStatus('error', '❌ Алдымен бетіңізді сканерлеңіз!');
+    return;
+  }
+
+  if (pin !== correctPin) {
+    pinInput.classList.add('error');
+    pinError.style.display = 'block';
+    pinInput.value = '';
+    setTimeout(() => pinInput.classList.remove('error'), 600);
+    checkLoginReady();
+    return;
+  }
+
+  // Сәтті кіру
+  pinCorrect = true;
+  stopCamera(); // Камераны өшіру
+  initTest();
+  showScreen('testScreen');
+}
+
+/* ============================================
+   6. ТЕСТ ФУНКЦИЯЛАРЫ
+   ============================================ */
+
+/**
+ * Тестті инициализациялау
+ */
+function initTest() {
+  currentQuestion = 0;
+  correctCount = 0;
+  wrongCount = 0;
+  userAnswers = new Array(questions.length).fill(null);
+  renderQuestion();
+  updateStats();
+}
+
+/**
+ * Сұрақты рендерлеу
+ */
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  const total = questions.length;
+
+  // Badge жаңарту
+  document.getElementById('qBadge').textContent = `СҰРАҚ #${currentQuestion + 1}`;
+
+  // Сұрақ мәтіні
+  document.getElementById('questionText').textContent = q.q;
+
+  // Жауап нұсқалары
+  const optsList = document.getElementById('optionsList');
+  optsList.innerHTML = '';
+
+  const letters = ['A', 'B', 'C', 'D', 'E'];
+  const userAnswer = userAnswers[currentQuestion];
+
+  q.opts.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+
+    // Жауап берілген болса стиль қосу
+    if (userAnswer !== null) {
+      btn.classList.add('answered');
+      if (idx === q.a) {
+        btn.classList.add('correct'); // Дұрыс жауапты жасылмен
+      } else if (idx === userAnswer && userAnswer !== q.a) {
+        btn.classList.add('wrong');   // Таңдалған қате жауап
+      }
+    }
+
+    btn.innerHTML = `<span class="option-letter">${letters[idx]}</span>${opt}`;
+
+    // Жауап берілмеген болса ғана клик оқиғасы
+    if (userAnswer === null) {
+      btn.onclick = () => selectAnswer(idx);
+    }
+
+    optsList.appendChild(btn);
+  });
+
+  // Навигация батырмаларын жаңарту
+  document.getElementById('prevBtn').disabled = currentQuestion === 0;
+  document.getElementById('nextBtn').disabled = currentQuestion === total - 1;
+
+  // Прогресс жолағы
+  const percent = ((currentQuestion + 1) / total) * 100;
+  document.getElementById('progressFill').style.width = `${percent}%`;
+
+  // Статистика
+  updateStats();
+}
+
+/**
+ * Жауапты таңдау
+ * @param {number} selectedIdx - Таңдалған нұсқа индексі
+ */
+function selectAnswer(selectedIdx) {
+  const q = questions[currentQuestion];
+  const isCorrect = selectedIdx === q.a;
+
+  // Жауапты сақтау
+  userAnswers[currentQuestion] = selectedIdx;
+
+  // Есептеу
+  if (isCorrect) {
+    correctCount++;
+  } else {
+    wrongCount++;
+  }
+
+  // Батырмаларды жаңарту (түс беру)
+  const optBtns = document.querySelectorAll('.option-btn');
+  optBtns.forEach((btn, idx) => {
+    btn.classList.add('answered');
+    btn.onclick = null; // Клик өшіру
+
+    if (idx === q.a) {
+      btn.classList.add('correct');
+    } else if (idx === selectedIdx && !isCorrect) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  // Статистиканы жаңарту
+  updateStats();
+
+  // 250ms кейін келесі сұраққа автоматты өту
+  setTimeout(() => {
+    if (currentQuestion < questions.length - 1) {
+      currentQuestion++;
+      renderQuestion();
+    }
+    // Соңғы сұрақ болса - аяқтауды ұсыну
+    else {
+      const unanswered = userAnswers.filter(a => a === null).length;
+      if (unanswered === 0) {
+        confirmFinish();
+      }
+    }
+  }, 250);
+}
+
+/**
+ * Статистиканы жаңарту
+ */
+function updateStats() {
+  document.getElementById('correctCount').textContent = correctCount;
+  document.getElementById('wrongCount').textContent = wrongCount;
+  document.getElementById('questionNum').textContent = `${currentQuestion + 1}/${questions.length}`;
+}
+
+/**
+ * Алдыңғы сұраққа өту
+ */
+function prevQuestion() {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  }
+}
+
+/**
+ * Келесі сұраққа өту
+ */
+function nextQuestion() {
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  }
+}
+
+/**
+ * Тестті аяқтауды растау
+ */
+function confirmFinish() {
+  const unanswered = userAnswers.filter(a => a === null).length;
+  const finishText = document.getElementById('finishModalText');
+
+  if (unanswered > 0) {
+    finishText.textContent = `Сізде ${unanswered} жауапсыз сұрақ бар. Соған қарамастан аяқтайсыз ба?`;
+  } else {
+    finishText.textContent = 'Барлық сұрақтарға жауап бердіңіз. Тестті аяқтайсыз ба?';
+  }
+
+  openModal('finishConfirmModal');
+}
+
+/**
+ * Тестті аяқтау (нәтижені сақтау)
+ */
+function finishTest() {
+  closeModal('finishConfirmModal');
+
+  // Жауапсыз сұрақтарды "қате" деп есептеу
+  userAnswers.forEach((ans, idx) => {
+    if (ans === null) {
+      wrongCount++;
+    }
+  });
+
+  // Нәтижені сақтау
+  saveResult();
+
+  // Нәтиже экранын көрсету
+  showResultScreen();
+}
+
+/**
+ * Нәтиже экранын рендерлеу
+ */
+function showResultScreen() {
+  const percent = Math.round((correctCount / questions.length) * 100);
+
+  // Баға/деңгей анықтау
+  let grade, icon;
+  if (percent >= 90) { grade = '🏆 Керемет нәтиже!'; icon = '🥇'; }
+  else if (percent >= 70) { grade = '👍 Жақсы нәтиже!'; icon = '🎯'; }
+  else if (percent >= 50) { grade = '📚 Орташа нәтиже'; icon = '📊'; }
+  else { grade = '💪 Жаттығу керек'; icon = '📖'; }
+
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultScore').innerHTML = `${correctCount} <span>/ 100</span>`;
+  document.getElementById('resultGrade').textContent = grade;
+  document.getElementById('rCorrect').textContent = correctCount;
+  document.getElementById('rWrong').textContent = wrongCount;
+
+  showScreen('resultScreen');
+}
+
+/**
+ * Тестті қайта бастау (бетті жаңарту)
+ */
+function restartTest() {
+  window.location.reload();
+}
+
+/* ============================================
+   7. САҚТАУ ФУНКЦИЯЛАРЫ (localStorage)
+   ============================================ */
+
+/**
+ * Тест нәтижесін сақтау
+ */
+function saveResult() {
+  try {
+    const results = getResults();
+
+    const newResult = {
+      id: generateId(),
+      face: faceImageBase64 || null,
+      correct: correctCount,
+      wrong: wrongCount,
+      total: questions.length,
+      date: formatDateTime()
+    };
+
+    // Жаңа нәтиже массивтің БАСЫНА қосу (кері хронология)
+    results.unshift(newResult);
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+
+  } catch (err) {
+    console.error('Сақтау қатесі:', err);
+    if (err.name === 'QuotaExceededError') {
+      alert('⚠️ Браузер жады толды! Ескі нәтижелерді жойыңыз.');
+    }
+  }
+}
+
+/**
+ * Барлық нәтижелерді алу
+ * @returns {Array}
+ */
+function getResults() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Нәтижелерді сақтау (жаңартылған массив)
+ * @param {Array} results
+ */
+function setResults(results) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+}
+
+/* ============================================
+   8. АДМИН ПАНЕЛЬ ФУНКЦИЯЛАРЫ
+   ============================================ */
+
+/**
+ * Админ кіру модалін ашу
+ */
+function openAdminModal() {
+  document.getElementById('adminPinInput').value = '';
+  document.getElementById('adminPinError').style.display = 'none';
+  openModal('adminLoginModal');
+  setTimeout(() => document.getElementById('adminPinInput').focus(), 100);
+}
+
+/**
+ * Админ модалін жабу
+ */
+function closeAdminModal() {
+  closeModal('adminLoginModal');
+}
+
+/**
+ * Админ PIN-ін тексеру
+ */
+function checkAdminPin() {
+  const pin = document.getElementById('adminPinInput').value;
+  const errorEl = document.getElementById('adminPinError');
+
+  if (pin === '7777') {
+    closeAdminModal();
+    openAdminPanel();
+  } else {
+    errorEl.style.display = 'block';
+    document.getElementById('adminPinInput').value = '';
+    setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
+  }
+}
+
+/**
+ * Админ PIN Enter арқылы
+ */
+function handleAdminPinKey(event) {
+  if (event.key === 'Enter') checkAdminPin();
+}
+
+/**
+ * Админ панелін ашу
+ */
+function openAdminPanel() {
+  renderAdminTable();
+  showScreen('adminPanel');
+}
+
+/**
+ * Админ панелінен шығу
+ */
+function closeAdmin() {
+  // Қай экранда болсақ - логин экранына оралу
+  showScreen('loginScreen');
+}
+
+/**
+ * Админ кестесін рендерлеу
+ */
+function renderAdminTable() {
+  const results = getResults();
+  const tbody = document.getElementById('adminTableBody');
+  const totalCount = document.getElementById('totalCount');
+
+  totalCount.textContent = results.length;
+  tbody.innerHTML = '';
+
+  if (results.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="3" y="3" width="18" height="18" rx="3"/>
+              <path d="M9 9h6M9 12h6M9 15h4"/>
+            </svg>
+            <p>Нәтиже жоқ</p>
+          </div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  results.forEach((result, idx) => {
+    const tr = document.createElement('tr');
+
+    // Бет суреті
+    const faceCell = result.face
+      ? `<img class="face-thumb" src="${result.face}" alt="Бет" onclick="viewFaceImage('${result.face}')" title="Суретті үлкейту">`
+      : `<div class="no-face">👤</div>`;
+
+    tr.innerHTML = `
+      <td><strong>${idx + 1}</strong></td>
+      <td>${faceCell}</td>
+      <td><span class="num-badge correct">${result.correct}</span></td>
+      <td><span class="num-badge wrong">${result.wrong}</span></td>
+      <td><span class="num-badge total">${result.total}</span></td>
+      <td style="color:var(--text-muted);font-size:0.82rem">${result.date}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteResult('${result.id}')">
+          🗑️ Жою
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+/**
+ * Бет суретін үлкейтіп көрсету
+ * @param {string} src - Base64 сурет деректері
+ */
+function viewFaceImage(src) {
+  document.getElementById('imgViewImg').src = src;
+  document.getElementById('imgViewModal').classList.add('active');
+}
+
+/**
+ * Жеке нәтижені жою (растаумен)
+ * @param {string} id - Нәтиже ID-і
+ */
+function deleteResult(id) {
+  pendingDeleteId = id;
+
+  const confirmBtn = document.getElementById('confirmDeleteBtn');
+  confirmBtn.onclick = () => {
+    const results = getResults().filter(r => r.id !== pendingDeleteId);
+    setResults(results);
+    closeModal('deleteConfirmModal');
+    renderAdminTable();
+    pendingDeleteId = null;
+  };
+
+  openModal('deleteConfirmModal');
+}
+
+/**
+ * Барлық нәтижелерді жою (екі растаумен)
+ */
+function clearAllResults() {
+  openModal('clearAllModal');
+}
+
+/**
+ * Барлық нәтижелерді жою - орындау
+ */
+function executeDeleteAll() {
+  localStorage.removeItem(STORAGE_KEY);
+  closeModal('clearAllModal');
+  renderAdminTable();
+}
+
+/* ============================================
+   9. КЛАВИАТУРА ОҚИҒАЛАРЫ (Escape, т.б.)
+   ============================================ */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // Барлық ашық модальдарды жабу
+    document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+      modal.classList.remove('active');
+    });
+    // Суретті жабу
+    document.getElementById('imgViewModal').classList.remove('active');
+  }
+});
+
+/* ============================================
+   10. БАСТАПҚЫ ЖҮКТЕУ (INITIALIZATION)
+   ============================================ */
+window.addEventListener('DOMContentLoaded', async () => {
+  // Бастапқы экранды белсендіру
+  showScreen('loginScreen');
+
+  // Face-API модельдерін алдын-ала жүктеу
+  setFaceStatus('loading', 'Бет тану модельдері жүктелуде...');
+
+  try {
+    await loadFaceModels();
+  } catch (e) {
+    // Қате болса пайдаланушыға хабарланады
+    console.log('Модель жүктеу кейінге қалдырылды.');
+  }
+});
+
+/* ============================================
+   СИПАТТАМА:
+   - Барлық функциялар осы бір HTML файлда
+   - localStorage кілті: unsiz_test_results_final
+   - Пароль: 2510
+   - Админ пароль: 7777
+   - 100 сұрақ: debugging, бағдарламалау, деректер
+     құрылымы, веб-технологиялар, IT жалпы білімі
+   ============================================ */
+</script>
+</body>
+</html>
