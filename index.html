@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>UNSIZ · ТЕСТ 100 · ТҮР + САУСАҚ ІЗІ + АЛАҚАН</title>
+    <!-- Face-API -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <!-- FingerprintJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <style>
+        /* ----- БАРЛЫҚ СТИЛЬДЕР ----- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0e14;
+            color: #eef2fb;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 20px 16px;
+            line-height: 1.5;
+            transition: background 0.3s;
+        }
+        /* 🌱 Энергия үнемдеу режимі */
+        body.energy-saving {
+            background: #05070a !important;
+        }
+        body.energy-saving * {
+            animation: none !important;
+            transition: none !important;
+            transform: none !important;
+        }
+        body.energy-saving .palm-outline-box,
+        body.energy-saving .fingerprint-animation,
+        body.energy-saving .palm-animation {
+            display: none !important;
+        }
+        body.energy-saving .video-container,
+        body.energy-saving .video-container.palm {
+            border-color: #444 !important;
+            box-shadow: none !important;
+        }
+        body.energy-saving .movement-bar {
+            transition: none !important;
+            background: #666 !important;
+        }
+        
+        .container { max-width: 1000px; margin: 0 auto; }
+                .login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0e14;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .login-screen.hidden { display: none !important; }
+        .login-card {
+            max-width: 600px;
+            width: 100%;
+            background: #111a24;
+            border: 2px solid #cc0000;
+            border-radius: 32px;
+            padding: 36px 28px;
+            box-shadow: 0 20px 0 #05080c;
+        }
+        .login-header { text-align: center; margin-bottom: 32px; }
+        .login-header h2 { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; color: white; }
+        .red-block { color: #cc0000; }
+        .orange-block { color: #ff8800; }
+        .green-block { color: #00ff88; }
+        .login-sub { color: #8a9ab0; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 3px; margin-top: 8px; }
+        
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #2a3340;
+            flex-wrap: wrap;
+        }
+        .auth-tab {
+            flex: 1;
+            min-width: 100px;
+            background: transparent;
+            border: none;
+            color: #8a9ab0;
+            padding: 12px 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border-bottom: 2px solid transparent;
+        }
+        .auth-tab.active { color: #cc0000; border-bottom: 2px solid #cc0000; }
+        .auth-tab.green.active { color: #00ff88; border-bottom: 2px solid #00ff88; }        .auth-tab.orange.active { color: #ff8800; border-bottom: 2px solid #ff8800; }
+        .auth-tab:hover { color: white; }
+        
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 12px;
+            border: 2px solid #cc0000;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-container.palm { border-color: #ff8800; }
+        #loginVideo, #palmVideo { 
+            width: 100%; 
+            height: auto; 
+            display: block;
+            transform: scaleX(-1);
+        }
+        
+        .palm-overlay-container { position: relative; }
+        .palm-guide-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .palm-outline-box {
+            width: 80%;
+            height: 80%;
+            border: 3px dashed #ff8800;
+            border-radius: 30% 30% 20% 20% / 40% 40% 30% 30%;
+            box-shadow: 0 0 20px rgba(255, 136, 0, 0.3);
+            animation: palmPulse 2s infinite;
+        }
+        @keyframes palmPulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0.5; transform: scale(1); }
+        }
+        
+        .face-preview-container, .palm-preview-container {
+            text-align: center;
+            margin: 15px 0;            display: none;
+        }
+        .face-preview-container img, .palm-preview-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 16px;
+            border: 2px solid #cc0000;
+            object-fit: cover;
+        }
+        .palm-preview-container img { border-color: #ff8800; }
+        
+        .face-status-login, .palm-status { 
+            text-align: center; 
+            padding: 10px; 
+            margin: 10px 0; 
+            border-radius: 8px; 
+            font-size: 0.9rem; 
+        }
+        .palm-status { background: #1a1a2a; }
+        .login-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid #cc0000;
+            color: white;
+            font-weight: 700;
+            padding: 14px;
+            margin-top: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .login-btn:hover { background: #cc0000; }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .biometric-btn { border-color: #00ff88; color: #00ff88; }
+        .biometric-btn:hover { background: #00ff88; color: #0a0e14; }
+        .palm-btn { border-color: #ff8800; color: #ff8800; }
+        .palm-btn:hover { background: #ff8800; color: #0a0e14; }
+        
+        .biometric-info, .palm-info {
+            background: #1a2a1a;
+            border: 1px solid #00ff88;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #00ff88;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .palm-info { background: #2a1a0a; border-color: #ff8800; color: #ff8800; }        .device-info-bar {
+            background: #1a1a2a;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 0.8rem;
+            color: #8a9ab0;
+            text-align: center;
+        }
+        .fingerprint-scan, .palm-scan {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 25px auto;
+        }
+        .fingerprint-scan canvas, .palm-scan canvas { width: 100%; height: 100%; border-radius: 20px; }
+        .fingerprint-animation, .palm-animation {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 20px;
+            background: radial-gradient(circle, transparent 30%, rgba(0,255,136,0.15) 70%);
+            animation: pulse 2s infinite;
+        }
+        .palm-animation { background: radial-gradient(ellipse, transparent 30%, rgba(255,136,0,0.15) 70%); }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.05); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+        
+        .liveness-hint {
+            background: #1a1a2a;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            color: #ffaa00;
+            text-align: center;
+        }
+        .movement-progress {
+            width: 100%;
+            height: 6px;
+            background: #2a3340;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .movement-bar { height: 100%; background: #ff8800; width: 0%; transition: width 0.3s; }
+        
+        /* 🌱 Энергия үнемдеу батырмасы */        .energy-toggle {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background: #1a2a1a;
+            color: #00ff88;
+            border: 2px solid #00ff88;
+            padding: 10px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 1500;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        .energy-toggle:hover { background: #00ff88; color: #0a0e14; }
+        .energy-toggle.active {
+            background: #00ff88;
+            color: #0a0e14;
+            box-shadow: 0 0 15px rgba(0,255,136,0.5);
+        }
+        .energy-toggle .icon { font-size: 1.1rem; }
+        
+        /* Тест стильдері */
+        .main-site { display: none; }
+        .main-site.visible { display: block; }
+        .test-header { border-left: 6px solid #cc0000; padding-left: 24px; margin-bottom: 30px; }
+        .test-header h1 { font-size: 2.5rem; font-weight: 800; text-transform: uppercase; }
+        .progress-panel {
+            background: #151b23; border: 1px solid #2a3340; border-radius: 20px;
+            padding: 20px 24px; margin-bottom: 28px;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+        }
+        .stats { display: flex; gap: 32px; }
+        .stat-item { display: flex; flex-direction: column; }
+        .stat-label { text-transform: uppercase; font-size: 0.75rem; color: #8e9aaf; }
+        .stat-value { font-size: 2.8rem; font-weight: 800; color: white; }
+        .badge { background: #cc0000; padding: 8px 20px; border-radius: 40px; font-weight: 700; }
+        .question-card {
+            background: #10161d; border: 1px solid #26303d; border-radius: 28px;
+            padding: 28px 24px; margin-bottom: 24px;
+        }
+        .question-text {
+            font-size: 1.5rem; font-weight: 700; margin-bottom: 28px;
+            padding-bottom: 18px; border-bottom: 2px dashed #2e3b4b;
+        }
+        .options-grid { display: flex; flex-direction: column; gap: 14px; }        .option {
+            background: #1a232e; border: 2px solid #2a3645; border-radius: 18px;
+            padding: 18px 20px; font-size: 1.1rem; cursor: pointer; color: #ddd;
+        }
+        .option:hover { background: #222f3d; border-color: #cc0000; }
+        .option.correct { background: #0f3a1f; border-color: #00c853; color: white; }
+        .option.wrong { background: #3a1515; border-color: #ff3b3b; color: #ffb0b0; }
+        .option.disabled { pointer-events: none; opacity: 0.8; }
+        .nav-buttons { display: flex; justify-content: center; gap: 20px; margin: 24px 0 40px; }
+        .nav-btn {
+            background: #1e293b; border: none; color: white; padding: 14px 40px;
+            border-radius: 40px; font-weight: 600; cursor: pointer; text-transform: uppercase; min-width: 160px;
+        }
+        .nav-btn:hover { background: #cc0000; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .result-screen {
+            background: #10161d; border-radius: 28px; padding: 40px; text-align: center;
+            border: 2px solid #cc0000;
+        }
+        .result-screen h2 { font-size: 3rem; margin-bottom: 20px; }
+        .restart-btn {
+            background: #cc0000; border: none; color: white; padding: 16px 40px;
+            font-size: 1.2rem; border-radius: 40px; margin-top: 30px; cursor: pointer;
+        }
+        .restart-btn:hover { background: #990000; }
+        
+        /* Админ панелі стильдері */
+        .admin-link { position: fixed; bottom: 20px; right: 20px; background: #1a1a1a; color: #888; padding: 10px 18px; border: 1px solid #333; cursor: pointer; z-index: 1500; text-transform: uppercase; }
+        .admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 3000; padding: 40px 20px; overflow-y: auto; }
+        .admin-content { max-width: 1600px; margin: 0 auto; background: #111; padding: 30px; border: 1px solid #cc0000; border-radius: 20px; }
+        .votes-table { width: 100%; border-collapse: collapse; color: white; font-size: 0.85rem; }
+        .votes-table th { background: #1a1a1a; padding: 12px 8px; color: #cc0000; text-transform: uppercase; font-size: 0.75rem; }
+        .votes-table td { padding: 10px 8px; border-bottom: 1px solid #222; }
+        .delete-btn { background: #cc0000; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 6px; }
+        .hidden { display: none !important; }
+        .info { background: #1a1a2a; color: #00aaff; }
+        .success { background: #1a3a1a; color: #00ff00; }
+        .error { background: #3a1a1a; color: #ff0000; }
+        .waiting { background: #1a1a3a; color: #ffaa00; }
+        .face-thumb, .palm-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 8px; border: 1px solid #cc0000; cursor: pointer; }
+        .palm-thumb { border-color: #ff8800; }
+        .fingerprint-thumb { width: 50px; height: 50px; border-radius: 10px; border: 2px solid #00ff88; cursor: pointer; background: #0d1a0d; object-fit: cover; }
+        .biometric-badge { background: #00ff88; color: #0a0e14; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+        .face-badge { background: #cc0000; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; }
+        .palm-badge { background: #ff8800; color: #0a0e14; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; }
+        .device-type-badge { display: inline-block; padding: 3px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
+        .device-mobile { background: #2a1a3a; color: #aa88ff; }
+        .device-tablet { background: #1a2a3a; color: #88aaff; }
+        .device-desktop { background: #1a3a2a; color: #88ffaa; }
+        .device-laptop { background: #3a2a1a; color: #ffcc88; }        .shuffle-badge { background: #2a1a3a; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; color: #aa88ff; margin-left: 15px; }
+        .user-info-bar { background: #1a2a1a; padding: 8px 16px; border-radius: 20px; display: inline-block; margin-bottom: 15px; color: #00ff88; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<!-- КІРУ ЭКРАНЫ -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <div class="login-header">
+            <h2><span class="red-block">ҮНСІЗДІК</span><br>ТЕСТ</h2>
+            <div class="login-sub">ТҮР · САУСАҚ ІЗІ · АЛАҚАН</div>
+        </div>
+        
+        <div class="device-info-bar" id="loginDeviceInfo">📱 Құрылғы анықталуда...</div>
+        
+        <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="face">📷 ТҮР</button>
+            <button class="auth-tab green" data-tab="fingerprint">🖐️ САУСАҚ ІЗІ</button>
+            <button class="auth-tab orange" data-tab="palm">✋ АЛАҚАН</button>
+        </div>
+        
+        <!-- Түр (бет тану) панелі -->
+        <div class="auth-panel active" id="facePanel">
+            <div class="face-section">
+                <div class="video-container">
+                    <video id="loginVideo" autoplay playsinline></video>
+                </div>
+                <canvas id="loginCanvas" style="display:none;"></canvas>
+                
+                <div class="face-preview-container" id="facePreviewContainer">
+                    <p style="color:#00ff00; margin-bottom:10px;">✅ Түр танылды!</p>
+                    <img id="facePreview" alt="Түр суреті">
+                </div>
+                
+                <div id="loginFaceStatus" class="face-status-login info">📷 Модель жүктелуде...</div>
+                <button class="login-btn" id="startLoginCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
+                <button class="login-btn" id="captureLoginFaceBtn" disabled>🔍 ТҮРДІ ТАНУ</button>
+            </div>
+            <button class="login-btn" id="faceLoginBtn" disabled style="background:#cc0000;">ТҮРМЕН КІРУ</button>
+        </div>
+        
+        <!-- Саусақ ізі панелі -->
+        <div class="auth-panel" id="fingerprintPanel">
+            <div class="fingerprint-scan" id="fingerprintVisual">
+                <canvas id="fingerprintCanvas" width="150" height="150"></canvas>
+                <div class="fingerprint-animation"></div>
+            </div>
+            
+            <div class="biometric-info" id="biometricStatus">                🖐️ Кіру үшін саусақ ізіңізді тіркеңіз
+            </div>
+            
+            <button class="login-btn biometric-btn" id="registerBiometricBtn">
+                🖐️ САУСАҚ ІЗІН ТІРКЕУ
+            </button>
+            
+            <button class="login-btn biometric-btn" id="loginWithBiometricBtn" style="margin-top:15px;">
+                🔓 САУСАҚ ІЗІМЕН КІРУ
+            </button>
+            
+            <div id="biometricDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;"></div>
+        </div>
+        
+        <!-- 🖐️ АЛАҚАН АРҚЫЛЫ КІРУ ПАНЕЛІ (MEDIAPIPE) -->
+        <div class="auth-panel" id="palmPanel">
+            <div class="palm-overlay-container">
+                <div class="video-container palm">
+                    <video id="palmVideo" autoplay playsinline></video>
+                </div>
+                <div class="palm-guide-overlay">
+                    <div class="palm-outline-box"></div>
+                </div>
+            </div>
+            
+            <div class="liveness-hint" id="livenessHint">✋ Алақаныңызды көрсетіп, баяу қозғалтыңыз</div>
+            <div class="movement-progress">
+                <div class="movement-bar" id="movementBar"></div>
+            </div>
+            
+            <div class="palm-preview-container" id="palmPreviewContainer">
+                <p style="color:#ff8800; margin-bottom:10px;">✅ Алақан тіркелді!</p>
+                <img id="palmPreview" alt="Алақан суреті">
+            </div>
+            
+            <div id="palmStatus" class="palm-status info">✋ MediaPipe жүктелуде...</div>
+            
+            <button class="login-btn palm-btn" id="startPalmCameraBtn">📷 КАМЕРАНЫ ҚОСУ</button>
+            <button class="login-btn palm-btn" id="registerPalmBtn" disabled>✋ АЛАҚАНДЫ ТІРКЕУ</button>
+            <button class="login-btn palm-btn" id="loginWithPalmBtn" disabled style="margin-top:15px;">🔓 АЛАҚАНМЕН КІРУ</button>
+            
+            <div id="palmDevicesInfo" style="color:#888; font-size:0.8rem; margin-top:20px; text-align:center;"></div>
+        </div>
+        
+        <p style="color:#888; margin-top:16px; text-align:center; font-size:0.8rem;">
+            Түр, саусақ ізі немесе алақан арқылы кіру
+        </p>
+    </div>
+</div>
+<!-- 🌱 ЭНЕРГИЯ ҮНЕМДЕУ БАТЫРМАСЫ -->
+<button class="energy-toggle" id="energyToggle" title="Энергия үнемдеу режимі">
+    <span class="icon">🔋</span>
+    <span class="label">Энергия: ҚАЛЫПТЫ</span>
+</button>
+
+<!-- НЕГІЗГІ САЙТ (тест) -->
+<div class="main-site" id="mainSite">
+    <!-- Тест контенті (қысқартылған) -->
+    <div class="container">
+        <div class="test-header">
+            <h1>ТЕСТ 100</h1>
+            <p style="color:#8a9ab0; margin-top:8px;">Барлық сұрақтарға жауап беріңіз</p>
+        </div>
+        
+        <div class="user-info-bar" id="userInfoBar">👤 Қолданушы | 📱 Құрылғы</div>
+        <div class="shuffle-badge" id="shuffleIndicator">🔄 ВАРИАНТТАР АРАЛАСТЫ</div>
+        
+        <div class="progress-panel">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Дұрыс</span>
+                    <span class="stat-value" id="correctCount" style="color:#00ff88;">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Қате</span>
+                    <span class="stat-value" id="wrongCount" style="color:#ff3b3b;">0</span>
+                </div>
+            </div>
+            <div class="badge" id="currentQuestionDisplay">1 / 100</div>
+        </div>
+        
+        <div id="testArea">
+            <div class="question-card">
+                <div class="question-text" id="questionText">Сұрақ жүктелуде...</div>
+                <div class="options-grid" id="optionsGrid"></div>
+            </div>
+        </div>
+        
+        <div class="nav-buttons" id="navButtons">
+            <button class="nav-btn" id="prevBtn" disabled>← Алдыңғы</button>
+            <button class="nav-btn" id="nextBtn">Келесі →</button>
+        </div>
+        
+        <div id="resultArea" class="result-screen hidden">
+            <h2>🎉 ТЕСТ АЯҚТАЛДЫ!</h2>
+            <p style="font-size:1.3rem; margin:15px 0;">
+                Дұрыс: <strong id="finalCorrect" style="color:#00ff88;">0</strong> / 
+                Қате: <strong id="finalWrong" style="color:#ff3b3b;">0</strong>
+            </p>            <p id="resultMessage" style="color:#8a9ab0; margin:10px 0;"></p>
+            <button class="restart-btn" id="restartBtn">🔄 ҚАЙТА БАСТАУ</button>
+        </div>
+    </div>
+</div>
+
+<!-- АДМИН ПАНЕЛІ -->
+<div class="admin-link" id="showAdminBtn">● АДМИН</div>
+<div class="admin-modal" id="adminModal">
+    <div class="admin-content">
+        <h2 style="color:#cc0000; margin-bottom:20px;">🔐 АДМИН ПАНЕЛІ</h2>
+        <div style="margin-bottom:15px;">
+            <input type="password" id="adminPass" placeholder="Құпия сөз" 
+                   style="padding:10px; border-radius:8px; border:1px solid #333; background:#1a1a1a; color:white; width:200px;">
+            <button id="adminLoginBtn" style="padding:10px 20px; background:#cc0000; color:white; border:none; border-radius:8px; cursor:pointer;">Кіру</button>
+        </div>
+        <div id="adminPanel" class="hidden">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <button id="exportBtn" style="padding:8px 16px; background:#00ff88; color:#0a0e14; border:none; border-radius:8px; cursor:pointer;">📥 Экспорт</button>
+                <button id="clearAllBtn" style="padding:8px 16px; background:#ff3b3b; color:white; border:none; border-radius:8px; cursor:pointer;">🗑️ Тазалау</button>
+                <button id="closeAdminBtn" style="padding:8px 16px; background:#333; color:white; border:none; border-radius:8px; cursor:pointer;">✕ Жабу</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="votes-table">
+                    <thead>
+                        <tr>
+                            <th>Уақыт</th>
+                            <th>Әдіс</th>
+                            <th>Түр</th>
+                            <th>Саусақ</th>
+                            <th>Алақан</th>
+                            <th>Құрылғы</th>
+                            <th>Нәтиже</th>
+                            <th>Әрекет</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:4000; justify-content:center; align-items:center;" onclick="this.style.display='none'">
+    <img id="modalImage" style="max-width:90%; max-height:90%; border:2px solid #cc0000; border-radius:10px;">
+</div>
+
+<script>
+    (function(){
+        "use strict";        
+        // ========== 🌱 ЭНЕРГИЯ ҮНЕМДЕУ ЖҮЙЕСІ ==========
+        const ENERGY_CONFIG = {
+            normal: {
+                cameraFPS: 30,
+                livenessInterval: 200,
+                faceDetectInterval: 500,
+                enableAnimations: true,
+                videoResolution: { width: 640, height: 480 }
+            },
+            saving: {
+                cameraFPS: 10,
+                livenessInterval: 800,
+                faceDetectInterval: 2000,
+                enableAnimations: false,
+                videoResolution: { width: 320, height: 240 }
+            }
+        };
+        
+        let energySavingMode = false;
+        let currentConfig = { ...ENERGY_CONFIG.normal };
+        
+        function loadEnergyPreference() {
+            const saved = localStorage.getItem('unsiz_energy_saving');
+            if (saved === 'true') {
+                enableEnergySaving(true);
+            }
+        }
+        
+        function saveEnergyPreference() {
+            localStorage.setItem('unsiz_energy_saving', energySavingMode.toString());
+        }
+        
+        function enableEnergySaving(enable) {
+            energySavingMode = enable;
+            currentConfig = enable ? { ...ENERGY_CONFIG.saving } : { ...ENERGY_CONFIG.normal };
+            
+            // UI жаңарту
+            const toggle = document.getElementById('energyToggle');
+            const label = toggle.querySelector('.label');
+            if (enable) {
+                document.body.classList.add('energy-saving');
+                toggle.classList.add('active');
+                label.textContent = 'Энергия: ҮНЕМДЕУ';
+            } else {
+                document.body.classList.remove('energy-saving');
+                toggle.classList.remove('active');
+                label.textContent = 'Энергия: ҚАЛЫПТЫ';
+            }
+                        // Камераларды қайта баптау
+            if (loginStream) restartCameraStream('login');
+            if (palmStream) restartCameraStream('palm');
+            
+            // Интервалдарды жаңарту
+            if (livenessCheckInterval) {
+                clearInterval(livenessCheckInterval);
+                if (palmStream) startLivenessDetection();
+            }
+            
+            saveEnergyPreference();
+            console.log(`🔋 Энергия режимі: ${enable ? 'ҮНЕМДЕУ' : 'ҚАЛЫПТЫ'}`);
+        }
+        
+        function restartCameraStream(type) {
+            const video = type === 'login' ? loginVideo : palmVideo;
+            const stream = type === 'login' ? loginStream : palmStream;
+            if (!stream) return;
+            
+            stream.getTracks().forEach(t => t.stop());
+            
+            navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'user', 
+                    width: currentConfig.videoResolution,
+                    height: currentConfig.videoResolution.height,
+                    frameRate: { ideal: currentConfig.cameraFPS, max: currentConfig.cameraFPS }
+                } 
+            }).then(newStream => {
+                if (type === 'login') loginStream = newStream;
+                else palmStream = newStream;
+                video.srcObject = newStream;
+            }).catch(e => console.error('Камераны қайта қосу қатесі:', e));
+        }
+        
+        // ========== ҚҰРЫЛҒЫ АНЫҚТАУ ==========
+        function detectDeviceType() {
+            const ua = navigator.userAgent;
+            const width = window.innerWidth;
+            let deviceType = 'desktop', deviceIcon = '💻', deviceClass = 'device-desktop';
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                deviceType = 'tablet'; deviceIcon = '📱'; deviceClass = 'device-tablet';
+            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                deviceType = 'mobile'; deviceIcon = '📱'; deviceClass = 'device-mobile';
+            } else if (/(Macintosh|MacIntel|MacPPC|Mac68K|Mac OS X)/i.test(ua) && !/(iPhone|iPad|iPod)/i.test(ua)) {
+                deviceType = 'laptop'; deviceIcon = '💻'; deviceClass = 'device-laptop';
+            } else if (/(Win64|WOW64|Win32)/i.test(ua)) {
+                deviceType = 'desktop'; deviceIcon = '🖥️'; deviceClass = 'device-desktop';
+            }
+            if (width <= 480) { deviceType = 'mobile'; deviceIcon = '📱'; deviceClass = 'device-mobile'; }            else if (width <= 768) { deviceType = 'tablet'; deviceIcon = '📱'; deviceClass = 'device-tablet'; }
+            return { deviceType, deviceIcon, deviceClass };
+        }
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Edg/')) return 'Edge';
+            if (ua.includes('OPR/') || ua.includes('Opera')) return 'Opera';
+            if (ua.includes('Chrome/')) return 'Chrome';
+            if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
+            if (ua.includes('Firefox/')) return 'Firefox';
+            return 'Белгісіз';
+        }
+        function getOSInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('Windows NT 10.0')) return 'Windows 10/11';
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac OS X')) return 'macOS';
+            if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('Linux')) return 'Linux';
+            return 'Белгісіз';
+        }
+        function getDetailedDeviceInfo() {
+            const device = detectDeviceType();
+            const browser = getBrowserInfo();
+            const os = getOSInfo();
+            const screenRes = `${window.screen.width}x${window.screen.height}`;
+            return {
+                type: device.deviceType, typeIcon: device.deviceIcon, typeClass: device.deviceClass,
+                browser, os, screen: screenRes,
+                fullInfo: `${device.deviceIcon} ${device.deviceType} | ${browser} | ${os} | ${screenRes}`
+            };
+        }
+        
+        // ========== 100 СҰРАҚ ==========
+        const ORIGINAL_QUESTIONS = [
+            { q: "Кодтағы қателерді анықтау процесі қалай аталады?", options: ["Компиляция", "Дебаггинг", "Тестілеу", "Орындау", "Инсталляция"], correct: 1 },
+            { q: "Синтаксистік қате дегеніміз не?", options: ["Логикалық қате", "Бағдарлама баяу жұмыс істеуі", "Жазылу ережесінің бұзылуы", "Дерекқор қатесі", "Дизайн қатесі"], correct: 2 },
+        ];
+        while (ORIGINAL_QUESTIONS.length < 100) {
+            ORIGINAL_QUESTIONS.push({ q: `Тест сұрағы ${ORIGINAL_QUESTIONS.length+1}`, options: ["A", "B", "C", "D", "E"], correct: 0 });
+        }
+        const TOTAL_QUESTIONS = 100;
+        
+        function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
+        function shuffleQuestionOptions(question) {
+            const opts = question.options.map((opt, idx) => ({ opt, originalIndex: idx }));
+            const shuffled = shuffleArray([...opts]);
+            const newCorrect = shuffled.findIndex(item => item.originalIndex === question.correct);
+            return { q: question.q, options: shuffled.map(item => item.opt), correct: newCorrect };        }
+        function getQuestionsWithShuffledOptions() { return ORIGINAL_QUESTIONS.map(q => shuffleQuestionOptions(q)); }
+        let QUESTIONS = getQuestionsWithShuffledOptions();
+        
+        // ========== КҮЙ ==========
+        let currentUser = null;
+        let answers = new Array(TOTAL_QUESTIONS).fill(null);
+        let questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
+        let currentIndex = 0;
+        let testFinished = false;
+        
+        let loginStream = null, palmStream = null;
+        let faceApiLoaded = false;
+        let mediaPipeLoaded = false;
+        let handsModel = null;
+        let loginFaceCaptured = null, loginFaceDetected = false;
+        let palmCaptured = null, palmDetected = false;
+        let deviceFingerprint = null, fullDeviceInfo = null;
+        
+        // Liveness detection
+        let lastHandPosition = null, movementScore = 0, livenessPassed = false;
+        let livenessCheckInterval = null;
+        
+        const ADMIN_PASS = "7777";
+        const STORAGE_KEY = "unsiz_test_results_100";
+        const BIOMETRIC_STORAGE_KEY = "unsiz_biometric_users_100";
+        const PALM_STORAGE_KEY = "unsiz_palm_users_100";
+        
+        fullDeviceInfo = getDetailedDeviceInfo();
+        document.getElementById('loginDeviceInfo').innerHTML = `${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type} | ${fullDeviceInfo.browser} | ${fullDeviceInfo.os} | ${fullDeviceInfo.screen}`;
+        
+        // 🌱 Энергия баптауларын жүктеу
+        loadEnergyPreference();
+        
+        // ========== САУСАҚ ІЗІ СУРЕТІ ==========
+        function generateFingerprintImage(seed) { /* ... */ }
+        function drawFingerprintOnCanvas(seed) { /* ... */ }
+        drawFingerprintOnCanvas('default_' + Date.now());
+        
+        // ========== АЛАҚАН СУРЕТІ ==========
+        function generatePalmImage(seed) { /* ... */ }
+        
+        // ========== FINGERPRINTJS ==========
+        async function initFingerprint() { /* ... */ }
+        initFingerprint();
+        
+        // DOM элементтері
+        const loginScreen = document.getElementById('loginScreen');
+        const mainSite = document.getElementById('mainSite');
+        const loginVideo = document.getElementById('loginVideo');        const palmVideo = document.getElementById('palmVideo');
+        const loginFaceStatus = document.getElementById('loginFaceStatus');
+        const palmStatus = document.getElementById('palmStatus');
+        const startLoginCam = document.getElementById('startLoginCameraBtn');
+        const startPalmCam = document.getElementById('startPalmCameraBtn');
+        const captureLoginFace = document.getElementById('captureLoginFaceBtn');
+        const faceLoginBtn = document.getElementById('faceLoginBtn');
+        const registerPalmBtn = document.getElementById('registerPalmBtn');
+        const loginWithPalmBtn = document.getElementById('loginWithPalmBtn');
+        const facePreviewContainer = document.getElementById('facePreviewContainer');
+        const palmPreviewContainer = document.getElementById('palmPreviewContainer');
+        const facePreview = document.getElementById('facePreview');
+        const palmPreview = document.getElementById('palmPreview');
+        const testArea = document.getElementById('testArea');
+        const resultArea = document.getElementById('resultArea');
+        const correctSpan = document.getElementById('correctCount');
+        const wrongSpan = document.getElementById('wrongCount');
+        const currentQSpan = document.getElementById('currentQuestionDisplay');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const navButtons = document.getElementById('navButtons');
+        const userInfoBar = document.getElementById('userInfoBar');
+        const biometricStatus = document.getElementById('biometricStatus');
+        const registerBiometricBtn = document.getElementById('registerBiometricBtn');
+        const loginWithBiometricBtn = document.getElementById('loginWithBiometricBtn');
+        const biometricDevicesInfo = document.getElementById('biometricDevicesInfo');
+        const palmDevicesInfo = document.getElementById('palmDevicesInfo');
+        const shuffleIndicator = document.getElementById('shuffleIndicator');
+        const livenessHint = document.getElementById('livenessHint');
+        const movementBar = document.getElementById('movementBar');
+        const energyToggle = document.getElementById('energyToggle');
+        
+        // 🌱 Энергия батырмасына оқиға
+        energyToggle.addEventListener('click', () => {
+            enableEnergySaving(!energySavingMode);
+        });
+        
+        // ========== ТАБ АУЫСТЫРУ ==========
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                const panelId = tab.dataset.tab === 'face' ? 'facePanel' : (tab.dataset.tab === 'fingerprint' ? 'fingerprintPanel' : 'palmPanel');
+                document.getElementById(panelId).classList.add('active');
+                if (tab.dataset.tab !== 'face' && loginStream) { loginStream.getTracks().forEach(t => t.stop()); loginStream = null; loginVideo.srcObject = null; }
+                if (tab.dataset.tab !== 'palm' && palmStream) { palmStream.getTracks().forEach(t => t.stop()); palmStream = null; palmVideo.srcObject = null; if (livenessCheckInterval) clearInterval(livenessCheckInterval); }
+            });
+        });
+                // ========== FACE API ==========
+        async function loadFaceAPI() { /* ... */ }
+        loadFaceAPI();
+        
+        // ========== MEDIAPIPE HANDS ==========
+        async function loadMediaPipeHands() {
+            if (mediaPipeLoaded) return true;
+            try {
+                palmStatus.textContent = '⏳ MediaPipe моделі жүктелуде...';
+                palmStatus.className = 'palm-status waiting';
+                
+                handsModel = new Hands({locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                }});
+                
+                handsModel.setOptions({
+                    maxNumHands: 1,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.7,
+                    minTrackingConfidence: 0.5
+                });
+                
+                await handsModel.initialize();
+                
+                mediaPipeLoaded = true;
+                palmStatus.textContent = '✅ Дайын. Камераны қосыңыз';
+                palmStatus.className = 'palm-status success';
+                palmDevicesInfo.innerHTML = '✋ Алақаныңызды камераға көрсетіңіз';
+                return true;
+            } catch(e) {
+                console.error('MediaPipe error:', e);
+                palmStatus.textContent = '❌ Модель жүктелмеді: ' + e.message;
+                palmStatus.className = 'palm-status error';
+                return false;
+            }
+        }
+        loadMediaPipeHands();
+        
+        // ========== 🌱 LIVENESS DETECTION (ENERGY AWARE) ==========
+        function startLivenessDetection() {
+            movementScore = 0;
+            livenessPassed = false;
+            lastHandPosition = null;
+            movementBar.style.width = '0%';
+            livenessHint.textContent = '✋ Алақаныңызды баяу қозғалтыңыз...';
+            livenessHint.style.color = '#ffaa00';
+            
+            if (livenessCheckInterval) clearInterval(livenessCheckInterval);
+            
+            // 🌱 Энергия режиміне байланысты интервал            const interval = currentConfig.livenessInterval;
+            
+            livenessCheckInterval = setInterval(async () => {
+                if (!handsModel || !palmStream || palmVideo.readyState < 2) return;
+                
+                try {
+                    const results = await handsModel.send({image: palmVideo});
+                    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                        const hand = results.multiHandLandmarks[0];
+                        const wrist = hand[0];
+                        const middleFinger = hand[12];
+                        const centerX = (wrist.x + middleFinger.x) / 2 * palmVideo.videoWidth;
+                        const centerY = (wrist.y + middleFinger.y) / 2 * palmVideo.videoHeight;
+                        
+                        if (lastHandPosition) {
+                            const distance = Math.sqrt(
+                                Math.pow(centerX - lastHandPosition.x, 2) + 
+                                Math.pow(centerY - lastHandPosition.y, 2)
+                            );
+                            if (distance > 15 && distance < 200) {
+                                movementScore = Math.min(movementScore + 5, 100);
+                                movementBar.style.width = movementScore + '%';
+                                if (movementScore >= 100 && !livenessPassed) {
+                                    livenessPassed = true;
+                                    livenessHint.textContent = '✅ Қозғалыс расталды!';
+                                    livenessHint.style.color = '#00ff88';
+                                    clearInterval(livenessCheckInterval);
+                                    livenessCheckInterval = null;
+                                    if (palmStream && !palmCaptured) capturePalmImage();
+                                }
+                            }
+                        }
+                        lastHandPosition = { x: centerX, y: centerY };
+                    }
+                } catch(e) { console.error('Liveness error:', e); }
+            }, interval);
+        }
+        
+        function capturePalmImage() {
+            if (!palmStream) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = 200; canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(palmVideo, 0, 0, 200, 200);
+            palmCaptured = canvas.toDataURL('image/jpeg', 0.9);
+            palmDetected = true;
+            palmPreview.src = palmCaptured;
+            palmPreviewContainer.style.display = 'block';
+            palmStatus.textContent = '✅ Алақан тіркелді!';
+            palmStatus.className = 'palm-status success';            loginWithPalmBtn.disabled = false;
+            if (palmStream) { palmStream.getTracks().forEach(t => t.stop()); palmStream = null; }
+            palmVideo.srcObject = null;
+            registerPalmBtn.disabled = true;
+        }
+        
+        // ========== АЛАҚАН КАМЕРАСЫ (ENERGY AWARE) ==========
+        startPalmCam.addEventListener('click', async () => {
+            if (!mediaPipeLoaded) {
+                const loaded = await loadMediaPipeHands();
+                if (!loaded) return;
+            }
+            try {
+                if (palmStream) { palmStream.getTracks().forEach(t => t.stop()); palmStream = null; }
+                palmStatus.textContent = '📷 Камера сұралуда...';
+                palmStatus.className = 'palm-status waiting';
+                
+                // 🌱 Энергия режиміне байланысты параметрлер
+                palmStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user', 
+                        width: currentConfig.videoResolution,
+                        height: currentConfig.videoResolution.height,
+                        frameRate: { ideal: currentConfig.cameraFPS, max: currentConfig.cameraFPS }
+                    } 
+                });
+                palmVideo.srcObject = palmStream;
+                await new Promise(resolve => { palmVideo.onloadedmetadata = () => { palmVideo.play(); resolve(); }; });
+                palmStatus.textContent = '📷 Камера дайын. Алақаныңызды көрсетіңіз';
+                palmStatus.className = 'palm-status success';
+                registerPalmBtn.disabled = false;
+                startPalmCam.disabled = true;
+                startLivenessDetection();
+            } catch(e) {
+                palmStatus.textContent = '❌ Камераға рұқсат берілмеді';
+                palmStatus.className = 'palm-status error';
+            }
+        });
+        
+        registerPalmBtn.addEventListener('click', () => {
+            if (!palmCaptured && palmStream) capturePalmImage();
+        });
+        
+        loginWithPalmBtn.addEventListener('click', () => {
+            if (!palmDetected) { alert('Алдымен алақаныңызды тіркеңіз'); return; }
+            const palmId = 'palm_' + Date.now();
+            const palmImage = palmCaptured;
+            let palmUsers = JSON.parse(localStorage.getItem(PALM_STORAGE_KEY) || '[]');
+            const existingUser = palmUsers.find(u => u.deviceFingerprint === deviceFingerprint);
+            if (!existingUser) {                palmUsers.push({ id: palmId, palmImage, deviceFingerprint, deviceInfo: fullDeviceInfo, registeredAt: new Date().toLocaleString('kk-KZ') });
+                localStorage.setItem(PALM_STORAGE_KEY, JSON.stringify(palmUsers));
+            }
+            proceedToLogin('palm', null, null, palmImage);
+        });
+        
+        // Түр камерасы (бет тану)
+        startLoginCam.addEventListener('click', async () => { /* ... */ });
+        captureLoginFace.addEventListener('click', async () => { /* ... */ });
+        faceLoginBtn.addEventListener('click', () => { /* ... */ });
+        
+        // Кіру функциясы
+        function proceedToLogin(method, faceData, fingerprintImage, palmImage) {
+            let userName = method === 'face' ? 'Түрмен кірді' : (method === 'biometric' ? 'Саусақ ізімен кірді' : 'Алақанмен кірді');
+            currentUser = { face: faceData, loginMethod: method, fingerprintImage, palmImage, deviceInfo: fullDeviceInfo, name: userName, loginTime: new Date().toLocaleString('kk-KZ') };
+            QUESTIONS = getQuestionsWithShuffledOptions();
+            answers = new Array(TOTAL_QUESTIONS).fill(null);
+            questionStatus = new Array(TOTAL_QUESTIONS).fill(false);
+            currentIndex = 0; testFinished = false;
+            loginScreen.classList.add('hidden');
+            mainSite.classList.add('visible');
+            userInfoBar.innerHTML = `👤 ${currentUser.name} | ${fullDeviceInfo.typeIcon} ${fullDeviceInfo.type}`;
+            shuffleIndicator.textContent = '🔄 ВАРИАНТТАР АРАЛАСТЫ';
+            renderQuestion(); updateStats();
+        }
+        
+        // ========== ТЕСТ ЛОГИКАСЫ ==========
+        function renderQuestion() { /* ... */ }
+        function selectAnswer(optIdx) { /* ... */ }
+        function updateStats() { /* ... */ }
+        function finishTest() { /* ... */ }
+        
+        // ========== АДМИН ПАНЕЛІ ==========
+        // ... (алдыңғы код)
+        
+        // Бастапқы инициализация
+        window.addEventListener('load', () => {
+            // Админ панелі т.б.
+        });
+        
+    })();
+</script>
+</body>
+</html>
