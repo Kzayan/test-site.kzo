@@ -148,8 +148,18 @@ button, input { font: inherit; }
   margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,90,90,.3);
 }
 .competition-title { text-align: center; font-size: 0.85rem; margin-bottom: 12px; color: var(--gold); }
-.join-row { display: flex; gap: 10px; }
+.join-row { display: flex; gap: 10px; margin-bottom: 8px; }
 .join-row input { flex: 1; padding: 12px; background: #1a0000; border: 1px solid #ff2020; border-radius: 10px; color: white; text-align: center; }
+
+/* Атын енгізу өрісі */
+.name-input-row {
+  display: flex; gap: 10px; margin-top: 8px;
+}
+.name-input-row input {
+  flex: 1; padding: 12px; background: #1a0000; border: 1px solid #ffd700; border-radius: 10px;
+  color: white; text-align: center; font-size: 1rem;
+}
+.name-input-row input::placeholder { color: #ffc4c4; opacity: 0.6; }
 
 .main { display: none; }
 .main.visible { display: block; }
@@ -258,8 +268,11 @@ button, input { font: inherit; }
 
     <div class="competition-box">
       <div class="competition-title">🎮 ДОСТАРМЕН ЖАРЫСУ 🎮</div>
+      <div class="name-input-row">
+        <input type="text" id="playerNameInput" placeholder="👤 Атыңызды енгізіңіз" maxlength="20" autocomplete="off">
+      </div>
       <div class="join-row">
-        <input type="text" id="roomCodeInput" placeholder="Бөлме коды">
+        <input type="text" id="roomCodeInput" placeholder="Бөлме коды (6 таңба)" maxlength="6" autocomplete="off" style="text-transform: uppercase;">
         <button id="joinRoomBtn" class="btn" style="margin-top:0; width:auto; padding:12px 20px;">🔗 Қосылу</button>
       </div>
       <button id="createRoomBtn" class="btn" style="margin-top:8px;">✨ Жаңа бөлме құру</button>
@@ -450,8 +463,8 @@ while(Q.length < 100) {
 }
 
 // === ЖАРЫС ЖҮЙЕСІ ===
-let currentRoom = null;
-let currentUserId = null;
+let currentRoom = localStorage.getItem("currentRoom") || null;
+let currentUserId = localStorage.getItem("currentUserId") || null;
 
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
@@ -460,138 +473,264 @@ function generateRoomCode() {
   return code;
 }
 
+function getPlayerName() {
+  const nameInput = document.getElementById("playerNameInput");
+  let name = nameInput.value.trim();
+  if(!name) {
+    name = "Қатысушы";
+  }
+  // Атын localStorage-ке сақтау
+  localStorage.setItem("playerName", name);
+  return name;
+}
+
 function createRoom() {
+  const playerName = getPlayerName();
+  if(!playerName || playerName === "Қатысушы") {
+    const customName = prompt("👤 Жарысқа қатысу үшін атыңызды енгізіңіз:", "");
+    if(customName && customName.trim()) {
+      document.getElementById("playerNameInput").value = customName.trim();
+      localStorage.setItem("playerName", customName.trim());
+    } else {
+      alert("⚠️ Атыңызды енгізу міндетті!");
+      return;
+    }
+  }
+  
   const code = generateRoomCode();
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  
+  // Жаңа бөлме құру
   rooms[code] = {
     createdAt: new Date().toISOString(),
     participants: [],
-    host: currentUserId || "Аноним"
+    host: playerName
   };
+  
   localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
   currentRoom = code;
   localStorage.setItem("currentRoom", code);
-  addUserToRoom();
+  
+  // Қатысушыны қосу
+  addUserToRoom(playerName);
+  
+  // Лидербордты көрсету
+  document.getElementById("leaderboardContainer").style.display = "block";
+  showLeaderboard();
   showShareModal(code);
+  
   return code;
 }
 
 function joinRoom(code) {
+  const playerName = getPlayerName();
+  if(!playerName || playerName === "Қатысушы") {
+    const customName = prompt("👤 Жарысқа қатысу үшін атыңызды енгізіңіз:", "");
+    if(customName && customName.trim()) {
+      document.getElementById("playerNameInput").value = customName.trim();
+      localStorage.setItem("playerName", customName.trim());
+    } else {
+      alert("⚠️ Атыңызды енгізу міндетті!");
+      return false;
+    }
+  }
+  
+  code = code.toUpperCase().trim();
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  
   if(!rooms[code]) {
     alert("❌ Бөлме табылмады! Кодты тексеріңіз.");
     return false;
   }
+  
   currentRoom = code;
   localStorage.setItem("currentRoom", code);
-  addUserToRoom();
+  
+  // Қатысушыны қосу
+  addUserToRoom(playerName);
+  
+  // Лидербордты көрсету
   document.getElementById("leaderboardContainer").style.display = "block";
   showLeaderboard();
-  alert("✅ Бөлмеге қосылдыңыз! Енді тесті бастаңыз.");
+  
+  alert(`✅ "${code}" бөлмесіне қосылдыңыз! Енді тесті бастаңыз.`);
   return true;
 }
 
-function addUserToRoom() {
+function addUserToRoom(playerName) {
   if(!currentRoom) return;
+  
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  
   if(rooms[currentRoom]) {
+    // Жаңа ID генерациялау (егер жоқ болса)
     if(!currentUserId) {
       currentUserId = "user_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
       localStorage.setItem("currentUserId", currentUserId);
     }
-    const existing = rooms[currentRoom].participants.find(p => p.id === currentUserId);
-    if(!existing) {
+    
+    // Бұрыннан бар ма тексеру
+    const existingIndex = rooms[currentRoom].participants.findIndex(p => p.id === currentUserId);
+    
+    if(existingIndex >= 0) {
+      // Атын жаңарту
+      rooms[currentRoom].participants[existingIndex].name = playerName;
+    } else {
+      // Жаңа қатысушы қосу
       rooms[currentRoom].participants.push({
         id: currentUserId,
-        name: "Қатысушы " + (rooms[currentRoom].participants.length + 1),
+        name: playerName,
         correct: 0,
         wrong: 0,
         completed: false,
         joinedAt: new Date().toISOString()
       });
-      localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
     }
+    
+    localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
+    console.log(`✅ Қатысушы қосылды: ${playerName} → бөлме: ${currentRoom}`);
   }
 }
 
 function updateUserResultInRoom(correct, wrong) {
-  if(!currentRoom) return;
+  if(!currentRoom || !currentUserId) return;
+  
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
-  if(rooms[currentRoom] && currentUserId) {
+  
+  if(rooms[currentRoom]) {
     const participant = rooms[currentRoom].participants.find(p => p.id === currentUserId);
+    
     if(participant) {
       participant.correct = correct;
       participant.wrong = wrong;
       participant.completed = true;
       participant.completedAt = new Date().toISOString();
+      
       localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
+      console.log(`📊 Нәтиже жаңартылды: ${participant.name} - ${correct} дұрыс, ${wrong} қате`);
+      
+      // Лидербордты жаңарту
+      showLeaderboard();
+    } else {
+      console.warn("⚠️ Қатысушы табылмады!");
     }
   }
 }
 
 function showLeaderboard() {
   if(!currentRoom) return;
+  
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
   const room = rooms[currentRoom];
-  if(!room) return;
   
-  const sorted = [...room.participants].sort((a,b) => b.correct - a.correct || a.wrong - b.wrong);
+  if(!room) {
+    console.warn("⚠️ Бөлме табылмады:", currentRoom);
+    return;
+  }
+  
+  // Дұрыс жауап саны бойынша сұрыптау (көптен азға), қате саны бойынша (аздан көпке)
+  const sorted = [...room.participants].sort((a, b) => {
+    if(b.correct !== a.correct) return b.correct - a.correct;
+    return a.wrong - b.wrong;
+  });
+  
   const tbody = document.getElementById("leaderboardBody");
   
   if(sorted.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Әзірге қатысушы жоқ</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Әзірге қатысушы жоқ</td></tr>';
   } else {
     tbody.innerHTML = sorted.map((p, idx) => {
       let rankClass = "";
-      if(idx === 0) rankClass = "rank1";
-      else if(idx === 1) rankClass = "rank2";
-      else if(idx === 2) rankClass = "rank3";
-      const percent = ((p.correct / Q.length) * 100).toFixed(1);
-      return `<tr class="${rankClass}"><td>${idx+1}</td><td>${p.name}</td><td style="color:#00c853">${p.correct}</td><td style="color:#ff4141">${p.wrong}</td><td>${percent}%</td></tr>`;
+      let rankEmoji = "";
+      if(idx === 0) { rankClass = "rank1"; rankEmoji = "🥇"; }
+      else if(idx === 1) { rankClass = "rank2"; rankEmoji = "🥈"; }
+      else if(idx === 2) { rankClass = "rank3"; rankEmoji = "🥉"; }
+      
+      const percent = p.correct > 0 ? ((p.correct / Q.length) * 100).toFixed(1) : "0.0";
+      const statusIcon = p.completed ? "✅" : "⏳";
+      
+      return `<tr class="${rankClass}">
+        <td>${rankEmoji} ${idx+1}</td>
+        <td>${statusIcon} ${p.name}</td>
+        <td style="color:#00c853; font-weight:bold;">${p.correct}</td>
+        <td style="color:#ff4141;">${p.wrong}</td>
+        <td>${percent}%</td>
+      </tr>`;
     }).join("");
   }
   
-  document.getElementById("roomInfoDisplay").innerHTML = `<div class="room-code-badge">🏠 Бөлме коды: ${currentRoom}</div>
-    <button id="copyRoomCode" class="share-btn copy-btn">📋 Кодты көшіру</button>`;
+  // Бөлме ақпаратын көрсету
+  document.getElementById("roomInfoDisplay").innerHTML = `
+    <div class="room-code-badge">🏠 Бөлме: ${currentRoom}</div>
+    <span style="color:#ffd700;">👥 ${room.participants.length} қатысушы</span>
+    <button id="copyRoomCode" class="share-btn copy-btn">📋 Кодты көшіру</button>
+  `;
   
+  // Көшіру батырмасы
   const copyBtn = document.getElementById("copyRoomCode");
-  if(copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(currentRoom); alert("Көшірілді!"); };
+  if(copyBtn) {
+    copyBtn.onclick = () => { 
+      navigator.clipboard.writeText(currentRoom); 
+      alert("✅ Бөлме коды көшірілді: " + currentRoom); 
+    };
+  }
+  
+  console.log(`📊 Лидерборд жаңартылды: ${sorted.length} қатысушы`);
 }
 
 function showShareModal(code) {
+  // Бұрынғы модальды өшіру
+  const oldModal = document.getElementById("shareModal");
+  if(oldModal) oldModal.remove();
+  
   const link = window.location.href.split('?')[0] + "?room=" + code;
   const modalHtml = `
     <div id="shareModal" style="position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.95);">
       <div style="background:#1a0000; border:2px solid #ff2020; border-radius:24px; padding:30px; max-width:450px; text-align:center;">
         <h2 style="color:#ff2020; margin-bottom:20px;">🎉 Бөлме құрылды!</h2>
-        <p>Бөлме коды:</p>
-        <div style="font-size:2rem; font-weight:bold; background:#000; padding:15px; border-radius:12px; letter-spacing:5px;">${code}</div>
-        <p style="margin:20px 0 10px;">Достарыңызға жіберіңіз:</p>
+        <p style="color:#ffd700; margin-bottom:10px;">Достарыңызға осы кодты беріңіз:</p>
+        <div style="font-size:2.5rem; font-weight:bold; background:#000; padding:20px; border-radius:12px; letter-spacing:8px; color:#ffd700; border:2px solid #ffd700;">${code}</div>
+        <p style="margin:20px 0 10px; color:#ffc4c4;">Немесе сілтемені жіберіңіз:</p>
         <input type="text" id="shareLinkInput" value="${link}" style="width:100%; padding:12px; background:#220000; border:1px solid #ff2020; border-radius:8px; color:white; text-align:center;" readonly>
         <div style="display:flex; gap:10px; margin-top:20px;">
-          <button id="copyLinkBtn" style="flex:1; background:#d00000; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">📋 Көшіру</button>
+          <button id="copyLinkBtn" style="flex:1; background:#d00000; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer; font-weight:bold;">📋 Көшіру</button>
           <button id="closeModalBtn" style="flex:1; background:#333; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">Жабу</button>
         </div>
       </div>
     </div>
   `;
   document.body.insertAdjacentHTML('beforeend', modalHtml);
+  
   document.getElementById("copyLinkBtn").onclick = () => {
     const input = document.getElementById("shareLinkInput");
-    input.select(); document.execCommand("copy");
-    alert("Сілтеме көшірілді!");
+    input.select(); 
+    document.execCommand("copy");
+    alert("✅ Сілтеме көшірілді!");
   };
+  
   document.getElementById("closeModalBtn").onclick = () => {
     document.getElementById("shareModal").remove();
-    document.getElementById("leaderboardContainer").style.display = "block";
-    showLeaderboard();
   };
 }
 
 // URL параметрінен бөлме кодын алу
 const urlRoom = new URLSearchParams(window.location.search).get('room');
 if(urlRoom) {
-  setTimeout(() => { joinRoom(urlRoom); }, 500);
+  // Бөлме коды бар болса, автоматты түрде қосылу
+  setTimeout(() => { 
+    document.getElementById("roomCodeInput").value = urlRoom.toUpperCase();
+    // Атын сұрау
+    const savedName = localStorage.getItem("playerName");
+    if(savedName) {
+      document.getElementById("playerNameInput").value = savedName;
+    }
+  }, 800);
+}
+
+// Сақталған атты көрсету
+const savedPlayerName = localStorage.getItem("playerName");
+if(savedPlayerName) {
+  document.getElementById("playerNameInput").value = savedPlayerName;
 }
 
 // === НЕГІЗГІ ТЕСТ ЛОГИКАСЫ ===
@@ -663,6 +802,13 @@ faceBtn.onclick = async () => {
 loginBtn.onclick = () => {
   if(!faceOk) { alert("Алдымен бетіңізді танытыңыз"); return; }
   if($("loginPass").value.trim() !== LOGIN_PASSWORD) { alert("Қате пароль! 2510 енгізіңіз"); return; }
+  
+  // Егер бөлмеге қосылған болса, лидербордты көрсету
+  if(currentRoom) {
+    document.getElementById("leaderboardContainer").style.display = "block";
+    showLeaderboard();
+  }
+  
   $("loginScreen").classList.add("hidden");
   $("main").classList.add("visible");
   render();
@@ -729,9 +875,9 @@ function saveResult() {
   });
   localStorage.setItem(STORE, JSON.stringify(allResults));
   
+  // Жарыс нәтижесін жаңарту
   if(currentRoom) {
     updateUserResultInRoom(correctCount, wrongCount);
-    showLeaderboard();
   }
 }
 
@@ -744,6 +890,11 @@ function finishTest() {
   $("nav").classList.add("hidden");
   $("result").classList.remove("hidden");
   $("result").innerHTML = `<div class="result"><h2>📊 НӘТИЖЕ</h2><div style="font-size:5rem;color:#ff2020;">${correctCount}</div><p>${Q.length} сұрақтың ішінен</p><div style="display:flex;gap:30px;justify-content:center;margin:20px 0"><div>✅ Дұрыс: ${correctCount}</div><div>❌ Қате: ${wrongCount}</div></div><button class="restart" onclick="location.reload()">🔄 Қайта бастау</button></div>`;
+  
+  // Лидербордты соңғы рет жаңарту
+  if(currentRoom) {
+    setTimeout(() => showLeaderboard(), 500);
+  }
 }
 
 $("prev").onclick = () => { if(idx > 0) { idx--; render(); } };
@@ -754,11 +905,37 @@ $("finish").onclick = finishTest;
 $("createRoomBtn").onclick = () => { createRoom(); };
 $("joinRoomBtn").onclick = () => {
   const code = $("roomCodeInput").value.trim().toUpperCase();
-  if(code) joinRoom(code);
-  else alert("Бөлме кодын енгізіңіз");
+  if(code) {
+    if(joinRoom(code)) {
+      // Сәтті қосылғаннан кейін енгізу өрісін тазалау
+      // $("roomCodeInput").value = "";
+    }
+  } else {
+    alert("Бөлме кодын енгізіңіз!");
+  }
 };
-$("shareRoomBtn").onclick = () => { if(currentRoom) showShareModal(currentRoom); };
-$("refreshLeaderboardBtn").onclick = () => { if(currentRoom) showLeaderboard(); };
+$("shareRoomBtn").onclick = () => { 
+  if(currentRoom) {
+    showShareModal(currentRoom); 
+  } else {
+    alert("Алдымен бөлмеге қосылыңыз немесе жаңа бөлме құрыңыз!");
+  }
+};
+$("refreshLeaderboardBtn").onclick = () => { 
+  if(currentRoom) {
+    showLeaderboard(); 
+    alert("🔄 Лидерборд жаңартылды!");
+  } else {
+    alert("Алдымен бөлмеге қосылыңыз!");
+  }
+};
+
+// Enter пернесімен бөлмеге қосылу
+$("roomCodeInput").addEventListener("keypress", (e) => {
+  if(e.key === "Enter") {
+    $("joinRoomBtn").click();
+  }
+});
 
 // Админ панелі
 const adminModal = $("adminModal"), imgModal = $("imgModal"), bigImg = $("bigImg");
@@ -785,7 +962,15 @@ imgModal.onclick = () => { imgModal.style.display = "none"; };
 document.addEventListener("keydown", e => { if(e.key === "Escape") { adminModal.style.display = "none"; imgModal.style.display = "none"; } });
 
 // Бар бөлмеге қосылған жағдайда лидербордты көрсету
-if(currentRoom) { document.getElementById("leaderboardContainer").style.display = "block"; showLeaderboard(); }
+if(currentRoom) { 
+  document.getElementById("leaderboardContainer").style.display = "block"; 
+  showLeaderboard(); 
+}
+
+// Бастапқыда сақталған бөлмені тексеру
+console.log("📋 Ағымдағы бөлме:", currentRoom);
+console.log("👤 Ағымдағы қолданушы:", currentUserId);
+
 })();
 </script>
 </body>
