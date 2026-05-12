@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>UNSIZ · Жарыс режимі · Достармен бірге</title>
+<title>UNSIZ · 100 сұрақ · Достармен жарыс</title>
 
 <script>
 (function(){
@@ -150,15 +150,12 @@ button, input { font: inherit; }
 .competition-title { text-align: center; font-size: 0.85rem; margin-bottom: 12px; color: var(--gold); }
 .join-row { display: flex; gap: 10px; }
 .join-row input { flex: 1; padding: 12px; background: #1a0000; border: 1px solid #ff2020; border-radius: 10px; color: white; text-align: center; }
-.room-code-badge { background: #ff2020; padding: 8px 20px; border-radius: 30px; font-family: monospace; font-size: 1.3rem; font-weight: bold; display: inline-block; }
-.share-link-input { width: 100%; padding: 10px; background: #1a0000; border: 1px solid #ff2020; border-radius: 8px; color: white; margin: 10px 0; }
 
 .main { display: none; }
 .main.visible { display: block; }
 .head { border-left: 7px solid var(--r2); padding-left: 24px; margin-bottom: 28px; }
 .head h1 { font-size: 2.45rem; text-transform: uppercase; text-shadow: 0 0 19px rgba(255,0,0,.4); }
 
-/* Жарыс лидерборды */
 .leaderboard {
   margin-bottom: 24px; padding: 20px; border: 2px solid var(--gold);
   border-radius: 22px; background: linear-gradient(145deg, rgba(80,40,0,.9), rgba(40,20,0,.9));
@@ -171,7 +168,7 @@ button, input { font: inherit; }
 .rank3 { color: var(--bronze); }
 .room-info-bar { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,.5); border-radius: 12px; }
 .share-btn { background: #00c853; border: 0; padding: 8px 20px; border-radius: 20px; cursor: pointer; color: white; font-weight: bold; }
-.copy-btn { background: #2196f3; }
+.room-code-badge { background: #ff2020; padding: 8px 20px; border-radius: 30px; font-family: monospace; font-size: 1.2rem; font-weight: bold; }
 
 .panel {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
@@ -225,7 +222,6 @@ button, input { font: inherit; }
 .imageModal { display: none; position: fixed; inset: 0; z-index: 4000; align-items: center;
               justify-content: center; background: rgba(0,0,0,.95); }
 .imageModal img { max-width: 90%; max-height: 90%; border: 2px solid var(--r2); border-radius: 10px; }
-.qr-code { text-align: center; margin-top: 15px; padding: 10px; background: white; border-radius: 12px; display: inline-block; }
 
 @media(max-width:640px) {
   .login-header h2, .head h1 { font-size: 2rem; }
@@ -239,12 +235,11 @@ button, input { font: inherit; }
 
 <body>
 
-<!-- LOGIN SCREEN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="login-header">
-      <h2><span class="red">ҮНСІЗДІК</span><br>ЖАРЫС</h2>
-      <div class="sub">ТҮР + 2510</div>
+      <h2><span class="red">ҮНСІЗДІК</span><br>ТЕСТ</h2>
+      <div class="sub">100 СҰРАҚ + ЖАРЫС</div>
     </div>
     <div class="video-box">
       <video id="loginVideo" autoplay playsinline></video>
@@ -261,33 +256,30 @@ button, input { font: inherit; }
     </div>
     <button class="btn" id="loginBtn" disabled>Кіру</button>
 
-    <!-- ЖАРЫС БӨЛМЕСІ -->
     <div class="competition-box">
       <div class="competition-title">🎮 ДОСТАРМЕН ЖАРЫСУ 🎮</div>
       <div class="join-row">
-        <input type="text" id="roomCodeInput" placeholder="Бөлме кодын енгізіңіз">
+        <input type="text" id="roomCodeInput" placeholder="Бөлме коды">
         <button id="joinRoomBtn" class="btn" style="margin-top:0; width:auto; padding:12px 20px;">🔗 Қосылу</button>
       </div>
-      <button id="createRoomBtn" class="btn" style="margin-top:8px;">✨ Жаңа бөлме құру + шақыру сілтемесі</button>
+      <button id="createRoomBtn" class="btn" style="margin-top:8px;">✨ Жаңа бөлме құру</button>
     </div>
   </div>
 </div>
 
-<!-- MAIN TEST -->
 <div class="main" id="main">
   <div class="container">
     <div class="head">
       <h1><span class="red">Қатемен жұмыс</span><br>100 сұрақ</h1>
     </div>
 
-    <!-- ЛИДЕРБОРД -->
     <div id="leaderboardContainer" style="display:none;">
       <div class="leaderboard">
         <h3>🏆 ЖАРЫС ЛИДЕРІ 🏆</h3>
         <div id="roomInfoDisplay" class="room-info-bar"></div>
         <table id="leaderboardTable">
           <thead><tr><th>Орын</th><th>Қатысушы</th><th>Дұрыс</th><th>Қате</th><th>Пайыз</th></tr></thead>
-          <tbody id="leaderboardBody"></tbody>
+          <tbody id="leaderboardBody"><tr><td colspan="5" style="text-align:center">Жүктелуде...</td></tr></tbody>
         </table>
         <button id="shareRoomBtn" class="share-btn" style="margin-top:10px;">📤 Бөлмені шақыру</button>
         <button id="refreshLeaderboardBtn" class="share-btn" style="margin-top:10px; background:#ff9800;">🔄 Жаңарту</button>
@@ -313,10 +305,8 @@ button, input { font: inherit; }
   </div>
 </div>
 
-<!-- ADMIN BUTTON -->
 <div class="admin-link" id="adminOpen">● Админ</div>
 
-<!-- ADMIN MODAL -->
 <div class="modal" id="adminModal">
   <div class="admin">
     <div class="adminTop"><h2 style="color:#ff2020">Админ панель</h2><span class="close" id="adminClose">&times;</span></div>
@@ -342,33 +332,127 @@ button, input { font: inherit; }
 
 const LOGIN_PASSWORD = "2510";
 const ADMIN_PASS = "7777";
-const STORE = "unsiz_red_protected_results_v2";
-const ROOMS_STORE = "unsiz_competition_rooms";
+const STORE = "unsiz_100_questions_results";
+const ROOMS_STORE = "unsiz_competition_rooms_v2";
 
-// ========== 100 СҰРАҚ (қысқартылған, бірақ толық нұсқа) ==========
-const Q = [];
-for(let i=1; i<=100; i++) {
-  if(i<=10) Q.push(["Бағдарламалаудағы қателердің негізгі түрі?",["Синтаксистік","Логикалық","Runtime","Барлығы"],3]);
-  else if(i<=20) Q.push(["Debugging дегеніміз не?",["Қате іздеу","Код жазу","Тестілеу","Компиляция"],0]);
-  else if(i<=30) Q.push(["try-catch блогы не үшін қолданылады?",["Қате өңдеу","Цикл","Шарт","Функция"],0]);
-  else if(i<=40) Q.push(["Null мәні нені білдіреді?",["Бос мән","Нөл","Қате","Анықталмаған"],0]);
-  else if(i<=50) Q.push(["IDE дегеніміз не?",["Бағдарламалау ортасы","Операциялық жүйе","Дерекқор","Браузер"],0]);
-  else if(i<=60) Q.push(["Syntax error дегеніміз?",["Жазылу қатесі","Логикалық қате","Есептеу қатесі","Желі қатесі"],0]);
-  else if(i<=70) Q.push(["Runtime error қашан болады?",["Бағдарлама орындалу кезінде","Компиляция кезінде","Код жазу кезінде","Орнату кезінде"],0]);
-  else if(i<=80) Q.push(["Unit test не тексереді?",["Бір модульді","Бүкіл жүйені","Интерфейсті","Дерекқорды"],0]);
-  else if(i<=90) Q.push(["Refactoring дегеніміз?",["Кодты жақсарту","Кодты жою","Қате қосу","Файл өшіру"],0]);
-  else Q.push(["Code review мақсаты?",["Қате табу","Кодты жасыру","Жылдамдықты арттыру","Дизайн жасау"],0]);
-}
-// Нақты жауап индекстерін орнату
-for(let i=0; i<Q.length; i++) {
-  if(Q[i][2] === undefined) Q[i][2] = 0;
+// ========== ТОЛЫҚ 100 СҰРАҚ ==========
+const Q = [
+["Кодтағы қателерді анықтау процесі қалай аталады?",["Компиляция","Дебаггинг","Тестілеу","Орындау"],1],
+["Синтаксистік қате дегеніміз не?",["Логикалық қате","Жазылу ережесінің бұзылуы","Дерекқор қатесі","Дизайн қатесі"],1],
+["Логикалық қате кезінде:",["Қате нәтиже береді","Компьютер өшеді","Файл жойылады","Желі үзіледі"],0],
+["Runtime error қашан пайда болады?",["Код жазу кезінде","Компиляция кезінде","Орындау кезінде","Жобалау кезінде"],2],
+["Debugger не үшін керек?",["Код жазу","Қате іздеу","Сурет салу","Файл сақтау"],1],
+["print() функциясы не үшін қолданылады?",["Қате жою","Мәлімет шығару","Файл ашу","Желіге қосылу"],1],
+["try-except блогы не үшін керек?",["Цикл құру","Шарт жазу","Қателерді өңдеу","Айнымалы құру"],2],
+["IDE дегеніміз:",["Операциялық жүйе","Бағдарламалау ортасы","Вирус","Драйвер"],1],
+["Infinite loop дегеніміз:",["Бір рет орындалатын цикл","Шексіз цикл","Қате код","Айнымалы"],1],
+["Null мәні дегеніміз:",["0 саны","Бос мән","1 саны","Теріс сан"],1],
+["Логикалық қатені табудың ең тиімді жолы:",["Компьютерді өшіру","Қадамдап орындау","Интернетті тексеру","Файлды жою"],1],
+["Синтаксистік қате табылғанда:",["Бағдарлама дұрыс жұмыс істейді","Компиляция тоқтайды","Нәтиже баяу шығады","Файл ашылады"],1],
+["Айнымалы анықталмаса қандай қате шығады?",["Type error","Name error","Index error","Logic error"],1],
+["Массив шегінен тыс элементке жүгінсек:",["Name error","Type error","Index error","Syntax error"],2],
+["Type error қашан болады?",["Түрлер сәйкес келмесе","Қате атау жазылса","Индекс дұрыс болмаса","Цикл тоқтаса"],0],
+["Қатені қайталамау үшін не істеу керек?",["Кодты тестілеу","Өшіру","Компьютер ауыстыру","Интернет қосу"],0],
+["assert командасы не үшін қолданылады?",["Файл ашу","Шартты тексеру","Цикл жасау","Айнымалы жою"],1],
+["Лог-файл не үшін керек?",["Музыка сақтау","Қате жазбаларын сақтау","Видео көру","Сурет салу"],1],
+["Refactoring дегеніміз:",["Кодты жою","Код құрылымын жақсарту","Қате қосу","Файл форматтау"],1],
+["Unit тестілеу не тексереді?",["Бүкіл жүйені","Бір модульді","Серверді","Интернетті"],1],
+["ValueError қашан пайда болады?",["Дұрыс емес мән енгізілсе","Айнымалы жоқ болса","Индекс артық болса","Файл табылмаса"],0],
+["FileNotFoundError қашан шығады?",["Файл табылмаса","Айнымалы жоқ болса","Түр сәйкес келмесе","Шарт қате болса"],0],
+["except блогы қай кезде орындалады?",["Қате пайда болса","Қате болмаса","Әрқашан","Цикл ішінде ғана"],0],
+["finally блогы:",["Әрқашан орындалады","Қате болса ғана","Ешқашан","Цикл жасайды"],0],
+["Breakpoint дегеніміз:",["Бағдарламаны тоқтату нүктесі","Қате түрі","Айнымалы","Цикл"],0],
+["Stack trace нені көрсетеді?",["Қате шыққан жолды","Дизайнды","Интернет жылдамдығын","Файл өлшемін"],0],
+["Тестілеудің мақсаты:",["Қате табу","Кодты жасыру","Компьютерді өшіру","Желі қосу"],0],
+["Қай қате бағдарлама тоқтауына әкелуі мүмкін?",["Runtime error","Логикалық","Комментарий қатесі","Дизайн қатесі"],0],
+["Debugging процесінің соңғы мақсаты:",["Қатені түзету","Кодты жою","Файлды жабу","Компьютерді өшіру"],0],
+["SyntaxError қай кезде шығады?",["Компиляция кезінде","Орындау кезінде","Интернет жоқ кезде","Файл жабылғанда"],0],
+["ZeroDivisionError қашан пайда болады?",["0-ге бөлгенде","Айнымалы жоқ болса","Индекс артық болса","Файл ашылмаса"],0],
+["Кодтағы комментарий не үшін керек?",["Түсіндіру жазу","Қате шығару","Файл жою","Айнымалы құру"],0],
+["Қате табылғаннан кейін бірінші қадам:",["Себебін анықтау","Кодты өшіру","Компьютерді өшіру","Жаңа файл ашу"],0],
+["while циклі тоқтамаса, бұл:",["Логикалық қате","Syntax error","Type error","Name error"],0],
+["Функция дұрыс нәтиже бермесе:",["Логикалық қате бар","Компьютер бұзылған","Интернет жоқ","Файл ашылмаған"],0],
+["Exception дегеніміз:",["Қате жағдай","Айнымалы","Цикл","Функция"],0],
+["Модульдік тексеру дегеніміз:",["Кодты бөліктерге бөліп тексеру","Бүкіл жүйені тексеру","Интерфейсті тексеру","Дизайнды тексеру"],0],
+["KeyError қашан пайда болады?",["Сөздікте жоқ кілт қолданылса","Айнымалы жоқ болса","0-ге бөлгенде","Файл ашылмаса"],0],
+["ImportError дегеніміз:",["Модуль жүктелмесе","Айнымалы қатесі","Индекс қатесі","Логикалық қате"],0],
+["Code review мақсаты:",["Қате табу","Файл жою","Интернет қосу","Дизайн өзгерту"],0],
+["Traceback нені көрсетеді?",["Қате шыққан жолдар тізбегін","Файл көлемін","Интернет жылдамдығын","Компьютер жадын"],0],
+["Regression testing мақсаты:",["Бұрынғы қателер қайталанбауын тексеру","Жаңа қате қосу","Файл жою","Дизайн өзгерту"],0],
+["Bug дегеніміз:",["Қате","Дұрыс код","Сервер","Айнымалы"],0],
+["Clean code мақсаты:",["Оқылуы жеңіл код","Ұзын код","Қате код","Форматсыз код"],0],
+["DRY принципі:",["Қайталауды азайту","Қате қосу","Файл жою","Интернет қосу"],0],
+["SOLID принциптері:",["Дизайн қағидалары","Қате түрлері","Файл атауы","Интернет түрі"],0],
+["Код сапасын арттыру үшін:",["Тестілеу жүргізу","Комментарийсіз жазу","Барлығын қысқарту","Форматтамау"],0],
+["Exception түрін нақты көрсету:",["Жақсы тәжірибе","Қате","Міндет емес","Интернетке байланысты"],0],
+["CI/CD мақсаты:",["Автоматты құрастыру және тексеру","Файл жою","Интернет өшіру","Дизайн өзгерту"],0],
+["Integration test не тексереді?",["Модульдердің байланысын","Бір функцияны","Дизайнды","Интернетті"],0],
+["Manual testing дегеніміз:",["Қолмен тексеру","Автоматты тексеру","Архивтеу","Форматтау"],0],
+["Automated testing артықшылығы:",["Жылдамдық","Қате көбейту","Файл жою","Дизайн бұзу"],0],
+["Static analysis қашан жасалады?",["Орындаусыз","Орындау кезінде","Интернетпен","Серверде"],0],
+["Dynamic testing қашан жасалады?",["Орындау кезінде","Код жазғанда","Форматтағанда","Архивтегенде"],0],
+["Code smell дегеніміз:",["Жаман құрылым белгісі","Жақсы код","Қате хабарлама","Айнымалы"],0],
+["Git дегеніміз:",["Нұсқа бақылау жүйесі","Операциялық жүйе","Сервер","Айнымалы"],0],
+["Merge conflict қашан болады?",["Бір файлды екі адам өзгерткенде","Интернет жоқ кезде","Файл жойылғанда","Компьютер өшкенде"],0],
+["Test coverage нені көрсетеді?",["Тестпен қамтылған пайызды","Код көлемін","Интернет жылдамдығын","Файл өлшемін"],0],
+["Linter дегеніміз:",["Кодты форматтау құралы","Принтер","Сканер","Монитор"],0],
+["Boundary value testing не тексереді?",["Шектік мәндерді","Орта мәндерді","Тек мәтінді","Дизайнды"],0],
+["Infinite recursion себебі:",["Шарт жоқ","Файл жоқ","Интернет жоқ","Индекс артық"],0],
+["raise командасы:",["Қате тастау","Цикл құру","Айнымалы жою","Файл ашу"],0],
+["Version control не үшін керек?",["Код нұсқаларын сақтау","Файл жою","Интернет қосу","Дизайн өзгерту"],0],
+["Unit test қашан жазылады?",["Кодпен бірге","Кодтан кейін","Ешқашан","Орнатқанда"],0],
+["System test не тексереді?",["Толық жүйені","Бір модульді","Бір функцияны","Интерфейсті"],0],
+["Acceptance test дегеніміз:",["Қолданушы қабылдау тесті","Модульдік тест","Интеграциялық тест","Бірлік тест"],0],
+["Performance testing не тексереді?",["Жылдамдық пен өнімділік","Қателерді","Қауіпсіздікті","Дизайнды"],0],
+["Security testing мақсаты:",["Қауіпсіздік олқылықтарын табу","Жылдамдықты тексеру","Интерфейсті тексеру","Дизайнды тексеру"],0],
+["Usability testing не тексереді?",["Қолдану ыңғайлылығы","Қауіпсіздікті","Өнімділікті","Жылдамдықты"],0],
+["Alpha testing кім жасайды?",["Ішкі команда","Клиенттер","Пайдаланушылар","Менеджерлер"],0],
+["Beta testing кім жасайды?",["Нақты пайдаланушылар","Әзірлеушілер","Тестерлер","Менеджерлер"],0],
+["Smoke testing дегеніміз:",["Негізгі функцияларды тексеру","Толық тестілеу","Қауіпсіздік тесті","Өнімділік тесті"],0],
+["Sanity testing дегеніміз:",["Нақты бөлікті тексеру","Толық жүйені тексеру","Қауіпсіздікті тексеру","Дизайнды тексеру"],0],
+["Regression testing қайталанады:",["Биылғы өзгерістерден кейін","Тек бір рет","Ешқашан","Тек жоба басында"],0],
+["White box testing дегеніміз:",["Кодты біле отырып тексеру","Кодты білмей тексеру","Функционалды тексеру","Интерфейсті тексеру"],0],
+["Black box testing дегеніміз:",["Кодты білмей тексеру","Кодты біле отырып тексеру","Ішкі құрылымды тексеру","Алгоритмді тексеру"],0],
+["Gray box testing дегеніміз:",["Аралас тестілеу","Тек қара","Тек ақ","Функционалды"],0],
+["Test case дегеніміз:",["Тексеру сценарийі","Қате түрі","Айнымалы","Файл"],0],
+["Test plan дегеніміз:",["Тестілеу жоспары","Қате тізімі","Сұрақтар","Жауаптар"],0],
+["Bug report құрамына кіреді:",["Қате сипаттамасы","Музыка","Видео","Сурет"],0],
+["Bug lifecycle дегеніміз:",["Қате өмір циклі","Қате түрі","Қате саны","Қате атауы"],0],
+["Severity дегеніміз:",["Қатенің маңыздылығы","Қате түрі","Қате саны","Қате орны"],0],
+["Priority дегеніміз:",["Қатенің кезектілігі","Қате түрі","Қате саны","Қате орны"],0],
+["Reproducible bug дегеніміз:",["Қайталанатын қате","Сирек кездесетін қате","Күрделі қате","Қарапайым қате"],0],
+["Critical bug дегеніміз:",["Маңызды қате","Кішігірім қате","Дизайн қатесі","Стиль қатесі"],0],
+["Hotfix дегеніміз:",["Жедел түзету","Жоспарлы түзету","Жаңа функция","Дизайн өзгерту"],0],
+["Patch дегеніміз:",["Түзету пакеті","Жаңа нұсқа","Жаңа функция","Қате"],0],
+["Rollback дегеніміз:",["Алдыңғы нұсқаға қайту","Жаңарту","Жою","Көшіру"],0],
+["Deployment дегеніміз:",["Орнату","Тестілеу","Жазу","Жою"],0],
+["Continuous Integration дегеніміз:",["Үздіксіз интеграция","Үздіксіз тестілеу","Үздіксіз жеткізу","Үздіксіз орнату"],0],
+["Continuous Delivery дегеніміз:",["Үздіксіз жеткізу","Үздіксіз интеграция","Үздіксіз тестілеу","Үздіксіз орнату"],0],
+["DevOps дегеніміз:",["Development + Operations","Development + Testing","Testing + Operations","Design + Operations"],0],
+["Agile дегеніміз:",["Икемді әдістеме","Су төгіндісі","Каскадты модель","Спиральды модель"],0],
+["Scrum дегеніміз:",["Agile фреймворгі","Су төгіндісі","Каскадты модель","SASH"],0],
+["Sprint дегеніміз:",["Қысқа мерзімді цикл","Ұзақ мерзімді цикл","Түзету","Жаңарту"],0],
+["Daily stand-up дегеніміз:",["Күнделікті жиналыс","Апталық жиналыс","Айлық жиналыс","Жылдық жиналыс"],0],
+["Retrospective дегеніміз:",["Кері байланыс жиналысы","Жоспарлау","Түзету","Тестілеу"],0],
+["Burndown chart дегеніміз:",["Жұмыс графигі","Қате графигі","Жылдамдық графигі","Сапа графигі"],0],
+["Velocity дегеніміз:",["Команда жылдамдығы","Қате саны","Тест саны","Функция саны"],0],
+["Definition of Done дегеніміз:",["Аяқталды деген критерий","Басталды деген критерий","Жоспарлы критерий","Сапа критерийі"],0],
+["Technical debt дегеніміз:",["Техникалық борыш","Функционалдық борыш","Дизайн борыш","Сапа борышы"],0],
+["Refactoring не істейді?",["Функционалды өзгертпейді","Жаңа қате қосады","Кодты өшіреді","Дизайнды өзгертеді"],0],
+["Code review кім жасайды?",["Басқа бағдарламашы","Клиент","Дизайнер","Менеджер"],0],
+["Pair programming дегеніміз?",["Екеулеп бағдарламалау","Жалғыз бағдарламалау","Топпен бағдарламалау","Дизайн"],0],
+["Code coverage жақсы көрсеткіші:",["80% жоғары","50%","30%","10%"],0]
+];
+
+// Қалған сұрақтарды толықтыру (100-ге дейін)
+while(Q.length < 100) {
+  Q.push(["Бағдарламалау сапасын арттыру әдісі?",["Тестілеу","Көшіру","Өшіру","Жасыру"],0]);
 }
 
 // === ЖАРЫС ЖҮЙЕСІ ===
 let currentRoom = null;
-let currentUserName = null;
+let currentUserId = null;
 
-// Бөлме құру
 function generateRoomCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
   let code = '';
@@ -382,55 +466,59 @@ function createRoom() {
   rooms[code] = {
     createdAt: new Date().toISOString(),
     participants: [],
-    host: currentUserName || "Аноним"
+    host: currentUserId || "Аноним"
   };
   localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
   currentRoom = code;
   localStorage.setItem("currentRoom", code);
-  saveUserToRoom();
-  showRoomModal(code);
+  addUserToRoom();
+  showShareModal(code);
   return code;
 }
 
 function joinRoom(code) {
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
   if(!rooms[code]) {
-    alert("Бөлме табылмады! Кодты тексеріңіз.");
+    alert("❌ Бөлме табылмады! Кодты тексеріңіз.");
     return false;
   }
   currentRoom = code;
   localStorage.setItem("currentRoom", code);
-  saveUserToRoom();
+  addUserToRoom();
+  document.getElementById("leaderboardContainer").style.display = "block";
+  showLeaderboard();
   alert("✅ Бөлмеге қосылдыңыз! Енді тесті бастаңыз.");
   return true;
 }
 
-function saveUserToRoom() {
+function addUserToRoom() {
   if(!currentRoom) return;
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
   if(rooms[currentRoom]) {
-    const userId = "user_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
-    if(!rooms[currentRoom].participants.find(p => p.faceId === localStorage.getItem("userFaceId"))) {
+    if(!currentUserId) {
+      currentUserId = "user_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
+      localStorage.setItem("currentUserId", currentUserId);
+    }
+    const existing = rooms[currentRoom].participants.find(p => p.id === currentUserId);
+    if(!existing) {
       rooms[currentRoom].participants.push({
-        id: userId,
+        id: currentUserId,
         name: "Қатысушы " + (rooms[currentRoom].participants.length + 1),
-        faceId: localStorage.getItem("userFaceId") || userId,
         correct: 0,
         wrong: 0,
         completed: false,
         joinedAt: new Date().toISOString()
       });
+      localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
     }
-    localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
   }
 }
 
-function updateUserResult(correct, wrong) {
+function updateUserResultInRoom(correct, wrong) {
   if(!currentRoom) return;
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
-  const faceId = localStorage.getItem("userFaceId");
-  if(rooms[currentRoom] && faceId) {
-    const participant = rooms[currentRoom].participants.find(p => p.faceId === faceId);
+  if(rooms[currentRoom] && currentUserId) {
+    const participant = rooms[currentRoom].participants.find(p => p.id === currentUserId);
     if(participant) {
       participant.correct = correct;
       participant.wrong = wrong;
@@ -441,57 +529,49 @@ function updateUserResult(correct, wrong) {
   }
 }
 
-function getLeaderboard() {
-  if(!currentRoom) return [];
+function showLeaderboard() {
+  if(!currentRoom) return;
   const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
   const room = rooms[currentRoom];
-  if(!room) return [];
-  return [...room.participants].sort((a,b) => b.correct - a.correct || a.wrong - b.wrong);
-}
-
-function showLeaderboard() {
-  const leaderboard = getLeaderboard();
+  if(!room) return;
+  
+  const sorted = [...room.participants].sort((a,b) => b.correct - a.correct || a.wrong - b.wrong);
   const tbody = document.getElementById("leaderboardBody");
-  if(!tbody) return;
-  if(leaderboard.length === 0) {
+  
+  if(sorted.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Әзірге қатысушы жоқ</td></tr>';
-    return;
+  } else {
+    tbody.innerHTML = sorted.map((p, idx) => {
+      let rankClass = "";
+      if(idx === 0) rankClass = "rank1";
+      else if(idx === 1) rankClass = "rank2";
+      else if(idx === 2) rankClass = "rank3";
+      const percent = ((p.correct / Q.length) * 100).toFixed(1);
+      return `<tr class="${rankClass}"><td>${idx+1}</td><td>${p.name}</td><td style="color:#00c853">${p.correct}</td><td style="color:#ff4141">${p.wrong}</td><td>${percent}%</td></tr>`;
+    }).join("");
   }
-  tbody.innerHTML = leaderboard.map((p, idx) => {
-    let rankClass = "";
-    if(idx === 0) rankClass = "rank1";
-    else if(idx === 1) rankClass = "rank2";
-    else if(idx === 2) rankClass = "rank3";
-    const percent = ((p.correct / 100) * 100).toFixed(1);
-    return `<tr class="${rankClass}">
-      <td>${idx + 1}</td>
-      <td>${p.name}</td>
-      <td style="color:#00c853">${p.correct}</td>
-      <td style="color:#ff4141">${p.wrong}</td>
-      <td>${percent}%</td>
-    </tr>`;
-  }).join("");
+  
   document.getElementById("roomInfoDisplay").innerHTML = `<div class="room-code-badge">🏠 Бөлме коды: ${currentRoom}</div>
-    <button id="copyRoomCodeBtn" class="share-btn copy-btn">📋 Кодты көшіру</button>`;
-  const copyBtn = document.getElementById("copyRoomCodeBtn");
-  if(copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(currentRoom); alert("Бөлме коды көшірілді!"); };
+    <button id="copyRoomCode" class="share-btn copy-btn">📋 Кодты көшіру</button>`;
+  
+  const copyBtn = document.getElementById("copyRoomCode");
+  if(copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(currentRoom); alert("Көшірілді!"); };
 }
 
-function showRoomModal(code) {
+function showShareModal(code) {
   const link = window.location.href.split('?')[0] + "?room=" + code;
   const modalHtml = `
-    <div id="roomShareModal" style="position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.95);">
+    <div id="shareModal" style="position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.95);">
       <div style="background:#1a0000; border:2px solid #ff2020; border-radius:24px; padding:30px; max-width:450px; text-align:center;">
-        <h2 style="color:#ff2020; margin-bottom:20px;">🎉 Жарыс бөлмесі құрылды!</h2>
+        <h2 style="color:#ff2020; margin-bottom:20px;">🎉 Бөлме құрылды!</h2>
         <p>Бөлме коды:</p>
         <div style="font-size:2rem; font-weight:bold; background:#000; padding:15px; border-radius:12px; letter-spacing:5px;">${code}</div>
-        <p style="margin:20px 0 10px;">Сілтеме (достарыңызға жіберіңіз):</p>
+        <p style="margin:20px 0 10px;">Достарыңызға жіберіңіз:</p>
         <input type="text" id="shareLinkInput" value="${link}" style="width:100%; padding:12px; background:#220000; border:1px solid #ff2020; border-radius:8px; color:white; text-align:center;" readonly>
         <div style="display:flex; gap:10px; margin-top:20px;">
           <button id="copyLinkBtn" style="flex:1; background:#d00000; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">📋 Көшіру</button>
-          <button id="closeShareBtn" style="flex:1; background:#333; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">Жабу</button>
+          <button id="closeModalBtn" style="flex:1; background:#333; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">Жабу</button>
         </div>
-        <p style="margin-top:15px; font-size:12px;">🔗 Достарыңыз сілтеме арқылы немесе код арқылы қосыла алады</p>
       </div>
     </div>
   `;
@@ -501,31 +581,27 @@ function showRoomModal(code) {
     input.select(); document.execCommand("copy");
     alert("Сілтеме көшірілді!");
   };
-  document.getElementById("closeShareBtn").onclick = () => {
-    document.getElementById("roomShareModal").remove();
+  document.getElementById("closeModalBtn").onclick = () => {
+    document.getElementById("shareModal").remove();
     document.getElementById("leaderboardContainer").style.display = "block";
     showLeaderboard();
   };
 }
 
 // URL параметрінен бөлме кодын алу
-const urlParams = new URLSearchParams(window.location.search);
-const roomFromUrl = urlParams.get('room');
-if(roomFromUrl) {
-  setTimeout(() => {
-    if(confirm(`"${roomFromUrl}" бөлмесіне қосылу?`)) {
-      joinRoom(roomFromUrl);
-    }
-  }, 500);
+const urlRoom = new URLSearchParams(window.location.search).get('room');
+if(urlRoom) {
+  setTimeout(() => { joinRoom(urlRoom); }, 500);
 }
 
 // === НЕГІЗГІ ТЕСТ ЛОГИКАСЫ ===
-let idx = 0, done = false, user = null, stream = null, model = false, face = null, faceOk = false;
-let ans = Array(Q.length).fill(null);
-let ok = Array(Q.length).fill(false);
+let idx = 0, done = false, user = null, stream = null, modelLoaded = false, faceOk = false;
+let userAnswers = Array(Q.length).fill(null);
+let userCorrect = Array(Q.length).fill(false);
 
 const $ = id => document.getElementById(id);
-const video = $("loginVideo"), statusDiv = $("status"), cameraBtn = $("cameraBtn"), faceBtn = $("faceBtn"), loginBtn = $("loginBtn");
+const video = $("loginVideo"), statusDiv = $("status");
+const cameraBtn = $("cameraBtn"), faceBtn = $("faceBtn"), loginBtn = $("loginBtn");
 
 function setStatus(t, c) { statusDiv.textContent = t; statusDiv.className = "status " + c; }
 
@@ -536,9 +612,9 @@ async function loadModels() {
     if (!window.faceapi) throw new Error("face-api жүктелмеді");
     await faceapi.nets.tinyFaceDetector.loadFromUri(url);
     await faceapi.nets.faceLandmark68Net.loadFromUri(url);
-    model = true;
+    modelLoaded = true;
     setStatus("✅ Дайын. Камераны қосыңыз", "ok");
-  } catch(e) { setStatus("❌ Модель қатесі", "err"); }
+  } catch(e) { setStatus("❌ Қате: " + e.message, "err"); }
 }
 window.addEventListener("load", loadModels);
 
@@ -552,9 +628,165 @@ cameraBtn.onclick = async () => {
     setStatus("📷 Камера дайын", "ok");
     faceBtn.disabled = false;
     cameraBtn.disabled = true;
-  } catch(e) { setStatus("❌ Камераға рұқсат жоқ", "err"); }
+  } catch(e) { setStatus("❌ Камера рұқсаты жоқ", "err"); }
 };
 
 faceBtn.onclick = async () => {
-  if(!model) { setStatus("⏳ Модель жүктелуде...", "wait"); return; }
-  setStatus("🔍 Бет ізделуде...
+  if(!modelLoaded) { setStatus("Модель жүктелуде...", "wait"); return; }
+  setStatus("🔍 Бет ізделуде...", "wait");
+  try {
+    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+    if(detections.length === 0) throw new Error("Бет табылмады");
+    if(detections.length > 1) throw new Error("Бірнеше бет");
+    const box = detections[0].detection.box;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const x = Math.max(0, box.x - 40);
+    const y = Math.max(0, box.y - 40);
+    const w = Math.min(box.width + 80, video.videoWidth - x);
+    const h = Math.min(box.height + 80, video.videoHeight - y);
+    canvas.width = 200; canvas.height = 200;
+    ctx.drawImage(video, x, y, w, h, 0, 0, 200, 200);
+    const faceData = canvas.toDataURL("image/jpeg", 0.9);
+    localStorage.setItem("userFace", faceData);
+    faceOk = true;
+    $("faceImg").src = faceData;
+    $("preview").style.display = "block";
+    setStatus("✅ Бет танылды!", "ok");
+    loginBtn.disabled = false;
+    if(stream) stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    video.srcObject = null;
+  } catch(e) { setStatus("❌ " + e.message, "err"); }
+};
+
+loginBtn.onclick = () => {
+  if(!faceOk) { alert("Алдымен бетіңізді танытыңыз"); return; }
+  if($("loginPass").value.trim() !== LOGIN_PASSWORD) { alert("Қате пароль! 2510 енгізіңіз"); return; }
+  $("loginScreen").classList.add("hidden");
+  $("main").classList.add("visible");
+  render();
+  updateStatsDisplay();
+};
+
+function render() {
+  if(done) return;
+  const q = Q[idx];
+  const selected = userAnswers[idx];
+  let html = `<div class="card"><div class="qtext">${idx+1}. ${q[0]}</div><div class="opts">`;
+  q[1].forEach((opt, i) => {
+    let cls = "opt";
+    if(selected !== null) {
+      if(i === q[2]) cls += " correct";
+      else if(i === selected) cls += " wrong";
+      cls += " disabled";
+    }
+    html += `<div class="${cls}" data-i="${i}">${opt}</div>`;
+  });
+  html += `</div></div>`;
+  $("test").innerHTML = html;
+  if(selected === null) {
+    document.querySelectorAll(".opt").forEach(el => {
+      el.onclick = () => selectAnswer(+el.dataset.i);
+    });
+  }
+  $("now").innerText = idx+1;
+  $("total").innerText = Q.length;
+  $("prev").disabled = idx === 0;
+  $("next").disabled = idx === Q.length-1;
+}
+
+function selectAnswer(choice) {
+  if(userAnswers[idx] !== null) return;
+  userAnswers[idx] = choice;
+  userCorrect[idx] = (choice === Q[idx][2]);
+  render();
+  updateStatsDisplay();
+  if(idx < Q.length-1) {
+    setTimeout(() => { idx++; render(); }, 300);
+  }
+}
+
+function updateStatsDisplay() {
+  const correctCount = userCorrect.filter(Boolean).length;
+  const wrongCount = userAnswers.filter((a,i) => a !== null && !userCorrect[i]).length;
+  $("correct").innerText = correctCount;
+  $("wrong").innerText = wrongCount;
+}
+
+function saveResult() {
+  const correctCount = userCorrect.filter(Boolean).length;
+  const wrongCount = userAnswers.filter((a,i) => a !== null && !userCorrect[i]).length;
+  const allResults = JSON.parse(localStorage.getItem(STORE) || "[]");
+  allResults.push({
+    id: Date.now() + "_" + Math.random().toString(36).slice(2,8),
+    face: localStorage.getItem("userFace") || "",
+    correct: correctCount,
+    wrong: wrongCount,
+    total: Q.length,
+    room: currentRoom || "Жеке",
+    date: new Date().toLocaleString()
+  });
+  localStorage.setItem(STORE, JSON.stringify(allResults));
+  
+  if(currentRoom) {
+    updateUserResultInRoom(correctCount, wrongCount);
+    showLeaderboard();
+  }
+}
+
+function finishTest() {
+  done = true;
+  saveResult();
+  const correctCount = userCorrect.filter(Boolean).length;
+  const wrongCount = userAnswers.filter((a,i) => a !== null && !userCorrect[i]).length;
+  $("test").classList.add("hidden");
+  $("nav").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("result").innerHTML = `<div class="result"><h2>📊 НӘТИЖЕ</h2><div style="font-size:5rem;color:#ff2020;">${correctCount}</div><p>${Q.length} сұрақтың ішінен</p><div style="display:flex;gap:30px;justify-content:center;margin:20px 0"><div>✅ Дұрыс: ${correctCount}</div><div>❌ Қате: ${wrongCount}</div></div><button class="restart" onclick="location.reload()">🔄 Қайта бастау</button></div>`;
+}
+
+$("prev").onclick = () => { if(idx > 0) { idx--; render(); } };
+$("next").onclick = () => { if(idx < Q.length-1) { idx++; render(); } };
+$("finish").onclick = finishTest;
+
+// Жарыс батырмалары
+$("createRoomBtn").onclick = () => { createRoom(); };
+$("joinRoomBtn").onclick = () => {
+  const code = $("roomCodeInput").value.trim().toUpperCase();
+  if(code) joinRoom(code);
+  else alert("Бөлме кодын енгізіңіз");
+};
+$("shareRoomBtn").onclick = () => { if(currentRoom) showShareModal(currentRoom); };
+$("refreshLeaderboardBtn").onclick = () => { if(currentRoom) showLeaderboard(); };
+
+// Админ панелі
+const adminModal = $("adminModal"), imgModal = $("imgModal"), bigImg = $("bigImg");
+$("adminOpen").onclick = () => { adminModal.style.display = "block"; };
+$("adminClose").onclick = () => { adminModal.style.display = "none"; };
+$("adminBtn").onclick = () => {
+  if($("adminPass").value === ADMIN_PASS) {
+    $("adminLogin").classList.add("hidden");
+    $("adminContent").classList.remove("hidden");
+    loadAdminTable();
+  } else { $("adminErr").innerText = "Қате құпия сөз!"; }
+};
+function loadAdminTable() {
+  const all = JSON.parse(localStorage.getItem(STORE) || "[]");
+  const tbody = $("tbody");
+  $("countUsers").innerText = all.length;
+  if(!all.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center">Нәтиже жоқ</td></tr>'; return; }
+  tbody.innerHTML = all.reverse().map((r,i) => `<tr><td>${i+1}</td><td class="face-cell" data-face="${r.face || ''}">${r.face ? '<img src="'+r.face+'" class="thumb">' : '📷'}</td><td style="color:#00c853">${r.correct}</td><td style="color:#ff4141">${r.wrong}</td><td>${r.room || 'Жеке'}</td><td>${r.date}</td><td><button class="del" data-id="${r.id}">Жою</button></td></tr>`).join("");
+  document.querySelectorAll(".face-cell").forEach(td => { td.onclick = () => { if(td.dataset.face) { bigImg.src = td.dataset.face; imgModal.style.display = "flex"; } }; });
+  document.querySelectorAll(".del").forEach(btn => { btn.onclick = (e) => { e.stopPropagation(); if(confirm("Жою?")) { let items = JSON.parse(localStorage.getItem(STORE) || "[]").filter(x => x.id !== btn.dataset.id); localStorage.setItem(STORE, JSON.stringify(items)); loadAdminTable(); } }; });
+}
+$("clearAll").onclick = () => { if(confirm("Барлық нәтижелерді жою?")) { localStorage.removeItem(STORE); loadAdminTable(); } };
+imgModal.onclick = () => { imgModal.style.display = "none"; };
+document.addEventListener("keydown", e => { if(e.key === "Escape") { adminModal.style.display = "none"; imgModal.style.display = "none"; } });
+
+// Бар бөлмеге қосылған жағдайда лидербордты көрсету
+if(currentRoom) { document.getElementById("leaderboardContainer").style.display = "block"; showLeaderboard(); }
+})();
+</script>
+</body>
+</html>
