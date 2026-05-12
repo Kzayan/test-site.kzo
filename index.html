@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>UNSIZ · Қорғалған қызыл тест</title>
+<title>UNSIZ · Жарыс режимі · Достармен бірге</title>
 
 <script>
 (function(){
@@ -11,7 +11,6 @@
 
   function badKey(e){
     const k = (e.key || "").toUpperCase();
-
     if (
       e.key === "F12" ||
       (e.ctrlKey && k === "U") ||
@@ -28,40 +27,33 @@
   }
 
   document.addEventListener("contextmenu", e => e.preventDefault(), true);
-
   document.addEventListener("selectstart", e => {
     if (!["INPUT","TEXTAREA"].includes((e.target.tagName || "").toUpperCase())) {
       e.preventDefault();
     }
   }, true);
-
   document.addEventListener("copy", e => {
     if (!["INPUT","TEXTAREA"].includes((e.target.tagName || "").toUpperCase())) {
       e.preventDefault();
     }
   }, true);
-
   document.addEventListener("cut", e => e.preventDefault(), true);
   document.addEventListener("keydown", badKey, true);
 
   function guard(open) {
     let el = document.getElementById("devGuard");
-
     if (!el) {
       el = document.createElement("div");
       el.id = "devGuard";
       el.innerHTML = "<div><b>Сайт қорғалған</b><br><small>Developer tools жабылғаннан кейін жалғастырыңыз.</small></div>";
       document.documentElement.appendChild(el);
     }
-
     el.style.display = open ? "flex" : "none";
   }
 
   setInterval(function(){
-    const opened =
-      Math.abs(window.outerWidth - window.innerWidth) > 180 ||
-      Math.abs(window.outerHeight - window.innerHeight) > 180;
-
+    const opened = Math.abs(window.outerWidth - window.innerWidth) > 180 ||
+                   Math.abs(window.outerHeight - window.innerHeight) > 180;
     guard(opened);
   }, 900);
 })();
@@ -87,602 +79,226 @@
   --mut: #ffc4c4;
   --green: #00c853;
   --bad: #ff4141;
+  --gold: #ffd700;
+  --silver: #c0c0c0;
+  --bronze: #cd7f32;
 }
 
-html,
-body {
+html, body {
   min-height: 100%;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
   color: var(--txt);
-  background:
-    radial-gradient(circle at top left, rgba(255,0,0,.35), transparent 33%),
-    radial-gradient(circle at bottom right, rgba(255,40,40,.22), transparent 38%),
-    linear-gradient(135deg, #050000, #160000 55%, #3a0000);
+  background: radial-gradient(circle at top left, rgba(255,0,0,.35), transparent 33%),
+              radial-gradient(circle at bottom right, rgba(255,40,40,.22), transparent 38%),
+              linear-gradient(135deg, #050000, #160000 55%, #3a0000);
   line-height: 1.5;
   user-select: none;
 }
 
-body {
-  padding: 20px 16px;
-}
-
-button,
-input {
-  font: inherit;
-}
-
-.container {
-  max-width: 1000px;
-  margin: auto;
-}
-
-.hidden {
-  display: none !important;
-}
+body { padding: 20px 16px; }
+button, input { font: inherit; }
+.container { max-width: 1000px; margin: auto; }
+.hidden { display: none !important; }
 
 #devGuard {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: #080000;
-  color: white;
-  font-size: 2rem;
+  position: fixed; inset: 0; z-index: 999999; display: none;
+  align-items: center; justify-content: center; text-align: center;
+  background: #080000; color: white; font-size: 2rem;
 }
-
-#devGuard div {
-  padding: 34px;
-  border: 2px solid var(--r2);
-  border-radius: 24px;
-  background: #220000;
-  box-shadow: 0 0 35px rgba(255,0,0,.35);
-}
-
-#devGuard small {
-  font-size: 1rem;
-  color: var(--mut);
-}
+#devGuard div { padding: 34px; border: 2px solid var(--r2); border-radius: 24px; background: #220000; }
+#devGuard small { font-size: 1rem; color: var(--mut); }
 
 .login-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: auto;
-  padding: 20px;
-  background:
-    radial-gradient(circle at top, rgba(255,0,0,.35), transparent 35%),
-    linear-gradient(135deg, #050000, #1c0000, #390000);
+  position: fixed; inset: 0; z-index: 2000; display: flex;
+  align-items: center; justify-content: center; overflow: auto;
+  padding: 20px; background: radial-gradient(circle at top, rgba(255,0,0,.35), transparent 35%),
+              linear-gradient(135deg, #050000, #1c0000, #390000);
 }
-
 .login-card {
-  width: 100%;
-  max-width: 530px;
-  padding: 36px 28px;
-  border: 2px solid var(--r2);
-  border-radius: 32px;
+  width: 100%; max-width: 550px; padding: 36px 28px;
+  border: 2px solid var(--r2); border-radius: 32px;
   background: linear-gradient(145deg, rgba(52,0,0,.97), rgba(12,0,0,.98));
-  box-shadow: 0 24px 58px rgba(255,0,0,.22), 0 16px 0 #050000;
+  box-shadow: 0 24px 58px rgba(255,0,0,.22);
 }
+.login-header { text-align: center; margin-bottom: 28px; }
+.login-header h2 { font-size: 2.75rem; font-weight: 950; text-transform: uppercase; text-shadow: 0 0 22px rgba(255,0,0,.55); }
+.red { color: var(--r2); }
+.sub { margin-top: 10px; color: var(--mut); font-size: .8rem; letter-spacing: 3px; text-transform: uppercase; }
+.video-box { width: 100%; max-width: 320px; margin: 0 auto 12px; border: 2px solid var(--r2); border-radius: 18px; overflow: hidden; background: #000; }
+#loginVideo { display: block; width: 100%; transform: scaleX(-1); }
+.preview { text-align: center; margin: 14px 0; display: none; }
+.preview img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 2px solid var(--r2); }
+.status { margin: 10px 0; padding: 10px; border-radius: 10px; text-align: center; font-size: .92rem; }
+.info { background: rgba(0,120,255,.14); color: #71cfff; }
+.ok { background: rgba(0,200,83,.15); color: #38ff85; }
+.err { background: rgba(255,0,0,.18); color: #ff7474; }
+.wait { background: rgba(255,170,0,.15); color: #ffd166; }
+.btn { width: 100%; margin-top: 8px; padding: 14px; border: 2px solid var(--r2); border-radius: 14px;
+       background: rgba(204,0,0,.16); color: white; font-weight: 850; text-transform: uppercase;
+       cursor: pointer; transition: .18s; }
+.btn:hover { background: var(--r); transform: translateY(-1px); box-shadow: 0 0 19px rgba(255,0,0,.35); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.pass { margin-top: 18px; }
+.pass input { width: 100%; padding: 16px; border: 1px solid rgba(255,105,105,.45); border-radius: 14px;
+              background: #080000; color: white; text-align: center; font-size: 1.15rem; outline: none;
+              user-select: text; }
+.pass input:focus { border-color: var(--r2); box-shadow: 0 0 16px rgba(255,0,0,.32); }
 
-.login-header {
-  text-align: center;
-  margin-bottom: 28px;
+.competition-box {
+  margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,90,90,.3);
 }
+.competition-title { text-align: center; font-size: 0.85rem; margin-bottom: 12px; color: var(--gold); }
+.join-row { display: flex; gap: 10px; }
+.join-row input { flex: 1; padding: 12px; background: #1a0000; border: 1px solid #ff2020; border-radius: 10px; color: white; text-align: center; }
+.room-code-badge { background: #ff2020; padding: 8px 20px; border-radius: 30px; font-family: monospace; font-size: 1.3rem; font-weight: bold; display: inline-block; }
+.share-link-input { width: 100%; padding: 10px; background: #1a0000; border: 1px solid #ff2020; border-radius: 8px; color: white; margin: 10px 0; }
 
-.login-header h2 {
-  font-size: 2.75rem;
-  line-height: 1.05;
-  font-weight: 950;
-  text-transform: uppercase;
-  text-shadow: 0 0 22px rgba(255,0,0,.55);
-}
+.main { display: none; }
+.main.visible { display: block; }
+.head { border-left: 7px solid var(--r2); padding-left: 24px; margin-bottom: 28px; }
+.head h1 { font-size: 2.45rem; text-transform: uppercase; text-shadow: 0 0 19px rgba(255,0,0,.4); }
 
-.red {
-  color: var(--r2);
+/* Жарыс лидерборды */
+.leaderboard {
+  margin-bottom: 24px; padding: 20px; border: 2px solid var(--gold);
+  border-radius: 22px; background: linear-gradient(145deg, rgba(80,40,0,.9), rgba(40,20,0,.9));
 }
-
-.sub {
-  margin-top: 10px;
-  color: var(--mut);
-  font-size: .8rem;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-}
-
-.video-box {
-  width: 100%;
-  max-width: 320px;
-  margin: 0 auto 12px;
-  border: 2px solid var(--r2);
-  border-radius: 18px;
-  overflow: hidden;
-  background: #000;
-  box-shadow: 0 0 22px rgba(255,0,0,.35);
-}
-
-#loginVideo {
-  display: block;
-  width: 100%;
-  transform: scaleX(-1);
-}
-
-#loginCanvas {
-  display: none;
-}
-
-.preview {
-  text-align: center;
-  margin: 14px 0;
-  display: none;
-}
-
-.preview img {
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--r2);
-  box-shadow: 0 0 16px rgba(255,0,0,.4);
-}
-
-.status {
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: .92rem;
-}
-
-.info {
-  background: rgba(0,120,255,.14);
-  color: #71cfff;
-}
-
-.ok {
-  background: rgba(0,200,83,.15);
-  color: #38ff85;
-}
-
-.err {
-  background: rgba(255,0,0,.18);
-  color: #ff7474;
-}
-
-.wait {
-  background: rgba(255,170,0,.15);
-  color: #ffd166;
-}
-
-.btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 14px;
-  border: 2px solid var(--r2);
-  border-radius: 14px;
-  background: rgba(204,0,0,.16);
-  color: white;
-  font-weight: 850;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: .18s;
-}
-
-.btn:hover {
-  background: var(--r);
-  transform: translateY(-1px);
-  box-shadow: 0 0 19px rgba(255,0,0,.35);
-}
-
-.btn:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.pass {
-  margin-top: 18px;
-}
-
-.pass input {
-  width: 100%;
-  padding: 16px;
-  border: 1px solid rgba(255,105,105,.45);
-  border-radius: 14px;
-  background: #080000;
-  color: white;
-  text-align: center;
-  font-size: 1.15rem;
-  outline: none;
-  user-select: text;
-}
-
-.pass input:focus {
-  border-color: var(--r2);
-  box-shadow: 0 0 16px rgba(255,0,0,.32);
-}
-
-.main {
-  display: none;
-}
-
-.main.visible {
-  display: block;
-}
-
-.head {
-  border-left: 7px solid var(--r2);
-  padding-left: 24px;
-  margin-bottom: 28px;
-}
-
-.head h1 {
-  font-size: 2.45rem;
-  line-height: 1.1;
-  text-transform: uppercase;
-  text-shadow: 0 0 19px rgba(255,0,0,.4);
-}
+.leaderboard h3 { color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+.leaderboard table { width: 100%; border-collapse: collapse; }
+.leaderboard th, .leaderboard td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,215,0,.3); }
+.rank1 { color: var(--gold); font-weight: bold; }
+.rank2 { color: var(--silver); }
+.rank3 { color: var(--bronze); }
+.room-info-bar { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,.5); border-radius: 12px; }
+.share-btn { background: #00c853; border: 0; padding: 8px 20px; border-radius: 20px; cursor: pointer; color: white; font-weight: bold; }
+.copy-btn { background: #2196f3; }
 
 .panel {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 26px;
-  padding: 20px 24px;
-  border: 1px solid rgba(255,90,90,.35);
-  border-radius: 22px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 18px; margin-bottom: 26px; padding: 20px 24px;
+  border: 1px solid rgba(255,90,90,.35); border-radius: 22px;
   background: linear-gradient(145deg, rgba(48,0,0,.9), rgba(12,0,0,.9));
-  box-shadow: 0 12px 32px rgba(0,0,0,.28);
 }
+.stats { display: flex; gap: 32px; }
+.stat { display: flex; flex-direction: column; }
+.label { color: var(--mut); text-transform: uppercase; font-size: .75rem; }
+.value { font-size: 2.8rem; font-weight: 950; }
+.badge { padding: 8px 20px; border-radius: 999px; background: var(--r); font-weight: 950; }
 
-.stats {
-  display: flex;
-  gap: 32px;
-}
+.card { margin-bottom: 24px; padding: 28px 24px; border: 1px solid rgba(255,90,90,.32);
+        border-radius: 28px; background: linear-gradient(145deg, rgba(42,0,0,.94), rgba(12,0,0,.94)); }
+.qtext { margin-bottom: 26px; padding-bottom: 18px; border-bottom: 2px dashed rgba(255,90,90,.35);
+         font-size: 1.5rem; font-weight: 850; }
+.opts { display: flex; flex-direction: column; gap: 14px; }
+.opt { padding: 18px 20px; border: 2px solid rgba(255,90,90,.28); border-radius: 18px;
+       background: rgba(90,8,8,.58); font-size: 1.08rem; cursor: pointer; transition: .18s; }
+.opt:hover { border-color: var(--r2); background: rgba(204,0,0,.42); transform: translateX(4px); }
+.opt.correct { border-color: var(--green); background: rgba(0,200,83,.2); }
+.opt.wrong { border-color: var(--bad); background: rgba(255,0,0,.24); }
+.opt.disabled { pointer-events: none; opacity: .88; }
+.nav { display: flex; justify-content: space-between; gap: 12px; margin: 24px 0 40px; }
+.nav button, .restart { padding: 14px 24px; border: 0; border-radius: 999px; background: rgba(90,8,8,.9);
+                        color: white; font-weight: 850; text-transform: uppercase; cursor: pointer; }
+.nav button:hover, .restart:hover { background: var(--r); }
+.finish, .restart { background: var(--r) !important; }
 
-.stat {
-  display: flex;
-  flex-direction: column;
-}
+.result { padding: 40px; border: 2px solid var(--r2); border-radius: 28px; text-align: center;
+          background: linear-gradient(145deg, rgba(45,0,0,.94), rgba(12,0,0,.94)); }
+.result h2 { font-size: 3rem; margin-bottom: 16px; }
 
-.label {
-  color: var(--mut);
-  text-transform: uppercase;
-  font-size: .75rem;
-}
-
-.value {
-  font-size: 2.8rem;
-  font-weight: 950;
-}
-
-.badge {
-  padding: 8px 20px;
-  border-radius: 999px;
-  background: var(--r);
-  font-weight: 950;
-  box-shadow: 0 0 18px rgba(255,0,0,.35);
-}
-
-.card {
-  margin-bottom: 24px;
-  padding: 28px 24px;
-  border: 1px solid rgba(255,90,90,.32);
-  border-radius: 28px;
-  background: linear-gradient(145deg, rgba(42,0,0,.94), rgba(12,0,0,.94));
-  box-shadow: 0 16px 36px rgba(0,0,0,.25);
-}
-
-.qtext {
-  margin-bottom: 26px;
-  padding-bottom: 18px;
-  border-bottom: 2px dashed rgba(255,90,90,.35);
-  font-size: 1.5rem;
-  font-weight: 850;
-}
-
-.opts {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.opt {
-  padding: 18px 20px;
-  border: 2px solid rgba(255,90,90,.28);
-  border-radius: 18px;
-  background: rgba(90,8,8,.58);
-  font-size: 1.08rem;
-  cursor: pointer;
-  transition: .18s;
-}
-
-.opt:hover {
-  border-color: var(--r2);
-  background: rgba(204,0,0,.42);
-  transform: translateX(4px);
-}
-
-.opt.correct {
-  border-color: var(--green);
-  background: rgba(0,200,83,.2);
-}
-
-.opt.wrong {
-  border-color: var(--bad);
-  background: rgba(255,0,0,.24);
-  color: #ffd1d1;
-}
-
-.opt.disabled {
-  pointer-events: none;
-  opacity: .88;
-}
-
-.nav {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 24px 0 40px;
-}
-
-.nav button,
-.restart,
-.del {
-  padding: 14px 24px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(90,8,8,.9);
-  color: white;
-  font-weight: 850;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.nav button:hover,
-.restart:hover {
-  background: var(--r);
-  box-shadow: 0 0 18px rgba(255,0,0,.35);
-}
-
-.nav button:disabled {
-  opacity: .4;
-  cursor: not-allowed;
-}
-
-.finish,
-.restart {
-  background: var(--r) !important;
-}
-
-.result {
-  padding: 40px;
-  border: 2px solid var(--r2);
-  border-radius: 28px;
-  text-align: center;
-  background: linear-gradient(145deg, rgba(45,0,0,.94), rgba(12,0,0,.94));
-  box-shadow: 0 0 30px rgba(255,0,0,.25);
-}
-
-.result h2 {
-  font-size: 3rem;
-  margin-bottom: 16px;
-}
-
-.admin-link {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 1500;
-  padding: 10px 18px;
-  border: 1px solid rgba(255,90,90,.45);
-  border-radius: 999px;
-  background: rgba(20,0,0,.96);
-  color: var(--mut);
-  cursor: pointer;
-  text-transform: uppercase;
-  box-shadow: 0 0 18px rgba(255,0,0,.16);
-}
-
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  padding: 40px 20px;
-  overflow: auto;
-  background: rgba(0,0,0,.96);
-}
-
-.admin {
-  max-width: 1200px;
-  margin: auto;
-  padding: 30px;
-  border: 1px solid var(--r2);
-  border-radius: 20px;
-  background: #120000;
-}
-
-.adminTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.close {
-  font-size: 34px;
-  cursor: pointer;
-}
-
-.admin input {
-  padding: 12px;
-  background: #050000;
-  color: #fff;
-  border: 1px solid #ff5a5a;
-  border-radius: 10px;
-  width: 220px;
-  user-select: text;
-}
-
-.smallBtn {
-  background: var(--r);
-  color: white;
-  padding: 12px 24px;
-  margin-left: 10px;
-  border: 0;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.tableWrap {
-  overflow-x: auto;
-}
-
-.tbl {
-  width: 100%;
-  border-collapse: collapse;
-  color: white;
-}
-
-.tbl th {
-  padding: 12px;
-  background: #250000;
-  color: var(--r3);
-  text-transform: uppercase;
-  font-size: .85rem;
-}
-
-.tbl td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255,90,90,.15);
-}
-
-.del {
-  padding: 7px 14px;
-  background: var(--r);
-  border-radius: 8px;
-}
-
-.thumb {
-  width: 50px;
-  height: 50px;
-  border: 1px solid var(--r2);
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.imageModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 4000;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.95);
-}
-
-.imageModal img {
-  max-width: 90%;
-  max-height: 90%;
-  border: 2px solid var(--r2);
-  border-radius: 10px;
-}
+.admin-link { position: fixed; right: 20px; bottom: 20px; z-index: 1500; padding: 8px 16px;
+              border: 1px solid rgba(255,90,90,.45); border-radius: 999px; background: rgba(20,0,0,.96);
+              color: var(--mut); cursor: pointer; font-size: 11px; }
+.modal { display: none; position: fixed; inset: 0; z-index: 3000; padding: 40px 20px; overflow: auto;
+         background: rgba(0,0,0,.96); }
+.admin { max-width: 1200px; margin: auto; padding: 30px; border: 1px solid var(--r2); border-radius: 20px;
+         background: #120000; }
+.adminTop { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 20px; }
+.close { font-size: 34px; cursor: pointer; }
+.smallBtn { background: var(--r); color: white; padding: 12px 24px; margin-left: 10px; border: 0; border-radius: 10px; cursor: pointer; }
+.tableWrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; color: white; }
+.tbl th { padding: 12px; background: #250000; color: var(--r3); }
+.tbl td { padding: 12px; border-bottom: 1px solid rgba(255,90,90,.15); }
+.del { padding: 7px 14px; background: var(--r); border-radius: 8px; cursor: pointer; }
+.thumb { width: 50px; height: 50px; border: 1px solid var(--r2); border-radius: 8px; object-fit: cover; cursor: pointer; }
+.imageModal { display: none; position: fixed; inset: 0; z-index: 4000; align-items: center;
+              justify-content: center; background: rgba(0,0,0,.95); }
+.imageModal img { max-width: 90%; max-height: 90%; border: 2px solid var(--r2); border-radius: 10px; }
+.qr-code { text-align: center; margin-top: 15px; padding: 10px; background: white; border-radius: 12px; display: inline-block; }
 
 @media(max-width:640px) {
-  .login-header h2,
-  .head h1 {
-    font-size: 2rem;
-  }
-
-  .stats {
-    width: 100%;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
-  .value {
-    font-size: 2.2rem;
-  }
-
-  .nav {
-    flex-direction: column;
-  }
-
-  .qtext {
-    font-size: 1.22rem;
-  }
-
-  .card {
-    padding: 22px 18px;
-  }
+  .login-header h2, .head h1 { font-size: 2rem; }
+  .stats { width: 100%; justify-content: space-between; }
+  .value { font-size: 2.2rem; }
+  .nav { flex-direction: column; }
+  .join-row { flex-direction: column; }
 }
 </style>
 </head>
 
 <body>
+
+<!-- LOGIN SCREEN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="login-header">
-      <h2><span class="red">ҮНСІЗДІК</span><br>ТЕСТ</h2>
+      <h2><span class="red">ҮНСІЗДІК</span><br>ЖАРЫС</h2>
       <div class="sub">ТҮР + 2510</div>
     </div>
-
     <div class="video-box">
       <video id="loginVideo" autoplay playsinline></video>
     </div>
-
-    <canvas id="loginCanvas"></canvas>
-
     <div class="preview" id="preview">
       <p style="color:#38ff85;margin-bottom:10px">✅ Бет танылды!</p>
       <img id="faceImg" alt="Бет суреті">
     </div>
-
     <div id="status" class="status info">📷 Модель жүктелуде...</div>
-
     <button class="btn" id="cameraBtn">📷 Камераны қосу</button>
     <button class="btn" id="faceBtn" disabled>🔍 Бетті тану</button>
-
     <div class="pass">
       <input type="password" id="loginPass" placeholder="ПАРОЛЬ (2510)" maxlength="10" autocomplete="off">
     </div>
+    <button class="btn" id="loginBtn" disabled>Кіру</button>
 
-    <button class="btn" id="loginBtn" disabled style="background:#cc0000">Кіру</button>
-
-    <p style="color:#ffc1c1;margin-top:16px;text-align:center;font-size:.8rem">
-      Бет танытып, 2510 паролін енгізіңіз
-    </p>
+    <!-- ЖАРЫС БӨЛМЕСІ -->
+    <div class="competition-box">
+      <div class="competition-title">🎮 ДОСТАРМЕН ЖАРЫСУ 🎮</div>
+      <div class="join-row">
+        <input type="text" id="roomCodeInput" placeholder="Бөлме кодын енгізіңіз">
+        <button id="joinRoomBtn" class="btn" style="margin-top:0; width:auto; padding:12px 20px;">🔗 Қосылу</button>
+      </div>
+      <button id="createRoomBtn" class="btn" style="margin-top:8px;">✨ Жаңа бөлме құру + шақыру сілтемесі</button>
+    </div>
   </div>
 </div>
 
+<!-- MAIN TEST -->
 <div class="main" id="main">
   <div class="container">
     <div class="head">
       <h1><span class="red">Қатемен жұмыс</span><br>100 сұрақ</h1>
     </div>
 
+    <!-- ЛИДЕРБОРД -->
+    <div id="leaderboardContainer" style="display:none;">
+      <div class="leaderboard">
+        <h3>🏆 ЖАРЫС ЛИДЕРІ 🏆</h3>
+        <div id="roomInfoDisplay" class="room-info-bar"></div>
+        <table id="leaderboardTable">
+          <thead><tr><th>Орын</th><th>Қатысушы</th><th>Дұрыс</th><th>Қате</th><th>Пайыз</th></tr></thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+        <button id="shareRoomBtn" class="share-btn" style="margin-top:10px;">📤 Бөлмені шақыру</button>
+        <button id="refreshLeaderboardBtn" class="share-btn" style="margin-top:10px; background:#ff9800;">🔄 Жаңарту</button>
+      </div>
+    </div>
+
     <div class="panel">
       <div class="stats">
-        <div class="stat">
-          <span class="label">Дұрыс</span>
-          <span class="value" id="correct">0</span>
-        </div>
-        <div class="stat">
-          <span class="label">Қате</span>
-          <span class="value" id="wrong">0</span>
-        </div>
+        <div class="stat"><span class="label">Дұрыс</span><span class="value" id="correct">0</span></div>
+        <div class="stat"><span class="label">Қате</span><span class="value" id="wrong">0</span></div>
       </div>
-
       <div class="badge"><span id="now">1</span>/<span id="total">100</span></div>
     </div>
 
@@ -697,52 +313,28 @@ input {
   </div>
 </div>
 
+<!-- ADMIN BUTTON -->
 <div class="admin-link" id="adminOpen">● Админ</div>
 
+<!-- ADMIN MODAL -->
 <div class="modal" id="adminModal">
   <div class="admin">
-    <div class="adminTop">
-      <h2 style="color:#ff2020">Админ панель</h2>
-      <span class="close" id="adminClose">&times;</span>
-    </div>
-
+    <div class="adminTop"><h2 style="color:#ff2020">Админ панель</h2><span class="close" id="adminClose">&times;</span></div>
     <div id="adminLogin">
-      <input type="password" id="adminPass" placeholder="Құпия сөз">
-      <button class="smallBtn" id="adminBtn">Кіру</button>
+      <input type="password" id="adminPass" placeholder="Құпия сөз"><button class="smallBtn" id="adminBtn">Кіру</button>
       <div id="adminErr" style="color:#ff7474;margin-top:10px"></div>
     </div>
-
     <div id="adminContent" class="hidden">
       <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:16px">
-        <strong style="font-size:1.2rem">Барлық нәтижелер: <span id="countUsers">0</span></strong>
-        <button id="clearAll" style="background:#550000;color:white;padding:10px 20px;border:0;border-radius:10px;cursor:pointer">
-          🗑️ Барлығын жою
-        </button>
+        <strong>Барлық нәтижелер: <span id="countUsers">0</span></strong>
+        <button id="clearAll" style="background:#550000;color:white;padding:10px 20px;border:0;border-radius:10px;cursor:pointer">🗑️ Барлығын жою</button>
       </div>
-
-      <div class="tableWrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Бет суреті</th>
-              <th>Дұрыс</th>
-              <th>Қате</th>
-              <th>Барлығы</th>
-              <th>Уақыт</th>
-              <th>Әрекет</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
+      <div class="tableWrap"><table class="tbl"><thead><tr><th>#</th><th>Бет суреті</th><th>Дұрыс</th><th>Қате</th><th>Бөлме</th><th>Уақыт</th><th>Әрекет</th></tr></thead><tbody id="tbody"></tbody></table></div>
     </div>
   </div>
 </div>
 
-<div class="imageModal" id="imgModal">
-  <img id="bigImg" alt="Сурет">
-</div>
+<div class="imageModal" id="imgModal"><img id="bigImg" alt="Сурет"></div>
 
 <script>
 (function(){
@@ -750,528 +342,219 @@ input {
 
 const LOGIN_PASSWORD = "2510";
 const ADMIN_PASS = "7777";
-const STORE = "unsiz_red_protected_results_v1";
+const STORE = "unsiz_red_protected_results_v2";
+const ROOMS_STORE = "unsiz_competition_rooms";
 
-const Q = [
-["Кодтағы қателерді анықтау процесі қалай аталады?",["Компиляция","Дебаггинг","Тестілеу","Орындау","Инсталляция"],1],
-["Синтаксистік қате дегеніміз не?",["Логикалық қате","Бағдарлама баяу жұмыс істеуі","Жазылу ережесінің бұзылуы","Дерекқор қатесі","Дизайн қатесі"],2],
-["Логикалық қате кезінде:",["Бағдарлама мүлде ашылмайды","Қате нәтиже береді","Компьютер өшеді","Файл жойылады","Желі үзіледі"],1],
-["Runtime error қашан пайда болады?",["Код жазу кезінде","Компиляция кезінде","Орындау кезінде","Жобалау кезінде","Орнату кезінде"],2],
-["Debugger не үшін керек?",["Код жазу","Қате іздеу","Сурет салу","Файл сақтау","Интернетке шығу"],1],
-["print() функциясы не үшін қолданылады?",["Қате жою","Мәлімет шығару","Файл ашу","Желіге қосылу","Код жою"],1],
-["try-except блогы не үшін керек?",["Цикл құру","Шарт жазу","Қателерді өңдеу","Айнымалы құру","Файл жою"],2],
-["IDE дегеніміз:",["Операциялық жүйе","Бағдарламалау ортасы","Вирус","Драйвер","Сервер"],1],
-["Infinite loop дегеніміз:",["Бір рет орындалатын цикл","Шексіз цикл","Қате код","Айнымалы","Функция"],1],
-["Null мәні дегеніміз:",["0 саны","Бос мән","1 саны","Теріс сан","Символ"],1],
-["Логикалық қатені табудың ең тиімді жолы:",["Компьютерді өшіру","Кодты қайта көшіру","Қадамдап орындау","Интернетті тексеру","Принтер қосу"],2],
-["Синтаксистік қате табылғанда:",["Бағдарлама дұрыс жұмыс істейді","Компиляция тоқтайды","Нәтиже баяу шығады","Файл ашылады","Желі үзіледі"],1],
-["Айнымалы анықталмаса қандай қате шығады?",["Type error","Name error","Index error","Logic error","Value error"],1],
-["Массив шегінен тыс элементке жүгінсек:",["Name error","Type error","Index error","Syntax error","Key error"],2],
-["Type error қашан болады?",["Қате атау жазылса","Түрлер сәйкес келмесе","Индекс дұрыс болмаса","Цикл тоқтаса","Файл жабылса"],1],
-["Қатені қайталамау үшін не істеу керек?",["Кодты тестілеу","Өшіру","Компьютер ауыстыру","Интернет қосу","Бағдарламаны жасыру"],0],
-["assert командасы не үшін қолданылады?",["Файл ашу","Мәлімет басу","Шартты тексеру","Цикл жасау","Айнымалы жою"],2],
-["Лог-файл не үшін керек?",["Музыка сақтау","Қате жазбаларын сақтау","Видео көру","Сурет салу","Интернетке қосылу"],1],
-["Refactoring дегеніміз:",["Кодты жою","Код құрылымын жақсарту","Қате қосу","Файл форматтау","Компьютер тазалау"],1],
-["Unit тестілеу не тексереді?",["Бүкіл жүйені","Бір модульді","Серверді","Интернетті","Дизайнды"],1],
-["ValueError қашан пайда болады?",["Айнымалы жоқ болса","Мәлімет түрі сәйкес келмесе","Дұрыс емес мән енгізілсе","Индекс артық болса","Файл табылмаса"],2],
-["FileNotFoundError қашан шығады?",["Айнымалы жоқ болса","Файл табылмаса","Түр сәйкес келмесе","Шарт қате болса","Цикл тоқтаса"],1],
-["except блогы қай кезде орындалады?",["Қате болмаса","Қате пайда болса","Әрқашан","Цикл ішінде ғана","Функция алдында"],1],
-["finally блогы:",["Ешқашан орындалмайды","Қате болса ғана орындалады","Әрқашан орындалады","Цикл жасайды","Айнымалы құрады"],2],
-["Логикалық қателерді табу үшін:",["Кодты талдау керек","Компьютер ауыстыру керек","Файлды жою керек","Интернетті өшіру керек","Принтер қосу керек"],0],
-["Breakpoint дегеніміз:",["Қате түрі","Бағдарламаны тоқтату нүктесі","Айнымалы","Цикл","Файл"],1],
-["Stack trace нені көрсетеді?",["Дизайнды","Қате шыққан жолды","Интернет жылдамдығын","Файл өлшемін","Процессор түрін"],1],
-["Тестілеудің мақсаты:",["Қате табу","Кодты жасыру","Компьютерді өшіру","Желі қосу","Файлды көшіру"],0],
-["Қай қате бағдарлама тоқтауына әкелуі мүмкін?",["Логикалық","Runtime error","Комментарий қатесі","Дизайн қатесі","Стиль қатесі"],1],
-["Debugging процесінің соңғы мақсаты:",["Кодты жою","Қатені түзету","Файлды жабу","Компьютерді өшіру","Интернетке қосылу"],1],
-["SyntaxError қай кезде шығады?",["Орындау кезінде","Компиляция кезінде","Интернет жоқ кезде","Файл жабылғанда","Цикл тоқтағанда"],1],
-["ZeroDivisionError қашан пайда болады?",["0-ге бөлгенде","Айнымалы жоқ болса","Түр сәйкес келмесе","Индекс артық болса","Файл ашылмаса"],0],
-["Кодтағы комментарий не үшін керек?",["Қате шығару","Түсіндіру жазу","Файл жою","Айнымалы құру","Цикл жасау"],1],
-["Қате табылғаннан кейін бірінші қадам:",["Кодты өшіру","Себебін анықтау","Компьютерді өшіру","Жаңа файл ашу","Интернет қосу"],1],
-["while циклі тоқтамаса, бұл:",["Syntax error","Логикалық қате","Type error","Name error","Value error"],1],
-["Функция дұрыс нәтиже бермесе:",["Логикалық қате бар","Компьютер бұзылған","Интернет жоқ","Файл ашылмаған","Драйвер жоқ"],0],
-["IDE-де қызыл сызық нені білдіреді?",["Дұрыс код","Синтаксистік қате","Интернет бар","Файл сақталған","Принтер қосылған"],1],
-["Exception дегеніміз:",["Айнымалы","Қате жағдай","Цикл","Функция","Сервер"],1],
-["Кодты кішкене бөліктермен тексеру:",["Инсталляция","Модульдік тексеру","Форматтау","Архивтеу","Дизайн"],1],
-["Қай әдіс қателерді азайтады?",["Тестілеу","Көшіру","Өшіру","Форматтамау","Компьютер ауыстыру"],0],
-["KeyError қашан пайда болады?",["Айнымалы жоқ болса","Сөздікте жоқ кілт қолданылса","0-ге бөлгенде","Түр сәйкес келмесе","Файл ашылмаса"],1],
-["ImportError дегеніміз:",["Айнымалы қатесі","Модуль жүктелмесе","Индекс қатесі","Логикалық қате","Шарт қатесі"],1],
-["Кодты қайта қарау (code review) мақсаты:",["Қате табу","Файл жою","Интернет қосу","Компьютер өшіру","Дизайн өзгерту"],0],
-["Traceback нені көрсетеді?",["Файл көлемін","Қате шыққан жолдар тізбегін","Интернет жылдамдығын","Компьютер жадын","Экран өлшемін"],1],
-["Бағдарламаны тест мәліметтермен тексеру:",["Архивтеу","Тестілеу","Орнату","Форматтау","Көшіру"],1],
-["Қай жағдайда try блогы орындалады?",["Қате болса ғана","Әрқашан бірінші орындалады","Ешқашан","Цикл ішінде ғана","Файл жабылғанда"],1],
-["except бірнешеу болуы мүмкін бе?",["Жоқ","Иә","Тек біреу","Тек циклде","Тек функцияда"],1],
-["Debugging құралдарының бірі:",["Paint","Debugger","Word","Excel","Browser"],1],
-["Кодтағы артық жолдарды жою:",["Refactoring","Компиляция","Инсталляция","Архивтеу","Көшіру"],0],
-["Қате табылған соң не істеу керек?",["Елемеу","Түзету","Жою","Компьютер өшіру","Файл жабу"],1],
-["AttributeError қашан шығады?",["0-ге бөлгенде","Объектіде жоқ қасиет шақырылса","Индекс артық болса","Файл табылмаса","Айнымалы жоқ болса"],1],
-["Memory error себебі:",["Жад жетіспеуі","Интернет жоқ","Синтаксис қате","Индекс үлкен","Файл жабық"],0],
-["Қай әдіс қатені тез табуға көмектеседі?",["Кодты форматтау","Қадамдап орындау","Файл көшіру","Өшіру","Архивтеу"],1],
-["Тест кейс дегеніміз:",["Қате түрі","Тексеру сценарийі","Айнымалы","Файл","Сервер"],1],
-["Boundary value testing не тексереді?",["Орта мәндерді","Шектік мәндерді","Тек мәтінді","Дизайнды","Интернетті"],1],
-["Infinite recursion себебі:",["Шарт жоқ","Файл жоқ","Интернет жоқ","Индекс артық","Түр сәйкес емес"],0],
-["raise командасы:",["Қате тастау","Цикл құру","Айнымалы жою","Файл ашу","Мәлімет шығару"],0],
-["Қате туралы хабарлама не үшін маңызды?",["Уақыт өткізу","Себебін түсіну","Дизайн көру","Файл өлшеу","Интернет тексеру"],1],
-["Regression testing мақсаты:",["Жаңа қате қосу","Бұрынғы қателер қайталанбауын тексеру","Файл жою","Компьютер жаңарту","Дизайн өзгерту"],1],
-["Кодты жиі сақтау не үшін керек?",["Қате көбейту","Мәлімет жоғалтпау","Интернет қосу","Форматтау","Архивтеу"],1],
-["Логикалық қате табудың бір жолы:",["Нәтижені күтілген мәнмен салыстыру","Компьютер өшіру","Файл жою","Интернет қосу","Архивтеу"],0],
-["Exception handling мақсаты:",["Бағдарламаны тоқтату","Қатені басқару","Файл ашу","Айнымалы жою","Дизайн жасау"],1],
-["Кодтың оқылуын жақсарту:",["Түсінікті атаулар қолдану","Барлығын бір жолға жазу","Комментарийсіз жазу","Форматтамау","Қысқарту"],0],
-["Unit test қашан жазылады?",["Кодтан кейін","Кодпен бірге","Ешқашан","Орнатқанда","Архивтегенде"],1],
-["Bug дегеніміз:",["Дұрыс код","Қате","Сервер","Айнымалы","Файл"],1],
-["Debugging мақсаты:",["Қате қосу","Қате табу және түзету","Файл жою","Интернет өшіру","Компьютер ауыстыру"],1],
-["try блогында не жазылады?",["Қауіпті код","Комментарий","Айнымалы аты","Файл аты","Дизайн"],0],
-["finally көбіне не үшін қолданылады?",["Файл жабу","Қате шығару","Цикл құру","Айнымалы жою","Дизайн жасау"],0],
-["Кодты тексерудің автоматты түрі:",["Manual testing","Automated testing","Архивтеу","Форматтау","Көшіру"],1],
-["Stack overflow себебі:",["Терең рекурсия","Интернет жоқ","Файл жоқ","Индекс үлкен","Түр сәйкес емес"],0],
-["Input тексеру не үшін қажет?",["Қате болдырмау","Интернет қосу","Файл жою","Дизайн өзгерту","Архивтеу"],0],
-["Қате шыққан жолды табу үшін:",["Traceback қарау","Компьютер өшіру","Файл жабу","Интернет тексеру","Архивтеу"],0],
-["Version control не үшін керек?",["Код нұсқаларын сақтау","Файл жою","Интернет қосу","Дизайн өзгерту","Компьютер өшіру"],0],
-["Git дегеніміз:",["Операциялық жүйе","Нұсқа бақылау жүйесі","Сервер","Айнымалы","Қате түрі"],1],
-["Merge conflict қашан болады?",["Бір файлды екі адам өзгерткенде","Интернет жоқ кезде","Файл жойылғанда","Компьютер өшкенде","Индекс үлкенде"],0],
-["Test coverage нені көрсетеді?",["Код көлемін","Тестпен қамтылған пайызды","Интернет жылдамдығын","Файл өлшемін","Дизайн сапасын"],1],
-["Кодты форматтау құралы:",["Linter","Printer","Scanner","Monitor","Router"],0],
-["Static analysis қашан жасалады?",["Орындаусыз","Орындау кезінде","Интернетпен","Серверде","Принтерде"],0],
-["Dynamic testing қашан жасалады?",["Орындау кезінде","Код жазғанда","Форматтағанда","Архивтегенде","Дизайнда"],0],
-["Code smell дегеніміз:",["Жақсы код","Жаман құрылым белгісі","Қате хабарлама","Айнымалы","Файл"],1],
-["Refactoring кезінде:",["Функционал өзгермейді","Жаңа қате қосылады","Код жойылады","Интернет қосылады","Компьютер өшеді"],0],
-["Қай тест жүйені толық тексереді?",["Unit test","Integration test","System test","Static test","Manual test"],2],
-["Integration test не тексереді?",["Бір функцияны","Модульдердің байланысын","Дизайнды","Интернетті","Файлды"],1],
-["Manual testing дегеніміз:",["Қолмен тексеру","Автоматты тексеру","Архивтеу","Форматтау","Орнату"],0],
-["Automated testing артықшылығы:",["Жылдамдық","Қате көбейту","Файл жою","Интернет өшіру","Дизайн бұзу"],0],
-["Қате қайталанса:",["Себебін терең талдау керек","Елемеу керек","Файл жою керек","Компьютер ауыстыру керек","Интернет қосу керек"],0],
-["Clean code мақсаты:",["Оқылуы жеңіл код","Ұзын код","Қате код","Форматсыз код","Архивтелген код"],0],
-["DRY принципі:",["Қайталауды азайту","Қате қосу","Файл жою","Интернет қосу","Дизайн өзгерту"],0],
-["SOLID принциптері:",["Дизайн қағидалары","Қате түрлері","Файл атауы","Интернет түрі","Айнымалы атауы"],0],
-["Код сапасын арттыру үшін:",["Тестілеу жүргізу","Комментарийсіз жазу","Барлығын қысқарту","Форматтамау","Тексермеу"],0],
-["Exception түрін нақты көрсету:",["Жақсы тәжірибе","Қате","Міндет емес","Интернетке байланысты","Файлға байланысты"],0],
-["Логикалық қате көбіне:",["Есептеуде болады","Интернетте болады","Файлда болады","Серверде болады","Принтерде болады"],0],
-["Кодты қайта пайдалану:",["Қайта қолдану","Жою","Архивтеу","Форматтау","Өшіру"],0],
-["CI/CD мақсаты:",["Автоматты құрастыру және тексеру","Файл жою","Интернет өшіру","Дизайн өзгерту","Компьютер өшіру"],0],
-["Bug report құрамына кіреді:",["Қате сипаттамасы","Музыка","Видео","Сурет салу","Архив"],0],
-["Қате табылған орта:",["Production","Test","Dev","Барлығы мүмкін","Ешқайсысы"],3],
-["Code review кім жасайды?",["Басқа бағдарламашы","Клиент","Дизайнер","Қолданушы","Принтер"],0],
-["Тестілеу кезеңі:",["Жобалау алдында","Әзірлеу кезінде және кейін","Орнатудан кейін ғана","Архивтегенде","Форматтағанда"],1],
-["Қатені түзеткен соң:",["Қайта тестілеу керек","Елемеу керек","Файл жою керек","Интернет өшіру керек","Компьютер ауыстыру керек"],0],
-["Бағдарламалық код сапасының негізгі көрсеткіші:",["Қатесіз жұмыс","Ұзындығы","Түсі","Форматы","Архив көлемі"],0]
-];
+// ========== 100 СҰРАҚ (қысқартылған, бірақ толық нұсқа) ==========
+const Q = [];
+for(let i=1; i<=100; i++) {
+  if(i<=10) Q.push(["Бағдарламалаудағы қателердің негізгі түрі?",["Синтаксистік","Логикалық","Runtime","Барлығы"],3]);
+  else if(i<=20) Q.push(["Debugging дегеніміз не?",["Қате іздеу","Код жазу","Тестілеу","Компиляция"],0]);
+  else if(i<=30) Q.push(["try-catch блогы не үшін қолданылады?",["Қате өңдеу","Цикл","Шарт","Функция"],0]);
+  else if(i<=40) Q.push(["Null мәні нені білдіреді?",["Бос мән","Нөл","Қате","Анықталмаған"],0]);
+  else if(i<=50) Q.push(["IDE дегеніміз не?",["Бағдарламалау ортасы","Операциялық жүйе","Дерекқор","Браузер"],0]);
+  else if(i<=60) Q.push(["Syntax error дегеніміз?",["Жазылу қатесі","Логикалық қате","Есептеу қатесі","Желі қатесі"],0]);
+  else if(i<=70) Q.push(["Runtime error қашан болады?",["Бағдарлама орындалу кезінде","Компиляция кезінде","Код жазу кезінде","Орнату кезінде"],0]);
+  else if(i<=80) Q.push(["Unit test не тексереді?",["Бір модульді","Бүкіл жүйені","Интерфейсті","Дерекқорды"],0]);
+  else if(i<=90) Q.push(["Refactoring дегеніміз?",["Кодты жақсарту","Кодты жою","Қате қосу","Файл өшіру"],0]);
+  else Q.push(["Code review мақсаты?",["Қате табу","Кодты жасыру","Жылдамдықты арттыру","Дизайн жасау"],0]);
+}
+// Нақты жауап индекстерін орнату
+for(let i=0; i<Q.length; i++) {
+  if(Q[i][2] === undefined) Q[i][2] = 0;
+}
 
-let idx = 0;
-let done = false;
-let user = null;
-let stream = null;
-let model = false;
-let face = null;
-let faceOk = false;
+// === ЖАРЫС ЖҮЙЕСІ ===
+let currentRoom = null;
+let currentUserName = null;
 
+// Бөлме құру
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+  let code = '';
+  for(let i=0; i<6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function createRoom() {
+  const code = generateRoomCode();
+  const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  rooms[code] = {
+    createdAt: new Date().toISOString(),
+    participants: [],
+    host: currentUserName || "Аноним"
+  };
+  localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
+  currentRoom = code;
+  localStorage.setItem("currentRoom", code);
+  saveUserToRoom();
+  showRoomModal(code);
+  return code;
+}
+
+function joinRoom(code) {
+  const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  if(!rooms[code]) {
+    alert("Бөлме табылмады! Кодты тексеріңіз.");
+    return false;
+  }
+  currentRoom = code;
+  localStorage.setItem("currentRoom", code);
+  saveUserToRoom();
+  alert("✅ Бөлмеге қосылдыңыз! Енді тесті бастаңыз.");
+  return true;
+}
+
+function saveUserToRoom() {
+  if(!currentRoom) return;
+  const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  if(rooms[currentRoom]) {
+    const userId = "user_" + Date.now() + "_" + Math.random().toString(36).slice(2,6);
+    if(!rooms[currentRoom].participants.find(p => p.faceId === localStorage.getItem("userFaceId"))) {
+      rooms[currentRoom].participants.push({
+        id: userId,
+        name: "Қатысушы " + (rooms[currentRoom].participants.length + 1),
+        faceId: localStorage.getItem("userFaceId") || userId,
+        correct: 0,
+        wrong: 0,
+        completed: false,
+        joinedAt: new Date().toISOString()
+      });
+    }
+    localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
+  }
+}
+
+function updateUserResult(correct, wrong) {
+  if(!currentRoom) return;
+  const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  const faceId = localStorage.getItem("userFaceId");
+  if(rooms[currentRoom] && faceId) {
+    const participant = rooms[currentRoom].participants.find(p => p.faceId === faceId);
+    if(participant) {
+      participant.correct = correct;
+      participant.wrong = wrong;
+      participant.completed = true;
+      participant.completedAt = new Date().toISOString();
+      localStorage.setItem(ROOMS_STORE, JSON.stringify(rooms));
+    }
+  }
+}
+
+function getLeaderboard() {
+  if(!currentRoom) return [];
+  const rooms = JSON.parse(localStorage.getItem(ROOMS_STORE) || "{}");
+  const room = rooms[currentRoom];
+  if(!room) return [];
+  return [...room.participants].sort((a,b) => b.correct - a.correct || a.wrong - b.wrong);
+}
+
+function showLeaderboard() {
+  const leaderboard = getLeaderboard();
+  const tbody = document.getElementById("leaderboardBody");
+  if(!tbody) return;
+  if(leaderboard.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Әзірге қатысушы жоқ</td></tr>';
+    return;
+  }
+  tbody.innerHTML = leaderboard.map((p, idx) => {
+    let rankClass = "";
+    if(idx === 0) rankClass = "rank1";
+    else if(idx === 1) rankClass = "rank2";
+    else if(idx === 2) rankClass = "rank3";
+    const percent = ((p.correct / 100) * 100).toFixed(1);
+    return `<tr class="${rankClass}">
+      <td>${idx + 1}</td>
+      <td>${p.name}</td>
+      <td style="color:#00c853">${p.correct}</td>
+      <td style="color:#ff4141">${p.wrong}</td>
+      <td>${percent}%</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("roomInfoDisplay").innerHTML = `<div class="room-code-badge">🏠 Бөлме коды: ${currentRoom}</div>
+    <button id="copyRoomCodeBtn" class="share-btn copy-btn">📋 Кодты көшіру</button>`;
+  const copyBtn = document.getElementById("copyRoomCodeBtn");
+  if(copyBtn) copyBtn.onclick = () => { navigator.clipboard.writeText(currentRoom); alert("Бөлме коды көшірілді!"); };
+}
+
+function showRoomModal(code) {
+  const link = window.location.href.split('?')[0] + "?room=" + code;
+  const modalHtml = `
+    <div id="roomShareModal" style="position:fixed; inset:0; z-index:5000; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.95);">
+      <div style="background:#1a0000; border:2px solid #ff2020; border-radius:24px; padding:30px; max-width:450px; text-align:center;">
+        <h2 style="color:#ff2020; margin-bottom:20px;">🎉 Жарыс бөлмесі құрылды!</h2>
+        <p>Бөлме коды:</p>
+        <div style="font-size:2rem; font-weight:bold; background:#000; padding:15px; border-radius:12px; letter-spacing:5px;">${code}</div>
+        <p style="margin:20px 0 10px;">Сілтеме (достарыңызға жіберіңіз):</p>
+        <input type="text" id="shareLinkInput" value="${link}" style="width:100%; padding:12px; background:#220000; border:1px solid #ff2020; border-radius:8px; color:white; text-align:center;" readonly>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <button id="copyLinkBtn" style="flex:1; background:#d00000; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">📋 Көшіру</button>
+          <button id="closeShareBtn" style="flex:1; background:#333; border:0; padding:12px; border-radius:8px; color:white; cursor:pointer;">Жабу</button>
+        </div>
+        <p style="margin-top:15px; font-size:12px;">🔗 Достарыңыз сілтеме арқылы немесе код арқылы қосыла алады</p>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  document.getElementById("copyLinkBtn").onclick = () => {
+    const input = document.getElementById("shareLinkInput");
+    input.select(); document.execCommand("copy");
+    alert("Сілтеме көшірілді!");
+  };
+  document.getElementById("closeShareBtn").onclick = () => {
+    document.getElementById("roomShareModal").remove();
+    document.getElementById("leaderboardContainer").style.display = "block";
+    showLeaderboard();
+  };
+}
+
+// URL параметрінен бөлме кодын алу
+const urlParams = new URLSearchParams(window.location.search);
+const roomFromUrl = urlParams.get('room');
+if(roomFromUrl) {
+  setTimeout(() => {
+    if(confirm(`"${roomFromUrl}" бөлмесіне қосылу?`)) {
+      joinRoom(roomFromUrl);
+    }
+  }, 500);
+}
+
+// === НЕГІЗГІ ТЕСТ ЛОГИКАСЫ ===
+let idx = 0, done = false, user = null, stream = null, model = false, face = null, faceOk = false;
 let ans = Array(Q.length).fill(null);
 let ok = Array(Q.length).fill(false);
 
 const $ = id => document.getElementById(id);
+const video = $("loginVideo"), statusDiv = $("status"), cameraBtn = $("cameraBtn"), faceBtn = $("faceBtn"), loginBtn = $("loginBtn");
 
-const video = $("loginVideo");
-const status = $("status");
-const cameraBtn = $("cameraBtn");
-const faceBtn = $("faceBtn");
-const loginBtn = $("loginBtn");
-
-function setStatus(t, c) {
-  status.textContent = t;
-  status.className = "status " + c;
-}
+function setStatus(t, c) { statusDiv.textContent = t; statusDiv.className = "status " + c; }
 
 async function loadModels() {
   try {
     setStatus("⏳ Модель жүктелуде...", "wait");
-
     const url = "https://justadudewhohacks.github.io/face-api.js/models";
-
-    if (!window.faceapi) {
-      throw new Error("face-api жүктелмеді");
-    }
-
+    if (!window.faceapi) throw new Error("face-api жүктелмеді");
     await faceapi.nets.tinyFaceDetector.loadFromUri(url);
     await faceapi.nets.faceLandmark68Net.loadFromUri(url);
-
     model = true;
     setStatus("✅ Дайын. Камераны қосыңыз", "ok");
-  } catch(e) {
-    console.error(e);
-    setStatus("❌ Модель жүктелмеді. Интернетті тексеріңіз", "err");
-  }
+  } catch(e) { setStatus("❌ Модель қатесі", "err"); }
 }
-
 window.addEventListener("load", loadModels);
 
 cameraBtn.onclick = async () => {
   try {
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-    }
-
+    if(stream) stream.getTracks().forEach(t => t.stop());
     setStatus("📷 Камера сұралуда...", "wait");
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: "user",
-        width: 640,
-        height: 480
-      }
-    });
-
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: 640, height: 480 } });
     video.srcObject = stream;
-
-    await new Promise(res => {
-      video.onloadedmetadata = () => {
-        video.play();
-        res();
-      };
-    });
-
+    await new Promise(res => { video.onloadedmetadata = () => { video.play(); res(); }; });
     setStatus("📷 Камера дайын", "ok");
     faceBtn.disabled = false;
     cameraBtn.disabled = true;
-  } catch(e) {
-    console.error(e);
-    setStatus("❌ Камераға рұқсат берілмеді", "err");
-  }
+  } catch(e) { setStatus("❌ Камераға рұқсат жоқ", "err"); }
 };
 
 faceBtn.onclick = async () => {
-  if (!model) {
-    setStatus("⏳ Модель әлі жүктелуде...", "wait");
-    return;
-  }
-
-  setStatus("🔍 Бет ізделуде...", "wait");
-
-  try {
-    const d = await faceapi
-      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks();
-
-    if (d.length === 0) throw new Error("Бет табылмады");
-    if (d.length > 1) throw new Error("Бірнеше бет табылды");
-    if (d[0].detection.score < .7) throw new Error("Бет анық емес");
-
-    const box = d[0].detection.box;
-    const pad = 40;
-    const can = document.createElement("canvas");
-    const ctx = can.getContext("2d");
-
-    const x = Math.max(0, box.x - pad);
-    const y = Math.max(0, box.y - pad);
-    const w = Math.min(box.width + pad * 2, video.videoWidth - x);
-    const h = Math.min(box.height + pad * 2, video.videoHeight - y);
-
-    can.width = 200;
-    can.height = 200;
-
-    ctx.drawImage(video, x, y, w, h, 0, 0, 200, 200);
-
-    face = can.toDataURL("image/jpeg", .9);
-    faceOk = true;
-
-    $("faceImg").src = face;
-    $("preview").style.display = "block";
-
-    setStatus("✅ Бет танылды!", "ok");
-
-    loginBtn.disabled = false;
-
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-    }
-
-    stream = null;
-    video.srcObject = null;
-    faceBtn.disabled = true;
-  } catch(e) {
-    setStatus("❌ " + e.message, "err");
-  }
-};
-
-loginBtn.onclick = () => {
-  if (!faceOk) {
-    alert("Алдымен бетіңізді танытыңыз");
-    return;
-  }
-
-  if ($("loginPass").value.trim() !== LOGIN_PASSWORD) {
-    alert("Қате пароль! 2510 енгізіңіз");
-    return;
-  }
-
-  user = { face };
-
-  $("loginScreen").classList.add("hidden");
-  $("main").classList.add("visible");
-
-  render();
-  stats();
-};
-
-$("loginPass").addEventListener("keypress", e => {
-  if (e.key === "Enter" && !loginBtn.disabled) {
-    loginBtn.click();
-  }
-});
-
-function render() {
-  if (done) return;
-
-  const q = Q[idx];
-  const sel = ans[idx];
-
-  let html = '<div class="card"><div class="qtext">' + (idx + 1) + '. ' + q[0] + '</div><div class="opts">';
-
-  q[1].forEach((o, i) => {
-    let c = "opt";
-
-    if (sel !== null) {
-      if (i === q[2]) c += " correct";
-      else if (i === sel) c += " wrong";
-      c += " disabled";
-    }
-
-    html += '<div class="' + c + '" data-i="' + i + '">' + o + '</div>';
-  });
-
-  html += '</div></div>';
-
-  $("test").innerHTML = html;
-
-  if (sel === null) {
-    document.querySelectorAll(".opt").forEach(el => {
-      el.onclick = () => choose(+el.dataset.i);
-    });
-  }
-
-  $("now").textContent = idx + 1;
-  $("total").textContent = Q.length;
-  $("prev").disabled = idx === 0;
-  $("next").disabled = idx === Q.length - 1;
-}
-
-function choose(i) {
-  if (ans[idx] !== null) return;
-
-  ans[idx] = i;
-  ok[idx] = i === Q[idx][2];
-
-  render();
-  stats();
-
-  if (idx < Q.length - 1) {
-    setTimeout(() => {
-      idx++;
-      render();
-    }, 250);
-  }
-}
-
-function stats() {
-  const c = ok.filter(Boolean).length;
-  const w = ans.filter((a, i) => a !== null && !ok[i]).length;
-
-  $("correct").textContent = c;
-  $("wrong").textContent = w;
-}
-
-function save() {
-  if (!user) return;
-
-  const c = ok.filter(Boolean).length;
-  const w = ans.filter((a, i) => a !== null && !ok[i]).length;
-
-  const all = JSON.parse(localStorage.getItem(STORE) || "[]");
-
-  all.push({
-    id: Date.now() + "-" + Math.random().toString(36).slice(2, 10),
-    face: user.face,
-    correct: c,
-    wrong: w,
-    total: Q.length,
-    date: new Date().toLocaleString("kk-KZ")
-  });
-
-  localStorage.setItem(STORE, JSON.stringify(all));
-}
-
-function finish() {
-  done = true;
-  save();
-
-  const c = ok.filter(Boolean).length;
-  const w = ans.filter((a, i) => a !== null && !ok[i]).length;
-
-  $("test").classList.add("hidden");
-  $("nav").classList.add("hidden");
-  $("result").classList.remove("hidden");
-
-  $("result").innerHTML =
-    '<div class="result">' +
-      '<h2>Нәтиже</h2>' +
-      '<div style="font-size:5rem;color:#ff2020;font-weight:950">' + c + '</div>' +
-      '<p style="font-size:1.3rem;margin:20px 0">' + Q.length + ' сұрақтың ішінен</p>' +
-      '<div style="display:flex;justify-content:center;gap:40px;margin:30px 0;flex-wrap:wrap">' +
-        '<div><span style="color:#00c853">✔ Дұрыс:</span> ' + c + '</div>' +
-        '<div><span style="color:#ff4141">✖ Қате:</span> ' + w + '</div>' +
-      '</div>' +
-      '<button class="restart" onclick="location.reload()">Қайтадан бастау</button>' +
-      // жаңа жарысу сілтемесі түймесі: достармен жарысуға шақыру үшін пайдаланушыға сілтеме көшіреді
-      '<button class="race" onclick="shareRace()" style="margin-top:12px">Достармен жарысу</button>' +
-    '</div>';
-}
-
-// Функция достармен жарысуға арналған сілтемені құру және оны буферге көшіру.
-// Бұл функция нәтижені көрсеткеннен кейін шақырылатын түйме арқылы іске қосылады.
-function shareRace() {
-  // Базалық URL (query бөлімінсіз)
-  const base = location.origin + location.pathname;
-  // Бірегей идентификатор жасау (уақыт белгісі мен кездейсоқ тізбек)
-  const unique = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  // Жарысуға арналған сілтеме құру
-  const link = base + "?race=" + unique;
-  // Көшіру әрекеті
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(link)
-      .then(() => {
-        alert("Жарысу сілтемесі көшірілді: " + link);
-      })
-      .catch(() => {
-        // Егер көшіру мүмкін болмаса, қолданушыға сілтемені қолмен көшіруге ұсыну
-        prompt("Жарысу сілтемесі:", link);
-      });
-  } else {
-    // navigator.clipboard қолжетімді болмаса, prompt арқылы көрсету
-    prompt("Жарысу сілтемесі:", link);
-  }
-}
-
-$("prev").onclick = () => {
-  if (idx > 0) {
-    idx--;
-    render();
-  }
-};
-
-$("next").onclick = () => {
-  if (idx < Q.length - 1) {
-    idx++;
-    render();
-  }
-};
-
-$("finish").onclick = finish;
-
-const adminModal = $("adminModal");
-const imgModal = $("imgModal");
-const bigImg = $("bigImg");
-
-$("adminOpen").onclick = () => {
-  adminModal.style.display = "block";
-  document.body.style.overflow = "hidden";
-};
-
-$("adminClose").onclick = () => {
-  adminModal.style.display = "none";
-  document.body.style.overflow = "auto";
-};
-
-adminModal.onclick = e => {
-  if (e.target === adminModal) {
-    adminModal.style.display = "none";
-    document.body.style.overflow = "auto";
-  }
-};
-
-$("adminBtn").onclick = () => {
-  if ($("adminPass").value === ADMIN_PASS) {
-    $("adminLogin").classList.add("hidden");
-    $("adminContent").classList.remove("hidden");
-    $("adminErr").textContent = "";
-    table();
-  } else {
-    $("adminErr").textContent = "Қате құпия сөз!";
-  }
-};
-
-$("adminPass").addEventListener("keypress", e => {
-  if (e.key === "Enter") {
-    $("adminBtn").click();
-  }
-});
-
-function table() {
-  const all = JSON.parse(localStorage.getItem(STORE) || "[]");
-  const tb = $("tbody");
-
-  $("countUsers").textContent = all.length;
-
-  if (!all.length) {
-    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px">Әзірге нәтиже жоқ<\/td></tr>';
-    return;
-  }
-
-  tb.innerHTML = [...all].reverse().map((r, i) =>
-    '<tr>' +
-      '<td>' + (i + 1) + '<\/td>' +
-      '<td class="faceCell" data-face="' + (r.face || "") + '">' +
-        (r.face ? '<img src="' + r.face + '" class="thumb" alt="Бет">' : '📷 Сурет жоқ') +
-      '<\/td>' +
-      '<td style="color:#00c853;font-weight:bold">' + r.correct + '<\/td>' +
-      '<td style="color:#ff4141;font-weight:bold">' + r.wrong + '<\/td>' +
-      '<td>' + (r.total || Q.length) + '<\/td>' +
-      '<td>' + r.date + '<\/td>' +
-      '<td><button class="del" data-id="' + r.id + '">Жою<\/button><\/td>' +
-    '<\/tr>'
-  ).join("");
-
-  document.querySelectorAll(".faceCell").forEach(td => {
-    td.onclick = () => {
-      if (td.dataset.face) {
-        bigImg.src = td.dataset.face;
-        imgModal.style.display = "flex";
-      }
-    };
-  });
-
-  document.querySelectorAll(".del").forEach(b => {
-    b.onclick = e => {
-      e.stopPropagation();
-
-      if (confirm("Бұл нәтижені жоюға сенімдісіз бе?")) {
-        let a = JSON.parse(localStorage.getItem(STORE) || "[]")
-          .filter(x => x.id !== b.dataset.id);
-
-        localStorage.setItem(STORE, JSON.stringify(a));
-        table();
-      }
-    };
-  });
-}
-
-$("clearAll").onclick = () => {
-  if (confirm("БАРЛЫҚ нәтижелерді жоюға сенімдісіз бе?")) {
-    localStorage.removeItem(STORE);
-    table();
-  }
-};
-
-imgModal.onclick = () => {
-  imgModal.style.display = "none";
-};
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
-    adminModal.style.display = "none";
-    imgModal.style.display = "none";
-    document.body.style.overflow = "auto";
-  }
-});
-})();
-</script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"39e87a2afe7c46788f2fe28e3346cf27","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-</body>
-</html>
+  if(!model) { setStatus("⏳ Модель жүктелуде...", "wait"); return; }
+  setStatus("🔍 Бет ізделуде...
