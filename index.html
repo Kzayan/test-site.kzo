@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Қазақи Ою - Музыкалық Ритм Ойыны | aian_wtkkz</title>
+    <style>
+        /* ========== ҚАЗАҚИ ОЮ-ӨРНЕК ШРИФТТЕРІ ========== */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap');
+
+        /* ========== НЕГІЗГІ СТИЛЬДЕР ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a0a0a;
+            font-family: 'Playfair Display', 'Segoe UI', serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        /* ========== АЛТЫН ОЮ-ӨРНЕК ЭФФЕКТІЛЕРІ ========== */
+        .ornament-text {
+            text-shadow: 0 0 15px #d4a853,
+                         0 0 30px #c9973a,
+                         0 0 50px #b8860b,
+                         0 0 80px #8b6914;
+            color: #f0d78c;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 3px;
+        }
+
+        /* ========== ОЙЫН КОНТЕЙНЕРІ ========== */
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: linear-gradient(180deg, 
+                #1a0a0a 0%, 
+                #2d1810 25%, 
+                #1a0a0a 50%,
+                #2d1810 75%,
+                #1a0a0a 100%);
+            overflow: hidden;
+            border-left: 3px solid #8b6914;
+            border-right: 3px solid #8b6914;
+        }
+
+        /* ========== БАСТАПҚЫ ЭКРАН ========== */
+        #start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(26, 10, 10, 0.97);
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .game-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        /* Ою-өрнек сызықтары */
+        .ornament-line {
+            width: 80%;
+            height: 20px;
+            margin: 10px 0;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ornament-line::before,
+        .ornament-line::after {
+            content: '◆━━━━◆━━━━◆';
+            color: #d4a853;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(212, 168, 83, 0.5);
+        }
+
+        .game-subtitle {
+            font-size: 1.1rem;
+            color: #d4a853;
+            margin-bottom: 40px;
+            letter-spacing: 4px;
+            font-style: italic;
+        }
+
+        /* ========== БАТЫРМА СТИЛЬДЕРІ ========== */
+        .btn {
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            outline: none;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b6914 0%, #d4a853 50%, #8b6914 100%);
+            color: #1a0a0a;
+            box-shadow: 0 0 25px rgba(212, 168, 83, 0.5);
+            animation: pulse 2s infinite;
+            border: 2px solid #f0d78c;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(212, 168, 83, 0.8);
+            background: linear-gradient(135deg, #c9973a 0%, #f0d78c 50%, #c9973a 100%);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+
+        .btn-secondary {
+            background: rgba(212, 168, 83, 0.1);
+            color: #d4a853;
+            border: 2px solid #d4a853;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 168, 83, 0.2);
+            box-shadow: 0 0 25px rgba(212, 168, 83, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 25px rgba(212, 168, 83, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(212, 168, 83, 0.8);
+            }
+        }
+
+        /* ========== INSTAGRAM СІЛТЕМЕСІ ========== */
+        .instagram-link {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #d4a853;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(26, 10, 10, 0.8);
+            border: 2px solid #d4a853;
+            border-radius: 50px;
+            z-index: 200;
+            transition: all 0.3s ease;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px rgba(212, 168, 83, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .instagram-link:hover {
+            background: rgba(212, 168, 83, 0.2);
+            box-shadow: 0 0 30px rgba(212, 168, 83, 0.6);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .instagram-icon {
+            width: 20px;
+            height: 20px;
+            fill: #d4a853;
+        }
+
+        /* ========== ФАЙЛ ТАҢДАУ ========== */
+        #file-input {
+            display: none;
+        }
+
+        .audio-info {
+            color: #d4a853;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            text-align: center;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        /* ========== ОЙЫН ЭКРАНЫ ========== */
+        #game-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        #game-screen.active {
+            display: block;
+        }
+
+        /* ========== CANVAS ========== */
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ========== HUD (Ұпай тақтасы) ========== */
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .hud-item {
+            background: rgba(26, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px 20px;
+            border: 2px solid rgba(212, 168, 83, 0.4);
+            box-shadow: 0 0 15px rgba(212, 168, 83, 0.2);
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .hud-label {
+            color: #c9973a;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .hud-value {
+            color: #f0d78c;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(240, 215, 140, 0.5);
+        }
+
+        /* ========== COMBO ДИСПЛЕЙ ========== */
+        #combo-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 900;
+            color: #f0d78c;
+            text-shadow: 0 0 30px rgba(212, 168, 83, 0.8),
+                         0 0 60px rgba(184, 134, 11, 0.5);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+            font-family: 'Playfair Display', serif;
+        }
+
+        #combo-display.show {
+            opacity: 1;
+            animation: comboAppear 0.5s ease-out;
+        }
+
+        @keyframes comboAppear {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* ========== МИСС ХАБАРЛАМАСЫ ========== */
+        #miss-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #8b0000;
+            text-shadow: 0 0 30px rgba(139, 0, 0, 0.8),
+                         0 0 60px rgba(139, 0, 0, 0.5);
+            opacity: 0;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 10;
+            font-family: 'Playfair Display', serif;
+        }
+
+        #miss-message.show {
+            opacity: 1;
+            animation: missShake 0.5s ease-out;
+        }
+
+        @keyframes missShake {
+            0%, 100% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+            25% {
+                transform: translate(-50%, -50%) rotate(-5deg);
+            }
+            75% {
+                transform: translate(-50%, -50%) rotate(5deg);
+            }
+        }
+
+        /* ========== GAME OVER ЭКРАНЫ ========== */
+        #gameover-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 10, 10, 0.97);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        #gameover-screen.active {
+            display: flex;
+        }
+
+        .gameover-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #8b0000;
+            text-shadow: 0 0 20px rgba(139, 0, 0, 0.6);
+        }
+
+        .gameover-reason {
+            font-size: 1.2rem;
+            color: #d4a853;
+            margin-bottom: 20px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .stats-container {
+            background: rgba(212, 168, 83, 0.1);
+            border: 2px solid rgba(212, 168, 83, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(212, 168, 83, 0.2);
+            width: 80%;
+            max-width: 350px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            color: #d4a853;
+            font-size: 1rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #f0d78c;
+            text-shadow: 0 0 10px rgba(240, 215, 140, 0.5);
+        }
+
+        /* ========== КЛАВИАТУРА ИНДИКАТОРЛАРЫ ========== */
+        .key-hints {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 10px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .key-hint {
+            color: rgba(212, 168, 83, 0.5);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(212, 168, 83, 0.3);
+            transition: all 0.15s ease;
+        }
+
+        .key-hint.active {
+            color: #f0d78c;
+            text-shadow: 0 0 20px rgba(212, 168, 83, 0.8);
+            transform: scale(1.2);
+        }
+
+        /* ========== МОБИЛЬДІ БЕЙІМДЕУ ========== */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 12px 35px;
+                font-size: 1rem;
+            }
+            
+            .hud-item {
+                padding: 8px 15px;
+                min-width: 60px;
+            }
+            
+            .hud-value {
+                font-size: 1.2rem;
+            }
+            
+            .key-hint {
+                font-size: 0.7rem;
+            }
+            
+            .instagram-link {
+                font-size: 0.8rem;
+                padding: 8px 15px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .game-title {
+                font-size: 1.6rem;
+            }
+            
+            .btn {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== INSTAGRAM СІЛТЕМЕСІ ========== -->
+    <a href="https://instagram.com/aian_wtkkz" 
+       target="_blank" 
+       class="instagram-link"
+       rel="noopener noreferrer">
+        <svg class="instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+        aian_wtkkz
+    </a>
+
+    <!-- ========== ОЙЫН КОНТЕЙНЕРІ ========== -->
+    <div id="game-container">
+        
+        <!-- ========== БАСТАПҚЫ ЭКРАН ========== -->
+        <div id="start-screen">
+            <div class="ornament-line"></div>
+            <h1 class="game-title ornament-text">ҚАЗАҚИ ОЮ</h1>
+            <p class="game-subtitle">МУЗЫКАЛЫҚ РИТМ ОЙЫНЫ</p>
+            <div class="ornament-line"></div>
+            
+            <!-- Музыка таңдау батырмасы -->
+            <button class="btn btn-primary" id="choose-music-btn">
+                🎵 Музыка таңдау
+            </button>
+            
+            <!-- Жасырын файл инпуты -->
+            <input type="file" id="file-input" accept=".mp3,.wav,.ogg,.m4a,.aac">
+            
+            <!-- Таңдалған файл туралы ақпарат -->
+            <div class="audio-info" id="audio-info"></div>
+            
+            <!-- Ойынды бастау батырмасы -->
+            <button class="btn btn-secondary" id="start-game-btn" style="display: none; margin-top: 20px;">
+                ⚡ Ойынды бастау
+            </button>
+            
+            <!-- Басқару пернелері -->
+            <div class="key-hints" style="position: relative; margin-top: 30px; padding: 20px 0;">
+                <span class="key-hint" data-key="d">D</span>
+                <span class="key-hint" data-key="f">F</span>
+                <span class="key-hint" data-key="j">J</span>
+                <span class="key-hint" data-key="k">K</span>
+            </div>
+        </div>
+
+        <!-- ========== ОЙЫН ЭКРАНЫ ========== -->
+        <div id="game-screen">
+            <!-- Ойын Canvas -->
+            <canvas id="game-canvas"></canvas>
+            
+            <!-- HUD ұпай тақтасы -->
+            <div id="hud">
+                <div class="hud-item">
+                    <div class="hud-label">Ұпай</div>
+                    <div class="hud-value" id="score-display">0</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">Combo</div>
+                    <div class="hud-value" id="combo-hud">0</div>
+                </div>
+                <div class="hud-item">
+                    <div class="hud-label">Дәлдік</div>
+                    <div class="hud-value" id="accuracy-display">100%</div>
+                </div>
+            </div>
+            
+            <!-- Combo дисплей -->
+            <div id="combo-display"></div>
+            
+            <!-- Мисс хабарламасы -->
+            <div id="miss-message">ӨТКІЗІП АЛДЫҢ!</div>
+        </div>
+
+        <!-- ========== GAME OVER ЭКРАНЫ ========== -->
+        <div id="gameover-screen">
+            <h2 class="gameover-title">ОЙЫН АЯҚТАЛДЫ</h2>
+            <p class="gameover-reason" id="gameover-reason"></p>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span>Соңғы ұпай:</span>
+                    <span class="stat-value" id="final-score">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Максималды Combo:</span>
+                    <span class="stat-value" id="max-combo">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Дәлдік:</span>
+                    <span class="stat-value" id="final-accuracy">100%</span>
+                </div>
+                <div class="stat-item">
+                    <span>Perfect:</span>
+                    <span class="stat-value" id="perfect-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Great:</span>
+                    <span class="stat-value" id="great-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Good:</span>
+                    <span class="stat-value" id="good-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Miss:</span>
+                    <span class="stat-value" id="miss-count">0</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="restart-btn">
+                🔄 Қайта ойнау
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ========== НЕГІЗГІ ОЙЫН КЛАСЫ ==========
+        class KazakhOrnamentGame {
+            constructor() {
+                // DOM элементтері
+                this.startScreen = document.getElementById('start-screen');
+                this.gameScreen = document.getElementById('game-screen');
+                this.gameoverScreen = document.getElementById('gameover-screen');
+                this.canvas = document.getElementById('game-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.fileInput = document.getElementById('file-input');
+                this.chooseMusicBtn = document.getElementById('choose-music-btn');
+                this.startGameBtn = document.getElementById('start-game-btn');
+                this.restartBtn = document.getElementById('restart-btn');
+                this.audioInfo = document.getElementById('audio-info');
+                this.scoreDisplay = document.getElementById('score-display');
+                this.comboHud = document.getElementById('combo-hud');
+                this.accuracyDisplay = document.getElementById('accuracy-display');
+                this.comboDisplay = document.getElementById('combo-display');
+                this.missMessage = document.getElementById('miss-message');
+                this.gameoverReason = document.getElementById('gameover-reason');
+                this.keyHints = document.querySelectorAll('.key-hint');
+
+                // Аудио айнымалылары
+                this.audioContext = null;
+                this.audioBuffer = null;
+                this.audioSource = null;
+                this.analyser = null;
+                this.selectedFile = null;
+                this.isPlaying = false;
+
+                // Ойын айнымалылары
+                this.gameState = 'menu';
+                this.score = 0;
+                this.combo = 0;
+                this.maxCombo = 0;
+                this.totalHits = 0;
+                this.totalTaps = 0;
+                this.perfectCount = 0;
+                this.greatCount = 0;
+                this.goodCount = 0;
+                this.missCount = 0;
+                this.lives = 1;
+                this.gameEndReason = '';
+
+                // Ойын объектілері
+                this.tiles = [];
+                this.particles = [];
+                this.ornaments = []; // Ою-өрнек бөлшектері
+                this.laneWidth = 0;
+                this.baseTileSpeed = 3;
+                this.currentTileSpeed = 3;
+                this.lanes = 4;
+                this.lanePositions = [];
+                this.tapEffects = [];
+
+                // Уақыт айнымалылары
+                this.lastTime = 0;
+                this.deltaTime = 0;
+                this.gameStartTime = 0;
+                this.beatTimings = [];
+                this.currentBeatIndex = 0;
+                this.musicStartTime = 0;
+
+                // BPM және талдау
+                this.detectedBPM = 120;
+                this.beatInterval = 500;
+
+                // Анимация
+                this.animationFrameId = null;
+                this.keysPressed = {};
+                this.ornamentAnimationTime = 0;
+
+                // Инициализация
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+
+            resizeCanvas() {
+                const container = document.getElementById('game-container');
+                const rect = container.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                this.laneWidth = this.canvas.width / this.lanes;
+                this.lanePositions = [];
+                for (let i = 0; i < this.lanes; i++) {
+                    this.lanePositions.push(i * this.laneWidth + this.laneWidth / 2);
+                }
+            }
+
+            setupEventListeners() {
+                this.chooseMusicBtn.addEventListener('click', () => {
+                    this.fileInput.click();
+                });
+
+                this.fileInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.handleFileSelection(file);
+                    }
+                });
+
+                this.startGameBtn.addEventListener('click', () => {
+                    this.startGame();
+                });
+
+                this.restartBtn.addEventListener('click', () => {
+                    this.restartGame();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (this.gameState !== 'playing') return;
+                    const key = e.key.toLowerCase();
+                    const laneMap = { 'd': 0, 'f': 1, 'j': 2, 'k': 3 };
+                    if (laneMap[key] !== undefined && !this.keysPressed[key]) {
+                        this.keysPressed[key] = true;
+                        this.handleTap(laneMap[key]);
+                        this.showKeyFeedback(key);
+                    }
+                });
+
+                document.addEventListener('keyup', (e) => {
+                    const key = e.key.toLowerCase();
+                    this.keysPressed[key] = false;
+                });
+
+                this.canvas.addEventListener('click', (e) => {
+                    if (this.gameState !== 'playing') return;
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const lane = Math.floor(x / this.laneWidth);
+                    if (lane >= 0 && lane < this.lanes) {
+                        this.handleTap(lane);
+                    }
+                });
+
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (this.gameState !== 'playing') return;
+                    for (let i = 0; i < e.touches.length; i++) {
+                        const touch = e.touches[i];
+                        const rect = this.canvas.getBoundingClientRect();
+                        const x = touch.clientX - rect.left;
+                        const lane = Math.floor(x / this.laneWidth);
+                        if (lane >= 0 && lane < this.lanes) {
+                            this.handleTap(lane);
+                        }
+                    }
+                });
+            }
+
+            showKeyFeedback(key) {
+                this.keyHints.forEach(hint => {
+                    if (hint.dataset.key === key) {
+                        hint.classList.add('active');
+                        setTimeout(() => hint.classList.remove('active'), 150);
+                    }
+                });
+            }
+
+            async handleFileSelection(file) {
+                this.selectedFile = file;
+                this.audioInfo.textContent = `📁 ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                try {
+                    if (!this.audioContext) {
+                        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    const arrayBuffer = await file.arrayBuffer();
+                    this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+                    await this.analyzeAudio();
+                    this.startGameBtn.style.display = 'inline-block';
+                    this.audioInfo.textContent += `\n🎵 BPM: ${this.detectedBPM} | Ұзақтығы: ${this.audioBuffer.duration.toFixed(1)}s`;
+                    this.playPreview();
+                } catch (error) {
+                    console.error('Аудио жүктеу қатесі:', error);
+                    this.audioInfo.textContent = '❌ Аудио жүктеу қатесі! Басқа файл таңдаңыз.';
+                }
+            }
+
+            playPreview() {
+                if (!this.audioBuffer || !this.audioContext) return;
+                if (this.audioSource) {
+                    try { this.audioSource.stop(); } catch (e) {}
+                }
+                const source = this.audioContext.createBufferSource();
+                source.buffer = this.audioBuffer;
+                const gainNode = this.audioContext.createGain();
+                gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 3);
+                source.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                source.start(0);
+                source.stop(this.audioContext.currentTime + 3);
+                this.audioSource = source;
+            }
+
+            async analyzeAudio() {
+                if (!this.audioBuffer || !this.audioContext) return;
+                this.analyser = this.audioContext.createAnalyser();
+                this.analyser.fftSize = 2048;
+                this.analyser.smoothingTimeConstant = 0.8;
+                this.detectedBPM = await this.detectBPM();
+                this.beatInterval = (60 / this.detectedBPM) * 1000;
+                this.generateBeatTimings();
+            }
+
+            async detectBPM() {
+                if (!this.audioBuffer) return 120;
+                const channelData = this.audioBuffer.getChannelData(0);
+                const sampleRate = this.audioBuffer.sampleRate;
+                const windowSize = Math.floor(sampleRate * 0.05);
+                const energies = [];
+                for (let i = 0; i < channelData.length; i += windowSize) {
+                    let energy = 0;
+                    for (let j = i; j < Math.min(i + windowSize, channelData.length); j++) {
+                        energy += Math.abs(channelData[j]);
+                    }
+                    energies.push(energy / windowSize);
+                }
+                const threshold = this.calculateThreshold(energies);
+                const peaks = [];
+                for (let i = 1; i < energies.length - 1; i++) {
+                    if (energies[i] > threshold && energies[i] > energies[i - 1] && energies[i] > energies[i + 1]) {
+                        peaks.push(i);
+                    }
+                }
+                if (peaks.length < 2) return 120;
+                const intervals = [];
+                for (let i = 1; i < peaks.length; i++) {
+                    intervals.push((peaks[i] - peaks[i - 1]) * 0.05);
+                }
+                intervals.sort((a, b) => a - b);
+                const medianInterval = intervals[Math.floor(intervals.length / 2)];
+                if (medianInterval === 0) return 120;
+                const bpm = Math.round(60 / medianInterval);
+                return Math.max(60, Math.min(200, bpm));
+            }
+
+            calculateThreshold(energies) {
+                if (energies.length === 0) return 0;
+                const sum = energies.reduce((a, b) => a + b, 0);
+                const avg = sum / energies.length;
+                const variance = energies.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / energies.length;
+                return avg + Math.sqrt(variance) * 1.5;
+            }
+
+            generateBeatTimings() {
+                if (!this.audioBuffer) return;
+                this.beatTimings = [];
+                const duration = this.audioBuffer.duration;
+                const interval = this.beatInterval / 1000;
+                for (let time = 2; time < duration; time += interval) {
+                    const lane = Math.floor(Math.random() * this.lanes);
+                    this.beatTimings.push({ time: time, lane: lane });
+                }
+            }
+
+            getCurrentMusicEnergy() {
+                if (!this.analyser || !this.audioBuffer) return 0.5;
+                const bufferLength = this.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                this.analyser.getByteFrequencyData(dataArray);
+                let totalEnergy = 0;
+                const relevantBins = Math.floor(bufferLength * 0.5);
+                for (let i = 0; i < relevantBins; i++) {
+                    totalEnergy += dataArray[i];
+                }
+                return totalEnergy / relevantBins / 255;
+            }
+
+            startGame() {
+                if (!this.audioBuffer || !this.audioContext) {
+                    alert('Алдымен музыка файлын таңдаңыз!');
+                    return;
+                }
+                this.startScreen.classList.add('hidden');
+                this.gameScreen.classList.add('active');
+                this.gameoverScreen.classList.remove('active');
+                this.gameState = 'playing';
+                this.lives = 1;
+                this.resetGameStats();
+                this.resizeCanvas();
+                this.startMusic();
+                this.gameStartTime = performance.now();
+                this.musicStartTime = this.audioContext.currentTime;
+                this.currentBeatIndex = 0;
+                this.currentTileSpeed = this.baseTileSpeed;
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                }
+                this.gameLoop(performance.now());
+            }
+
+            startMusic() {
+                if (!this.audioBuffer || !this.audioContext) return;
+                if (this.audioSource) {
+                    try { this.audioSource.stop(); } catch (e) {}
+                }
+                this.audioSource = this.audioContext.createBufferSource();
+                this.audioSource.buffer = this.audioBuffer;
+                const gainNode = this.audioContext.createGain();
+                gainNode.gain.setValueAtTime(0.8, this.audioContext.currentTime);
+                this.audioSource.connect(this.analyser);
+                this.analyser.connect(gainNode);
+                gainNode.connect(this.audioContext.destination);
+                this.audioSource.start(0);
+                this.isPlaying = true;
+            }
+
+            resetGameStats() {
+                this.score = 0;
+                this.combo = 0;
+                this.maxCombo = 0;
+                this.totalHits = 0;
+                this.totalTaps = 0;
+                this.perfectCount = 0;
+                this.greatCount = 0;
+                this.goodCount = 0;
+                this.missCount = 0;
+                this.tiles = [];
+                this.particles = [];
+                this.ornaments = [];
+                this.tapEffects = [];
+                this.gameEndReason = '';
+                this.updateHUD();
+            }
+
+            gameLoop(currentTime) {
+                if (this.gameState !== 'playing') return;
+                this.deltaTime = currentTime - this.lastTime;
+                this.lastTime = currentTime;
+                this.ornamentAnimationTime += this.deltaTime * 0.001;
+                const elapsedTime = (currentTime - this.gameStartTime) / 1000;
+                this.updateTileSpeedByMusicEnergy();
+                this.spawnTiles(elapsedTime);
+                this.updateTiles();
+                this.updateParticles();
+                this.updateOrnaments();
+                this.updateTapEffects();
+                this.render();
+                if (this.audioBuffer && elapsedTime > this.audioBuffer.duration + 1) {
+                    this.endGame('win');
+                    return;
+                }
+                this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
+            }
+
+            updateTileSpeedByMusicEnergy() {
+                if (!this.analyser) return;
+                const energy = this.getCurrentMusicEnergy();
+                const minSpeedMultiplier = 0.7;
+                const maxSpeedMultiplier = 2.5;
+                const speedMultiplier = minSpeedMultiplier + (energy * (maxSpeedMultiplier - minSpeedMultiplier));
+                const targetSpeed = this.baseTileSpeed * speedMultiplier;
+                this.currentTileSpeed += (targetSpeed - this.currentTileSpeed) * 0.1;
+                this.currentTileSpeed = Math.max(this.baseTileSpeed * 0.5, Math.min(this.baseTileSpeed * 3, this.currentTileSpeed));
+            }
+
+            spawnTiles(elapsedTime) {
+                while (this.currentBeatIndex < this.beatTimings.length) {
+                    const beat = this.beatTimings[this.currentBeatIndex];
+                    const spawnTime = beat.time - 2;
+                    if (elapsedTime >= spawnTime) {
+                        this.createTile(beat.lane, beat.time);
+                        this.currentBeatIndex++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            createTile(lane, hitTime) {
+                const tile = {
+                    lane: lane,
+                    x: this.lanePositions[lane] - this.laneWidth / 2,
+                    y: -100,
+                    width: this.laneWidth - 10,
+                    height: 40,
+                    targetY: this.canvas.height - 150,
+                    hitTime: hitTime,
+                    color: this.getOrnamentColor(),
+                    active: true,
+                    hit: false,
+                    missed: false,
+                    ornamentPattern: Math.floor(Math.random() * 3) // Ою түрі
+                };
+                this.tiles.push(tile);
+            }
+
+            getOrnamentColor() {
+                const colors = [
+                    '#d4a853', // Алтын
+                    '#c9973a', // Қою алтын
+                    '#b8860b', // Қара алтын
+                    '#f0d78c', // Ашық алтын
+                    '#8b6914', // Қола
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            updateTiles() {
+                const currentTime = (performance.now() - this.gameStartTime) / 1000;
+                for (let i = this.tiles.length - 1; i >= 0; i--) {
+                    const tile = this.tiles[i];
+                    if (!tile.active) continue;
+                    const timeToHit = tile.hitTime - currentTime;
+                    const progress = 1 - (timeToHit / 2);
+                    const speedFactor = this.currentTileSpeed / this.baseTileSpeed;
+                    const adjustedProgress = Math.min(1, progress * speedFactor);
+                    tile.y = -100 + (this.canvas.height + 100) * adjustedProgress;
+                    if (tile.y > tile.targetY + 60 && !tile.hit && !tile.missed) {
+                        tile.missed = true;
+                        tile.active = false;
+                        this.handleMiss(tile);
+                    }
+                }
+                this.tiles = this.tiles.filter(tile => tile.active);
+            }
+
+            handleTap(lane) {
+                if (this.gameState !== 'playing') return;
+                this.addTapEffect(lane);
+                let closestTile = null;
+                let closestDistance = Infinity;
+                for (const tile of this.tiles) {
+                    if (tile.lane === lane && tile.active && !tile.hit && !tile.missed) {
+                        const tileCenter = tile.y + tile.height / 2;
+                        const targetCenter = tile.targetY;
+                        const distance = Math.abs(tileCenter - targetCenter);
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestTile = tile;
+                        }
+                    }
+                }
+                if (closestTile && closestDistance < 100) {
+                    this.handleHit(closestTile, closestDistance);
+                } else {
+                    this.totalTaps++;
+                    this.updateAccuracy();
+                }
+            }
+
+            handleHit(tile, distance) {
+                tile.hit = true;
+                tile.active = false;
+                let hitType = '';
+                let points = 0;
+                if (distance < 25) {
+                    hitType = 'Perfect';
+                    points = 100;
+                    this.perfectCount++;
+                } else if (distance < 60) {
+                    hitType = 'Great';
+                    points = 75;
+                    this.greatCount++;
+                } else {
+                    hitType = 'Good';
+                    points = 50;
+                    this.goodCount++;
+                }
+                this.combo++;
+                if (this.combo > this.maxCombo) {
+                    this.maxCombo = this.combo;
+                }
+                const comboMultiplier = Math.min(this.combo, 10);
+                this.score += points * comboMultiplier;
+                this.totalHits++;
+                this.totalTaps++;
+                this.spawnOrnamentParticles(tile.x + tile.width / 2, tile.y + tile.height / 2, tile.color, hitType);
+                if (this.combo > 1) {
+                    this.showComboDisplay();
+                }
+                this.triggerVibration(hitType);
+                this.updateHUD();
+                this.updateAccuracy();
+            }
+
+            handleMiss(tile) {
+                this.combo = 0;
+                this.missCount++;
+                this.totalTaps++;
+                this.lives--;
+                this.showMissMessage();
+                if (tile) {
+                    this.spawnMissParticles(tile.x + tile.width / 2, tile.y + tile.height / 2);
+                }
+                if (navigator.vibrate) {
+                    navigator.vibrate([100, 50, 100, 50, 200]);
+                }
+                this.updateHUD();
+                this.updateAccuracy();
+                if (this.lives <= 0) {
+                    this.gameEndReason = 'Сіз плитканы өткізіп алдыңыз! Ойын аяқталды.';
+                    setTimeout(() => {
+                        if (this.gameState === 'playing') {
+                            this.endGame('miss');
+                        }
+                    }, 500);
+                }
+            }
+
+            showMissMessage() {
+                this.missMessage.classList.add('show');
+                const container = document.getElementById('game-container');
+                container.style.animation = 'shake 0.5s ease-out';
+                setTimeout(() => {
+                    this.missMessage.classList.remove('show');
+                    container.style.animation = '';
+                }, 500);
+            }
+
+            spawnOrnamentParticles(x, y, color, hitType) {
+                const count = hitType === 'Perfect' ? 30 : hitType === 'Great' ? 20 : 15;
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 * i) / count;
+                    const speed = 3 + Math.random() * 6;
+                    // Ою-өрнек пішініндегі бөлшектер
+                    const ornamentType = Math.floor(Math.random() * 3);
+                    this.ornaments.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 1.0,
+                        decay: 0.02 + Math.random() * 0.03,
+                        size: 3 + Math.random() * 6,
+                        color: color,
+                        rotation: Math.random() * Math.PI * 2,
+                        rotationSpeed: (Math.random() - 0.5) * 0.2,
+                        type: ornamentType
+                    });
+                }
+            }
+
+            spawnMissParticles(x, y) {
+                const count = 30;
+                for (let i = 0; i < count; i++) {
+                    const angle = (Math.PI * 2 * i) / count;
+                    const speed = 5 + Math.random() * 8;
+                    this.particles.push({
+                        x: x, y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 1.0,
+                        decay: 0.03 + Math.random() * 0.04,
+                        size: 3 + Math.random() * 6,
+                        color: '#8b0000'
+                    });
+                }
+            }
+
+            showComboDisplay() {
+                this.comboDisplay.textContent = `${this.combo}x`;
+                this.comboDisplay.classList.add('show');
+                setTimeout(() => this.comboDisplay.classList.remove('show'), 500);
+            }
+
+            updateAccuracy() {
+                if (this.totalTaps === 0) {
+                    this.accuracyDisplay.textContent = '100%';
+                    return;
+                }
+                const accuracy = (this.totalHits / this.totalTaps) * 100;
+                this.accuracyDisplay.textContent = `${Math.round(accuracy)}%`;
+            }
+
+            updateHUD() {
+                this.scoreDisplay.textContent = this.score;
+                this.comboHud.textContent = this.combo;
+                this.updateAccuracy();
+            }
+
+            updateParticles() {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= p.decay;
+                    if (p.life <= 0) this.particles.splice(i, 1);
+                }
+            }
+
+            updateOrnaments() {
+                for (let i = this.ornaments.length - 1; i >= 0; i--) {
+                    const o = this.ornaments[i];
+                    o.x += o.vx;
+                    o.y += o.vy;
+                    o.rotation += o.rotationSpeed;
+                    o.life -= o.decay;
+                    if (o.life <= 0) this.ornaments.splice(i, 1);
+                }
+            }
+
+            addTapEffect(lane) {
+                const x = this.lanePositions[lane];
+                const y = this.canvas.height - 150;
+                this.tapEffects.push({
+                    x: x, y: y,
+                    radius: 20,
+                    maxRadius: 70,
+                    life: 1.0,
+                    decay: 0.04
+                });
+            }
+
+            updateTapEffects() {
+                for (let i = this.tapEffects.length - 1; i >= 0; i--) {
+                    const e = this.tapEffects[i];
+                    e.radius += (e.maxRadius - e.radius) * 0.15;
+                    e.life -= e.decay;
+                    if (e.life <= 0) this.tapEffects.splice(i, 1);
+                }
+            }
+
+            triggerVibration(hitType) {
+                if (!navigator.vibrate) return;
+                switch (hitType) {
+                    case 'Perfect': navigator.vibrate(50); break;
+                    case 'Great': navigator.vibrate(30); break;
+                    case 'Good': navigator.vibrate(15); break;
+                }
+            }
+
+            // ========== РЕНДЕР ==========
+            render() {
+                const ctx = this.ctx;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                
+                // Фон
+                ctx.fillStyle = '#1a0a0a';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Ою-өрнек фоны
+                this.drawBackgroundOrnaments(ctx, width, height);
+                
+                // Жолдар
+                this.drawLanes(ctx, width, height);
+                
+                // Плиткалар
+                this.drawTiles(ctx);
+                
+                // Tap эффектілері
+                this.drawTapEffects(ctx);
+                
+                // Ою бөлшектері
+                this.drawOrnamentParticles(ctx);
+                
+                // Қарапайым бөлшектер
+                this.drawParticles(ctx);
+                
+                // Тап сызығы
+                this.drawTargetLine(ctx, width, height);
+                
+                // Энергия индикаторы
+                this.drawEnergyIndicator(ctx, width, height);
+            }
+
+            // ========== ФОНДЫҚ ОЮ-ӨРНЕКТЕР ==========
+            drawBackgroundOrnaments(ctx, width, height) {
+                ctx.save();
+                ctx.globalAlpha = 0.08;
+                
+                // Айналмалы ою-өрнектер
+                const time = this.ornamentAnimationTime || 0;
+                
+                for (let i = 0; i < 5; i++) {
+                    const x = width * (0.1 + i * 0.2);
+                    const y = height * 0.5 + Math.sin(time + i) * 50;
+                    
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(time * 0.5 + i);
+                    
+                    // Сегізбұрышты ою
+                    this.drawKazakhOrnament(ctx, 0, 0, 40, '#d4a853');
+                    
+                    ctx.restore();
+                }
+                
+                // Төртбұрышты оюлар
+                for (let i = 0; i < 6; i++) {
+                    const x = width * (0.05 + i * 0.18);
+                    const y = height * 0.3 + Math.cos(time + i * 0.7) * 40;
+                    
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(time * 0.3);
+                    this.drawDiamondOrnament(ctx, 0, 0, 25, '#c9973a');
+                    ctx.restore();
+                }
+                
+                ctx.restore();
+            }
+
+            // ========== ҚАЗАҚИ ОЮ-ӨРНЕК СУРЕТТЕРІ ==========
+            drawKazakhOrnament(ctx, x, y, size, color) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                
+                // Сегізбұрышты жұлдыз
+                for (let i = 0; i < 8; i++) {
+                    const angle = (Math.PI * 2 * i) / 8;
+                    const innerX = x + Math.cos(angle) * size * 0.4;
+                    const innerY = y + Math.sin(angle) * size * 0.4;
+                    const outerX = x + Math.cos(angle) * size;
+                    const outerY = y + Math.sin(angle) * size;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(outerX, outerY);
+                    ctx.stroke();
+                }
+                
+                // Ішкі шеңбер
+                ctx.beginPath();
+                ctx.arc(x, y, size * 0.3, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // Сыртқы шеңбер
+                ctx.beginPath();
+                ctx.arc(x, y, size * 0.7, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            drawDiamondOrnament(ctx, x, y, size, color) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                
+                // Ромб
+                ctx.beginPath();
+                ctx.moveTo(x, y - size);
+                ctx.lineTo(x + size * 0.6, y);
+                ctx.lineTo(x, y + size);
+                ctx.lineTo(x - size * 0.6, y);
+                ctx.closePath();
+                ctx.stroke();
+                
+                // Ішкі ромб
+                ctx.beginPath();
+                ctx.moveTo(x, y - size * 0.5);
+                ctx.lineTo(x + size * 0.3, y);
+                ctx.lineTo(x, y + size * 0.5);
+                ctx.lineTo(x - size * 0.3, y);
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            // ========== ЖОЛДАР ==========
+            drawLanes(ctx, width, height) {
+                ctx.strokeStyle = 'rgba(212, 168, 83, 0.3)';
+                ctx.lineWidth = 1;
+                for (let i = 1; i < this.lanes; i++) {
+                    const x = i * this.laneWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.stroke();
+                }
+            }
+
+            // ========== ПЛИТКАЛАР ==========
+            drawTiles(ctx) {
+                for (const tile of this.tiles) {
+                    if (!tile.active) continue;
+                    const x = tile.x + 5;
+                    const y = tile.y;
+                    const w = tile.width;
+                    const h = tile.height;
+                    
+                    // Алтын жарқырау
+                    ctx.shadowColor = tile.color;
+                    ctx.shadowBlur = 25;
+                    
+                    // Плитка градиенті
+                    const gradient = ctx.createLinearGradient(x, y, x + w, y);
+                    gradient.addColorStop(0, tile.color);
+                    gradient.addColorStop(0.5, this.lightenColor(tile.color, 0.3));
+                    gradient.addColorStop(1, tile.color);
+                    
+                    ctx.fillStyle = gradient;
+                    this.roundRect(ctx, x, y, w, h, 8);
+                    ctx.fill();
+                    
+                    // Ою-өрнек жиегі
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = '#f0d78c';
+                    ctx.lineWidth = 2;
+                    this.roundRect(ctx, x, y, w, h, 8);
+                    ctx.stroke();
+                    
+                    // Ішкі ою-өрнек
+                    this.drawTileOrnament(ctx, x + w/2, y + h/2, Math.min(w, h) * 0.3, tile.ornamentPattern);
+                    
+                    // Жылтыр сызық
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                    this.roundRect(ctx, x + 5, y + 5, w - 10, h / 3, 5);
+                    ctx.fill();
+                }
+            }
+
+            drawTileOrnament(ctx, cx, cy, size, pattern) {
+                ctx.save();
+                ctx.globalAlpha = 0.6;
+                
+                switch(pattern) {
+                    case 0: // Ромб
+                        ctx.strokeStyle = '#1a0a0a';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy - size);
+                        ctx.lineTo(cx + size * 0.5, cy);
+                        ctx.lineTo(cx, cy + size);
+                        ctx.lineTo(cx - size * 0.5, cy);
+                        ctx.closePath();
+                        ctx.stroke();
+                        break;
+                    case 1: // Шеңбер
+                        ctx.strokeStyle = '#1a0a0a';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, size, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, size * 0.5, 0, Math.PI * 2);
+                        ctx.stroke();
+                        break;
+                    case 2: // Крест
+                        ctx.strokeStyle = '#1a0a0a';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(cx - size, cy);
+                        ctx.lineTo(cx + size, cy);
+                        ctx.moveTo(cx, cy - size);
+                        ctx.lineTo(cx, cy + size);
+                        ctx.stroke();
+                        break;
+                }
+                
+                ctx.restore();
+            }
+
+            roundRect(ctx, x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+            }
+
+            // ========== TAP ЭФФЕКТІЛЕРІ ==========
+            drawTapEffects(ctx) {
+                for (const effect of this.tapEffects) {
+                    ctx.save();
+                    ctx.globalAlpha = effect.life * 0.6;
+                    const gradient = ctx.createRadialGradient(effect.x, effect.y, 0, effect.x, effect.y, effect.radius);
+                    gradient.addColorStop(0, 'rgba(212, 168, 83, 0.6)');
+                    gradient.addColorStop(1, 'rgba(212, 168, 83, 0)');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(effect.x, effect.y, effect.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            // ========== ОЮ БӨЛШЕКТЕРІ ==========
+            drawOrnamentParticles(ctx) {
+                for (const o of this.ornaments) {
+                    ctx.save();
+                    ctx.globalAlpha = o.life;
+                    ctx.translate(o.x, o.y);
+                    ctx.rotate(o.rotation);
+                    
+                    ctx.fillStyle = o.color;
+                    ctx.shadowColor = o.color;
+                    ctx.shadowBlur = 10;
+                    
+                    if (o.type === 0) {
+                        // Кішкентай ромб
+                        ctx.beginPath();
+                        ctx.moveTo(0, -o.size);
+                        ctx.lineTo(o.size * 0.5, 0);
+                        ctx.lineTo(0, o.size);
+                        ctx.lineTo(-o.size * 0.5, 0);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else if (o.type === 1) {
+                        // Кішкентай шеңбер
+                        ctx.beginPath();
+                        ctx.arc(0, 0, o.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        // Кішкентай квадрат
+                        ctx.fillRect(-o.size/2, -o.size/2, o.size, o.size);
+                    }
+                    
+                    ctx.restore();
+                }
+            }
+
+            // ========== ҚАРАПАЙЫМ БӨЛШЕКТЕР ==========
+            drawParticles(ctx) {
+                for (const p of this.particles) {
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    ctx.fillStyle = p.color;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            // ========== ТАП СЫЗЫҒЫ ==========
+            drawTargetLine(ctx, width, height) {
+                const y = height - 150;
+                
+                // Алтын жарқырау сызығы
+                ctx.strokeStyle = 'rgba(212, 168, 83, 0.7)';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#d4a853';
+                ctx.shadowBlur = 25;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+                
+                // Ою-өрнек индикаторлары
+                for (let i = 0; i < this.lanes; i++) {
+                    const x = this.lanePositions[i];
+                    
+                    // Сыртқы ою-өрнек
+                    ctx.strokeStyle = 'rgba(240, 215, 140, 0.7)';
+                    ctx.lineWidth = 2;
+                    this.drawKazakhOrnament(ctx, x, y, 16, '#f0d78c');
+                    
+                    // Ішкі толтыру
+                    ctx.fillStyle = 'rgba(212, 168, 83, 0.2)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // ========== ЭНЕРГИЯ ИНДИКАТОРЫ ==========
+            drawEnergyIndicator(ctx, width, height) {
+                const energy = this.getCurrentMusicEnergy();
+                const barWidth = width - 40;
+                const barHeight = 6;
+                const x = 20;
+                const y = height - 30;
+                
+                // Фон
+                ctx.fillStyle = 'rgba(26, 10, 10, 0.7)';
+                this.roundRect(ctx, x, y, barWidth, barHeight, 3);
+                ctx.fill();
+                
+                // Алтын градиент
+                const gradient = ctx.createLinearGradient(x, y, x + barWidth, y);
+                gradient.addColorStop(0, '#8b6914');
+                gradient.addColorStop(0.5, '#d4a853');
+                gradient.addColorStop(1, '#f0d78c');
+                
+                ctx.fillStyle = gradient;
+                this.roundRect(ctx, x, y, barWidth * energy, barHeight, 3);
+                ctx.fill();
+                
+                // Ою-өрнек мәтін
+                ctx.fillStyle = '#d4a853';
+                ctx.font = '10px "Playfair Display", serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Ырғақ: ${Math.round(energy * 100)}%`, width / 2, y - 5);
+            }
+
+            lightenColor(hex, factor) {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                const newR = Math.min(255, Math.floor(r + (255 - r) * factor));
+                const newG = Math.min(255, Math.floor(g + (255 - g) * factor));
+                const newB = Math.min(255, Math.floor(b + (255 - b) * factor));
+                return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+            }
+
+            endGame(reason) {
+                this.gameState = 'gameover';
+                this.isPlaying = false;
+                if (this.audioSource) {
+                    try { this.audioSource.stop(); } catch (e) {}
+                }
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                this.gameScreen.classList.remove('active');
+                this.gameoverScreen.classList.add('active');
+                
+                if (reason === 'miss') {
+                    this.gameoverReason.textContent = this.gameEndReason || 'Сіз плитканы өткізіп алдыңыз!';
+                } else if (reason === 'win') {
+                    this.gameoverReason.textContent = '🎉 Музыка аяқталды! Керемет ойын!';
+                }
+                
+                document.getElementById('final-score').textContent = this.score;
+                document.getElementById('max-combo').textContent = this.maxCombo;
+                document.getElementById('final-accuracy').textContent = 
+                    this.totalTaps > 0 ? `${Math.round((this.totalHits / this.totalTaps) * 100)}%` : '100%';
+                document.getElementById('perfect-count').textContent = this.perfectCount;
+                document.getElementById('great-count').textContent = this.greatCount;
+                document.getElementById('good-count').textContent = this.goodCount;
+                document.getElementById('miss-count').textContent = this.missCount;
+                
+                if (navigator.vibrate) {
+                    if (reason === 'miss') {
+                        navigator.vibrate([200, 100, 200, 100, 400]);
+                    } else {
+                        navigator.vibrate([50, 30, 50, 30, 100]);
+                    }
+                }
+            }
+
+            restartGame() {
+                if (this.audioSource) {
+                    try { this.audioSource.stop(); } catch (e) {}
+                }
+                this.gameoverScreen.classList.remove('active');
+                this.startScreen.classList.remove('hidden');
+                this.gameScreen.classList.remove('active');
+                this.gameState = 'menu';
+                this.isPlaying = false;
+                this.lives = 1;
+                this.tiles = [];
+                this.particles = [];
+                this.ornaments = [];
+                this.tapEffects = [];
+                this.currentTileSpeed = this.baseTileSpeed;
+                this.resetGameStats();
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                if (this.audioBuffer) {
+                    this.generateBeatTimings();
+                }
+            }
+        }
+
+        // ========== CSS АНИМАЦИЯСЫ ==========
+        const shakeStyle = document.createElement('style');
+        shakeStyle.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(shakeStyle);
+
+        // ========== ОЙЫНДЫ БАСТАУ ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            const game = new KazakhOrnamentGame();
+            
+            window.addEventListener('error', (e) => {
+                console.error('Ойын қатесі:', e.error);
+            });
+            
+            document.addEventListener('click', () => {
+                if (game.audioContext && game.audioContext.state === 'suspended') {
+                    game.audioContext.resume();
+                }
+            }, { once: true });
+            
+            console.log('Қазақи Ою ойыны дайын! 🎵');
+            console.log('Instagram: @aian_wtkkz');
+            console.log('Басқару: D F J K пернелері немесе тышқан/touch');
+        });
+    </script>
+</body>
+</html>
