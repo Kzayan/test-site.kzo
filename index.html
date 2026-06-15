@@ -8,21 +8,41 @@
 
 <style>
 body{
-font-size:5px;
+font-size:16px;
 font-family:Arial;
-margin:5px;
+margin:10px;
+background:#f0f0f0;
 }
 table{
 border-collapse:collapse;
 width:100%;
+background:white;
 }
 td,th{
-border:1px solid black;
-padding:1px;
+border:1px solid #333;
+padding:8px 10px;
+text-align:left;
+}
+th{
+background:#4472C4;
+color:white;
+font-weight:bold;
+}
+tr:nth-child(even){
+background:#f9f9f9;
 }
 button{
-font-size:12px;
-margin:5px;
+font-size:16px;
+padding:10px 20px;
+margin:10px 5px;
+background:#4472C4;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+button:hover{
+background:#365a9e;
 }
 </style>
 </head>
@@ -66,7 +86,7 @@ margin:5px;
 <script>
 function saveImg(){
 html2canvas(document.getElementById("spor"),{
-scale:5
+scale:3
 }).then(function(canvas){
 let a=document.createElement("a");
 a.href=canvas.toDataURL("image/png");
