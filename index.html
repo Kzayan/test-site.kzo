@@ -45,7 +45,7 @@
       position: relative;
     }
 
-    /* КОНВЕРТ ЭКРАНЫ - БҮКІЛ ЭКРАН */
+    /* КОНВЕРТ ЭКРАНЫ */
     .envelope-screen {
       position: fixed;
       top: 0;
@@ -806,7 +806,7 @@
 
     <div class="greeting">
       Құрметті қонақтар!<br>
-      Сіздерді ауылымыздың қызымыз <strong>Банудың</strong> ұзатылу тойына арналған жайылған ақ дастарханымыздың қадірлі қонағы болуға шақырамыз.
+      Сіздерді <strong>аяулы қызымыз Банудың</strong> ұзатылу тойына арналып жайылған ақ дастарханымыздың қадірлі қонағы болуға шақырамыз.
     </div>
 
     <div class="invite-details">
@@ -897,37 +897,14 @@
     updateTimer();
     setInterval(updateTimer, 1000);
 
-    // КОНВЕРТ АШУ - бүкіл экранға басу арқылы
-    var envelopeScreen = document.getElementById('envelopeScreen');
-    var envelope = document.getElementById('envelope');
-    var invitationCard = document.getElementById('invitationCard');
-    var musicBtn = document.getElementById('musicBtn');
-    var opened = false;
-
-    envelopeScreen.addEventListener('click', function() {
-      if (opened) return;
-      opened = true;
-      
-      // Конвертті ашу
-      envelope.classList.add('open');
-      
-      // 1.2 секундтан кейін конвертті жасырып, шақыртуды көрсету
-      setTimeout(function() {
-        envelopeScreen.classList.add('hidden');
-        invitationCard.classList.add('visible');
-        musicBtn.classList.add('visible');
-        
-        // Музыканы қосуға тырысу
-        if (player && typeof player.playVideo === 'function') {
-          try { player.playVideo(); } catch (e) {}
-        }
-      }, 1200);
-    });
-
-    // YOUTUBE МУЗЫКА
+    // ============================================
+    // YOUTUBE МУЗЫКА - АВТОМАТТЫ ҚОСЫЛУ
+    // ============================================
     var VIDEO_ID = 'ch9zSWcAa1E';
     var player = null;
     var isPlaying = false;
+    var playerReady = false;
+    var musicBtn = document.getElementById('musicBtn');
 
     function loadYouTubeAPI() {
       var tag = document.createElement('script');
@@ -960,7 +937,13 @@
       });
     };
 
-    function onPlayerReady(event) {}
+    function onPlayerReady(event) {
+      playerReady = true;
+      // Егер конверт бұрын басылған болса — музыканы қос
+      if (window.__startMusic) {
+        try { player.playVideo(); } catch (e) {}
+      }
+    }
 
     function onPlayerStateChange(event) {
       if (event.data === YT.PlayerState.PLAYING) {
@@ -974,9 +957,22 @@
       }
     }
 
+    // Музыканы қосу функциясы (конверт басылғанда шақырылады)
+    function startMusic() {
+      window.__startMusic = true;
+      if (player && playerReady && typeof player.playVideo === 'function') {
+        try {
+          player.playVideo();
+        } catch (e) {
+          console.log('Автоплей блокталды');
+        }
+      }
+    }
+
+    // Музыка батырмасы - қосу/өшіру
     musicBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      if (!player) return;
+      if (!player || !playerReady) return;
       if (isPlaying) {
         player.pauseVideo();
       } else {
@@ -984,6 +980,30 @@
       }
     });
 
+    // КОНВЕРТ АШУ - музыка автоматты қосылады
+    var envelopeScreen = document.getElementById('envelopeScreen');
+    var envelope = document.getElementById('envelope');
+    var invitationCard = document.getElementById('invitationCard');
+    var opened = false;
+
+    envelopeScreen.addEventListener('click', function() {
+      if (opened) return;
+      opened = true;
+      
+      // Конвертті ашу
+      envelope.classList.add('open');
+      
+      // МУЗЫКАНЫ БІРДЕН ҚОСУ (автоплей үшін клик керек)
+      startMusic();
+      
+      setTimeout(function() {
+        envelopeScreen.classList.add('hidden');
+        invitationCard.classList.add('visible');
+        musicBtn.classList.add('visible');
+      }, 1200);
+    });
+
+    // YouTube API жүктеу
     loadYouTubeAPI();
   </script>
 </body>
