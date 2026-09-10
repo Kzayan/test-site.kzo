@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Банудың ұзату тойы · Шақырту</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #8b5e3c;
+      --primary-light: #c4956a;
+      --primary-dark: #5c3a21;
+      --gold: #c9a96e;
+      --gold-light: #e8d5b5;
+      --text-dark: #3a2618;
+      --text-medium: #6b4f3a;
+      --text-light: #9b7b65;
+      --white: #ffffff;
+      --success: #6a9c5a;
+      --danger: #b85450;
+      --shadow-sm: 0 4px 15px rgba(0,0,0,0.06);
+      --shadow-md: 0 10px 30px rgba(0,0,0,0.1);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
+      --border-radius-lg: 32px;
+      --border-radius-md: 20px;
+      --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(135deg, #fdf8f3 0%, #f5ede4 50%, #fdf8f3 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      font-family: 'Montserrat', sans-serif;
+      padding: 30px 20px;
+      position: relative; overflow-x: hidden;
+    }
+
+    body::before {
+      content: ''; position: fixed; top: -100px; right: -100px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,169,110,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    body::after {
+      content: ''; position: fixed; bottom: -150px; left: -150px;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,94,60,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* КОНВЕРТ */
+    .envelope-screen {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #fdf8f3 0%, #f0e2d0 50%, #fdf8f3 100%);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    .envelope-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .envelope-hint {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem; color: var(--primary);
+      margin-bottom: 2rem; letter-spacing: 2px;
+      text-align: center;
+      animation: pulseText 2s ease-in-out infinite;
+      padding: 0 20px;
+    }
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.03); }
+    }
+    .envelope-wrapper { perspective: 1200px; cursor: pointer; position: relative; }
+    .envelope {
+      position: relative; width: 320px; height: 220px;
+      background: linear-gradient(135deg, #f5e6d3, #e8d3ba);
+      border-radius: 8px;
+      box-shadow: 0 25px 60px rgba(139,94,60,0.35), 0 0 0 1px rgba(201,169,110,0.3);
+      transition: transform 0.6s ease;
+      transform-style: preserve-3d;
+    }
+    .envelope-wrapper:hover .envelope {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 35px 80px rgba(139,94,60,0.45), 0 0 0 1px rgba(201,169,110,0.5);
+    }
+    .envelope-flap {
+      position: absolute; top: 0; left: 0; width: 100%; height: 0;
+      border-left: 160px solid transparent;
+      border-right: 160px solid transparent;
+      border-top: 110px solid #ddc4a4;
+      border-radius: 8px 8px 0 0;
+      transform-origin: top;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    .envelope.open .envelope-flap { transform: rotateX(180deg); z-index: 1; }
+    .envelope-body {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #f5e6d3, #ead9c2);
+      border-radius: 8px; overflow: hidden; z-index: 2;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .envelope-body::before, .envelope-body::after {
+      content: ''; position: absolute; bottom: 0; width: 0; height: 0;
+    }
+    .envelope-body::before { left: 0; border-bottom: 130px solid #e6cfb2; border-right: 170px solid transparent; }
+    .envelope-body::after { right: 0; border-bottom: 130px solid #e6cfb2; border-left: 170px solid transparent; }
+    .wax-seal {
+      position: relative; z-index: 5;
+      width: 80px; height: 80px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #d4a574, #8b5e3c 70%, #6b4428);
+      box-shadow: 0 6px 20px rgba(139,94,60,0.5), inset 0 -3px 8px rgba(0,0,0,0.3), inset 0 3px 8px rgba(255,255,255,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.2rem; color: #f5e6d3;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+      transition: all 0.5s ease;
+      animation: sealPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes sealPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .envelope.open .wax-seal { opacity: 0; transform: scale(0.5); }
+    .envelope-letter {
+      position: absolute; top: 20px; left: 50%;
+      transform: translateX(-50%) translateY(0);
+      width: 280px; height: 180px;
+      background: linear-gradient(135deg, #fffdf9, #fdf5e9);
+      border-radius: 6px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      z-index: 1;
+      transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s, opacity 0.5s ease 0.3s;
+      opacity: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 1rem;
+      border: 1px solid rgba(201,169,110,0.3);
+    }
+    .envelope.open .envelope-letter {
+      transform: translateX(-50%) translateY(-180px);
+      opacity: 1;
+    }
+    .letter-text { font-family: 'Great Vibes', cursive; font-size: 2rem; color: var(--primary-dark); text-align: center; line-height: 1.3; }
+    .letter-sub { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: var(--text-light); letter-spacing: 3px; text-transform: uppercase; margin-top: 0.5rem; }
+
+    .invitation-card {
+      max-width: 800px; width: 100%;
+      background: rgba(255, 252, 247, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 40px;
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.8);
+      padding: 3rem 2.5rem;
+      border: 1px solid rgba(201,169,110,0.3);
+      position: relative; overflow: hidden;
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+      transition: opacity 1s ease 0.5s, transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+      pointer-events: none;
+    }
+    .invitation-card.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .invitation-card::before {
+      content: ''; position: absolute; top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 60%; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      border-radius: 0 0 50% 50%;
+    }
+
+    /* МУЗЫКА */
+    .music-btn {
+      position: fixed; top: 20px; right: 20px;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: 2px solid var(--gold-light);
+      color: var(--white); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 25px rgba(139,94,60,0.35);
+      transition: var(--transition);
+      z-index: 1000;
+      animation: pulse 2s infinite;
+      opacity: 0; pointer-events: none; padding: 0;
+    }
+    .music-btn.visible { opacity: 1; pointer-events: auto; }
+    .music-btn:hover { transform: scale(1.1); }
+    .music-btn.playing { animation: pulsePlaying 1.5s infinite; }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 8px 25px rgba(139,94,60,0.35), 0 0 0 0 rgba(201,169,110,0.5); }
+      50% { box-shadow: 0 8px 25px rgba(139,94,60,0.35), 0 0 0 12px rgba(201,169,110,0); }
+    }
+    @keyframes pulsePlaying {
+      0%, 100% { box-shadow: 0 8px 25px rgba(139,94,60,0.45), 0 0 0 0 rgba(201,169,110,0.6); }
+      50% { box-shadow: 0 8px 25px rgba(139,94,60,0.45), 0 0 0 15px rgba(201,169,110,0); }
+    }
+    .music-note-svg { width: 28px; height: 28px; fill: var(--gold-light); transition: all 0.4s ease; }
+    .music-btn.playing .music-note-svg { animation: noteDance 1s ease-in-out infinite; fill: #fff8e8; }
+    @keyframes noteDance {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.2) rotate(0deg); }
+    }
+    .music-equalizer { display: none; align-items: flex-end; gap: 3px; height: 22px; }
+    .music-equalizer span { display: block; width: 3px; background: var(--gold-light); border-radius: 2px; height: 6px; }
+    .music-btn.playing .music-note-svg { display: none; }
+    .music-btn.playing .music-equalizer { display: flex; }
+    .music-btn.playing .music-equalizer span { animation: equalizer 0.8s ease-in-out infinite; }
+    .music-btn.playing .music-equalizer span:nth-child(1) { animation-delay: 0s; }
+    .music-btn.playing .music-equalizer span:nth-child(2) { animation-delay: 0.15s; }
+    .music-btn.playing .music-equalizer span:nth-child(3) { animation-delay: 0.3s; }
+    .music-btn.playing .music-equalizer span:nth-child(4) { animation-delay: 0.45s; }
+    @keyframes equalizer {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
+    }
+
+    /* КОНТЕНТ */
+    .photo-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 2.5rem; position: relative; }
+    .photo-wrapper { position: relative; width: 220px; height: 220px; margin-bottom: 1rem; }
+    .photo-wrapper::before {
+      content: ''; position: absolute; inset: -8px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
+      animation: rotateBorder 8s linear infinite; opacity: 0.7;
+    }
+    @keyframes rotateBorder { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .photo-wrapper::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; background: var(--white); z-index: 1; }
+    .bride-photo {
+      position: relative; z-index: 2;
+      width: 100%; height: 100%;
+      border-radius: 50%; object-fit: cover;
+      border: 4px solid var(--white);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: var(--transition);
+    }
+    .bride-photo:hover { transform: scale(1.05); }
+    .photo-caption {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.2rem; color: var(--primary);
+      letter-spacing: 2px; margin-top: 0.5rem;
+    }
+    .ornament { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 1.5rem 0; }
+    .ornament-line { width: 80px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+    .ornament-line:last-child { background: linear-gradient(90deg, var(--gold), transparent); }
+    .ornament-symbol { color: var(--gold); font-size: 1.2rem; }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600; font-size: 2.8rem;
+      color: var(--primary-dark);
+      text-align: center; letter-spacing: 2px;
+      margin-bottom: 0.5rem; line-height: 1.2;
+    }
+    .subhead {
+      text-align: center; font-size: 1rem;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 5px; margin-bottom: 2rem; font-weight: 500;
+    }
+    .greeting {
+      font-size: 1.2rem; font-weight: 400;
+      color: var(--text-medium);
+      margin-bottom: 2rem; text-align: center; line-height: 1.8;
+      background: linear-gradient(135deg, #fffaf5, #fef5ed);
+      padding: 1.5rem; border-radius: var(--border-radius-md);
+      border: 1px solid rgba(201,169,110,0.2);
+    }
+    .greeting strong { color: var(--primary-dark); font-weight: 600; }
+    .invite-details {
+      background: linear-gradient(135deg, #ffffff, #fef9f4);
+      border-radius: var(--border-radius-lg);
+      padding: 2rem; box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(201,169,110,0.25);
+      margin-bottom: 2rem;
+    }
+    .detail-row {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 1rem; margin-bottom: 1.2rem; padding: 0.8rem;
+      border-radius: 15px; transition: var(--transition);
+    }
+    .detail-row:hover { background: rgba(201,169,110,0.08); transform: translateX(5px); }
+    .detail-icon {
+      font-size: 1.8rem; width: 50px; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #fef5ed, #f8e8d8);
+      border-radius: 50%; box-shadow: var(--shadow-sm);
+    }
+    .detail-text { font-size: 1.1rem; color: var(--text-dark); font-weight: 500; }
+    .strong { font-weight: 700; color: var(--primary-dark); }
+    .hosts {
+      background: linear-gradient(135deg, #f8f0e6, #f5e8d8);
+      border-radius: var(--border-radius-md);
+      padding: 1.5rem; text-align: center;
+      font-size: 1.1rem; color: var(--text-medium);
+      font-weight: 500; margin: 1.5rem 0;
+      border: 2px solid rgba(201,169,110,0.3);
+      position: relative;
+    }
+    .hosts::before {
+      content: '✦'; position: absolute; top: -15px; left: 50%;
+      transform: translateX(-50%);
+      color: var(--gold); font-size: 1.5rem;
+      background: var(--white); padding: 0 10px;
+    }
+    .hosts-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; color: var(--primary-dark);
+      font-weight: 600; margin-top: 0.5rem;
+    }
+
+    /* ТАЙМЕР */
+    .timer-section {
+      background: linear-gradient(135deg, #fffaf5, #fef5ed);
+      border-radius: var(--border-radius-lg);
+      padding: 2rem 1.5rem; margin: 2rem 0;
+      border: 1px solid rgba(201,169,110,0.3);
+      box-shadow: var(--shadow-md);
+      position: relative;
+    }
+    .timer-section::before {
+      content: ''; position: absolute; top: -1px;
+      left: 20%; right: 20%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .timer-label {
+      text-align: center; font-size: 0.9rem;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--text-light); margin-bottom: 1.5rem; font-weight: 600;
+    }
+    .timer-grid { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+    .timer-unit {
+      display: flex; flex-direction: column; align-items: center;
+      min-width: 70px; background: var(--white);
+      padding: 1rem 0.8rem; border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(201,169,110,0.2);
+    }
+    .time-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem; font-weight: 700;
+      color: var(--primary-dark);
+      line-height: 1;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .time-caption {
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--text-light);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-top: 8px;
+    }
+
+    /* RSVP */
+    .rsvp-section {
+      margin: 2rem 0;
+      background: linear-gradient(135deg, #ffffff, #fef9f4);
+      border-radius: var(--border-radius-lg);
+      padding: 2rem; box-shadow: var(--shadow-md);
+      border: 1px solid rgba(201,169,110,0.3);
+      position: relative;
+    }
+    .rsvp-section::before {
+      content: ''; position: absolute; top: -1px;
+      left: 20%; right: 20%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .rsvp-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; color: var(--primary-dark);
+      text-align: center; margin-bottom: 0.5rem; font-weight: 600;
+    }
+    .rsvp-subtitle {
+      text-align: center; font-size: 0.9rem;
+      color: var(--text-light); margin-bottom: 1.5rem;
+    }
+    .rsvp-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-label { font-size: 0.9rem; color: var(--text-medium); font-weight: 600; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 0.85rem 1rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem; color: var(--text-dark);
+      background: var(--white);
+      border: 1.5px solid rgba(201,169,110,0.3);
+      border-radius: 15px;
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,169,110,0.15);
+    }
+    .form-textarea { resize: vertical; min-height: 80px; }
+    .form-select {
+      cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b5e3c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      padding-right: 2.5rem;
+    }
+    .rsvp-submit {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: none; color: var(--white);
+      font-weight: 600; font-size: 1rem;
+      padding: 1rem 2rem; border-radius: 50px;
+      cursor: pointer; transition: var(--transition);
+      box-shadow: 0 8px 25px rgba(139,94,60,0.3);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    .rsvp-submit:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(139,94,60,0.4); }
+    .rsvp-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .rsvp-success {
+      text-align: center; padding: 1.5rem;
+      background: linear-gradient(135deg, #f0f8ec, #e8f4e0);
+      border-radius: var(--border-radius-md);
+      border: 2px solid rgba(106,156,90,0.3);
+      color: var(--success); font-weight: 600;
+      display: none;
+    }
+    .rsvp-success.visible { display: block; animation: fadeInUp 0.5s ease-out; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .rsvp-error {
+      text-align: center; padding: 1rem;
+      background: rgba(184,84,80,0.1);
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(184,84,80,0.3);
+      color: var(--danger); font-weight: 600;
+      font-size: 0.9rem; display: none; margin-top: 0.8rem;
+    }
+    .rsvp-error.visible { display: block; }
+
+    /* МЕКЕНЖАЙ */
+    .location-section { margin: 2rem 0 1rem; }
+    .address-block {
+      text-align: center; margin: 1rem 0;
+      font-size: 1.05rem; font-weight: 500;
+      color: var(--text-medium);
+      background: linear-gradient(135deg, #fffaf5, #fef5ed);
+      padding: 1.5rem; border-radius: 25px;
+      border: 1px solid rgba(201,169,110,0.25);
+      box-shadow: var(--shadow-sm);
+      line-height: 1.7;
+    }
+    .address-block .label {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; color: var(--primary-dark);
+      font-weight: 600; margin-bottom: 0.4rem;
+    }
+    .footnote {
+      text-align: center; color: var(--text-light);
+      font-size: 1rem; margin-top: 2.5rem;
+      font-style: italic; letter-spacing: 1px;
+    }
+
+    /* INSTAGRAM СІЛТЕМЕСІ */
+    .credit-section {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(201,169,110,0.25);
+    }
+
+    .credit-text {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.8rem;
+      font-weight: 500;
+    }
+
+    .instagram-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.8rem 1.8rem;
+      background: linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7);
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 25px rgba(238,42,123,0.3);
+      transition: var(--transition);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .instagram-link:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 35px rgba(238,42,123,0.5);
+    }
+
+    .instagram-link:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .instagram-icon {
+      width: 22px;
+      height: 22px;
+      fill: var(--white);
+    }
+
+    .instagram-username {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+    }
+
+    /* АДМИН ПАНЕЛІ */
+    .admin-overlay {
+      position: fixed; inset: 0;
+      background: rgba(58,38,24,0.9);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: none;
+      justify-content: center; align-items: center;
+      padding: 20px; overflow-y: auto;
+    }
+    .admin-overlay.visible { display: flex; animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .admin-panel {
+      background: linear-gradient(135deg, #ffffff, #fef9f4);
+      border-radius: 30px;
+      max-width: 800px; width: 100%;
+      padding: 2rem;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      border: 2px solid rgba(201,169,110,0.4);
+      position: relative;
+      max-height: 92vh; overflow-y: auto;
+      animation: slideUp 0.4s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .admin-header {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(201,169,110,0.3);
+    }
+    .admin-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem; color: var(--primary-dark);
+      font-weight: 600;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .admin-close {
+      background: rgba(184,84,80,0.1);
+      border: 1.5px solid rgba(184,84,80,0.3);
+      color: var(--danger);
+      width: 40px; height: 40px; border-radius: 50%;
+      cursor: pointer; font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .admin-close:hover {
+      background: var(--danger); color: var(--white);
+      transform: rotate(90deg);
+    }
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #fffaf5, #fef5ed);
+      border-radius: 20px; padding: 1rem;
+      text-align: center;
+      border: 1px solid rgba(201,169,110,0.25);
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--primary-dark);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem; font-weight: 600;
+    }
+    .admin-list-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--primary-dark);
+      margin: 1.5rem 0 1rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .admin-btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .admin-btn {
+      background: rgba(201,169,110,0.15);
+      border: 1px solid rgba(201,169,110,0.4);
+      color: var(--primary-dark);
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .admin-btn:hover { background: var(--gold); color: var(--white); }
+    .admin-btn.danger {
+      background: rgba(184,84,80,0.1);
+      border-color: rgba(184,84,80,0.3);
+      color: var(--danger);
+    }
+    .admin-btn.danger:hover { background: var(--danger); color: var(--white); }
+    .admin-search {
+      width: 100%; padding: 0.7rem 1rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.9rem;
+      background: var(--white);
+      border: 1.5px solid rgba(201,169,110,0.3);
+      border-radius: 15px;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: var(--transition);
+    }
+    .admin-search:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,169,110,0.15); }
+    .guest-list { display: flex; flex-direction: column; gap: 0.8rem; }
+    .guest-item {
+      background: var(--white);
+      border-radius: 15px; padding: 1rem;
+      border: 1px solid rgba(201,169,110,0.2);
+      box-shadow: var(--shadow-sm);
+      display: flex; justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem; transition: var(--transition);
+    }
+    .guest-item:hover { transform: translateX(5px); box-shadow: var(--shadow-md); }
+    .guest-info { flex: 1; }
+    .guest-name { font-weight: 700; color: var(--text-dark); font-size: 1rem; margin-bottom: 0.3rem; }
+    .guest-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.2rem; }
+    .guest-note {
+      font-size: 0.85rem; color: var(--text-medium);
+      font-style: italic;
+      background: rgba(201,169,110,0.08);
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px; margin-top: 0.5rem;
+    }
+    .guest-status {
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .guest-status.yes { background: rgba(106,156,90,0.15); color: var(--success); border: 1px solid rgba(106,156,90,0.3); }
+    .guest-status.no { background: rgba(184,84,80,0.15); color: var(--danger); border: 1px solid rgba(184,84,80,0.3); }
+    .guest-status.maybe { background: rgba(201,169,110,0.15); color: var(--primary); border: 1px solid rgba(201,169,110,0.3); }
+    .guest-actions {
+      display: flex; flex-direction: column;
+      align-items: flex-end; gap: 0.5rem;
+    }
+    .guest-delete {
+      background: rgba(184,84,80,0.1);
+      border: none; color: var(--danger);
+      width: 30px; height: 30px; border-radius: 50%;
+      cursor: pointer; font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition);
+    }
+    .guest-delete:hover { background: var(--danger); color: var(--white); transform: scale(1.1); }
+    .empty-state {
+      text-align: center; padding: 2.5rem 1rem;
+      color: var(--text-light);
+      font-style: italic;
+      background: rgba(201,169,110,0.05);
+      border-radius: 15px;
+      border: 2px dashed rgba(201,169,110,0.3);
+    }
+    .loading-state {
+      text-align: center; padding: 2rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+    .admin-footer {
+      margin-top: 1.5rem; padding-top: 1rem;
+      border-top: 1px solid rgba(201,169,110,0.2);
+      font-size: 0.8rem; color: var(--text-light);
+      text-align: center; font-style: italic;
+    }
+
+    @media (max-width: 640px) {
+      .invitation-card { padding: 2rem 1.5rem; border-radius: 30px; }
+      h1 { font-size: 2rem; }
+      .photo-wrapper { width: 160px; height: 160px; }
+      .photo-caption { font-size: 1.8rem; }
+      .time-value { font-size: 1.8rem; }
+      .timer-grid { gap: 0.8rem; }
+      .timer-unit { min-width: 60px; padding: 0.8rem 0.5rem; }
+      .music-btn { width: 52px; height: 52px; top: 15px; right: 15px; }
+      .music-note-svg { width: 24px; height: 24px; }
+      .envelope { width: 260px; height: 180px; }
+      .envelope-flap { border-left: 130px solid transparent; border-right: 130px solid transparent; border-top: 90px solid #ddc4a4; }
+      .envelope-body::before { border-bottom: 105px solid #e6cfb2; border-right: 140px solid transparent; }
+      .envelope-body::after { border-bottom: 105px solid #e6cfb2; border-left: 140px solid transparent; }
+      .envelope-letter { width: 230px; height: 150px; }
+      .letter-text { font-size: 1.6rem; }
+      .envelope-hint { font-size: 1.05rem; }
+      .admin-panel { padding: 1.5rem; }
+      .admin-title { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- КОНВЕРТ -->
+  <div class="envelope-screen" id="envelopeScreen">
+    <div class="envelope-hint">💌 Шақыртуды ашу үшін конвертті басыңыз</div>
+    <div class="envelope-wrapper" id="envelopeWrapper">
+      <div class="envelope" id="envelope">
+        <div class="envelope-letter">
+          <div class="letter-text">Ұзату тойы</div>
+          <div class="letter-sub">11.10.2026</div>
+        </div>
+        <div class="envelope-body"></div>
+        <div class="envelope-flap"></div>
+        <div class="wax-seal">Б</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МУЗЫКА -->
+  <button class="music-btn" id="musicBtn" title="Музыканы қосу/өшіру" aria-label="Музыканы қосу/өшіру">
+    <svg class="music-note-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+      <circle cx="10" cy="17" r="2.5"/>
+      <circle cx="18" cy="15" r="2.5"/>
+    </svg>
+    <div class="music-equalizer">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </button>
+
+  <!-- НЕГІЗГІ ШАҚЫРТУ -->
+  <div class="invitation-card" id="invitationCard">
+    <div class="photo-section">
+      <div class="photo-wrapper">
+        <img src="https://i.ibb.co.com/zWh10ZDX/photo.jpg" alt="Бану - қалыңдық" class="bride-photo">
+      </div>
+      <div class="photo-caption">Бану</div>
+    </div>
+
+    <div class="ornament">
+      <span class="ornament-line"></span>
+      <span class="ornament-symbol">✦</span>
+      <span class="ornament-line"></span>
+    </div>
+
+    <h1>Ұзату тойы</h1>
+    <div class="subhead">11.10.2026</div>
+
+    <div class="greeting">
+      Құрметті қонақтар!<br>
+      Сіздерді ауылымыздың қызымыз <strong>Банудың</strong> ұзатылу тойына арналған жайылған ақ дастарханымыздың қадірлі қонағы болуға шақырамыз.
+    </div>
+
+    <div class="invite-details">
+      <div class="detail-row">
+        <span class="detail-icon">📅</span>
+        <span class="detail-text"><span class="strong">11.10.2026 жыл</span> · 19:00</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📍</span>
+        <span class="detail-text"><span class="strong">Мекен-жайымыз:</span> Абай ауылы, ELITE ABAY HALL, Артықов көшесі, 237</span>
+      </div>
+      
+      <div class="hosts">
+        Той иелері:
+        <div class="hosts-name">Жұлдыз · Дәурен</div>
+      </div>
+    </div>
+
+    <div class="timer-section">
+      <div class="timer-label">⏳ Тойға дейін</div>
+      <div class="timer-grid">
+        <div class="timer-unit">
+          <span class="time-value" id="days">00</span>
+          <span class="time-caption">күн</span>
+        </div>
+        <div class="timer-unit">
+          <span class="time-value" id="hours">00</span>
+          <span class="time-caption">сағат</span>
+        </div>
+        <div class="timer-unit">
+          <span class="time-value" id="minutes">00</span>
+          <span class="time-caption">минут</span>
+        </div>
+        <div class="timer-unit">
+          <span class="time-value" id="seconds">00</span>
+          <span class="time-caption">секунд</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RSVP ФОРМАСЫ (АНКЕТА) -->
+    <div class="rsvp-section">
+      <div class="rsvp-title">Қатысуыңызды растаңыз</div>
+      <div class="rsvp-subtitle">Тойға келетініңізді хабарлаңыз ✦</div>
+
+      <form class="rsvp-form" id="rsvpForm">
+        <div class="form-group">
+          <label class="form-label" for="guestName">Аты-жөніңіз *</label>
+          <input type="text" id="guestName" class="form-input" placeholder="Мысалы: Айгүл Серікқызы" required maxlength="60">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="guestPhone">Телефон нөміріңіз</label>
+          <input type="tel" id="guestPhone" class="form-input" placeholder="+7 (___) ___-__-__" maxlength="25">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="guestStatus">Тойға келесіз бе? *</label>
+          <select id="guestStatus" class="form-select" required>
+            <option value="">Таңдаңыз...</option>
+            <option value="yes">✅ Иә, келемін</option>
+            <option value="no">❌ Өкінішке орай, келе алмаймын</option>
+            <option value="maybe">🤔 Әлі белгісіз</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="guestCount">Қанша адам келеді?</label>
+          <select id="guestCount" class="form-select">
+            <option value="1">1 адам</option>
+            <option value="2">2 адам</option>
+            <option value="3">3 адам</option>
+            <option value="4">4 адам</option>
+            <option value="5+">5+ адам</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="guestNote">Тілек / қосымша ақпарат</label>
+          <textarea id="guestNote" class="form-textarea" placeholder="Тілегіңізді немесе сұрағыңызды жазыңыз..." maxlength="300"></textarea>
+        </div>
+
+        <button type="submit" class="rsvp-submit" id="rsvpSubmitBtn">✦ Жіберу ✦</button>
+      </form>
+
+      <div class="rsvp-success" id="rsvpSuccess">
+        ✅ Рақмет! Жауабыңыз қабылданды.
+      </div>
+
+      <div class="rsvp-error" id="rsvpError">
+        ⚠️ Қате орын алды. Қайта көріңіз.
+      </div>
+    </div>
+
+    <div class="location-section">
+      <div class="address-block">
+        <span class="label">📍 Мекен-жайымыз</span>
+        Абай ауылы, ELITE ABAY HALL<br>
+        Артықов көшесі, 237
+      </div>
+    </div>
+
+    <div class="footnote">
+      ✦ Сіздерді күтеміз! ✦
+    </div>
+
+    <!-- INSTAGRAM КРЕДИТ -->
+    <div class="credit-section">
+      <div class="credit-text">Сайтты жасаған</div>
+      <a href="https://www.instagram.com/aian_wtkkz_17" target="_blank" rel="noopener noreferrer" class="instagram-link">
+        <svg class="instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+        <span class="instagram-username">aian_wtkkz_17</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- АДМИН ПАНЕЛІ -->
+  <div class="admin-overlay" id="adminOverlay">
+    <div class="admin-panel">
+      <div class="admin-header">
+        <div class="admin-title">🔐 Админ панелі</div>
+        <button class="admin-close" id="adminClose" title="Жабу">✕</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-number" id="statTotal">0</div>
+          <div class="stat-label">Барлығы</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statYes" style="color: #6a9c5a;">0</div>
+          <div class="stat-label">Келеді</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statNo" style="color: #b85450;">0</div>
+          <div class="stat-label">Келмейді</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statMaybe" style="color: #c9a96e;">0</div>
+          <div class="stat-label">Белгісіз</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statPeople" style="color: #8b5e3c;">0</div>
+          <div class="stat-label">Адам саны</div>
+        </div>
+      </div>
+
+      <div class="admin-list-title">
+        <span>📋 Қонақтар тізімі</span>
+        <div class="admin-btn-group">
+          <button class="admin-btn" id="refreshBtn">🔄 Жаңарту</button>
+          <button class="admin-btn danger" id="clearAllBtn">🗑️ Барлығын өшіру</button>
+        </div>
+      </div>
+
+      <input type="text" class="admin-search" id="adminSearch" placeholder="🔍 Іздеу (аты, телефон)...">
+
+      <div class="guest-list" id="guestList">
+        <div class="loading-state">Жүктелуде...</div>
+      </div>
+
+      <div class="admin-footer">
+        💡 Деректер Firebase Firestore-та сақталады — барлық құрылғыдан көрінеді
+      </div>
+    </div>
+  </div>
+
+  <!-- Жасырын YouTube плеер -->
+  <div id="youtubePlayer" style="position:fixed; bottom:-9999px; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
+
+  <!-- Firebase SDK (compat нұсқасы — қарапайым) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    (function() {
+      // ============================================================
+      // ⚠️ МАҢЫЗДЫ: Төмендегі firebaseConfig-ті ӨЗІҢІЗДІҢ Firebase
+      // жобаңыздың деректерімен ауыстырыңыз!
+      // console.firebase.google.com → жобаңыз → ⚙️ Project settings
+      // → Your apps → SDK setup → Config
+      // ============================================================
+      const firebaseConfig = {
+        apiKey: "AIzaSyDEMO_REPLACE_ME",
+        authDomain: "banu-toy.firebaseapp.com",
+        projectId: "banu-toy",
+        storageBucket: "banu-toy.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef123456"
+      };
+
+      // Firebase инициализация
+      let db = null;
+      let firebaseReady = false;
+
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        firebaseReady = true;
+        console.log('✅ Firebase дайын');
+      } catch (e) {
+        console.error('❌ Firebase қатесі:', e);
+        firebaseReady = false;
+      }
+
+      // ---------- ТАЙМЕР ----------
+      const targetDate = new Date('2026-10-11T19:00:00+05:00');
+      function updateTimer() {
+        const diff = targetDate - new Date();
+        if (diff <= 0) {
+          document.getElementById('days').textContent = '00';
+          document.getElementById('hours').textContent = '00';
+          document.getElementById('minutes').textContent = '00';
+          document.getElementById('seconds').textContent = '00';
+          return;
+        }
+        const s = Math.floor(diff / 1000);
+        const format = (n) => String(n).padStart(2, '0');
+        document.getElementById('days').textContent = format(Math.floor(s / 86400));
+        document.getElementById('hours').textContent = format(Math.floor((s % 86400) / 3600));
+        document.getElementById('minutes').textContent = format(Math.floor((s % 3600) / 60));
+        document.getElementById('seconds').textContent = format(s % 60);
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
+
+      // ---------- КОНВЕРТ ----------
+      const envelopeScreen = document.getElementById('envelopeScreen');
+      const envelopeWrapper = document.getElementById('envelopeWrapper');
+      const envelope = document.getElementById('envelope');
+      const invitationCard = document.getElementById('invitationCard');
+      const musicBtn = document.getElementById('musicBtn');
+      let opened = false;
+
+      envelopeWrapper.addEventListener('click', function() {
+        if (opened) return;
+        opened = true;
+        envelope.classList.add('open');
+        setTimeout(() => {
+          envelopeScreen.classList.add('hidden');
+          invitationCard.classList.add('visible');
+          musicBtn.classList.add('visible');
+          if (player && typeof player.playVideo === 'function') {
+            try { player.playVideo(); } catch (e) {}
+          }
+        }, 1200);
+      });
+
+      // ---------- RSVP ФОРМАСЫ ----------
+      const rsvpForm = document.getElementById('rsvpForm');
+      const rsvpSuccess = document.getElementById('rsvpSuccess');
+      const rsvpError = document.getElementById('rsvpError');
+      const rsvpSubmitBtn = document.getElementById('rsvpSubmitBtn');
+
+      rsvpForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('guestName').value.trim();
+        const phone = document.getElementById('guestPhone').value.trim();
+        const status = document.getElementById('guestStatus').value;
+        const count = document.getElementById('guestCount').value;
+        const note = document.getElementById('guestNote').value.trim();
+
+        if (!name || !status) return;
+
+        rsvpSubmitBtn.disabled = true;
+        rsvpSubmitBtn.textContent = '⏳ Жіберілуде...';
+        rsvpError.classList.remove('visible');
+
+        const guestData = {
+          name: name,
+          phone: phone,
+          status: status,
+          count: count,
+          note: note,
+          date: new Date().toLocaleString('kk-KZ'),
+          timestamp: Date.now()
+        };
+
+        try {
+          if (firebaseReady && db) {
+            // Firebase-ке сақтау (орталықтан)
+            await db.collection('guests').add(guestData);
+            console.log('✅ Firebase-ке сақталды');
+          } else {
+            // Firebase жоқ болса, localStorage-қа сақтау (қосалқы)
+            const local = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+            local.push({ ...guestData, id: Date.now() });
+            localStorage.setItem('weddingGuests', JSON.stringify(local));
+            console.log('⚠️ localStorage-қа сақталды (Firebase қосылмаған)');
+          }
+
+          rsvpForm.style.display = 'none';
+          rsvpSuccess.classList.add('visible');
+          setTimeout(() => {
+            rsvpForm.reset();
+            rsvpForm.style.display = 'flex';
+            rsvpSuccess.classList.remove('visible');
+          }, 4000);
+        } catch (err) {
+          console.error('❌ Қате:', err);
+          rsvpError.classList.add('visible');
+          setTimeout(() => rsvpError.classList.remove('visible'), 4000);
+        } finally {
+          rsvpSubmitBtn.disabled = false;
+          rsvpSubmitBtn.textContent = '✦ Жіберу ✦';
+        }
+      });
+
+      // ---------- 5 РЕТ БАСУ → АДМИН ----------
+      let clickCount = 0;
+      let clickTimer = null;
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.music-btn')) return;
+        if (e.target.closest('.admin-overlay')) return;
+
+        clickCount++;
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
+        if (clickCount >= 5) {
+          clickCount = 0;
+          openAdminPanel();
+        }
+      });
+
+      // ---------- АДМИН ПАНЕЛІ ----------
+      const adminOverlay = document.getElementById('adminOverlay');
+      const adminClose = document.getElementById('adminClose');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+      const refreshBtn = document.getElementById('refreshBtn');
+      const guestListEl = document.getElementById('guestList');
+      const adminSearch = document.getElementById('adminSearch');
+      let allGuests = [];
+      let unsubscribe = null;
+
+      function openAdminPanel() {
+        adminOverlay.classList.add('visible');
+        loadGuestsRealtime();
+      }
+
+      function closeAdminPanel() {
+        adminOverlay.classList.remove('visible');
+        if (unsubscribe) {
+          unsubscribe();
+          unsubscribe = null;
+        }
+      }
+
+      adminClose.addEventListener('click', closeAdminPanel);
+      adminOverlay.addEventListener('click', function(e) {
+        if (e.target === adminOverlay) closeAdminPanel();
+      });
+
+      // Қонақтарды нақты уақытта жүктеу (Firebase Firestore)
+      function loadGuestsRealtime() {
+        if (!firebaseReady || !db) {
+          // Firebase жоқ болса — localStorage-тан жүктеу
+          const local = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+          allGuests = local.sort((a, b) => b.timestamp - a.timestamp);
+          renderGuestList();
+          updateStats();
+          guestListEl.insertAdjacentHTML('beforeend',
+            '<div style="margin-top:1rem;padding:0.8rem;background:rgba(201,169,110,0.1);border-radius:12px;font-size:0.8rem;color:#8b5e3c;text-align:center;">⚠️ Firebase қосылмаған — тек осы құрылғыдағы деректер көрсетілуде</div>');
+          return;
+        }
+
+        // Firestore-дан нақты уақытта алу
+        guestListEl.innerHTML = '<div class="loading-state">Жүктелуде...</div>';
+
+        if (unsubscribe) unsubscribe();
+
+        unsubscribe = db.collection('guests')
+          .orderBy('timestamp', 'desc')
+          .onSnapshot(
+            (snapshot) => {
+              allGuests = [];
+              snapshot.forEach((doc) => {
+                allGuests.push({ id: doc.id, ...doc.data() });
+              });
+              renderGuestList();
+              updateStats();
+            },
+            (error) => {
+              console.error('Firestore қатесі:', error);
+              guestListEl.innerHTML = `
+                <div class="empty-state">
+                  ⚠️ Деректерді жүктеу мүмкін болмады.<br>
+                  <small>Firestore ережелерін тексеріңіз (test mode)</small>
+                </div>`;
+            }
+          );
+      }
+
+      // Статистика
+      function updateStats() {
+        document.getElementById('statTotal').textContent = allGuests.length;
+        document.getElementById('statYes').textContent = allGuests.filter(g => g.status === 'yes').length;
+        document.getElementById('statNo').textContent = allGuests.filter(g => g.status === 'no').length;
+        document.getElementById('statMaybe').textContent = allGuests.filter(g => g.status === 'maybe').length;
+
+        // Адам саны
+        let peopleCount = 0;
+        allGuests.filter(g => g.status === 'yes').forEach(g => {
+          if (g.count === '5+') peopleCount += 5;
+          else peopleCount += parseInt(g.count || '1') || 1;
+        });
+        document.getElementById('statPeople').textContent = peopleCount;
+      }
+
+      // Тізімді көрсету
+      function renderGuestList() {
+        const search = (adminSearch.value || '').toLowerCase().trim();
+
+        let filtered = allGuests;
+        if (search) {
+          filtered = allGuests.filter(g =>
+            (g.name || '').toLowerCase().includes(search) ||
+            (g.phone || '').toLowerCase().includes(search)
+          );
+        }
+
+        if (filtered.length === 0) {
+          guestListEl.innerHTML = search
+            ? '<div class="empty-state">🔍 Ештеңе табылмады</div>'
+            : '<div class="empty-state">Әзірге ешкім жауап бермеді</div>';
+          return;
+        }
+
+        guestListEl.innerHTML = filtered.map(guest => {
+          let statusText, statusClass;
+          if (guest.status === 'yes') { statusText = '✅ Келеді'; statusClass = 'yes'; }
+          else if (guest.status === 'no') { statusText = '❌ Келмейді'; statusClass = 'no'; }
+          else { statusText = '🤔 Белгісіз'; statusClass = 'maybe'; }
+
+          const countLabel = guest.count ? `👥 ${guest.count} адам` : '';
+
+          return `
+            <div class="guest-item">
+              <div class="guest-info">
+                <div class="guest-name">${escapeHtml(guest.name)}</div>
+                ${guest.phone ? `<div class="guest-meta">📞 ${escapeHtml(guest.phone)}</div>` : ''}
+                ${countLabel ? `<div class="guest-meta">${countLabel}</div>` : ''}
+                ${guest.date ? `<div class="guest-meta">🕒 ${escapeHtml(guest.date)}</div>` : ''}
+                ${guest.note ? `<div class="guest-note">💬 ${escapeHtml(guest.note)}</div>` : ''}
+              </div>
+              <div class="guest-actions">
+                <span class="guest-status ${statusClass}">${statusText}</span>
+                <button class="guest-delete" data-id="${guest.id}" title="Өшіру">🗑️</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        guestListEl.querySelectorAll('.guest-delete').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteGuest(this.dataset.id);
+          });
+        });
+      }
+
+      // Қонақты өшіру
+      async function deleteGuest(id) {
+        if (!confirm('Осы қонақты өшіруге сенімдісіз бе?')) return;
+        try {
+          if (firebaseReady && db) {
+            await db.collection('guests').doc(id).delete();
+          } else {
+            const local = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+            const filtered = local.filter(g => String(g.id) !== String(id));
+            localStorage.setItem('weddingGuests', JSON.stringify(filtered));
+            allGuests = filtered.sort((a, b) => b.timestamp - a.timestamp);
+            renderGuestList();
+            updateStats();
+          }
+        } catch (err) {
+          console.error('Өшіру қатесі:', err);
+        }
+      }
+
+      // Барлығын өшіру
+      clearAllBtn.addEventListener('click', async function() {
+        if (!confirm('БАРЛЫҚ қонақтар тізімін өшіруге сенімдісіз бе?')) return;
+        try {
+          if (firebaseReady && db) {
+            const snapshot = await db.collection('guests').get();
+            const batch = db.batch();
+            snapshot.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+          } else {
+            localStorage.removeItem('weddingGuests');
+            allGuests = [];
+            renderGuestList();
+            updateStats();
+          }
+        } catch (err) {
+          console.error('Өшіру қатесі:', err);
+        }
+      });
+
+      // Жаңарту
+      refreshBtn.addEventListener('click', () => {
+        if (firebaseReady && db) {
+          loadGuestsRealtime();
+        } else {
+          const local = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+          allGuests = local.sort((a, b) => b.timestamp - a.timestamp);
+          renderGuestList();
+          updateStats();
+        }
+      });
+
+      // Іздеу
+      adminSearch.addEventListener('input', renderGuestList);
+
+      // XSS-тен қорғау
+      function escapeHtml(text) {
+        if (text == null) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+      }
+
+      // ---------- YOUTUBE МУЗЫКА ----------
+      const VIDEO_ID = 'ch9zSWcAa1E';
+      let player = null;
+      let isPlaying = false;
+
+      function loadYouTubeAPI() {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document
