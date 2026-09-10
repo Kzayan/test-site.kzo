@@ -32,7 +32,6 @@
       width: 100%;
       min-height: 100vh;
       overflow-x: hidden;
-      /* Мәтін таңдауға тыйым салу */
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -50,11 +49,8 @@
       font-family: 'Montserrat', sans-serif;
       padding: 30px 20px;
       position: relative;
-      /* Контекст мәзірін болдырмау */
-      -webkit-touch-callout: none;
     }
 
-    /* Барлық мәтінге таңдауға тыйым */
     * {
       -webkit-user-select: none;
       -moz-user-select: none;
@@ -63,13 +59,40 @@
       -webkit-touch-callout: none;
     }
 
-    /* Суретті сүйреуге тыйым */
     img {
       -webkit-user-drag: none;
       -khtml-user-drag: none;
       -moz-user-drag: none;
       -o-user-drag: none;
       user-drag: none;
+      pointer-events: none;
+    }
+
+    /* ===================================================
+       ЖАСЫРЫН YOUTUBE ПЛЕЕР - МҮЛДЕ КӨРІНБЕЙДІ
+       Видео атауы, "Watch on YouTube" жазуы және басқа
+       элементтер толығымен жасырылған
+    =================================================== */
+    #youtubePlayerContainer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: -9999;
+    }
+
+    #youtubePlayer {
+      width: 1px;
+      height: 1px;
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      opacity: 0;
       pointer-events: none;
     }
 
@@ -788,6 +811,14 @@
 </head>
 <body>
 
+  <!-- ===================================================
+       ЖАСЫРЫН YOUTUBE ПЛЕЕР
+       Видео туралы ақпарат толығымен жасырылған
+  =================================================== -->
+  <div id="youtubePlayerContainer">
+    <div id="youtubePlayer"></div>
+  </div>
+
   <!-- КОНВЕРТ ЭКРАНЫ -->
   <div class="envelope-screen" id="envelopeScreen">
     <div class="envelope-hint">💌 Шақыртуды ашу үшін экранды басыңыз</div>
@@ -901,37 +932,15 @@
     </div>
   </div>
 
-  <!-- Жасырын YouTube плеер -->
-  <div id="youtubePlayer" style="position:fixed; bottom:-9999px; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
-
   <script>
     // ============================================
     // МӘТІН КӨШІРУГЕ ТЫЙЫМ САЛУ
     // ============================================
-    
-    // 1. Copy оқиғасын болдырмау (Ctrl+C, Cmd+C)
-    document.addEventListener('copy', function(e) {
-      e.preventDefault();
-      return false;
-    });
-
-    // 2. Cut оқиғасын болдырмау (Ctrl+X, Cmd+X)
-    document.addEventListener('cut', function(e) {
-      e.preventDefault();
-      return false;
-    });
-
-    // 3. Контекст мәзірін болдырмау (оң жақ батырма)
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      return false;
-    });
-
-    // 4. Ctrl+C, Ctrl+X, Ctrl+A, Ctrl+U, F12 тіркестерін болдырмау
+    document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
+    document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
     document.addEventListener('keydown', function(e) {
-      // Ctrl немесе Cmd басылғанда
       if (e.ctrlKey || e.metaKey) {
-        // C (copy), X (cut), A (select all), U (view source), S (save), P (print)
         if (e.key === 'c' || e.key === 'C' ||
             e.key === 'x' || e.key === 'X' ||
             e.key === 'a' || e.key === 'A' ||
@@ -942,14 +951,7 @@
           return false;
         }
       }
-      
-      // F12 (Developer Tools) болдырмау
-      if (e.key === 'F12') {
-        e.preventDefault();
-        return false;
-      }
-
-      // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C болдырмау
+      if (e.key === 'F12') { e.preventDefault(); return false; }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
         if (e.key === 'I' || e.key === 'i' ||
             e.key === 'J' || e.key === 'j' ||
@@ -959,56 +961,20 @@
         }
       }
     });
-
-    // 5. Мәтін таңдауға тыйым (selectstart)
     document.addEventListener('selectstart', function(e) {
-      // Input өрістеріне рұқсат (егер болашақта қосылатын болса)
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-        return true;
-      }
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return true;
       e.preventDefault();
       return false;
     });
-
-    // 6. Drag (сүйреу) болдырмау
-    document.addEventListener('dragstart', function(e) {
-      e.preventDefault();
-      return false;
-    });
-
-    // 7. Ұзақ басу арқылы таңдау (телефонда) болдырмау
-    document.addEventListener('touchstart', function(e) {
-      // Суреттер мен мәтіндерге ұзақ басуға тыйым
-      if (e.target.tagName === 'IMG' || 
-          e.target.classList.contains('greeting') ||
-          e.target.classList.contains('address-block') ||
-          e.target.classList.contains('hosts')) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-
-    // 8. Қос рет басу арқылы таңдау болдырмау
+    document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
     document.addEventListener('mousedown', function(e) {
-      if (e.detail > 1) {
-        e.preventDefault();
-        return false;
-      }
-    });
-
-    // 9. Суреттерді сақтауға тыйым (save image as)
-    document.querySelectorAll('img').forEach(function(img) {
-      img.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-        return false;
-      });
-      img.setAttribute('draggable', 'false');
+      if (e.detail > 1) { e.preventDefault(); return false; }
     });
 
     // ============================================
     // ТАЙМЕР
     // ============================================
     var targetDate = new Date('2026-10-11T19:00:00+05:00');
-    
     function updateTimer() {
       var diff = targetDate - new Date();
       if (diff <= 0) {
@@ -1029,7 +995,7 @@
     setInterval(updateTimer, 1000);
 
     // ============================================
-    // YOUTUBE МУЗЫКА
+    // YOUTUBE МУЗЫКА - ТОЛЫҚ ЖАСЫРЫН
     // ============================================
     var VIDEO_ID = 'ch9zSWcAa1E';
     var player = null;
@@ -1059,7 +1025,10 @@
           'rel': 0,
           'showinfo': 0,
           'iv_load_policy': 3,
-          'fs': 0
+          'fs': 0,
+          'disablekb': 1,
+          'enablejsapi': 1,
+          'origin': window.location.origin
         },
         events: {
           'onReady': onPlayerReady,
@@ -1070,6 +1039,9 @@
 
     function onPlayerReady(event) {
       playerReady = true;
+      // Плеер дайын болғанда оның барлық элементтерін жасыру
+      hidePlayerElements();
+      
       if (window.__startMusic) {
         try { player.playVideo(); } catch (e) {}
       }
@@ -1080,12 +1052,36 @@
         isPlaying = true;
         musicBtn.classList.add('playing');
         musicBtn.title = 'Музыканы өшіру';
+        // Ойнап жатқанда да жасырын ұстау
+        hidePlayerElements();
       } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
         isPlaying = false;
         musicBtn.classList.remove('playing');
         musicBtn.title = 'Музыканы қосу';
       }
     }
+
+    // YouTube плеердің барлық элементтерін жасыру
+    function hidePlayerElements() {
+      try {
+        var iframe = document.querySelector('#youtubePlayer iframe') || 
+                     document.querySelector('#youtubePlayerContainer iframe');
+        if (iframe) {
+          iframe.style.width = '1px';
+          iframe.style.height = '1px';
+          iframe.style.position = 'absolute';
+          iframe.style.top = '-9999px';
+          iframe.style.left = '-9999px';
+          iframe.style.opacity = '0';
+          iframe.style.pointerEvents = 'none';
+          iframe.setAttribute('tabindex', '-1');
+          iframe.setAttribute('aria-hidden', 'true');
+        }
+      } catch (e) {}
+    }
+
+    // Әр 1 секунд сайын плеерді жасырып отыру (қорғаныс)
+    setInterval(hidePlayerElements, 1000);
 
     function startMusic() {
       window.__startMusic = true;
@@ -1108,7 +1104,7 @@
       }
     });
 
-    // КОНВЕРТ АШУ - музыка автоматты қосылады
+    // КОНВЕРТ АШУ
     var envelopeScreen = document.getElementById('envelopeScreen');
     var envelope = document.getElementById('envelope');
     var invitationCard = document.getElementById('invitationCard');
