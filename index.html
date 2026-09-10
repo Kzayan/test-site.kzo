@@ -32,6 +32,13 @@
       width: 100%;
       min-height: 100vh;
       overflow-x: hidden;
+      /* Мәтін таңдауға тыйым салу */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -43,6 +50,27 @@
       font-family: 'Montserrat', sans-serif;
       padding: 30px 20px;
       position: relative;
+      /* Контекст мәзірін болдырмау */
+      -webkit-touch-callout: none;
+    }
+
+    /* Барлық мәтінге таңдауға тыйым */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    /* Суретті сүйреуге тыйым */
+    img {
+      -webkit-user-drag: none;
+      -khtml-user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
+      user-drag: none;
+      pointer-events: none;
     }
 
     /* КОНВЕРТ ЭКРАНЫ */
@@ -414,6 +442,7 @@
       border: 4px solid var(--white);
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       transition: var(--transition);
+      pointer-events: none;
     }
 
     .photo-caption {
@@ -714,6 +743,7 @@
       height: 22px;
       fill: var(--white);
       flex-shrink: 0;
+      pointer-events: none;
     }
 
     .instagram-username {
@@ -875,7 +905,108 @@
   <div id="youtubePlayer" style="position:fixed; bottom:-9999px; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
 
   <script>
+    // ============================================
+    // МӘТІН КӨШІРУГЕ ТЫЙЫМ САЛУ
+    // ============================================
+    
+    // 1. Copy оқиғасын болдырмау (Ctrl+C, Cmd+C)
+    document.addEventListener('copy', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // 2. Cut оқиғасын болдырмау (Ctrl+X, Cmd+X)
+    document.addEventListener('cut', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // 3. Контекст мәзірін болдырмау (оң жақ батырма)
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // 4. Ctrl+C, Ctrl+X, Ctrl+A, Ctrl+U, F12 тіркестерін болдырмау
+    document.addEventListener('keydown', function(e) {
+      // Ctrl немесе Cmd басылғанда
+      if (e.ctrlKey || e.metaKey) {
+        // C (copy), X (cut), A (select all), U (view source), S (save), P (print)
+        if (e.key === 'c' || e.key === 'C' ||
+            e.key === 'x' || e.key === 'X' ||
+            e.key === 'a' || e.key === 'A' ||
+            e.key === 'u' || e.key === 'U' ||
+            e.key === 's' || e.key === 'S' ||
+            e.key === 'p' || e.key === 'P') {
+          e.preventDefault();
+          return false;
+        }
+      }
+      
+      // F12 (Developer Tools) болдырмау
+      if (e.key === 'F12') {
+        e.preventDefault();
+        return false;
+      }
+
+      // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C болдырмау
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+        if (e.key === 'I' || e.key === 'i' ||
+            e.key === 'J' || e.key === 'j' ||
+            e.key === 'C' || e.key === 'c') {
+          e.preventDefault();
+          return false;
+        }
+      }
+    });
+
+    // 5. Мәтін таңдауға тыйым (selectstart)
+    document.addEventListener('selectstart', function(e) {
+      // Input өрістеріне рұқсат (егер болашақта қосылатын болса)
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return true;
+      }
+      e.preventDefault();
+      return false;
+    });
+
+    // 6. Drag (сүйреу) болдырмау
+    document.addEventListener('dragstart', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // 7. Ұзақ басу арқылы таңдау (телефонда) болдырмау
+    document.addEventListener('touchstart', function(e) {
+      // Суреттер мен мәтіндерге ұзақ басуға тыйым
+      if (e.target.tagName === 'IMG' || 
+          e.target.classList.contains('greeting') ||
+          e.target.classList.contains('address-block') ||
+          e.target.classList.contains('hosts')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    // 8. Қос рет басу арқылы таңдау болдырмау
+    document.addEventListener('mousedown', function(e) {
+      if (e.detail > 1) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // 9. Суреттерді сақтауға тыйым (save image as)
+    document.querySelectorAll('img').forEach(function(img) {
+      img.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+      });
+      img.setAttribute('draggable', 'false');
+    });
+
+    // ============================================
     // ТАЙМЕР
+    // ============================================
     var targetDate = new Date('2026-10-11T19:00:00+05:00');
     
     function updateTimer() {
@@ -898,7 +1029,7 @@
     setInterval(updateTimer, 1000);
 
     // ============================================
-    // YOUTUBE МУЗЫКА - АВТОМАТТЫ ҚОСЫЛУ
+    // YOUTUBE МУЗЫКА
     // ============================================
     var VIDEO_ID = 'ch9zSWcAa1E';
     var player = null;
