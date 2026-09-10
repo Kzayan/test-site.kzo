@@ -939,7 +939,6 @@
 
     function onPlayerReady(event) {
       playerReady = true;
-      // Егер конверт бұрын басылған болса — музыканы қос
       if (window.__startMusic) {
         try { player.playVideo(); } catch (e) {}
       }
@@ -957,7 +956,6 @@
       }
     }
 
-    // Музыканы қосу функциясы (конверт басылғанда шақырылады)
     function startMusic() {
       window.__startMusic = true;
       if (player && playerReady && typeof player.playVideo === 'function') {
@@ -969,7 +967,6 @@
       }
     }
 
-    // Музыка батырмасы - қосу/өшіру
     musicBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       if (!player || !playerReady) return;
@@ -990,10 +987,7 @@
       if (opened) return;
       opened = true;
       
-      // Конвертті ашу
       envelope.classList.add('open');
-      
-      // МУЗЫКАНЫ БІРДЕН ҚОСУ (автоплей үшін клик керек)
       startMusic();
       
       setTimeout(function() {
@@ -1003,7 +997,6 @@
       }, 1200);
     });
 
-    // YouTube API жүктеу
     loadYouTubeAPI();
   </script>
 </body>
