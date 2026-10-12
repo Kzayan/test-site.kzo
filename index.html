@@ -7,11 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --primary: #3b82f6;
@@ -22,14 +18,12 @@
       --dark-2: #12263f;
       --text: #1e293b;
       --text-light: #64748b;
-      --bg: #f1f5f9;
       --card: #ffffff;
+      --actor-primary: #a855f7;
+      --actor-accent: #d946ef;
     }
 
-    html {
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-    }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
     body {
       font-family: 'Inter', sans-serif;
@@ -43,8 +37,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .resume-card,
-    .resume-card * {
+    .resume-card, .resume-card * {
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -52,9 +45,7 @@
       -webkit-touch-callout: none;
     }
 
-    .email-display,
-    .contact-chip[href^="mailto"],
-    .contact-chip[href^="mailto"] * {
+    .email-display, .contact-chip[href^="mailto"], .contact-chip[href^="mailto"] * {
       -webkit-user-select: text;
       -moz-user-select: text;
       -ms-user-select: text;
@@ -65,10 +56,8 @@
     body::before {
       content: '';
       position: fixed;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
       background: 
         radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
         radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
@@ -84,10 +73,8 @@
     }
 
     .floating-shapes {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      z-index: 0;
+      position: fixed; inset: 0;
+      overflow: hidden; z-index: 0;
       pointer-events: none;
     }
 
@@ -99,7 +86,7 @@
       animation: float 15s ease-in-out infinite;
     }
 
-    .shape-1 { width: 400px; height: 400px; background: #3b82f6; top: -100px; left: -100px; animation-delay: 0s; }
+    .shape-1 { width: 400px; height: 400px; background: #3b82f6; top: -100px; left: -100px; }
     .shape-2 { width: 300px; height: 300px; background: #06b6d4; bottom: -80px; right: -80px; animation-delay: -5s; }
     .shape-3 { width: 250px; height: 250px; background: #8b5cf6; top: 40%; right: 10%; animation-delay: -10s; }
 
@@ -132,6 +119,48 @@
         0 0 100px rgba(59, 130, 246, 0.1);
     }
 
+    .section-tabs {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      padding: 5px;
+    }
+
+    .tab-btn {
+      padding: 0.6rem 1.2rem;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.65);
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: white; background: rgba(255, 255, 255, 0.08); }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+    }
+
+    .tab-btn i { font-size: 0.9rem; }
+
     .toolbar {
       position: absolute;
       top: 1.5rem;
@@ -150,7 +179,6 @@
       border-radius: 12px;
       padding: 4px;
       gap: 2px;
-      overflow: hidden;
     }
 
     .lang-btn {
@@ -165,13 +193,9 @@
       cursor: pointer;
       border-radius: 9px;
       transition: all 0.3s ease;
-      position: relative;
     }
 
-    .lang-btn:hover {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-    }
+    .lang-btn:hover { color: white; background: rgba(255, 255, 255, 0.1); }
 
     .lang-btn.active {
       background: linear-gradient(135deg, #3b82f6, #06b6d4);
@@ -180,8 +204,7 @@
     }
 
     .tool-btn {
-      width: 44px;
-      height: 44px;
+      width: 44px; height: 44px;
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
@@ -204,8 +227,7 @@
 
     .tool-btn .tooltip {
       position: absolute;
-      bottom: -38px;
-      right: 0;
+      bottom: -38px; right: 0;
       background: rgba(0, 0, 0, 0.9);
       color: white;
       padding: 0.4rem 0.8rem;
@@ -222,7 +244,7 @@
     .header {
       position: relative;
       background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #1e40af 100%);
-      padding: 3.5rem 3rem 3rem 3rem;
+      padding: 4.5rem 3rem 3rem 3rem;
       overflow: hidden;
     }
 
@@ -230,8 +252,7 @@
       content: '';
       position: absolute;
       top: 0; right: 0;
-      width: 60%;
-      height: 100%;
+      width: 60%; height: 100%;
       background: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.3), transparent 60%);
       pointer-events: none;
     }
@@ -240,8 +261,7 @@
       content: '';
       position: absolute;
       bottom: 0; left: 0;
-      width: 100%;
-      height: 4px;
+      width: 100%; height: 4px;
       background: linear-gradient(90deg, #3b82f6, #06b6d4, #8b5cf6, #3b82f6);
       background-size: 200% 100%;
       animation: gradientMove 3s linear infinite;
@@ -262,8 +282,7 @@
 
     .avatar {
       flex-shrink: 0;
-      width: 140px;
-      height: 140px;
+      width: 140px; height: 140px;
       border-radius: 30px;
       background: linear-gradient(135deg, #3b82f6, #06b6d4);
       display: flex;
@@ -275,8 +294,7 @@
       color: white;
       box-shadow: 
         0 20px 40px -10px rgba(59, 130, 246, 0.6),
-        0 0 0 4px rgba(255, 255, 255, 0.1),
-        inset 0 2px 10px rgba(255, 255, 255, 0.2);
+        0 0 0 4px rgba(255, 255, 255, 0.1);
       position: relative;
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       cursor: pointer;
@@ -348,7 +366,6 @@
       color: #e2e8f0;
       border: 1px solid rgba(255, 255, 255, 0.12);
       transition: all 0.3s ease;
-      cursor: pointer;
       text-decoration: none;
     }
 
@@ -416,8 +433,7 @@
 
     .section-title i {
       font-size: 1rem;
-      width: 32px;
-      height: 32px;
+      width: 32px; height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -431,12 +447,11 @@
       content: '';
       position: absolute;
       bottom: 0; left: 0;
-      width: 100%;
-      height: 1px;
+      width: 100%; height: 1px;
       background: linear-gradient(90deg, #cbd5e1 0%, transparent 100%);
     }
 
-    .edu-card {
+    .info-card {
       background: white;
       border-radius: 18px;
       padding: 1.4rem;
@@ -447,21 +462,65 @@
       overflow: hidden;
     }
 
-    .edu-card::before {
+    .info-card::before {
       content: '';
       position: absolute;
       left: 0; top: 0;
-      width: 4px;
-      height: 100%;
+      width: 4px; height: 100%;
       background: linear-gradient(180deg, var(--primary), var(--accent));
       border-radius: 4px 0 0 4px;
     }
 
-    .edu-card:hover {
+    .info-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
       border-color: #bfdbfe;
     }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row:first-child { padding-top: 0; }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--text-light);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .info-label i {
+      color: var(--primary);
+      font-size: 0.9rem;
+      width: 18px;
+      text-align: center;
+    }
+
+    .info-value {
+      color: var(--dark-2);
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .info-value a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .info-value a:hover { text-decoration: underline; }
 
     .edu-institution {
       font-family: 'Manrope', sans-serif;
@@ -620,8 +679,7 @@
     .goal-card::before {
       content: '\201C';
       position: absolute;
-      top: -30px;
-      right: 15px;
+      top: -30px; right: 15px;
       font-size: 8rem;
       font-family: Georgia, serif;
       color: rgba(59, 130, 246, 0.12);
@@ -660,8 +718,7 @@
     }
 
     .trait-item i {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -696,17 +753,6 @@
       overflow: hidden;
     }
 
-    .course-card::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.06), transparent 60%);
-      pointer-events: none;
-    }
-
     .course-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
@@ -722,8 +768,6 @@
       align-items: center;
       gap: 0.6rem;
       margin-bottom: 0.8rem;
-      position: relative;
-      z-index: 1;
     }
 
     .course-name i { color: var(--primary); font-size: 1.1rem; }
@@ -735,8 +779,6 @@
       padding-left: 1rem;
       border-left: 3px solid;
       border-image: linear-gradient(180deg, var(--primary), var(--accent)) 1;
-      position: relative;
-      z-index: 1;
     }
 
     .filmography {
@@ -763,6 +805,233 @@
       opacity: 0.7;
     }
 
+    /* ============================================
+       АКТЕРЛІК ПОРТФОЛИО БӨЛІМІ
+       ============================================ */
+    .actor-portfolio { display: none; }
+    .actor-portfolio.active { display: block; animation: fadeInUp 0.5s ease; }
+    .resume-main.active { display: block; }
+    .resume-main { display: none; }
+
+    .actor-header {
+      position: relative;
+      background: linear-gradient(135deg, #1a0b2e 0%, #4c1d95 50%, #7c3aed 100%);
+      padding: 4.5rem 3rem 3rem 3rem;
+      overflow: hidden;
+    }
+
+    .actor-header::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 60%; height: 100%;
+      background: radial-gradient(circle at 70% 50%, rgba(217, 70, 239, 0.35), transparent 60%);
+      pointer-events: none;
+    }
+
+    .actor-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 4px;
+      background: linear-gradient(90deg, #a855f7, #d946ef, #ec4899, #a855f7);
+      background-size: 200% 100%;
+      animation: gradientMove 3s linear infinite;
+    }
+
+    .actor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(217, 70, 239, 0.15);
+      border: 1px solid rgba(217, 70, 239, 0.4);
+      color: #f0abfc;
+      padding: 0.5rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .actor-badge i { font-size: 0.85rem; }
+
+    .actor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.7fr;
+      gap: 0;
+    }
+
+    .actor-left {
+      background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+      padding: 2.5rem 2rem 2.5rem 3rem;
+      border-right: 1px solid #e9d5ff;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .actor-right {
+      padding: 2.5rem 3rem 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .actor-section-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--actor-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.3rem;
+      position: relative;
+      padding-bottom: 0.7rem;
+    }
+
+    .actor-section-title i {
+      font-size: 1rem;
+      width: 32px; height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--actor-primary), var(--actor-accent));
+      color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(168, 85, 247, 0.3);
+    }
+
+    .actor-section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, #e9d5ff 0%, transparent 100%);
+    }
+
+    /* ============================================
+       ФОТО ГАЛЕРЕЯ
+       ============================================ */
+    .photo-gallery {
+      background: linear-gradient(135deg, #1a0b2e 0%, #2e1065 100%);
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .photo-gallery::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(168, 85, 247, 0.2), transparent 50%),
+                  radial-gradient(circle at 70% 70%, rgba(217, 70, 239, 0.15), transparent 50%);
+      pointer-events: none;
+    }
+
+    .photo-gallery-title {
+      position: relative;
+      z-index: 1;
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #f0abfc;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 2rem;
+      justify-content: center;
+    }
+
+    .photo-gallery-title i {
+      font-size: 1.1rem;
+      width: 40px; height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #a855f7, #d946ef);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5);
+    }
+
+    .photo-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .photo-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(217, 70, 239, 0.3);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      aspect-ratio: 3 / 4;
+      width: 100%;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: #d946ef;
+      box-shadow: 0 25px 50px rgba(217, 70, 239, 0.4);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .photo-card:hover img {
+      transform: scale(1.08);
+    }
+
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(10, 22, 40, 0.95) 100%);
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .photo-card:hover .photo-overlay {
+      opacity: 1;
+    }
+
+    .photo-caption {
+      color: white;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .photo-caption i {
+      color: #d946ef;
+    }
+
     .footer {
       background: linear-gradient(135deg, #0a1628 0%, #12263f 100%);
       padding: 1.5rem 3rem;
@@ -781,8 +1050,7 @@
     .social-links { display: flex; gap: 0.6rem; }
 
     .social-btn {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -814,21 +1082,12 @@
       letter-spacing: 0.02em;
     }
 
-    .copyright i {
-      color: #3b82f6;
-      margin-right: 0.4rem;
-      font-size: 0.85rem;
-    }
-
-    .copyright span {
-      color: #60a5fa;
-      font-weight: 600;
-    }
+    .copyright i { color: #3b82f6; margin-right: 0.4rem; font-size: 0.85rem; }
+    .copyright span { color: #60a5fa; font-weight: 600; }
 
     .toast {
       position: fixed;
-      bottom: 2rem;
-      left: 50%;
+      bottom: 2rem; left: 50%;
       transform: translateX(-50%) translateY(100px);
       background: linear-gradient(135deg, #10b981, #059669);
       color: white;
@@ -858,7 +1117,6 @@
       inset: 0;
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
       z-index: 10000;
       display: none;
       align-items: center;
@@ -866,15 +1124,9 @@
       padding: 1rem;
     }
 
-    .copy-modal.show {
-      display: flex;
-      animation: fadeIn 0.3s ease;
-    }
+    .copy-modal.show { display: flex; animation: fadeIn 0.3s ease; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .copy-modal-content {
       background: white;
@@ -885,8 +1137,6 @@
       text-align: center;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
       animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-height: 90vh;
-      overflow-y: auto;
     }
 
     @keyframes scaleIn {
@@ -930,17 +1180,12 @@
       letter-spacing: 0.5px;
     }
 
-    .email-display:active,
-    .email-display.selected {
+    .email-display:active, .email-display.selected {
       background: linear-gradient(135deg, #dbeafe, #bae6fd);
       border-color: var(--primary);
     }
 
-    .copy-modal-btns {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
+    .copy-modal-btns { display: flex; flex-direction: column; gap: 0.6rem; }
 
     .copy-modal-btns button {
       padding: 0.95rem 1rem;
@@ -963,21 +1208,13 @@
       box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
     }
 
-    .copy-modal-btns button.primary:hover,
-    .copy-modal-btns button.primary:active {
+    .copy-modal-btns button.primary:hover, .copy-modal-btns button.primary:active {
       transform: translateY(-2px);
       box-shadow: 0 10px 22px rgba(59, 130, 246, 0.5);
     }
 
-    .copy-modal-btns button.secondary {
-      background: #f1f5f9;
-      color: var(--text);
-    }
-
-    .copy-modal-btns button.secondary:hover,
-    .copy-modal-btns button.secondary:active {
-      background: #e2e8f0;
-    }
+    .copy-modal-btns button.secondary { background: #f1f5f9; color: var(--text); }
+    .copy-modal-btns button.secondary:hover, .copy-modal-btns button.secondary:active { background: #e2e8f0; }
 
     .copy-modal-btns button.mail-link {
       background: linear-gradient(135deg, #10b981, #059669);
@@ -985,49 +1222,105 @@
       box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
     }
 
-    .copy-modal-btns button.mail-link:hover,
-    .copy-modal-btns button.mail-link:active {
+    .copy-modal-btns button.mail-link:hover, .copy-modal-btns button.mail-link:active {
       transform: translateY(-2px);
       box-shadow: 0 10px 22px rgba(16, 185, 129, 0.5);
     }
 
+    /* Фото модаль — үлкен көрініс */
+    .photo-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10001;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      cursor: zoom-out;
+    }
+
+    .photo-modal.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .photo-modal img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 20px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+      animation: scaleIn 0.3s ease;
+    }
+
+    .photo-modal-close {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .photo-modal-close:hover {
+      background: #ef4444;
+      transform: rotate(90deg) scale(1.1);
+    }
+
     @media (max-width: 900px) {
-      .header-content { flex-direction: column; text-align: center; gap: 1.5rem; padding-top: 2rem; }
+      .header-content, .actor-header .header-content { flex-direction: column; text-align: center; gap: 1.5rem; padding-top: 2rem; }
       .name-title h1 { font-size: 2.4rem; }
       .contact-row { justify-content: center; }
-      .main-content { grid-template-columns: 1fr; }
-      .left-col { padding: 2rem; border-right: none; border-bottom: 1px solid #e2e8f0; }
-      .right-col { padding: 2rem; }
+      .main-content, .actor-grid { grid-template-columns: 1fr; }
+      .left-col, .actor-left { padding: 2rem; border-right: none; border-bottom: 1px solid #e2e8f0; }
+      .right-col, .actor-right { padding: 2rem; }
       .traits-grid { grid-template-columns: 1fr; }
-      .toolbar { top: 1rem; right: 1rem; left: 1rem; justify-content: space-between; }
+      .toolbar { top: 1rem; right: 1rem; }
+      .section-tabs { top: 1rem; left: 1rem; }
+      .tab-btn { padding: 0.5rem 0.9rem; font-size: 0.72rem; }
+      .tab-btn span { display: none; }
       .lang-switcher { padding: 3px; }
       .lang-btn { padding: 0.5rem 0.9rem; font-size: 0.78rem; }
+      .photo-gallery { padding: 2rem 1.5rem; }
     }
 
     @media (max-width: 520px) {
       body { padding: 0.8rem; }
       .resume-card { border-radius: 24px; }
-      .header { padding: 4rem 1.5rem 2rem 1.5rem; }
+      .header, .actor-header { padding: 5rem 1.5rem 2rem 1.5rem; }
       .avatar { width: 110px; height: 110px; font-size: 2.5rem; }
       .name-title h1 { font-size: 1.8rem; }
       .contact-chip { font-size: 0.85rem; padding: 0.5rem 1rem; }
-      .left-col, .right-col { padding: 1.5rem; }
+      .left-col, .right-col, .actor-left, .actor-right { padding: 1.5rem; }
       .footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
       .copyright { padding: 0.9rem 1.5rem 1.2rem 1.5rem; font-size: 0.75rem; }
       .tool-btn { width: 38px; height: 38px; font-size: 0.9rem; }
       .lang-btn { padding: 0.45rem 0.75rem; font-size: 0.72rem; }
-      .copy-modal-content { padding: 1.5rem 1.2rem; border-radius: 20px; }
-      .email-display { font-size: 0.95rem; padding: 0.9rem; }
-      .copy-modal-btns button { padding: 0.85rem 1rem; font-size: 0.9rem; }
+      .tab-btn { padding: 0.45rem 0.7rem; }
+      .info-row { flex-direction: column; gap: 0.3rem; }
+      .info-value { text-align: left; }
+      .photo-gallery { padding: 1.5rem 1rem; }
+      .photo-grid { gap: 1rem; }
     }
 
     @media print {
       body { background: white; padding: 0; }
-      body::before, .floating-shapes, .toolbar, .footer .social-links, .copy-modal { display: none; }
+      body::before, .floating-shapes, .toolbar, .footer .social-links, .copy-modal, .section-tabs, .photo-modal { display: none; }
       .resume-card { box-shadow: none; }
       .section { opacity: 1 !important; animation: none; }
       .footer { background: white; color: #333; }
       .copyright { background: white; color: #333; }
+      .photo-gallery { background: white !important; }
     }
   </style>
 </head>
@@ -1040,6 +1333,17 @@
 
   <div class="resume-wrapper">
     <div class="resume-card">
+      <div class="section-tabs">
+        <button class="tab-btn active" id="tabResume">
+          <i class="fas fa-file-alt"></i>
+          <span data-i18n="tab_resume">Түйіндеме</span>
+        </button>
+        <button class="tab-btn" id="tabActor">
+          <i class="fas fa-masks-theater"></i>
+          <span data-i18n="tab_actor">Актерлік портфолио</span>
+        </button>
+      </div>
+
       <div class="toolbar">
         <div class="lang-switcher">
           <button class="lang-btn active" id="btnKz" data-lang="kz">ҚАЗ</button>
@@ -1059,181 +1363,357 @@
         </button>
       </div>
 
-      <div class="header">
-        <div class="header-content">
-          <div class="avatar" id="avatar" title="Сәлем! 👋">АБ</div>
-          <div class="header-info">
-            <div class="name-title">
-              <h1 data-i18n="name">Базарбек Аян Жеңісұлы</h1>
-            </div>
-            <div class="role-tag">
-              <i class="fas fa-code"></i>
-              <span data-i18n="role">Бағдарламалық қамтамасыз ету</span>
-            </div>
-            <div class="contact-row">
-              <div class="contact-chip">
-                <i class="fas fa-birthday-cake"></i>
-                <span data-i18n="birthday">10.01.2006</span>
+      <div class="resume-main active" id="resumeMain">
+        <div class="header">
+          <div class="header-content">
+            <div class="avatar" id="avatar" title="Сәлем! 👋">АБ</div>
+            <div class="header-info">
+              <div class="name-title">
+                <h1 data-i18n="name">Базарбек Аян Жеңісұлы</h1>
               </div>
-              <a class="contact-chip" href="https://maps.google.com/?q=Қызылорда" target="_blank" rel="noopener">
-                <i class="fas fa-map-marker-alt"></i>
-                <span data-i18n="city">Қызылорда</span>
-              </a>
-              <a class="contact-chip" href="mailto:kzayan161@gmail.com">
-                <i class="fas fa-envelope"></i>
-                kzayan161@gmail.com
-              </a>
+              <div class="role-tag">
+                <i class="fas fa-code"></i>
+                <span data-i18n="role">Бағдарламалық қамтамасыз ету</span>
+              </div>
+              <div class="contact-row">
+                <div class="contact-chip">
+                  <i class="fas fa-birthday-cake"></i>
+                  <span data-i18n="birthday">10.01.2006</span>
+                </div>
+                <a class="contact-chip" href="https://maps.google.com/?q=Қызылорда" target="_blank" rel="noopener">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span data-i18n="city">Қызылорда</span>
+                </a>
+                <a class="contact-chip" href="mailto:kzayan161@gmail.com">
+                  <i class="fas fa-envelope"></i>
+                  kzayan161@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main-content">
+          <div class="left-col">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-graduation-cap"></i>
+                <span data-i18n="education">Білімі</span>
+              </div>
+              <div class="info-card">
+                <div class="edu-institution" data-i18n="college">Халықаралық ORDA жоғары колледжі</div>
+                <div class="edu-specialty">
+                  <i class="fas fa-laptop-code"></i>
+                  <span data-i18n="specialty">Бағдарламалық қамтамасыз ету (IT)</span>
+                </div>
+                <div class="edu-year">
+                  <i class="fas fa-calendar-check"></i>
+                  <span data-i18n="grad_year">Бітіру жылы: 2026</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-briefcase"></i>
+                <span data-i18n="experience">Жұмыс тәжірибесі</span>
+              </div>
+              <div class="exp-card">
+                <div class="exp-title">
+                  <i class="fas fa-building-columns"></i>
+                  <span data-i18n="exp_title">ХҚКО / ЦОН</span>
+                </div>
+                <div class="exp-desc" data-i18n="exp_desc">
+                  Халыққа қызмет көрсету орталығында жұмыс тәжірибесі бар. Құжаттарды рәсімдеу және азаматтарға кеңес беру.
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-tools"></i>
+                <span data-i18n="skills">Кәсіби дағдылар</span>
+              </div>
+              <div class="skills-list">
+                <div class="skill-tag"><i class="fas fa-desktop"></i> <span data-i18n="skill1">Компьютермен жұмыс</span></div>
+                <div class="skill-tag"><i class="fas fa-file-word"></i> Microsoft Word</div>
+                <div class="skill-tag"><i class="fas fa-file-excel"></i> Microsoft Excel</div>
+                <div class="skill-tag"><i class="fas fa-globe"></i> <span data-i18n="skill4">Интернетпен жұмыс</span></div>
+                <div class="skill-tag"><i class="fas fa-file-signature"></i> <span data-i18n="skill5">Құжаттарды рәсімдеу</span></div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-language"></i>
+                <span data-i18n="languages">Тілдер</span>
+              </div>
+              <div class="lang-list">
+                <div class="lang-card">
+                  <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_kz">Қазақ тілі</span></div>
+                  <div class="lang-level" data-i18n="native">Ана тілі</div>
+                </div>
+                <div class="lang-card">
+                  <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_ru">Орыс тілі</span></div>
+                  <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+                </div>
+                <div class="lang-card">
+                  <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_uz">Өзбек тілі</span></div>
+                  <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+                </div>
+                <div class="lang-card">
+                  <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_ky">Қырғыз тілі</span></div>
+                  <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+                </div>
+                <div class="lang-card">
+                  <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_tr">Түрік тілі</span></div>
+                  <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="right-col">
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-bullseye"></i>
+                <span data-i18n="goal">Мақсатым</span>
+              </div>
+              <div class="goal-card">
+                <div class="goal-text" data-i18n="goal_text">
+                  Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-user-check"></i>
+                <span data-i18n="traits">Жеке қасиеттер</span>
+              </div>
+              <div class="traits-grid">
+                <div class="trait-item"><i class="fas fa-shield-halved"></i> <span data-i18n="trait1">Жауапкершілік</span></div>
+                <div class="trait-item"><i class="fas fa-broom"></i> <span data-i18n="trait2">Ұқыптылық</span></div>
+                <div class="trait-item"><i class="fas fa-brain"></i> <span data-i18n="trait3">Тез меңгеру</span></div>
+                <div class="trait-item"><i class="fas fa-handshake"></i> <span data-i18n="trait4">Тіл табысу</span></div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-star"></i>
+                <span data-i18n="extra">Қосымша білім</span>
+              </div>
+              <div class="course-card">
+                <div class="course-name">
+                  <i class="fas fa-masks-theater"></i>
+                  <span data-i18n="course_name">Art House актерлік мектебі</span>
+                </div>
+                <div class="course-desc" data-i18n="course_desc">
+                  «Актерлік шеберлік» онлайн курсын толық аяқтаған. Сахна тілі, эмоциямен жұмыс істеу және камера алдындағы актерлік шеберлік бойынша практикалық дағдыларды меңгерген.
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">
+                <i class="fas fa-film"></i>
+                <span data-i18n="filmography">Фильмография</span>
+              </div>
+              <div class="filmography">
+                <i class="fas fa-video"></i>
+                <span data-i18n="filmography_text">Қазіргі уақытта театрда және кинода түскен рөлдері жоқ.</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="main-content">
-        <div class="left-col">
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-graduation-cap"></i>
-              <span data-i18n="education">Білімі</span>
-            </div>
-            <div class="edu-card">
-              <div class="edu-institution" data-i18n="college">Халықаралық ORDA жоғары колледжі</div>
-              <div class="edu-specialty">
-                <i class="fas fa-laptop-code"></i>
-                <span data-i18n="specialty">Бағдарламалық қамтамасыз ету (IT)</span>
+      <!-- ============================================
+           АКТЕРЛІК ПОРТФОЛИО БӨЛІМІ
+           ============================================ -->
+      <div class="actor-portfolio" id="actorPortfolio">
+        <div class="actor-header">
+          <div class="header-content">
+            <div class="avatar" id="actorAvatar" title="🎭" style="background: linear-gradient(135deg, #a855f7, #d946ef);">АБ</div>
+            <div class="header-info">
+              <div class="actor-badge">
+                <i class="fas fa-star"></i>
+                <span data-i18n="actor_badge">АКТЕРЛІК ПОРТФОЛИО</span>
               </div>
-              <div class="edu-year">
-                <i class="fas fa-calendar-check"></i>
-                <span data-i18n="grad_year">Бітіру жылы: 2026</span>
+              <div class="name-title">
+                <h1 data-i18n="actor_name">Базарбек Аян Жеңісұлы</h1>
               </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-briefcase"></i>
-              <span data-i18n="experience">Жұмыс тәжірибесі</span>
-            </div>
-            <div class="exp-card">
-              <div class="exp-title">
-                <i class="fas fa-building-columns"></i>
-                <span data-i18n="exp_title">ХҚКО / ЦОН</span>
+              <div class="role-tag" style="color: #f0abfc;">
+                <i class="fas fa-masks-theater" style="color: #d946ef;"></i>
+                <span data-i18n="actor_role">Актер · Сахна шебері</span>
               </div>
-              <div class="exp-desc" data-i18n="exp_desc">
-                Халыққа қызмет көрсету орталығында жұмыс тәжірибесі бар. Құжаттарды рәсімдеу және азаматтарға кеңес беру.
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-tools"></i>
-              <span data-i18n="skills">Кәсіби дағдылар</span>
-            </div>
-            <div class="skills-list">
-              <div class="skill-tag"><i class="fas fa-desktop"></i> <span data-i18n="skill1">Компьютермен жұмыс</span></div>
-              <div class="skill-tag"><i class="fas fa-file-word"></i> Microsoft Word</div>
-              <div class="skill-tag"><i class="fas fa-file-excel"></i> Microsoft Excel</div>
-              <div class="skill-tag"><i class="fas fa-globe"></i> <span data-i18n="skill4">Интернетпен жұмыс</span></div>
-              <div class="skill-tag"><i class="fas fa-file-signature"></i> <span data-i18n="skill5">Құжаттарды рәсімдеу</span></div>
-            </div>
-          </div>
-
-          <!-- ТІЛДЕР — 6 ТІЛ -->
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-language"></i>
-              <span data-i18n="languages">Тілдер</span>
-            </div>
-            <div class="lang-list">
-              <div class="lang-card">
-                <div class="lang-name">
-                  <i class="fas fa-comment-dots"></i>
-                  <span data-i18n="lang_kz">Қазақ тілі</span>
+              <div class="contact-row">
+                <div class="contact-chip">
+                  <i class="fas fa-birthday-cake"></i>
+                  <span data-i18n="actor_birthday">10.01.2006</span>
                 </div>
-                <div class="lang-level" data-i18n="native">Ана тілі</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name">
-                  <i class="fas fa-comment-dots"></i>
-                  <span data-i18n="lang_ru">Орыс тілі</span>
-                </div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name">
-                  <i class="fas fa-comment-dots"></i>
-                  <span data-i18n="lang_uz">Өзбек тілі</span>
-                </div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name">
-                  <i class="fas fa-comment-dots"></i>
-                  <span data-i18n="lang_ky">Қырғыз тілі</span>
-                </div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name">
-                  <i class="fas fa-comment-dots"></i>
-                  <span data-i18n="lang_tr">Түрік тілі</span>
-                </div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+                <a class="contact-chip" href="tel:+77778312510">
+                  <i class="fas fa-phone-alt"></i>
+                  +7 777 831 2510
+                </a>
+                <a class="contact-chip" href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener">
+                  <i class="fab fa-instagram"></i>
+                  @aian_wtkkz_17
+                </a>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="right-col">
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-bullseye"></i>
-              <span data-i18n="goal">Мақсатым</span>
+        <div class="actor-grid">
+          <div class="actor-left">
+            <div class="section">
+              <div class="actor-section-title">
+                <i class="fas fa-user"></i>
+                <span data-i18n="actor_personal">Жеке мәліметтер</span>
+              </div>
+              <div class="info-card">
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-id-card"></i><span data-i18n="actor_name_label">Аты-жөні</span></div>
+                  <div class="info-value" data-i18n="actor_name">Базарбек Аян Жеңісұлы</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-birthday-cake"></i><span data-i18n="actor_birth_label">Туған күні</span></div>
+                  <div class="info-value" data-i18n="actor_birthday">10.01.2006</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-ruler-vertical"></i><span data-i18n="actor_height_label">Бойы</span></div>
+                  <div class="info-value" data-i18n="actor_height">165 см</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-weight-scale"></i><span data-i18n="actor_weight_label">Салмағы</span></div>
+                  <div class="info-value" data-i18n="actor_weight">50 кг</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-tshirt"></i><span data-i18n="actor_clothes_label">Киім өлшемі</span></div>
+                  <div class="info-value" data-i18n="actor_clothes">M</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-shoe-prints"></i><span data-i18n="actor_shoes_label">Аяқ киім өлшемі</span></div>
+                  <div class="info-value" data-i18n="actor_shoes">36</div>
+                </div>
+              </div>
             </div>
-            <div class="goal-card">
-              <div class="goal-text" data-i18n="goal_text">
-                Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.
+
+            <div class="section">
+              <div class="actor-section-title">
+                <i class="fas fa-eye"></i>
+                <span data-i18n="actor_appearance">Сыртқы келбеті</span>
+              </div>
+              <div class="info-card">
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-cut"></i><span data-i18n="actor_hair_label">Шаш түсі мен ұзындығы</span></div>
+                  <div class="info-value" data-i18n="actor_hair">Қара, қысқа</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-eye"></i><span data-i18n="actor_eyes_label">Көз түсі</span></div>
+                  <div class="info-value" data-i18n="actor_eyes">Қара, кішірек</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-star"></i><span data-i18n="actor_features_label">Ерекше белгілері</span></div>
+                  <div class="info-value" data-i18n="actor_features">Көзілдірік тағуы</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="actor-section-title">
+                <i class="fas fa-music"></i>
+                <span data-i18n="actor_skills">Арнайы дағдылар</span>
+              </div>
+              <div class="skills-list">
+                <div class="skill-tag"><i class="fas fa-microphone"></i> <span data-i18n="actor_skill_sing">Ән айту</span></div>
+                <div class="skill-tag"><i class="fas fa-comments"></i> <span data-i18n="actor_skill_lang">Қазақша</span></div>
               </div>
             </div>
           </div>
 
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-user-check"></i>
-              <span data-i18n="traits">Жеке қасиеттер</span>
-            </div>
-            <div class="traits-grid">
-              <div class="trait-item"><i class="fas fa-shield-halved"></i> <span data-i18n="trait1">Жауапкершілік</span></div>
-              <div class="trait-item"><i class="fas fa-broom"></i> <span data-i18n="trait2">Ұқыптылық</span></div>
-              <div class="trait-item"><i class="fas fa-brain"></i> <span data-i18n="trait3">Тез меңгеру</span></div>
-              <div class="trait-item"><i class="fas fa-handshake"></i> <span data-i18n="trait4">Тіл табысу</span></div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-star"></i>
-              <span data-i18n="extra">Қосымша білім</span>
-            </div>
-            <div class="course-card">
-              <div class="course-name">
-                <i class="fas fa-masks-theater"></i>
-                <span data-i18n="course_name">Art House актерлік мектебі</span>
+          <div class="actor-right">
+            <div class="section">
+              <div class="actor-section-title">
+                <i class="fas fa-address-book"></i>
+                <span data-i18n="actor_contacts">Байланыс</span>
               </div>
-              <div class="course-desc" data-i18n="course_desc">
-                «Актерлік шеберлік» онлайн курсын толық аяқтаған. Сахна тілі, эмоциямен жұмыс істеу және камера алдындағы актерлік шеберлік бойынша практикалық дағдыларды меңгерген.
+              <div class="info-card">
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-map-marker-alt"></i><span data-i18n="actor_city_label">Қаласы</span></div>
+                  <div class="info-value" data-i18n="actor_city">Қызылорда</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-phone-alt"></i><span data-i18n="actor_phone_label">Телефон</span></div>
+                  <div class="info-value"><a href="tel:+77778312510">+7 777 831 2510</a></div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="fab fa-instagram"></i><span data-i18n="actor_insta_label">Instagram</span></div>
+                  <div class="info-value"><a href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener">@aian_wtkkz_17</a></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-film"></i>
-              <span data-i18n="filmography">Фильмография</span>
+            <div class="section">
+              <div class="actor-section-title">
+                <i class="fas fa-graduation-cap"></i>
+                <span data-i18n="actor_edu">Білімі мен тәжірибесі</span>
+              </div>
+              <div class="info-card">
+                <div class="info-row">
+                  <div class="info-label"><i class="fas fa-laptop-code"></i><span data-i18n="actor_main_job_label">Негізгі мамандығы</span></div>
+                  <div class="info-value" data-i18n="actor_main_job">IT</div>
+                </div>
+              </div>
+              <div class="course-card" style="margin-top: 0.8rem;">
+                <div class="course-name">
+                  <i class="fas fa-masks-theater"></i>
+                  <span data-i18n="actor_acting_edu">Актерлік білімі</span>
+                </div>
+                <div class="course-desc" data-i18n="actor_acting_desc">
+                  Art House актерлік мектебінің «Актерлік шеберлік» онлайн курсын толық аяқтаған. Актерлік шеберлік, сахна тілі, эмоциямен жұмыс және камера алдындағы шеберлік бойынша білім мен практикалық дағдыларды меңгерген.
+                </div>
+              </div>
+              <div class="filmography" style="margin-top: 0.8rem;">
+                <i class="fas fa-video"></i>
+                <span data-i18n="actor_filmography">Театрдағы/Кинодағы рөлдері: Жоқ</span>
+              </div>
             </div>
-            <div class="filmography">
-              <i class="fas fa-video"></i>
-              <span data-i18n="filmography_text">Қазіргі уақытта театрда және кинода түскен рөлдері жоқ.</span>
+          </div>
+        </div>
+
+        <!-- ============================================
+             ФОТО ГАЛЕРЕЯ — 2 ФОТО
+             ============================================ -->
+        <div class="photo-gallery">
+          <div class="photo-gallery-title">
+            <i class="fas fa-camera-retro"></i>
+            <span data-i18n="photo_gallery_title">ФОТОГАЛЕРЕЯ</span>
+          </div>
+          <div class="photo-grid">
+            <div class="photo-card" onclick="openPhotoModal(this)">
+              <img src="https://i.ibb.co/5xwn9cMj/IMG-20261012-WA0043.jpg" 
+                   alt="Актерлік портфолио фото 1"
+                   onerror="this.onerror=null; this.src='https://i.ibb.co/Q3f9gzcB/file-0000000002e08211b2d6030121162338.jpg';">
+              <div class="photo-overlay">
+                <div class="photo-caption">
+                  <i class="fas fa-masks-theater"></i>
+                  Базарбек Аян
+                </div>
+              </div>
+            </div>
+            <div class="photo-card" onclick="openPhotoModal(this)">
+              <img src="https://i.ibb.co/Q3f9gzcB/file-0000000002e08211b2d6030121162338.jpg" 
+                   alt="Актерлік портфолио фото 2"
+                   onerror="this.onerror=null; this.src='https://i.ibb.co/5xwn9cMj/IMG-20261012-WA0043.jpg';">
+              <div class="photo-overlay">
+                <div class="photo-caption">
+                  <i class="fas fa-masks-theater"></i>
+                  Базарбек Аян
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1245,6 +1725,12 @@
           <a class="social-btn" href="mailto:kzayan161@gmail.com" title="Email">
             <i class="fas fa-envelope"></i>
           </a>
+          <a class="social-btn" href="tel:+77778312510" title="Phone">
+            <i class="fas fa-phone"></i>
+          </a>
+          <a class="social-btn" href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener" title="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
         </div>
       </div>
 
@@ -1253,6 +1739,14 @@
         © 2026. <span data-i18n="copyright_text">Барлық құқықтар қорғалған.</span>
       </div>
     </div>
+  </div>
+
+  <!-- ФОТО МОДАЛЬ -->
+  <div class="photo-modal" id="photoModal" onclick="closePhotoModal()">
+    <button class="photo-modal-close" onclick="closePhotoModal()">
+      <i class="fas fa-times"></i>
+    </button>
+    <img src="" alt="Үлкен фото" id="photoModalImg" onclick="event.stopPropagation()">
   </div>
 
   <div class="toast" id="toast">
@@ -1288,6 +1782,30 @@
 
   <script>
     // ==========================================
+    // ФОТО МОДАЛЬ
+    // ==========================================
+    function openPhotoModal(card) {
+      const img = card.querySelector('img');
+      document.getElementById('photoModalImg').src = img.src;
+      document.getElementById('photoModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+      showToast(translations[currentLang].toast_photo, 'fa-camera', '#a855f7');
+    }
+
+    function closePhotoModal() {
+      document.getElementById('photoModal').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePhotoModal();
+        document.getElementById('copyModal').classList.remove('show');
+        document.getElementById('emailDisplay').classList.remove('selected');
+      }
+    });
+
+    // ==========================================
     // ЖЕКЕ ДЕРЕКТЕРДІ КӨШІРУГЕ ТЫЙЫМ САЛУ
     // ==========================================
     document.addEventListener('copy', (e) => {
@@ -1306,9 +1824,7 @@
 
     document.addEventListener('dragstart', (e) => {
       const text = e.target.textContent || '';
-      if (text.includes('kzayan161@gmail.com')) {
-        return;
-      }
+      if (text.includes('kzayan161@gmail.com')) return;
       e.preventDefault();
     });
 
@@ -1327,9 +1843,6 @@
         e.preventDefault();
         showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
       }
-    });
-
-    document.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Insert') {
         e.preventDefault();
         showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
@@ -1341,6 +1854,8 @@
     // ==========================================
     const translations = {
       kz: {
+        tab_resume: 'Түйіндеме',
+        tab_actor: 'Актерлік портфолио',
         tooltip_print: 'Басып шығару',
         tooltip_copy: 'Email көшіру',
         tooltip_theme: 'Түс',
@@ -1382,6 +1897,43 @@
         footer_name: 'Базарбек Аян',
         footer_resume: 'Түйіндеме',
         copyright_text: 'Барлық құқықтар қорғалған.',
+        actor_badge: 'АКТЕРЛІК ПОРТФОЛИО',
+        actor_name: 'Базарбек Аян Жеңісұлы',
+        actor_role: 'Актер · Сахна шебері',
+        actor_birthday: '10.01.2006',
+        actor_personal: 'Жеке мәліметтер',
+        actor_name_label: 'Аты-жөні',
+        actor_birth_label: 'Туған күні (жасы)',
+        actor_height_label: 'Бойы',
+        actor_height: '165 см',
+        actor_weight_label: 'Салмағы',
+        actor_weight: '50 кг',
+        actor_clothes_label: 'Киім өлшемі',
+        actor_clothes: 'M',
+        actor_shoes_label: 'Аяқ киім өлшемі',
+        actor_shoes: '36',
+        actor_appearance: 'Сыртқы келбеті',
+        actor_hair_label: 'Шаш түсі мен ұзындығы',
+        actor_hair: 'Қара, қысқа',
+        actor_eyes_label: 'Көз түсі',
+        actor_eyes: 'Қара, кішірек',
+        actor_features_label: 'Ерекше белгілері',
+        actor_features: 'Көзілдірік тағуы',
+        actor_skills: 'Арнайы дағдылар (Hard skills)',
+        actor_skill_sing: 'Ән айту',
+        actor_skill_lang: 'Қазақша',
+        actor_contacts: 'Байланыс және қала',
+        actor_city_label: 'Тұратын қаласы',
+        actor_city: 'Қызылорда',
+        actor_phone_label: 'Телефон нөмірі',
+        actor_insta_label: 'Instagram',
+        actor_edu: 'Білімі мен тәжірибесі',
+        actor_main_job_label: 'Негізгі мамандығы',
+        actor_main_job: 'IT',
+        actor_acting_edu: 'Актерлік білімі',
+        actor_acting_desc: 'Art House актерлік мектебінің «Актерлік шеберлік» онлайн курсын толық аяқтаған. Актерлік шеберлік, сахна тілі, эмоциямен жұмыс және камера алдындағы шеберлік бойынша білім мен практикалық дағдыларды меңгерген.',
+        actor_filmography: 'Театрдағы/Кинодағы рөлдері: Жоқ',
+        photo_gallery_title: 'ФОТОГАЛЕРЕЯ',
         toast_welcome: 'Сайтқа қош келдіңіз! 🎉',
         toast_copied: 'Email көшірілді',
         toast_copy_error: 'Көшіру мүмкін болмады',
@@ -1390,6 +1942,9 @@
         toast_theme: 'Түс',
         toast_skill: 'Дағды',
         toast_trait: 'Қасиет',
+        toast_tab_resume: 'Түйіндеме бөлімі',
+        toast_tab_actor: 'Актерлік портфолио бөлімі',
+        toast_photo: '📷 Фото үлкейтілді',
         toast_greet1: 'Сәлем! 👋',
         toast_greet2: 'Қош келдіңіз! ✨',
         toast_greet3: 'Рахмет! 🙌',
@@ -1403,6 +1958,8 @@
         modal_close: 'Жабу'
       },
       ru: {
+        tab_resume: 'Резюме',
+        tab_actor: 'Актёрское портфолио',
         tooltip_print: 'Печать',
         tooltip_copy: 'Копировать email',
         tooltip_theme: 'Цвет',
@@ -1444,6 +2001,43 @@
         footer_name: 'Базарбек Аян',
         footer_resume: 'Резюме',
         copyright_text: 'Все права защищены.',
+        actor_badge: 'АКТЁРСКОЕ ПОРТФОЛИО',
+        actor_name: 'Базарбек Аян Жеңісұлы',
+        actor_role: 'Актёр · Мастер сцены',
+        actor_birthday: '10.01.2006',
+        actor_personal: 'Личные данные',
+        actor_name_label: 'Имя и фамилия',
+        actor_birth_label: 'Дата рождения (возраст)',
+        actor_height_label: 'Рост',
+        actor_height: '165 см',
+        actor_weight_label: 'Вес',
+        actor_weight: '50 кг',
+        actor_clothes_label: 'Размер одежды',
+        actor_clothes: 'M',
+        actor_shoes_label: 'Размер обуви',
+        actor_shoes: '36',
+        actor_appearance: 'Внешность',
+        actor_hair_label: 'Цвет и длина волос',
+        actor_hair: 'Чёрные, короткие',
+        actor_eyes_label: 'Цвет глаз',
+        actor_eyes: 'Чёрные, небольшие',
+        actor_features_label: 'Особые приметы',
+        actor_features: 'Ношение очков',
+        actor_skills: 'Специальные навыки (Hard skills)',
+        actor_skill_sing: 'Пение',
+        actor_skill_lang: 'Казахский',
+        actor_contacts: 'Контакты и город',
+        actor_city_label: 'Город проживания',
+        actor_city: 'Кызылорда',
+        actor_phone_label: 'Номер телефона',
+        actor_insta_label: 'Instagram',
+        actor_edu: 'Образование и опыт',
+        actor_main_job_label: 'Основная специальность',
+        actor_main_job: 'IT',
+        actor_acting_edu: 'Актёрское образование',
+        actor_acting_desc: 'Полностью прошёл онлайн-курс «Актёрское мастерство» школы Art House. Освоил знания и практические навыки по актёрскому мастерству, сценической речи, работе с эмоциями и мастерству перед камерой.',
+        actor_filmography: 'Роли в театре/кино: Нет',
+        photo_gallery_title: 'ФОТОГАЛЕРЕЯ',
         toast_welcome: 'Добро пожаловать на сайт! 🎉',
         toast_copied: 'Email скопирован',
         toast_copy_error: 'Не удалось скопировать',
@@ -1452,6 +2046,9 @@
         toast_theme: 'Цвет',
         toast_skill: 'Навык',
         toast_trait: 'Качество',
+        toast_tab_resume: 'Раздел Резюме',
+        toast_tab_actor: 'Раздел Актёрское портфолио',
+        toast_photo: '📷 Фото увеличено',
         toast_greet1: 'Привет! 👋',
         toast_greet2: 'Добро пожаловать! ✨',
         toast_greet3: 'Спасибо! 🙌',
@@ -1467,6 +2064,32 @@
     };
 
     let currentLang = 'kz';
+
+    // ==========================================
+    // БӨЛІМ АУЫСТЫРУ
+    // ==========================================
+    const tabResume = document.getElementById('tabResume');
+    const tabActor = document.getElementById('tabActor');
+    const resumeMain = document.getElementById('resumeMain');
+    const actorPortfolio = document.getElementById('actorPortfolio');
+
+    tabResume.addEventListener('click', () => {
+      tabResume.classList.add('active');
+      tabActor.classList.remove('active');
+      resumeMain.classList.add('active');
+      actorPortfolio.classList.remove('active');
+      showToast(translations[currentLang].toast_tab_resume, 'fa-file-alt', '#3b82f6');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    tabActor.addEventListener('click', () => {
+      tabActor.classList.add('active');
+      tabResume.classList.remove('active');
+      actorPortfolio.classList.add('active');
+      resumeMain.classList.remove('active');
+      showToast(translations[currentLang].toast_tab_actor, 'fa-masks-theater', '#a855f7');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
     // ==========================================
     // ТІЛ АУЫСТЫРУ
@@ -1532,11 +2155,6 @@
         textarea.style.left = '0';
         textarea.style.width = '2em';
         textarea.style.height = '2em';
-        textarea.style.padding = '0';
-        textarea.style.border = 'none';
-        textarea.style.outline = 'none';
-        textarea.style.boxShadow = 'none';
-        textarea.style.background = 'transparent';
         textarea.style.opacity = '0';
         document.body.appendChild(textarea);
         
@@ -1563,16 +2181,13 @@
     function showCopyModal() {
       const modal = document.getElementById('copyModal');
       modal.classList.add('show');
-      setTimeout(() => {
-        selectEmail();
-      }, 200);
+      setTimeout(() => { selectEmail(); }, 200);
     }
 
     function selectEmail() {
       const emailDisplay = document.getElementById('emailDisplay');
       const range = document.createRange();
       const selection = window.getSelection();
-      
       range.selectNodeContents(emailDisplay);
       selection.removeAllRanges();
       selection.addRange(range);
@@ -1598,16 +2213,12 @@
           await navigator.clipboard.writeText(EMAIL);
           showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
           return;
-        } catch (err) {
-          console.warn('Clipboard API failed:', err);
-        }
+        } catch (err) {}
       }
-
       if (fallbackCopy(EMAIL)) {
         showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
         return;
       }
-
       showCopyModal();
     }
 
@@ -1627,19 +2238,13 @@
 
     document.getElementById('modalCopyBtn').addEventListener('click', async () => {
       let copied = false;
-      
       if (navigator.clipboard && window.isSecureContext) {
         try {
           await navigator.clipboard.writeText(EMAIL);
           copied = true;
-        } catch (err) {
-          console.warn('Modal clipboard failed:', err);
-        }
+        } catch (err) {}
       }
-      
-      if (!copied) {
-        copied = fallbackCopy(EMAIL);
-      }
+      if (!copied) copied = fallbackCopy(EMAIL);
       
       if (copied) {
         showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
@@ -1647,7 +2252,6 @@
         document.getElementById('emailDisplay').classList.remove('selected');
       } else {
         selectEmail();
-        showToast(translations[currentLang].toast_selected, 'fa-hand-pointer', '#3b82f6');
       }
     });
 
@@ -1655,16 +2259,7 @@
       window.location.href = 'mailto:' + EMAIL;
     });
 
-    window.selectEmail = function() {
-      selectEmail();
-    };
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.getElementById('copyModal').classList.remove('show');
-        document.getElementById('emailDisplay').classList.remove('selected');
-      }
-    });
+    window.selectEmail = function() { selectEmail(); };
 
     // ==========================================
     // БАСЫП ШЫҒАРУ
@@ -1677,11 +2272,11 @@
     // ТҮС АУЫСТЫРУ
     // ==========================================
     const themeColors = [
-      { primary: '#3b82f6', accent: '#06b6d4', dark: '#0a1628' },
-      { primary: '#8b5cf6', accent: '#d946ef', dark: '#1a0b2e' },
-      { primary: '#10b981', accent: '#06b6d4', dark: '#052e16' },
-      { primary: '#ec4899', accent: '#f43f5e', dark: '#2e0b1f' },
-      { primary: '#f97316', accent: '#eab308', dark: '#2e1a05' }
+      { primary: '#3b82f6', accent: '#06b6d4' },
+      { primary: '#8b5cf6', accent: '#d946ef' },
+      { primary: '#10b981', accent: '#06b6d4' },
+      { primary: '#ec4899', accent: '#f43f5e' },
+      { primary: '#f97316', accent: '#eab308' }
     ];
     let themeIndex = 0;
 
@@ -1693,28 +2288,31 @@
       root.style.setProperty('--primary-dark', theme.primary);
       root.style.setProperty('--primary-light', theme.primary + 'cc');
       root.style.setProperty('--accent', theme.accent);
-      root.style.setProperty('--dark', theme.dark);
 
       const themeName = translations[currentLang].themes[themeIndex];
       showToast(`${translations[currentLang].toast_theme}: ${themeName}`, 'fa-palette', theme.primary);
     });
 
     // ==========================================
-    // АВАТАР
+    // АВАТАРЛАР
     // ==========================================
     const avatar = document.getElementById('avatar');
+    const actorAvatar = document.getElementById('actorAvatar');
 
-    avatar.addEventListener('click', () => {
-      const dict = translations[currentLang];
-      const greetings = [
-        dict.toast_greet1, dict.toast_greet2, dict.toast_greet3,
-        dict.toast_greet4, dict.toast_greet5
-      ];
-      const idx = Math.floor(Math.random() * greetings.length);
-      showToast(greetings[idx], 'fa-hand-sparkles', '#3b82f6');
-      avatar.style.transform = 'scale(1.1) rotate(8deg)';
-      setTimeout(() => avatar.style.transform = '', 300);
-    });
+    function attachAvatarClick(el) {
+      if (!el) return;
+      el.addEventListener('click', () => {
+        const dict = translations[currentLang];
+        const greetings = [dict.toast_greet1, dict.toast_greet2, dict.toast_greet3, dict.toast_greet4, dict.toast_greet5];
+        const idx = Math.floor(Math.random() * greetings.length);
+        showToast(greetings[idx], 'fa-hand-sparkles', '#3b82f6');
+        el.style.transform = 'scale(1.1) rotate(8deg)';
+        setTimeout(() => el.style.transform = '', 300);
+      });
+    }
+
+    attachAvatarClick(avatar);
+    attachAvatarClick(actorAvatar);
 
     // ==========================================
     // SKILL TAG
@@ -1747,22 +2345,10 @@
     // ПЕРНЕ КОМБИНАЦИЯЛАРЫ
     // ==========================================
     document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-        e.preventDefault();
-        window.print();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
-        e.preventDefault();
-        copyEmail();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 't') {
-        e.preventDefault();
-        document.getElementById('themeBtn').click();
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
-        e.preventDefault();
-        switchLang(currentLang === 'kz' ? 'ru' : 'kz');
-      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); window.print(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') { e.preventDefault(); copyEmail(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 't') { e.preventDefault(); document.getElementById('themeBtn').click(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); switchLang(currentLang === 'kz' ? 'ru' : 'kz'); }
     });
 
     // ==========================================
@@ -1771,19 +2357,14 @@
     window.addEventListener('load', () => {
       let savedLang = 'kz';
       try { savedLang = localStorage.getItem('resume_lang') || 'kz'; } catch(e) {}
-      
-      if (savedLang === 'ru') {
-        switchLang('ru');
-      }
+      if (savedLang === 'ru') switchLang('ru');
 
       setTimeout(() => {
         showToast(translations[currentLang].toast_welcome, 'fa-hand-sparkles', '#3b82f6');
       }, 800);
     });
 
-    console.log('%c👋 Сәлем! / Привет!', 'color: #3b82f6; font-size: 18px; font-weight: bold;');
-    console.log('%c🔒 Жеке деректерді көшіруге тыйым салынған', 'color: #ef4444; font-size: 14px; font-weight: bold;');
-    console.log('%c📧 Тек email көшіруге рұқсат: ' + EMAIL, 'color: #10b981; font-size: 12px;');
+    console.log('%c📸 2 фото қосылды!', 'color: #a855f7; font-size: 16px; font-weight: bold;');
   </script>
 </body>
 </html>
