@@ -563,6 +563,12 @@
 
     .skill-tag:hover i { color: white; }
 
+    .lang-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
     .lang-card {
       background: white;
       border-radius: 16px;
@@ -572,11 +578,13 @@
       justify-content: space-between;
       border: 1px solid #e2e8f0;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .lang-card:hover {
       border-color: #bfdbfe;
       box-shadow: 0 8px 16px rgba(59, 130, 246, 0.1);
+      transform: translateY(-2px);
     }
 
     .lang-name {
@@ -597,6 +605,7 @@
       font-size: 0.78rem;
       font-weight: 700;
       letter-spacing: 0.05em;
+      white-space: nowrap;
     }
 
     .goal-card {
@@ -1129,17 +1138,48 @@
             </div>
           </div>
 
+          <!-- ТІЛДЕР — 6 ТІЛ -->
           <div class="section">
             <div class="section-title">
               <i class="fas fa-language"></i>
               <span data-i18n="languages">Тілдер</span>
             </div>
-            <div class="lang-card">
-              <div class="lang-name">
-                <i class="fas fa-comment-dots"></i>
-                <span data-i18n="lang_kz">Қазақ тілі</span>
+            <div class="lang-list">
+              <div class="lang-card">
+                <div class="lang-name">
+                  <i class="fas fa-comment-dots"></i>
+                  <span data-i18n="lang_kz">Қазақ тілі</span>
+                </div>
+                <div class="lang-level" data-i18n="native">Ана тілі</div>
               </div>
-              <div class="lang-level" data-i18n="native">Ана тілі</div>
+              <div class="lang-card">
+                <div class="lang-name">
+                  <i class="fas fa-comment-dots"></i>
+                  <span data-i18n="lang_ru">Орыс тілі</span>
+                </div>
+                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+              </div>
+              <div class="lang-card">
+                <div class="lang-name">
+                  <i class="fas fa-comment-dots"></i>
+                  <span data-i18n="lang_uz">Өзбек тілі</span>
+                </div>
+                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+              </div>
+              <div class="lang-card">
+                <div class="lang-name">
+                  <i class="fas fa-comment-dots"></i>
+                  <span data-i18n="lang_ky">Қырғыз тілі</span>
+                </div>
+                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+              </div>
+              <div class="lang-card">
+                <div class="lang-name">
+                  <i class="fas fa-comment-dots"></i>
+                  <span data-i18n="lang_tr">Түрік тілі</span>
+                </div>
+                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1321,7 +1361,12 @@
         skill5: 'Құжаттарды рәсімдеу',
         languages: 'Тілдер',
         lang_kz: 'Қазақ тілі',
+        lang_ru: 'Орыс тілі',
+        lang_uz: 'Өзбек тілі',
+        lang_ky: 'Қырғыз тілі',
+        lang_tr: 'Түрік тілі',
         native: 'Ана тілі',
+        conversational: 'Сөйлесу',
         goal: 'Мақсатым',
         goal_text: 'Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.',
         traits: 'Жеке қасиеттер',
@@ -1378,7 +1423,12 @@
         skill5: 'Оформление документов',
         languages: 'Языки',
         lang_kz: 'Казахский язык',
+        lang_ru: 'Русский язык',
+        lang_uz: 'Узбекский язык',
+        lang_ky: 'Киргизский язык',
+        lang_tr: 'Турецкий язык',
         native: 'Родной',
+        conversational: 'Разговорный',
         goal: 'Моя цель',
         goal_text: 'Используя свои знания и навыки, профессионально развиваться, приобретать новый опыт и найти стабильную работу.',
         traits: 'Личные качества',
