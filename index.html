@@ -2,56 +2,49 @@
 <html lang="kk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Банудың ұзату тойы · Шақырту</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Базарбек Аян · Түйіндеме</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #8b5e3c;
-      --primary-light: #c4956a;
-      --primary-dark: #5c3a21;
-      --gold: #c9a96e;
-      --gold-light: #e8d5b5;
-      --text-dark: #3a2618;
-      --text-medium: #6b4f3a;
-      --text-light: #9b7b65;
-      --white: #ffffff;
-      --shadow-sm: 0 4px 15px rgba(0,0,0,0.06);
-      --shadow-md: 0 10px 30px rgba(0,0,0,0.1);
-      --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
-      --border-radius-lg: 32px;
-      --border-radius-md: 20px;
-      --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #1e40af;
+      --primary-light: #60a5fa;
+      --accent: #06b6d4;
+      --dark: #0a1628;
+      --dark-2: #12263f;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+    }
 
-    html, body {
-      width: 100%;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: transparent;
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
-      background: linear-gradient(135deg, #fdf8f3 0%, #f5ede4 50%, #fdf8f3 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Montserrat', sans-serif;
-      padding: 30px 20px;
+      font-family: 'Inter', sans-serif;
+      background: #0a1628;
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 2rem 1rem;
       position: relative;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    * {
+    .resume-card,
+    .resume-card * {
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -59,1072 +52,1688 @@
       -webkit-touch-callout: none;
     }
 
-    img {
-      -webkit-user-drag: none;
-      -khtml-user-drag: none;
-      -moz-user-drag: none;
-      -o-user-drag: none;
-      user-drag: none;
-      pointer-events: none;
+    .email-display,
+    .contact-chip[href^="mailto"],
+    .contact-chip[href^="mailto"] * {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
     }
 
-    /* ===================================================
-       ЖАСЫРЫН YOUTUBE ПЛЕЕР - МҮЛДЕ КӨРІНБЕЙДІ
-       Видео атауы, "Watch on YouTube" жазуы және басқа
-       элементтер толығымен жасырылған
-    =================================================== */
-    #youtubePlayerContainer {
+    body::before {
+      content: '';
       position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      overflow: hidden;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      z-index: -9999;
-    }
-
-    #youtubePlayer {
-      width: 1px;
-      height: 1px;
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
-      opacity: 0;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      animation: bgMove 20s ease-in-out infinite alternate;
+      z-index: 0;
       pointer-events: none;
     }
 
-    /* КОНВЕРТ ЭКРАНЫ */
-    .envelope-screen {
+    @keyframes bgMove {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-5%, -5%) scale(1.1); }
+    }
+
+    .floating-shapes {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: linear-gradient(135deg, #fdf8f3 0%, #f0e2d0 50%, #fdf8f3 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    .envelope-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .envelope-hint {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
-      color: var(--primary);
-      margin-bottom: 2rem;
-      letter-spacing: 2px;
-      text-align: center;
-      animation: pulseText 2s ease-in-out infinite;
-      padding: 0 20px;
-    }
-
-    @keyframes pulseText {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.03); }
-    }
-
-    .envelope-wrapper {
-      perspective: 1200px;
-      position: relative;
-    }
-
-    .envelope {
-      position: relative;
-      width: 320px;
-      height: 220px;
-      background: linear-gradient(135deg, #f5e6d3, #e8d3ba);
-      border-radius: 8px;
-      box-shadow: 0 25px 60px rgba(139,94,60,0.35), 0 0 0 1px rgba(201,169,110,0.3);
-      transition: transform 0.6s ease;
-      transform-style: preserve-3d;
-    }
-
-    .envelope-screen:hover .envelope {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 35px 80px rgba(139,94,60,0.45), 0 0 0 1px rgba(201,169,110,0.5);
-    }
-
-    .envelope-flap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 0;
-      border-left: 160px solid transparent;
-      border-right: 160px solid transparent;
-      border-top: 110px solid #ddc4a4;
-      border-radius: 8px 8px 0 0;
-      transform-origin: top;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 3;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-    }
-
-    .envelope.open .envelope-flap {
-      transform: rotateX(180deg);
-      z-index: 1;
-    }
-
-    .envelope-body {
-      position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #f5e6d3, #ead9c2);
-      border-radius: 8px;
       overflow: hidden;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .envelope-body::before,
-    .envelope-body::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .envelope-body::before {
-      left: 0;
-      border-bottom: 130px solid #e6cfb2;
-      border-right: 170px solid transparent;
-    }
-
-    .envelope-body::after {
-      right: 0;
-      border-bottom: 130px solid #e6cfb2;
-      border-left: 170px solid transparent;
-    }
-
-    .wax-seal {
-      position: relative;
-      z-index: 5;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #d4a574, #8b5e3c 70%, #6b4428);
-      box-shadow: 0 6px 20px rgba(139,94,60,0.5), inset 0 -3px 8px rgba(0,0,0,0.3), inset 0 3px 8px rgba(255,255,255,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Great Vibes', cursive;
-      font-size: 2.2rem;
-      color: #f5e6d3;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-      transition: all 0.5s ease;
-      animation: sealPulse 2.5s ease-in-out infinite;
-    }
-
-    @keyframes sealPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-    }
-
-    .envelope.open .wax-seal {
-      opacity: 0;
-      transform: scale(0.5);
-    }
-
-    .envelope-letter {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(0);
-      width: 280px;
-      height: 180px;
-      background: linear-gradient(135deg, #fffdf9, #fdf5e9);
-      border-radius: 6px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      z-index: 1;
-      transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s, opacity 0.5s ease 0.3s;
-      opacity: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-      border: 1px solid rgba(201,169,110,0.3);
-    }
-
-    .envelope.open .envelope-letter {
-      transform: translateX(-50%) translateY(-180px);
-      opacity: 1;
-    }
-
-    .letter-text {
-      font-family: 'Great Vibes', cursive;
-      font-size: 2rem;
-      color: var(--primary-dark);
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    .letter-sub {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.85rem;
-      color: var(--text-light);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-top: 0.5rem;
-    }
-
-    /* НЕГІЗГІ ШАҚЫРТУ */
-    .invitation-card {
-      max-width: 800px;
-      width: 100%;
-      background: rgba(255, 252, 247, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 40px;
-      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.8);
-      padding: 3rem 2.5rem;
-      border: 1px solid rgba(201,169,110,0.3);
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      transform: translateY(40px) scale(0.95);
-      transition: opacity 1s ease 0.5s, transform 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
+      z-index: 0;
       pointer-events: none;
     }
 
-    .invitation-card.visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
-
-    .invitation-card::before {
-      content: '';
+    .shape {
       position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60%;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      border-radius: 0 0 50% 50%;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.4;
+      animation: float 15s ease-in-out infinite;
     }
 
-    /* МУЗЫКА */
-    .music-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      border: 2px solid var(--gold-light);
-      color: var(--white);
+    .shape-1 { width: 400px; height: 400px; background: #3b82f6; top: -100px; left: -100px; animation-delay: 0s; }
+    .shape-2 { width: 300px; height: 300px; background: #06b6d4; bottom: -80px; right: -80px; animation-delay: -5s; }
+    .shape-3 { width: 250px; height: 250px; background: #8b5cf6; top: 40%; right: 10%; animation-delay: -10s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(30px, -30px); }
+    }
+
+    .resume-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1150px;
+      margin: 0 auto;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .resume-card {
+      background: var(--card);
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 
+        0 40px 80px -20px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 0 100px rgba(59, 130, 246, 0.1);
+    }
+
+    .toolbar {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      gap: 0.6rem;
+      z-index: 10;
+      align-items: center;
+    }
+
+    .lang-switcher {
+      display: flex;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 4px;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    .lang-btn {
+      padding: 0.55rem 1.1rem;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      border-radius: 9px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .lang-btn:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+    }
+
+    .tool-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 1rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 25px rgba(139,94,60,0.35);
-      transition: var(--transition);
-      z-index: 1000;
-      animation: pulse 2s infinite;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .tool-btn:hover {
+      background: rgba(59, 130, 246, 0.4);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .tool-btn .tooltip {
+      position: absolute;
+      bottom: -38px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      padding: 0;
+      transition: opacity 0.2s;
     }
 
-    .music-btn.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .tool-btn:hover .tooltip { opacity: 1; }
 
-    .music-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .music-btn.playing {
-      animation: pulsePlaying 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 8px 25px rgba(139,94,60,0.35), 0 0 0 0 rgba(201,169,110,0.5); }
-      50% { box-shadow: 0 8px 25px rgba(139,94,60,0.35), 0 0 0 12px rgba(201,169,110,0); }
-    }
-
-    @keyframes pulsePlaying {
-      0%, 100% { box-shadow: 0 8px 25px rgba(139,94,60,0.45), 0 0 0 0 rgba(201,169,110,0.6); }
-      50% { box-shadow: 0 8px 25px rgba(139,94,60,0.45), 0 0 0 15px rgba(201,169,110,0); }
-    }
-
-    .music-note-svg {
-      width: 28px;
-      height: 28px;
-      fill: var(--gold-light);
-      transition: all 0.4s ease;
-    }
-
-    .music-btn.playing .music-note-svg {
-      animation: noteDance 1s ease-in-out infinite;
-      fill: #fff8e8;
-    }
-
-    @keyframes noteDance {
-      0%, 100% { transform: scale(1) rotate(0deg); }
-      50% { transform: scale(1.2) rotate(0deg); }
-    }
-
-    .music-equalizer {
-      display: none;
-      align-items: flex-end;
-      gap: 3px;
-      height: 22px;
-    }
-
-    .music-equalizer span {
-      display: block;
-      width: 3px;
-      background: var(--gold-light);
-      border-radius: 2px;
-      height: 6px;
-    }
-
-    .music-btn.playing .music-note-svg { display: none; }
-    .music-btn.playing .music-equalizer { display: flex; }
-
-    .music-btn.playing .music-equalizer span {
-      animation: equalizer 0.8s ease-in-out infinite;
-    }
-
-    .music-btn.playing .music-equalizer span:nth-child(1) { animation-delay: 0s; }
-    .music-btn.playing .music-equalizer span:nth-child(2) { animation-delay: 0.15s; }
-    .music-btn.playing .music-equalizer span:nth-child(3) { animation-delay: 0.3s; }
-    .music-btn.playing .music-equalizer span:nth-child(4) { animation-delay: 0.45s; }
-
-    @keyframes equalizer {
-      0%, 100% { height: 6px; }
-      50% { height: 22px; }
-    }
-
-    /* КОНТЕНТ */
-    .photo-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 2.5rem;
+    .header {
       position: relative;
+      background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #1e40af 100%);
+      padding: 3.5rem 3rem 3rem 3rem;
+      overflow: hidden;
     }
 
-    .photo-wrapper {
-      position: relative;
-      width: 220px;
-      height: 220px;
-      margin-bottom: 1rem;
-    }
-
-    .photo-wrapper::before {
+    .header::before {
       content: '';
       position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--gold));
-      animation: rotateBorder 8s linear infinite;
-      opacity: 0.7;
+      top: 0; right: 0;
+      width: 60%;
+      height: 100%;
+      background: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.3), transparent 60%);
+      pointer-events: none;
     }
 
-    @keyframes rotateBorder {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4, #8b5cf6, #3b82f6);
+      background-size: 200% 100%;
+      animation: gradientMove 3s linear infinite;
     }
 
-    .photo-wrapper::after {
+    @keyframes gradientMove {
+      0% { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .avatar {
+      flex-shrink: 0;
+      width: 140px;
+      height: 140px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: white;
+      box-shadow: 
+        0 20px 40px -10px rgba(59, 130, 246, 0.6),
+        0 0 0 4px rgba(255, 255, 255, 0.1),
+        inset 0 2px 10px rgba(255, 255, 255, 0.2);
+      position: relative;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .avatar:hover { transform: scale(1.05) rotate(-3deg); }
+
+    .avatar::after {
       content: '';
       position: absolute;
       inset: -4px;
-      border-radius: 50%;
-      background: var(--white);
-      z-index: 1;
+      border-radius: 34px;
+      background: linear-gradient(135deg, #60a5fa, #22d3ee, #a78bfa);
+      z-index: -1;
+      opacity: 0.6;
+      filter: blur(15px);
+      animation: pulseGlow 3s ease-in-out infinite;
     }
 
-    .bride-photo {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid var(--white);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      transition: var(--transition);
-      pointer-events: none;
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
     }
 
-    .photo-caption {
-      font-family: 'Great Vibes', cursive;
-      font-size: 2.2rem;
-      color: var(--primary);
-      letter-spacing: 2px;
-      margin-top: 0.5rem;
-    }
+    .header-info { flex: 1; min-width: 0; }
 
-    .ornament {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      margin: 1.5rem 0;
-    }
-
-    .ornament-line {
-      width: 80px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold));
-    }
-
-    .ornament-line:last-child {
-      background: linear-gradient(90deg, var(--gold), transparent);
-    }
-
-    .ornament-symbol {
-      color: var(--gold);
-      font-size: 1.2rem;
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-weight: 600;
-      font-size: 2.8rem;
-      color: var(--primary-dark);
-      text-align: center;
-      letter-spacing: 2px;
+    .name-title h1 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: white;
       margin-bottom: 0.5rem;
-      line-height: 1.2;
-    }
-
-    .subhead {
-      text-align: center;
-      font-size: 1rem;
-      color: var(--primary-light);
-      text-transform: uppercase;
-      letter-spacing: 5px;
-      margin-bottom: 2rem;
-      font-weight: 500;
-    }
-
-    .greeting {
-      font-size: 1.2rem;
-      font-weight: 400;
-      color: var(--text-medium);
-      margin-bottom: 2rem;
-      text-align: center;
-      line-height: 1.8;
-      background: linear-gradient(135deg, #fffaf5, #fef5ed);
-      padding: 1.5rem;
-      border-radius: var(--border-radius-md);
-      border: 1px solid rgba(201,169,110,0.2);
-    }
-
-    .greeting strong {
-      color: var(--primary-dark);
-      font-weight: 600;
-    }
-
-    .invite-details {
-      background: linear-gradient(135deg, #ffffff, #fef9f4);
-      border-radius: var(--border-radius-lg);
-      padding: 2rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(201,169,110,0.25);
-      margin-bottom: 2rem;
-    }
-
-    .detail-row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.2rem;
-      padding: 0.8rem;
-      border-radius: 15px;
-      transition: var(--transition);
-    }
-
-    .detail-icon {
-      font-size: 1.8rem;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #fef5ed, #f8e8d8);
-      border-radius: 50%;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .detail-text {
-      font-size: 1.1rem;
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    .strong {
-      font-weight: 700;
-      color: var(--primary-dark);
-    }
-
-    .hosts {
-      background: linear-gradient(135deg, #f8f0e6, #f5e8d8);
-      border-radius: var(--border-radius-md);
-      padding: 1.5rem;
-      text-align: center;
-      font-size: 1.1rem;
-      color: var(--text-medium);
-      font-weight: 500;
-      margin: 1.5rem 0;
-      border: 2px solid rgba(201,169,110,0.3);
-      position: relative;
-    }
-
-    .hosts::before {
-      content: '✦';
-      position: absolute;
-      top: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--gold);
-      font-size: 1.5rem;
-      background: var(--white);
-      padding: 0 10px;
-    }
-
-    .hosts-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-      color: var(--primary-dark);
-      font-weight: 600;
-      margin-top: 0.5rem;
-    }
-
-    /* ТАЙМЕР */
-    .timer-section {
-      background: linear-gradient(135deg, #fffaf5, #fef5ed);
-      border-radius: var(--border-radius-lg);
-      padding: 2rem 1.5rem;
-      margin: 2rem 0;
-      border: 1px solid rgba(201,169,110,0.3);
-      box-shadow: var(--shadow-md);
-      position: relative;
-    }
-
-    .timer-section::before {
-      content: '';
-      position: absolute;
-      top: -1px;
-      left: 20%;
-      right: 20%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
-
-    .timer-label {
-      text-align: center;
-      font-size: 0.9rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--text-light);
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-    }
-
-    .timer-grid {
-      display: flex;
-      justify-content: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    .timer-unit {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 70px;
-      background: var(--white);
-      padding: 1rem 0.8rem;
-      border-radius: 20px;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid rgba(201,169,110,0.2);
-    }
-
-    .time-value {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      line-height: 1;
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .time-caption {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-top: 8px;
-    }
-
-    /* МЕКЕНЖАЙ */
-    .location-section {
-      margin: 2rem 0 1rem;
-    }
-
-    .address-block {
-      text-align: center;
-      margin: 1rem 0;
+    .role-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #93c5fd;
       font-size: 1.05rem;
       font-weight: 500;
-      color: var(--text-medium);
-      background: linear-gradient(135deg, #fffaf5, #fef5ed);
-      padding: 1.5rem;
-      border-radius: 25px;
-      border: 1px solid rgba(201,169,110,0.25);
-      box-shadow: var(--shadow-sm);
-      line-height: 1.7;
+      margin-bottom: 1.2rem;
     }
 
-    .address-block .label {
-      display: block;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      color: var(--primary-dark);
-      font-weight: 600;
+    .role-tag i { color: #22d3ee; }
+
+    .contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .contact-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      padding: 0.6rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .contact-chip:hover {
+      background: rgba(59, 130, 246, 0.25);
+      border-color: rgba(96, 165, 250, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .contact-chip i { color: #60a5fa; font-size: 1rem; }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1.7fr;
+      gap: 0;
+    }
+
+    .left-col {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      padding: 2.5rem 2rem 2.5rem 3rem;
+      border-right: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .right-col {
+      padding: 2.5rem 3rem 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .section {
+      opacity: 0;
+      animation: sectionFade 0.6s ease forwards;
+    }
+
+    .section:nth-child(1) { animation-delay: 0.15s; }
+    .section:nth-child(2) { animation-delay: 0.25s; }
+    .section:nth-child(3) { animation-delay: 0.35s; }
+    .section:nth-child(4) { animation-delay: 0.45s; }
+    .section:nth-child(5) { animation-delay: 0.55s; }
+
+    @keyframes sectionFade {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.3rem;
+      position: relative;
+      padding-bottom: 0.7rem;
+    }
+
+    .section-title i {
+      font-size: 1rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, #cbd5e1 0%, transparent 100%);
+    }
+
+    .edu-card {
+      background: white;
+      border-radius: 18px;
+      padding: 1.4rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .edu-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 4px 0 0 4px;
+    }
+
+    .edu-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+      border-color: #bfdbfe;
+    }
+
+    .edu-institution {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--dark-2);
       margin-bottom: 0.4rem;
     }
 
-    .footnote {
-      text-align: center;
-      color: var(--text-light);
-      font-size: 1rem;
-      margin-top: 2.5rem;
-      font-style: italic;
-      letter-spacing: 1px;
+    .edu-specialty {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.6rem;
     }
 
-    /* INSTAGRAM КРЕДИТ */
-    .credit-section {
-      text-align: center;
-      margin-top: 2.5rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(201,169,110,0.25);
-    }
-
-    .credit-text {
-      font-size: 0.8rem;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 0.8rem;
-      font-weight: 500;
-    }
-
-    .instagram-link {
+    .edu-year {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 0.8rem 1.8rem;
-      background: linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7);
-      color: var(--white);
-      text-decoration: none;
-      border-radius: 50px;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+      color: var(--primary-dark);
       font-weight: 600;
+      font-size: 0.82rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+    }
+
+    .exp-card {
+      background: white;
+      border-radius: 18px;
+      padding: 1.4rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+      transition: all 0.3s ease;
+    }
+
+    .exp-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+      border-color: #bfdbfe;
+    }
+
+    .exp-title {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
       font-size: 1rem;
-      letter-spacing: 1px;
-      box-shadow: 0 8px 25px rgba(238,42,123,0.3);
-      transition: var(--transition);
-      border: 2px solid rgba(255,255,255,0.3);
+      color: var(--dark-2);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.7rem;
     }
 
-    .instagram-link:hover {
+    .exp-title i { color: var(--primary); }
+
+    .exp-desc {
+      color: var(--text-light);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      padding-left: 0.9rem;
+      border-left: 2px solid #dbeafe;
+    }
+
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .skill-tag {
+      background: white;
+      border: 1px solid #e2e8f0;
+      color: var(--dark-2);
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+    }
+
+    .skill-tag i { color: var(--primary); font-size: 0.9rem; }
+
+    .skill-tag:hover {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border-color: transparent;
       transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 12px 35px rgba(238,42,123,0.5);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.35);
     }
 
-    .instagram-icon {
-      width: 22px;
-      height: 22px;
-      fill: var(--white);
+    .skill-tag:hover i { color: white; }
+
+    .lang-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .lang-card:hover {
+      border-color: #bfdbfe;
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.1);
+    }
+
+    .lang-name {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 600;
+      color: var(--dark-2);
+    }
+
+    .lang-name i { color: var(--primary); font-size: 1.1rem; }
+
+    .lang-level {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      padding: 0.3rem 0.9rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .goal-card {
+      background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+      padding: 1.6rem;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #bfdbfe;
+    }
+
+    .goal-card::before {
+      content: '\201C';
+      position: absolute;
+      top: -30px;
+      right: 15px;
+      font-size: 8rem;
+      font-family: Georgia, serif;
+      color: rgba(59, 130, 246, 0.12);
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .goal-text {
+      position: relative;
+      z-index: 1;
+      color: var(--dark-2);
+      font-weight: 500;
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .traits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+    }
+
+    .trait-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 14px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--dark-2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .trait-item i {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+      color: var(--primary);
+      border-radius: 10px;
+      font-size: 1rem;
       flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .trait-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.12);
+      border-color: #bfdbfe;
+    }
+
+    .trait-item:hover i {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      transform: rotate(-8deg) scale(1.05);
+    }
+
+    .course-card {
+      background: white;
+      border-radius: 18px;
+      padding: 1.4rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .course-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.06), transparent 60%);
       pointer-events: none;
     }
 
-    .instagram-username {
-      font-family: 'Montserrat', sans-serif;
+    .course-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+      border-color: #bfdbfe;
+    }
+
+    .course-name {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--dark-2);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .course-name i { color: var(--primary); font-size: 1.1rem; }
+
+    .course-desc {
+      color: var(--text-light);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      padding-left: 1rem;
+      border-left: 3px solid;
+      border-image: linear-gradient(180deg, var(--primary), var(--accent)) 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .filmography {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-radius: 18px;
+      padding: 1.6rem;
+      text-align: center;
+      color: var(--text-light);
+      font-weight: 500;
+      border: 2px dashed #cbd5e1;
+      transition: all 0.3s ease;
+    }
+
+    .filmography:hover {
+      border-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .filmography i {
+      color: var(--primary);
+      font-size: 1.8rem;
+      margin-bottom: 0.6rem;
+      display: block;
+      opacity: 0.7;
+    }
+
+    .footer {
+      background: linear-gradient(135deg, #0a1628 0%, #12263f 100%);
+      padding: 1.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+    }
+
+    .footer span { color: #60a5fa; font-weight: 600; }
+
+    .social-links { display: flex; gap: 0.6rem; }
+
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .social-btn:hover {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+      border-color: transparent;
+    }
+
+    .copyright {
+      background: linear-gradient(135deg, #0a1628 0%, #071020 100%);
+      padding: 1rem 3rem 1.4rem 3rem;
+      text-align: center;
+      color: #64748b;
+      font-size: 0.82rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      letter-spacing: 0.02em;
+    }
+
+    .copyright i {
+      color: #3b82f6;
+      margin-right: 0.4rem;
+      font-size: 0.85rem;
+    }
+
+    .copyright span {
+      color: #60a5fa;
       font-weight: 600;
     }
 
-    @media (max-width: 640px) {
-      .invitation-card {
-        padding: 2rem 1.5rem;
-        border-radius: 30px;
-      }
-      h1 { font-size: 2rem; }
-      .photo-wrapper { width: 160px; height: 160px; }
-      .photo-caption { font-size: 1.8rem; }
-      .time-value { font-size: 1.8rem; }
-      .timer-grid { gap: 0.8rem; }
-      .timer-unit { min-width: 60px; padding: 0.8rem 0.5rem; }
-      .music-btn { width: 52px; height: 52px; top: 15px; right: 15px; }
-      .music-note-svg { width: 24px; height: 24px; }
-      .envelope { width: 260px; height: 180px; }
-      .envelope-flap {
-        border-left: 130px solid transparent;
-        border-right: 130px solid transparent;
-        border-top: 90px solid #ddc4a4;
-      }
-      .envelope-body::before {
-        border-bottom: 105px solid #e6cfb2;
-        border-right: 140px solid transparent;
-      }
-      .envelope-body::after {
-        border-bottom: 105px solid #e6cfb2;
-        border-left: 140px solid transparent;
-      }
-      .envelope-letter { width: 230px; height: 150px; }
-      .letter-text { font-size: 1.6rem; }
-      .envelope-hint { font-size: 1.05rem; }
-      .instagram-link { padding: 0.7rem 1.4rem; font-size: 0.9rem; }
-      .instagram-icon { width: 18px; height: 18px; }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 1rem 1.8rem;
+      border-radius: 14px;
+      font-weight: 600;
+      box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 9999;
+      pointer-events: none;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast i { font-size: 1.2rem; flex-shrink: 0; }
+
+    .copy-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .copy-modal.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .copy-modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 2rem 1.6rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+      animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .copy-modal-content i.modal-icon {
+      font-size: 3rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .copy-modal-content h3 {
+      font-family: 'Manrope', sans-serif;
+      font-size: 1.3rem;
+      color: var(--dark-2);
+      margin-bottom: 0.6rem;
+    }
+
+    .copy-modal-content .modal-hint {
+      color: #64748b;
+      font-size: 0.88rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .email-display {
+      background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+      border: 2px dashed #60a5fa;
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      word-break: break-all;
+      cursor: text;
+      letter-spacing: 0.5px;
+    }
+
+    .email-display:active,
+    .email-display.selected {
+      background: linear-gradient(135deg, #dbeafe, #bae6fd);
+      border-color: var(--primary);
+    }
+
+    .copy-modal-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .copy-modal-btns button {
+      padding: 0.95rem 1rem;
+      border-radius: 14px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .copy-modal-btns button.primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    .copy-modal-btns button.primary:hover,
+    .copy-modal-btns button.primary:active {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(59, 130, 246, 0.5);
+    }
+
+    .copy-modal-btns button.secondary {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .copy-modal-btns button.secondary:hover,
+    .copy-modal-btns button.secondary:active {
+      background: #e2e8f0;
+    }
+
+    .copy-modal-btns button.mail-link {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    .copy-modal-btns button.mail-link:hover,
+    .copy-modal-btns button.mail-link:active {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(16, 185, 129, 0.5);
+    }
+
+    @media (max-width: 900px) {
+      .header-content { flex-direction: column; text-align: center; gap: 1.5rem; padding-top: 2rem; }
+      .name-title h1 { font-size: 2.4rem; }
+      .contact-row { justify-content: center; }
+      .main-content { grid-template-columns: 1fr; }
+      .left-col { padding: 2rem; border-right: none; border-bottom: 1px solid #e2e8f0; }
+      .right-col { padding: 2rem; }
+      .traits-grid { grid-template-columns: 1fr; }
+      .toolbar { top: 1rem; right: 1rem; left: 1rem; justify-content: space-between; }
+      .lang-switcher { padding: 3px; }
+      .lang-btn { padding: 0.5rem 0.9rem; font-size: 0.78rem; }
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 0.8rem; }
+      .resume-card { border-radius: 24px; }
+      .header { padding: 4rem 1.5rem 2rem 1.5rem; }
+      .avatar { width: 110px; height: 110px; font-size: 2.5rem; }
+      .name-title h1 { font-size: 1.8rem; }
+      .contact-chip { font-size: 0.85rem; padding: 0.5rem 1rem; }
+      .left-col, .right-col { padding: 1.5rem; }
+      .footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
+      .copyright { padding: 0.9rem 1.5rem 1.2rem 1.5rem; font-size: 0.75rem; }
+      .tool-btn { width: 38px; height: 38px; font-size: 0.9rem; }
+      .lang-btn { padding: 0.45rem 0.75rem; font-size: 0.72rem; }
+      .copy-modal-content { padding: 1.5rem 1.2rem; border-radius: 20px; }
+      .email-display { font-size: 0.95rem; padding: 0.9rem; }
+      .copy-modal-btns button { padding: 0.85rem 1rem; font-size: 0.9rem; }
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      body::before, .floating-shapes, .toolbar, .footer .social-links, .copy-modal { display: none; }
+      .resume-card { box-shadow: none; }
+      .section { opacity: 1 !important; animation: none; }
+      .footer { background: white; color: #333; }
+      .copyright { background: white; color: #333; }
     }
   </style>
 </head>
 <body>
-
-  <!-- ===================================================
-       ЖАСЫРЫН YOUTUBE ПЛЕЕР
-       Видео туралы ақпарат толығымен жасырылған
-  =================================================== -->
-  <div id="youtubePlayerContainer">
-    <div id="youtubePlayer"></div>
+  <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
   </div>
 
-  <!-- КОНВЕРТ ЭКРАНЫ -->
-  <div class="envelope-screen" id="envelopeScreen">
-    <div class="envelope-hint">💌 Шақыртуды ашу үшін экранды басыңыз</div>
-    <div class="envelope-wrapper">
-      <div class="envelope" id="envelope">
-        <div class="envelope-letter">
-          <div class="letter-text">Ұзату тойы</div>
-          <div class="letter-sub">11.10.2026</div>
+  <div class="resume-wrapper">
+    <div class="resume-card">
+      <div class="toolbar">
+        <div class="lang-switcher">
+          <button class="lang-btn active" id="btnKz" data-lang="kz">ҚАЗ</button>
+          <button class="lang-btn" id="btnRu" data-lang="ru">РУС</button>
         </div>
-        <div class="envelope-body"></div>
-        <div class="envelope-flap"></div>
-        <div class="wax-seal">Б</div>
+        <button class="tool-btn" id="printBtn" aria-label="Print">
+          <i class="fas fa-print"></i>
+          <span class="tooltip" data-i18n="tooltip_print">Басып шығару</span>
+        </button>
+        <button class="tool-btn" id="copyBtn" aria-label="Copy">
+          <i class="fas fa-envelope-open-text"></i>
+          <span class="tooltip" data-i18n="tooltip_copy">Email көшіру</span>
+        </button>
+        <button class="tool-btn" id="themeBtn" aria-label="Theme">
+          <i class="fas fa-palette"></i>
+          <span class="tooltip" data-i18n="tooltip_theme">Түс</span>
+        </button>
+      </div>
+
+      <div class="header">
+        <div class="header-content">
+          <div class="avatar" id="avatar" title="Сәлем! 👋">АБ</div>
+          <div class="header-info">
+            <div class="name-title">
+              <h1 data-i18n="name">Базарбек Аян Жеңісұлы</h1>
+            </div>
+            <div class="role-tag">
+              <i class="fas fa-code"></i>
+              <span data-i18n="role">Бағдарламалық қамтамасыз ету</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-chip">
+                <i class="fas fa-birthday-cake"></i>
+                <span data-i18n="birthday">10.01.2006</span>
+              </div>
+              <a class="contact-chip" href="https://maps.google.com/?q=Қызылорда" target="_blank" rel="noopener">
+                <i class="fas fa-map-marker-alt"></i>
+                <span data-i18n="city">Қызылорда</span>
+              </a>
+              <a class="contact-chip" href="mailto:kzayan161@gmail.com">
+                <i class="fas fa-envelope"></i>
+                kzayan161@gmail.com
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div class="left-col">
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-graduation-cap"></i>
+              <span data-i18n="education">Білімі</span>
+            </div>
+            <div class="edu-card">
+              <div class="edu-institution" data-i18n="college">Халықаралық ORDA жоғары колледжі</div>
+              <div class="edu-specialty">
+                <i class="fas fa-laptop-code"></i>
+                <span data-i18n="specialty">Бағдарламалық қамтамасыз ету (IT)</span>
+              </div>
+              <div class="edu-year">
+                <i class="fas fa-calendar-check"></i>
+                <span data-i18n="grad_year">Бітіру жылы: 2026</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-briefcase"></i>
+              <span data-i18n="experience">Жұмыс тәжірибесі</span>
+            </div>
+            <div class="exp-card">
+              <div class="exp-title">
+                <i class="fas fa-building-columns"></i>
+                <span data-i18n="exp_title">ХҚКО / ЦОН</span>
+              </div>
+              <div class="exp-desc" data-i18n="exp_desc">
+                Халыққа қызмет көрсету орталығында жұмыс тәжірибесі бар. Құжаттарды рәсімдеу және азаматтарға кеңес беру.
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-tools"></i>
+              <span data-i18n="skills">Кәсіби дағдылар</span>
+            </div>
+            <div class="skills-list">
+              <div class="skill-tag"><i class="fas fa-desktop"></i> <span data-i18n="skill1">Компьютермен жұмыс</span></div>
+              <div class="skill-tag"><i class="fas fa-file-word"></i> Microsoft Word</div>
+              <div class="skill-tag"><i class="fas fa-file-excel"></i> Microsoft Excel</div>
+              <div class="skill-tag"><i class="fas fa-globe"></i> <span data-i18n="skill4">Интернетпен жұмыс</span></div>
+              <div class="skill-tag"><i class="fas fa-file-signature"></i> <span data-i18n="skill5">Құжаттарды рәсімдеу</span></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-language"></i>
+              <span data-i18n="languages">Тілдер</span>
+            </div>
+            <div class="lang-card">
+              <div class="lang-name">
+                <i class="fas fa-comment-dots"></i>
+                <span data-i18n="lang_kz">Қазақ тілі</span>
+              </div>
+              <div class="lang-level" data-i18n="native">Ана тілі</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-bullseye"></i>
+              <span data-i18n="goal">Мақсатым</span>
+            </div>
+            <div class="goal-card">
+              <div class="goal-text" data-i18n="goal_text">
+                Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-user-check"></i>
+              <span data-i18n="traits">Жеке қасиеттер</span>
+            </div>
+            <div class="traits-grid">
+              <div class="trait-item"><i class="fas fa-shield-halved"></i> <span data-i18n="trait1">Жауапкершілік</span></div>
+              <div class="trait-item"><i class="fas fa-broom"></i> <span data-i18n="trait2">Ұқыптылық</span></div>
+              <div class="trait-item"><i class="fas fa-brain"></i> <span data-i18n="trait3">Тез меңгеру</span></div>
+              <div class="trait-item"><i class="fas fa-handshake"></i> <span data-i18n="trait4">Тіл табысу</span></div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-star"></i>
+              <span data-i18n="extra">Қосымша білім</span>
+            </div>
+            <div class="course-card">
+              <div class="course-name">
+                <i class="fas fa-masks-theater"></i>
+                <span data-i18n="course_name">Art House актерлік мектебі</span>
+              </div>
+              <div class="course-desc" data-i18n="course_desc">
+                «Актерлік шеберлік» онлайн курсын толық аяқтаған. Сахна тілі, эмоциямен жұмыс істеу және камера алдындағы актерлік шеберлік бойынша практикалық дағдыларды меңгерген.
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              <i class="fas fa-film"></i>
+              <span data-i18n="filmography">Фильмография</span>
+            </div>
+            <div class="filmography">
+              <i class="fas fa-video"></i>
+              <span data-i18n="filmography_text">Қазіргі уақытта театрда және кинода түскен рөлдері жоқ.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div>© 2026 · <span data-i18n="footer_name">Базарбек Аян</span> · <span data-i18n="footer_resume">Түйіндеме</span></div>
+        <div class="social-links">
+          <a class="social-btn" href="mailto:kzayan161@gmail.com" title="Email">
+            <i class="fas fa-envelope"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="copyright">
+        <i class="fas fa-copyright"></i>
+        © 2026. <span data-i18n="copyright_text">Барлық құқықтар қорғалған.</span>
       </div>
     </div>
   </div>
 
-  <!-- МУЗЫКА -->
-  <button class="music-btn" id="musicBtn" title="Музыканы қосу/өшіру" aria-label="Музыканы қосу/өшіру">
-    <svg class="music-note-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-      <circle cx="10" cy="17" r="2.5"/>
-      <circle cx="18" cy="15" r="2.5"/>
-    </svg>
-    <div class="music-equalizer">
-      <span></span><span></span><span></span><span></span>
-    </div>
-  </button>
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastText">Email көшірілді!</span>
+  </div>
 
-  <!-- НЕГІЗГІ ШАҚЫРТУ -->
-  <div class="invitation-card" id="invitationCard">
-    <div class="photo-section">
-      <div class="photo-wrapper">
-        <img src="https://i.ibb.co.com/zWh10ZDX/photo.jpg" alt="Бану - қалыңдық" class="bride-photo">
-      </div>
-      <div class="photo-caption">Бану</div>
-    </div>
-
-    <div class="ornament">
-      <span class="ornament-line"></span>
-      <span class="ornament-symbol">✦</span>
-      <span class="ornament-line"></span>
-    </div>
-
-    <h1>Ұзату тойы</h1>
-    <div class="subhead">11.10.2026</div>
-
-    <div class="greeting">
-      Құрметті қонақтар!<br>
-      Сіздерді <strong>аяулы қызымыз Банудың</strong> ұзатылу тойына арналып жайылған ақ дастарханымыздың қадірлі қонағы болуға шақырамыз.
-    </div>
-
-    <div class="invite-details">
-      <div class="detail-row">
-        <span class="detail-icon">📅</span>
-        <span class="detail-text"><span class="strong">11.10.2026 жыл</span> · 19:00</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-icon">📍</span>
-        <span class="detail-text"><span class="strong">Мекен-жайымыз:</span> Абай ауылы, ELITE ABAY HALL, Артықов көшесі, 237</span>
+  <div class="copy-modal" id="copyModal">
+    <div class="copy-modal-content">
+      <i class="fas fa-envelope-open-text modal-icon"></i>
+      <h3 data-i18n="modal_title">Email көшіру</h3>
+      <p class="modal-hint" data-i18n="modal_hint">
+        Email-ды ұзақ басып тұрып, «Көшіру» таңдаңыз:
+      </p>
+      
+      <div class="email-display" id="emailDisplay" onclick="selectEmail()">
+        kzayan161@gmail.com
       </div>
       
-      <div class="hosts">
-        Той иелері:
-        <div class="hosts-name">Жұлдыз · Дәурен</div>
+      <div class="copy-modal-btns">
+        <button class="primary" id="modalCopyBtn">
+          <i class="fas fa-copy"></i>
+          <span data-i18n="modal_copy">Көшіру</span>
+        </button>
+        <button class="mail-link" id="modalMailBtn">
+          <i class="fas fa-paper-plane"></i>
+          <span data-i18n="modal_mail">Пошта ашу</span>
+        </button>
+        <button class="secondary" id="modalCloseBtn" data-i18n="modal_close">Жабу</button>
       </div>
-    </div>
-
-    <div class="timer-section">
-      <div class="timer-label">⏳ Тойға дейін</div>
-      <div class="timer-grid">
-        <div class="timer-unit">
-          <span class="time-value" id="days">00</span>
-          <span class="time-caption">күн</span>
-        </div>
-        <div class="timer-unit">
-          <span class="time-value" id="hours">00</span>
-          <span class="time-caption">сағат</span>
-        </div>
-        <div class="timer-unit">
-          <span class="time-value" id="minutes">00</span>
-          <span class="time-caption">минут</span>
-        </div>
-        <div class="timer-unit">
-          <span class="time-value" id="seconds">00</span>
-          <span class="time-caption">секунд</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="location-section">
-      <div class="address-block">
-        <span class="label">📍 Мекен-жайымыз</span>
-        Абай ауылы, ELITE ABAY HALL<br>
-        Артықов көшесі, 237
-      </div>
-    </div>
-
-    <div class="footnote">
-      ✦ Сіздерді күтеміз! ✦
-    </div>
-
-    <!-- INSTAGRAM КРЕДИТ -->
-    <div class="credit-section">
-      <div class="credit-text">Сайтты жасаған</div>
-      <a href="https://www.instagram.com/aian_wtkkz_17" target="_blank" rel="noopener noreferrer" class="instagram-link">
-        <svg class="instagram-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-        </svg>
-        <span class="instagram-username">aian_wtkkz_17</span>
-      </a>
     </div>
   </div>
 
   <script>
-    // ============================================
-    // МӘТІН КӨШІРУГЕ ТЫЙЫМ САЛУ
-    // ============================================
-    document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey || e.metaKey) {
-        if (e.key === 'c' || e.key === 'C' ||
-            e.key === 'x' || e.key === 'X' ||
-            e.key === 'a' || e.key === 'A' ||
-            e.key === 'u' || e.key === 'U' ||
-            e.key === 's' || e.key === 'S' ||
-            e.key === 'p' || e.key === 'P') {
-          e.preventDefault();
-          return false;
-        }
-      }
-      if (e.key === 'F12') { e.preventDefault(); return false; }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-        if (e.key === 'I' || e.key === 'i' ||
-            e.key === 'J' || e.key === 'j' ||
-            e.key === 'C' || e.key === 'c') {
-          e.preventDefault();
-          return false;
-        }
-      }
-    });
-    document.addEventListener('selectstart', function(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return true;
-      e.preventDefault();
-      return false;
-    });
-    document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('mousedown', function(e) {
-      if (e.detail > 1) { e.preventDefault(); return false; }
-    });
-
-    // ============================================
-    // ТАЙМЕР
-    // ============================================
-    var targetDate = new Date('2026-10-11T19:00:00+05:00');
-    function updateTimer() {
-      var diff = targetDate - new Date();
-      if (diff <= 0) {
-        document.getElementById('days').textContent = '00';
-        document.getElementById('hours').textContent = '00';
-        document.getElementById('minutes').textContent = '00';
-        document.getElementById('seconds').textContent = '00';
+    // ==========================================
+    // ЖЕКЕ ДЕРЕКТЕРДІ КӨШІРУГЕ ТЫЙЫМ САЛУ
+    // ==========================================
+    document.addEventListener('copy', (e) => {
+      const selection = window.getSelection().toString();
+      if (selection.includes('kzayan161@gmail.com') || selection.trim() === 'kzayan161@gmail.com') {
         return;
       }
-      var s = Math.floor(diff / 1000);
-      function fmt(n) { return String(n).padStart(2, '0'); }
-      document.getElementById('days').textContent = fmt(Math.floor(s / 86400));
-      document.getElementById('hours').textContent = fmt(Math.floor((s % 86400) / 3600));
-      document.getElementById('minutes').textContent = fmt(Math.floor((s % 3600) / 60));
-      document.getElementById('seconds').textContent = fmt(s % 60);
-    }
-    updateTimer();
-    setInterval(updateTimer, 1000);
+      e.preventDefault();
+      showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
+    });
 
-    // ============================================
-    // YOUTUBE МУЗЫКА - ТОЛЫҚ ЖАСЫРЫН
-    // ============================================
-    var VIDEO_ID = 'ch9zSWcAa1E';
-    var player = null;
-    var isPlaying = false;
-    var playerReady = false;
-    var musicBtn = document.getElementById('musicBtn');
+    document.addEventListener('cut', (e) => {
+      e.preventDefault();
+      showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
+    });
 
-    function loadYouTubeAPI() {
-      var tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    }
+    document.addEventListener('dragstart', (e) => {
+      const text = e.target.textContent || '';
+      if (text.includes('kzayan161@gmail.com')) {
+        return;
+      }
+      e.preventDefault();
+    });
 
-    window.onYouTubeIframeAPIReady = function() {
-      player = new YT.Player('youtubePlayer', {
-        height: '1',
-        width: '1',
-        videoId: VIDEO_ID,
-        playerVars: {
-          'autoplay': 0,
-          'controls': 0,
-          'loop': 1,
-          'playlist': VIDEO_ID,
-          'playsinline': 1,
-          'modestbranding': 1,
-          'rel': 0,
-          'showinfo': 0,
-          'iv_load_policy': 3,
-          'fs': 0,
-          'disablekb': 1,
-          'enablejsapi': 1,
-          'origin': window.location.origin
-        },
-        events: {
-          'onReady': onPlayerReady,
-          'onStateChange': onPlayerStateChange
-        }
-      });
+    document.addEventListener('contextmenu', (e) => {
+      const target = e.target;
+      if (target.classList.contains('email-display') || 
+          target.closest('.email-display') ||
+          (target.tagName === 'A' && target.href.startsWith('mailto:'))) {
+        return;
+      }
+      e.preventDefault();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault();
+        showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Insert') {
+        e.preventDefault();
+        showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
+      }
+    });
+
+    // ==========================================
+    // ТІЛДЕР СӨЗДІГІ
+    // ==========================================
+    const translations = {
+      kz: {
+        tooltip_print: 'Басып шығару',
+        tooltip_copy: 'Email көшіру',
+        tooltip_theme: 'Түс',
+        name: 'Базарбек Аян Жеңісұлы',
+        role: 'Бағдарламалық қамтамасыз ету',
+        birthday: '10.01.2006',
+        city: 'Қызылорда',
+        education: 'Білімі',
+        college: 'Халықаралық ORDA жоғары колледжі',
+        specialty: 'Бағдарламалық қамтамасыз ету (IT)',
+        grad_year: 'Бітіру жылы: 2026',
+        experience: 'Жұмыс тәжірибесі',
+        exp_title: 'ХҚКО / ЦОН',
+        exp_desc: 'Халыққа қызмет көрсету орталығында жұмыс тәжірибесі бар. Құжаттарды рәсімдеу және азаматтарға кеңес беру.',
+        skills: 'Кәсіби дағдылар',
+        skill1: 'Компьютермен жұмыс',
+        skill4: 'Интернетпен жұмыс',
+        skill5: 'Құжаттарды рәсімдеу',
+        languages: 'Тілдер',
+        lang_kz: 'Қазақ тілі',
+        native: 'Ана тілі',
+        goal: 'Мақсатым',
+        goal_text: 'Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.',
+        traits: 'Жеке қасиеттер',
+        trait1: 'Жауапкершілік',
+        trait2: 'Ұқыптылық',
+        trait3: 'Тез меңгеру',
+        trait4: 'Тіл табысу',
+        extra: 'Қосымша білім',
+        course_name: 'Art House актерлік мектебі',
+        course_desc: '«Актерлік шеберлік» онлайн курсын толық аяқтаған. Сахна тілі, эмоциямен жұмыс істеу және камера алдындағы актерлік шеберлік бойынша практикалық дағдыларды меңгерген.',
+        filmography: 'Фильмография',
+        filmography_text: 'Қазіргі уақытта театрда және кинода түскен рөлдері жоқ.',
+        footer_name: 'Базарбек Аян',
+        footer_resume: 'Түйіндеме',
+        copyright_text: 'Барлық құқықтар қорғалған.',
+        toast_welcome: 'Сайтқа қош келдіңіз! 🎉',
+        toast_copied: 'Email көшірілді',
+        toast_copy_error: 'Көшіру мүмкін болмады',
+        toast_copy_forbidden: '⛔ Жеке деректерді көшіруге тыйым салынған',
+        toast_selected: 'Мәтін таңдалды — ұзақ басып «Көшіру» таңдаңыз',
+        toast_theme: 'Түс',
+        toast_skill: 'Дағды',
+        toast_trait: 'Қасиет',
+        toast_greet1: 'Сәлем! 👋',
+        toast_greet2: 'Қош келдіңіз! ✨',
+        toast_greet3: 'Рахмет! 🙌',
+        toast_greet4: 'Сәттілік! 🚀',
+        toast_greet5: 'Танысқаныма қуаныштымын! 😊',
+        themes: ['Көк', 'Күлгін', 'Жасыл', 'Қызғылт', 'Қызғылт сары'],
+        modal_title: 'Email көшіру',
+        modal_hint: 'Email-ды ұзақ басып тұрып, «Көшіру» таңдаңыз:',
+        modal_copy: 'Көшіру',
+        modal_mail: 'Пошта ашу',
+        modal_close: 'Жабу'
+      },
+      ru: {
+        tooltip_print: 'Печать',
+        tooltip_copy: 'Копировать email',
+        tooltip_theme: 'Цвет',
+        name: 'Базарбек Аян Жеңісұлы',
+        role: 'Программное обеспечение',
+        birthday: '10.01.2006',
+        city: 'Кызылорда',
+        education: 'Образование',
+        college: 'Международный высший колледж ORDA',
+        specialty: 'Программное обеспечение (IT)',
+        grad_year: 'Год окончания: 2026',
+        experience: 'Опыт работы',
+        exp_title: 'ЦОН (Центр обслуживания населения)',
+        exp_desc: 'Есть опыт работы в Центре обслуживания населения. Оформление документов и консультирование граждан.',
+        skills: 'Профессиональные навыки',
+        skill1: 'Работа с компьютером',
+        skill4: 'Работа с интернетом',
+        skill5: 'Оформление документов',
+        languages: 'Языки',
+        lang_kz: 'Казахский язык',
+        native: 'Родной',
+        goal: 'Моя цель',
+        goal_text: 'Используя свои знания и навыки, профессионально развиваться, приобретать новый опыт и найти стабильную работу.',
+        traits: 'Личные качества',
+        trait1: 'Ответственность',
+        trait2: 'Аккуратность',
+        trait3: 'Быстрое обучение',
+        trait4: 'Коммуникабельность',
+        extra: 'Дополнительное образование',
+        course_name: 'Актёрская школа Art House',
+        course_desc: 'Полностью прошёл онлайн-курс «Актёрское мастерство». Освоил практические навыки по актёрскому мастерству, сценической речи, работе с эмоциями и актёрской игре перед камерой.',
+        filmography: 'Фильмография',
+        filmography_text: 'В настоящее время ролей в театре и кино нет.',
+        footer_name: 'Базарбек Аян',
+        footer_resume: 'Резюме',
+        copyright_text: 'Все права защищены.',
+        toast_welcome: 'Добро пожаловать на сайт! 🎉',
+        toast_copied: 'Email скопирован',
+        toast_copy_error: 'Не удалось скопировать',
+        toast_copy_forbidden: '⛔ Копирование личных данных запрещено',
+        toast_selected: 'Текст выделен — удержите и выберите «Копировать»',
+        toast_theme: 'Цвет',
+        toast_skill: 'Навык',
+        toast_trait: 'Качество',
+        toast_greet1: 'Привет! 👋',
+        toast_greet2: 'Добро пожаловать! ✨',
+        toast_greet3: 'Спасибо! 🙌',
+        toast_greet4: 'Удачи! 🚀',
+        toast_greet5: 'Рад знакомству! 😊',
+        themes: ['Синий', 'Фиолетовый', 'Зелёный', 'Розовый', 'Оранжевый'],
+        modal_title: 'Копировать email',
+        modal_hint: 'Удержите email и выберите «Копировать»:',
+        modal_copy: 'Копировать',
+        modal_mail: 'Открыть почту',
+        modal_close: 'Закрыть'
+      }
     };
 
-    function onPlayerReady(event) {
-      playerReady = true;
-      // Плеер дайын болғанда оның барлық элементтерін жасыру
-      hidePlayerElements();
-      
-      if (window.__startMusic) {
-        try { player.playVideo(); } catch (e) {}
-      }
+    let currentLang = 'kz';
+
+    // ==========================================
+    // ТІЛ АУЫСТЫРУ
+    // ==========================================
+    function switchLang(lang) {
+      currentLang = lang;
+      const dict = translations[lang];
+
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
+
+      document.documentElement.lang = lang === 'kz' ? 'kk' : 'ru';
+      document.title = lang === 'kz' 
+        ? 'Базарбек Аян · Түйіндеме' 
+        : 'Базарбек Аян · Резюме';
+
+      document.getElementById('btnKz').classList.toggle('active', lang === 'kz');
+      document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+
+      const langName = lang === 'kz' ? 'Қазақша' : 'Русский';
+      showToast(`Тіл: ${langName}`, 'fa-language', '#3b82f6');
+
+      try { localStorage.setItem('resume_lang', lang); } catch(e) {}
     }
 
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        musicBtn.classList.add('playing');
-        musicBtn.title = 'Музыканы өшіру';
-        // Ойнап жатқанда да жасырын ұстау
-        hidePlayerElements();
-      } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-        isPlaying = false;
-        musicBtn.classList.remove('playing');
-        musicBtn.title = 'Музыканы қосу';
-      }
+    document.getElementById('btnKz').addEventListener('click', () => switchLang('kz'));
+    document.getElementById('btnRu').addEventListener('click', () => switchLang('ru'));
+
+    // ==========================================
+    // TOAST
+    // ==========================================
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    let toastTimer = null;
+
+    function showToast(message, icon = 'fa-check-circle', color = '#10b981') {
+      toastText.textContent = message;
+      toast.style.background = `linear-gradient(135deg, ${color}, ${color}dd)`;
+      toast.querySelector('i').className = `fas ${icon}`;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
     }
 
-    // YouTube плеердің барлық элементтерін жасыру
-    function hidePlayerElements() {
+    // ==========================================
+    // EMAIL КӨШІРУ
+    // ==========================================
+    const EMAIL = 'kzayan161@gmail.com';
+
+    function fallbackCopy(text) {
       try {
-        var iframe = document.querySelector('#youtubePlayer iframe') || 
-                     document.querySelector('#youtubePlayerContainer iframe');
-        if (iframe) {
-          iframe.style.width = '1px';
-          iframe.style.height = '1px';
-          iframe.style.position = 'absolute';
-          iframe.style.top = '-9999px';
-          iframe.style.left = '-9999px';
-          iframe.style.opacity = '0';
-          iframe.style.pointerEvents = 'none';
-          iframe.setAttribute('tabindex', '-1');
-          iframe.setAttribute('aria-hidden', 'true');
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '0';
+        textarea.style.left = '0';
+        textarea.style.width = '2em';
+        textarea.style.height = '2em';
+        textarea.style.padding = '0';
+        textarea.style.border = 'none';
+        textarea.style.outline = 'none';
+        textarea.style.boxShadow = 'none';
+        textarea.style.background = 'transparent';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        
+        if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+          const range = document.createRange();
+          range.selectNodeContents(textarea);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          textarea.setSelectionRange(0, text.length);
+        } else {
+          textarea.select();
+          textarea.setSelectionRange(0, text.length);
         }
-      } catch (e) {}
+        
+        const success = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        return success;
+      } catch (err) {
+        return false;
+      }
     }
 
-    // Әр 1 секунд сайын плеерді жасырып отыру (қорғаныс)
-    setInterval(hidePlayerElements, 1000);
+    function showCopyModal() {
+      const modal = document.getElementById('copyModal');
+      modal.classList.add('show');
+      setTimeout(() => {
+        selectEmail();
+      }, 200);
+    }
 
-    function startMusic() {
-      window.__startMusic = true;
-      if (player && playerReady && typeof player.playVideo === 'function') {
+    function selectEmail() {
+      const emailDisplay = document.getElementById('emailDisplay');
+      const range = document.createRange();
+      const selection = window.getSelection();
+      
+      range.selectNodeContents(emailDisplay);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      try {
+        const tempInput = document.createElement('input');
+        tempInput.value = EMAIL;
+        tempInput.style.position = 'fixed';
+        tempInput.style.opacity = '0';
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, tempInput.value.length);
+        document.body.removeChild(tempInput);
+      } catch(e) {}
+      
+      emailDisplay.classList.add('selected');
+      showToast(translations[currentLang].toast_selected, 'fa-hand-pointer', '#3b82f6');
+    }
+
+    async function copyEmail() {
+      if (navigator.clipboard && window.isSecureContext) {
         try {
-          player.playVideo();
-        } catch (e) {
-          console.log('Автоплей блокталды');
+          await navigator.clipboard.writeText(EMAIL);
+          showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
+          return;
+        } catch (err) {
+          console.warn('Clipboard API failed:', err);
         }
       }
+
+      if (fallbackCopy(EMAIL)) {
+        showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
+        return;
+      }
+
+      showCopyModal();
     }
 
-    musicBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (!player || !playerReady) return;
-      if (isPlaying) {
-        player.pauseVideo();
-      } else {
-        player.playVideo();
+    document.getElementById('copyBtn').addEventListener('click', copyEmail);
+
+    document.getElementById('modalCloseBtn').addEventListener('click', () => {
+      document.getElementById('copyModal').classList.remove('show');
+      document.getElementById('emailDisplay').classList.remove('selected');
+    });
+
+    document.getElementById('copyModal').addEventListener('click', (e) => {
+      if (e.target.id === 'copyModal') {
+        document.getElementById('copyModal').classList.remove('show');
+        document.getElementById('emailDisplay').classList.remove('selected');
       }
     });
 
-    // КОНВЕРТ АШУ
-    var envelopeScreen = document.getElementById('envelopeScreen');
-    var envelope = document.getElementById('envelope');
-    var invitationCard = document.getElementById('invitationCard');
-    var opened = false;
-
-    envelopeScreen.addEventListener('click', function() {
-      if (opened) return;
-      opened = true;
+    document.getElementById('modalCopyBtn').addEventListener('click', async () => {
+      let copied = false;
       
-      envelope.classList.add('open');
-      startMusic();
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(EMAIL);
+          copied = true;
+        } catch (err) {
+          console.warn('Modal clipboard failed:', err);
+        }
+      }
       
-      setTimeout(function() {
-        envelopeScreen.classList.add('hidden');
-        invitationCard.classList.add('visible');
-        musicBtn.classList.add('visible');
-      }, 1200);
+      if (!copied) {
+        copied = fallbackCopy(EMAIL);
+      }
+      
+      if (copied) {
+        showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
+        document.getElementById('copyModal').classList.remove('show');
+        document.getElementById('emailDisplay').classList.remove('selected');
+      } else {
+        selectEmail();
+        showToast(translations[currentLang].toast_selected, 'fa-hand-pointer', '#3b82f6');
+      }
     });
 
-    loadYouTubeAPI();
+    document.getElementById('modalMailBtn').addEventListener('click', () => {
+      window.location.href = 'mailto:' + EMAIL;
+    });
+
+    window.selectEmail = function() {
+      selectEmail();
+    };
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('copyModal').classList.remove('show');
+        document.getElementById('emailDisplay').classList.remove('selected');
+      }
+    });
+
+    // ==========================================
+    // БАСЫП ШЫҒАРУ
+    // ==========================================
+    document.getElementById('printBtn').addEventListener('click', () => {
+      window.print();
+    });
+
+    // ==========================================
+    // ТҮС АУЫСТЫРУ
+    // ==========================================
+    const themeColors = [
+      { primary: '#3b82f6', accent: '#06b6d4', dark: '#0a1628' },
+      { primary: '#8b5cf6', accent: '#d946ef', dark: '#1a0b2e' },
+      { primary: '#10b981', accent: '#06b6d4', dark: '#052e16' },
+      { primary: '#ec4899', accent: '#f43f5e', dark: '#2e0b1f' },
+      { primary: '#f97316', accent: '#eab308', dark: '#2e1a05' }
+    ];
+    let themeIndex = 0;
+
+    document.getElementById('themeBtn').addEventListener('click', () => {
+      themeIndex = (themeIndex + 1) % themeColors.length;
+      const theme = themeColors[themeIndex];
+      const root = document.documentElement;
+      root.style.setProperty('--primary', theme.primary);
+      root.style.setProperty('--primary-dark', theme.primary);
+      root.style.setProperty('--primary-light', theme.primary + 'cc');
+      root.style.setProperty('--accent', theme.accent);
+      root.style.setProperty('--dark', theme.dark);
+
+      const themeName = translations[currentLang].themes[themeIndex];
+      showToast(`${translations[currentLang].toast_theme}: ${themeName}`, 'fa-palette', theme.primary);
+    });
+
+    // ==========================================
+    // АВАТАР
+    // ==========================================
+    const avatar = document.getElementById('avatar');
+
+    avatar.addEventListener('click', () => {
+      const dict = translations[currentLang];
+      const greetings = [
+        dict.toast_greet1, dict.toast_greet2, dict.toast_greet3,
+        dict.toast_greet4, dict.toast_greet5
+      ];
+      const idx = Math.floor(Math.random() * greetings.length);
+      showToast(greetings[idx], 'fa-hand-sparkles', '#3b82f6');
+      avatar.style.transform = 'scale(1.1) rotate(8deg)';
+      setTimeout(() => avatar.style.transform = '', 300);
+    });
+
+    // ==========================================
+    // SKILL TAG
+    // ==========================================
+    document.querySelectorAll('.skill-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        const skill = tag.textContent.trim();
+        showToast(`${translations[currentLang].toast_skill}: ${skill}`, 'fa-star', '#8b5cf6');
+      });
+    });
+
+    // ==========================================
+    // TRAIT
+    // ==========================================
+    document.querySelectorAll('.trait-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const trait = item.textContent.trim();
+        showToast(`${translations[currentLang].toast_trait}: ${trait}`, 'fa-award', '#06b6d4');
+      });
+    });
+
+    // ==========================================
+    // БАСЫП ШЫҒАРУ АЛДЫНДА
+    // ==========================================
+    window.addEventListener('beforeprint', () => {
+      document.querySelectorAll('.section').forEach(s => s.style.opacity = '1');
+    });
+
+    // ==========================================
+    // ПЕРНЕ КОМБИНАЦИЯЛАРЫ
+    // ==========================================
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        window.print();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        copyEmail();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+        e.preventDefault();
+        document.getElementById('themeBtn').click();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+        e.preventDefault();
+        switchLang(currentLang === 'kz' ? 'ru' : 'kz');
+      }
+    });
+
+    // ==========================================
+    // БЕТТІ АШҚАНДА
+    // ==========================================
+    window.addEventListener('load', () => {
+      let savedLang = 'kz';
+      try { savedLang = localStorage.getItem('resume_lang') || 'kz'; } catch(e) {}
+      
+      if (savedLang === 'ru') {
+        switchLang('ru');
+      }
+
+      setTimeout(() => {
+        showToast(translations[currentLang].toast_welcome, 'fa-hand-sparkles', '#3b82f6');
+      }, 800);
+    });
+
+    console.log('%c👋 Сәлем! / Привет!', 'color: #3b82f6; font-size: 18px; font-weight: bold;');
+    console.log('%c🔒 Жеке деректерді көшіруге тыйым салынған', 'color: #ef4444; font-size: 14px; font-weight: bold;');
+    console.log('%c📧 Тек email көшіруге рұқсат: ' + EMAIL, 'color: #10b981; font-size: 12px;');
   </script>
 </body>
 </html>
