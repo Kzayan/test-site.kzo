@@ -334,6 +334,25 @@
 
     .contact-chip i { color: #60a5fa; font-size: 1rem; }
 
+    /* Instagram чипі — қызғылт градиент */
+    .contact-chip.instagram-chip {
+      background: linear-gradient(135deg, rgba(225, 48, 108, 0.2), rgba(253, 89, 73, 0.15));
+      border-color: rgba(253, 89, 73, 0.4);
+    }
+
+    .contact-chip.instagram-chip i {
+      background: linear-gradient(135deg, #e1306c, #fd5949, #feda75);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .contact-chip.instagram-chip:hover {
+      background: linear-gradient(135deg, rgba(225, 48, 108, 0.4), rgba(253, 89, 73, 0.3));
+      border-color: rgba(253, 89, 73, 0.8);
+      box-shadow: 0 8px 20px rgba(225, 48, 108, 0.4);
+    }
+
     .main-content {
       display: grid;
       grid-template-columns: 1fr 1.7fr;
@@ -756,6 +775,12 @@
       border-color: transparent;
     }
 
+    /* Instagram social-btn — қызғылт gradient */
+    .social-btn.instagram-btn:hover {
+      background: linear-gradient(135deg, #e1306c, #fd5949, #feda75);
+      box-shadow: 0 8px 20px rgba(225, 48, 108, 0.5);
+    }
+
     .copyright {
       background: linear-gradient(135deg, #0a1628 0%, #071020 100%);
       padding: 1rem 3rem 1.4rem 3rem;
@@ -1003,6 +1028,10 @@
                 <i class="fas fa-envelope"></i>
                 kzayan161@gmail.com
               </a>
+              <a class="contact-chip instagram-chip" href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener">
+                <i class="fab fa-instagram"></i>
+                @aian_wtkkz_17
+              </a>
             </div>
           </div>
         </div>
@@ -1068,22 +1097,6 @@
                 <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_kz">Қазақ тілі</span></div>
                 <div class="lang-level" data-i18n="native">Ана тілі</div>
               </div>
-              <div class="lang-card">
-                <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_ru">Орыс тілі</span></div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_uz">Өзбек тілі</span></div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_ky">Қырғыз тілі</span></div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
-              <div class="lang-card">
-                <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_tr">Түрік тілі</span></div>
-                <div class="lang-level" data-i18n="conversational">Сөйлесу</div>
-              </div>
             </div>
           </div>
         </div>
@@ -1148,6 +1161,9 @@
         <div class="social-links">
           <a class="social-btn" href="mailto:kzayan161@gmail.com" title="Email">
             <i class="fas fa-envelope"></i>
+          </a>
+          <a class="social-btn instagram-btn" href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener" title="Instagram">
+            <i class="fab fa-instagram"></i>
           </a>
         </div>
       </div>
@@ -1260,12 +1276,7 @@
         skill5: 'Құжаттарды рәсімдеу',
         languages: 'Тілдер',
         lang_kz: 'Қазақ тілі',
-        lang_ru: 'Орыс тілі',
-        lang_uz: 'Өзбек тілі',
-        lang_ky: 'Қырғыз тілі',
-        lang_tr: 'Түрік тілі',
         native: 'Ана тілі',
-        conversational: 'Сөйлесу',
         goal: 'Мақсатым',
         goal_text: 'Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.',
         traits: 'Жеке қасиеттер',
@@ -1322,12 +1333,7 @@
         skill5: 'Оформление документов',
         languages: 'Языки',
         lang_kz: 'Казахский язык',
-        lang_ru: 'Русский язык',
-        lang_uz: 'Узбекский язык',
-        lang_ky: 'Киргизский язык',
-        lang_tr: 'Турецкий язык',
         native: 'Родной',
-        conversational: 'Разговорный',
         goal: 'Моя цель',
         goal_text: 'Используя свои знания и навыки, профессионально развиваться, приобретать новый опыт и найти стабильную работу.',
         traits: 'Личные качества',
@@ -1640,7 +1646,7 @@
       }, 800);
     });
 
-    console.log('%c✅ Актерлік бөлім толығымен өшірілді', 'color: #10b981; font-size: 14px; font-weight: bold;');
-  </script>
+    console.log('%c📸 Instagram қосылды: @aian_wtkkz_17', 'color: #e1306c; font-size: 14px; font-weight: bold;');
+  </style>
 </body>
 </html>
