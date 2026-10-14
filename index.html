@@ -1,1652 +1,546 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>Базарбек Аян · Түйіндеме</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --primary: #3b82f6;
-      --primary-dark: #1e40af;
-      --primary-light: #60a5fa;
-      --accent: #06b6d4;
-      --dark: #0a1628;
-      --dark-2: #12263f;
-      --text: #1e293b;
-      --text-light: #64748b;
-      --card: #ffffff;
-    }
-
-    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #0a1628;
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      padding: 2rem 1rem;
-      position: relative;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .resume-card, .resume-card * {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-touch-callout: none;
-    }
-
-    .email-display, .contact-chip[href^="mailto"], .contact-chip[href^="mailto"] * {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: 
-        radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-      animation: bgMove 20s ease-in-out infinite alternate;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    @keyframes bgMove {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(-5%, -5%) scale(1.1); }
-    }
-
-    .floating-shapes {
-      position: fixed; inset: 0;
-      overflow: hidden; z-index: 0;
-      pointer-events: none;
-    }
-
-    .shape {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.4;
-      animation: float 15s ease-in-out infinite;
-    }
-
-    .shape-1 { width: 400px; height: 400px; background: #3b82f6; top: -100px; left: -100px; }
-    .shape-2 { width: 300px; height: 300px; background: #06b6d4; bottom: -80px; right: -80px; animation-delay: -5s; }
-    .shape-3 { width: 250px; height: 250px; background: #8b5cf6; top: 40%; right: 10%; animation-delay: -10s; }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0); }
-      50% { transform: translate(30px, -30px); }
-    }
-
-    .resume-wrapper {
-      position: relative;
-      z-index: 1;
-      max-width: 1150px;
-      margin: 0 auto;
-      opacity: 0;
-      animation: fadeInUp 0.8s ease forwards;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .resume-card {
-      background: var(--card);
-      border-radius: 32px;
-      overflow: hidden;
-      box-shadow: 
-        0 40px 80px -20px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        0 0 100px rgba(59, 130, 246, 0.1);
-    }
-
-    .toolbar {
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      display: flex;
-      gap: 0.6rem;
-      z-index: 10;
-      align-items: center;
-    }
-
-    .lang-switcher {
-      display: flex;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 4px;
-      gap: 2px;
-    }
-
-    .lang-btn {
-      padding: 0.55rem 1.1rem;
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.6);
-      font-family: 'Manrope', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      cursor: pointer;
-      border-radius: 9px;
-      transition: all 0.3s ease;
-    }
-
-    .lang-btn:hover { color: white; background: rgba(255, 255, 255, 0.1); }
-
-    .lang-btn.active {
-      background: linear-gradient(135deg, #3b82f6, #06b6d4);
-      color: white;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
-    }
-
-    .tool-btn {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .tool-btn:hover {
-      background: rgba(59, 130, 246, 0.4);
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
-    }
-
-    .tool-btn .tooltip {
-      position: absolute;
-      bottom: -38px; right: 0;
-      background: rgba(0, 0, 0, 0.9);
-      color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-
-    .tool-btn:hover .tooltip { opacity: 1; }
-
-    .header {
-      position: relative;
-      background: linear-gradient(135deg, #0a1628 0%, #1e3a5f 50%, #1e40af 100%);
-      padding: 3.5rem 3rem 3rem 3rem;
-      overflow: hidden;
-    }
-
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 0; right: 0;
-      width: 60%; height: 100%;
-      background: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.3), transparent 60%);
-      pointer-events: none;
-    }
-
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 4px;
-      background: linear-gradient(90deg, #3b82f6, #06b6d4, #8b5cf6, #3b82f6);
-      background-size: 200% 100%;
-      animation: gradientMove 3s linear infinite;
-    }
-
-    @keyframes gradientMove {
-      0% { background-position: 0% 0; }
-      100% { background-position: 200% 0; }
-    }
-
-    .header-content {
-      display: flex;
-      align-items: center;
-      gap: 2.5rem;
-      position: relative;
-      z-index: 2;
-    }
-
-    .avatar {
-      flex-shrink: 0;
-      width: 140px; height: 140px;
-      border-radius: 30px;
-      background: linear-gradient(135deg, #3b82f6, #06b6d4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: white;
-      box-shadow: 
-        0 20px 40px -10px rgba(59, 130, 246, 0.6),
-        0 0 0 4px rgba(255, 255, 255, 0.1);
-      position: relative;
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-    }
-
-    .avatar:hover { transform: scale(1.05) rotate(-3deg); }
-
-    .avatar::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 34px;
-      background: linear-gradient(135deg, #60a5fa, #22d3ee, #a78bfa);
-      z-index: -1;
-      opacity: 0.6;
-      filter: blur(15px);
-      animation: pulseGlow 3s ease-in-out infinite;
-    }
-
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.8; }
-    }
-
-    .header-info { flex: 1; min-width: 0; }
-
-    .name-title h1 {
-      font-family: 'Manrope', sans-serif;
-      font-size: 3rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      color: white;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .role-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #93c5fd;
-      font-size: 1.05rem;
-      font-weight: 500;
-      margin-bottom: 1.2rem;
-    }
-
-    .role-tag i { color: #22d3ee; }
-
-    .contact-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .contact-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      padding: 0.6rem 1.2rem;
-      border-radius: 100px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #e2e8f0;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      transition: all 0.3s ease;
-      text-decoration: none;
-    }
-
-    .contact-chip:hover {
-      background: rgba(59, 130, 246, 0.25);
-      border-color: rgba(96, 165, 250, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-    }
-
-    .contact-chip i { color: #60a5fa; font-size: 1rem; }
-
-    /* Instagram чипі — қызғылт градиент */
-    .contact-chip.instagram-chip {
-      background: linear-gradient(135deg, rgba(225, 48, 108, 0.2), rgba(253, 89, 73, 0.15));
-      border-color: rgba(253, 89, 73, 0.4);
-    }
-
-    .contact-chip.instagram-chip i {
-      background: linear-gradient(135deg, #e1306c, #fd5949, #feda75);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .contact-chip.instagram-chip:hover {
-      background: linear-gradient(135deg, rgba(225, 48, 108, 0.4), rgba(253, 89, 73, 0.3));
-      border-color: rgba(253, 89, 73, 0.8);
-      box-shadow: 0 8px 20px rgba(225, 48, 108, 0.4);
-    }
-
-    .main-content {
-      display: grid;
-      grid-template-columns: 1fr 1.7fr;
-      gap: 0;
-    }
-
-    .left-col {
-      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-      padding: 2.5rem 2rem 2.5rem 3rem;
-      border-right: 1px solid #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .right-col {
-      padding: 2.5rem 3rem 2.5rem 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-    }
-
-    .section {
-      opacity: 0;
-      animation: sectionFade 0.6s ease forwards;
-    }
-
-    .section:nth-child(1) { animation-delay: 0.15s; }
-    .section:nth-child(2) { animation-delay: 0.25s; }
-    .section:nth-child(3) { animation-delay: 0.35s; }
-    .section:nth-child(4) { animation-delay: 0.45s; }
-    .section:nth-child(5) { animation-delay: 0.55s; }
-
-    @keyframes sectionFade {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section-title {
-      font-family: 'Manrope', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      margin-bottom: 1.3rem;
-      position: relative;
-      padding-bottom: 0.7rem;
-    }
-
-    .section-title i {
-      font-size: 1rem;
-      width: 32px; height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
-    }
-
-    .section-title::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0;
-      width: 100%; height: 1px;
-      background: linear-gradient(90deg, #cbd5e1 0%, transparent 100%);
-    }
-
-    .info-card {
-      background: white;
-      border-radius: 18px;
-      padding: 1.4rem;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .info-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0;
-      width: 4px; height: 100%;
-      background: linear-gradient(180deg, var(--primary), var(--accent));
-      border-radius: 4px 0 0 4px;
-    }
-
-    .info-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
-      border-color: #bfdbfe;
-    }
-
-    .edu-institution {
-      font-family: 'Manrope', sans-serif;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--dark-2);
-      margin-bottom: 0.4rem;
-    }
-
-    .edu-specialty {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--primary);
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .edu-year {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
-      color: var(--primary-dark);
-      font-weight: 600;
-      font-size: 0.82rem;
-      padding: 0.35rem 0.9rem;
-      border-radius: 100px;
-    }
-
-    .exp-card {
-      background: white;
-      border-radius: 18px;
-      padding: 1.4rem;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-      transition: all 0.3s ease;
-    }
-
-    .exp-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
-      border-color: #bfdbfe;
-    }
-
-    .exp-title {
-      font-family: 'Manrope', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--dark-2);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.7rem;
-    }
-
-    .exp-title i { color: var(--primary); }
-
-    .exp-desc {
-      color: var(--text-light);
-      font-size: 0.92rem;
-      line-height: 1.6;
-      padding-left: 0.9rem;
-      border-left: 2px solid #dbeafe;
-    }
-
-    .skills-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-    }
-
-    .skill-tag {
-      background: white;
-      border: 1px solid #e2e8f0;
-      color: var(--dark-2);
-      padding: 0.55rem 1rem;
-      border-radius: 12px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
-    }
-
-    .skill-tag i { color: var(--primary); font-size: 0.9rem; }
-
-    .skill-tag:hover {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      border-color: transparent;
-      transform: translateY(-3px) scale(1.03);
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.35);
-    }
-
-    .skill-tag:hover i { color: white; }
-
-    .lang-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-    }
-
-    .lang-card {
-      background: white;
-      border-radius: 16px;
-      padding: 1rem 1.2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1px solid #e2e8f0;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .lang-card:hover {
-      border-color: #bfdbfe;
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.1);
-      transform: translateY(-2px);
-    }
-
-    .lang-name {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      font-weight: 600;
-      color: var(--dark-2);
-    }
-
-    .lang-name i { color: var(--primary); font-size: 1.1rem; }
-
-    .lang-level {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      padding: 0.3rem 0.9rem;
-      border-radius: 100px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-    }
-
-    .goal-card {
-      background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
-      padding: 1.6rem;
-      border-radius: 20px;
-      position: relative;
-      overflow: hidden;
-      border: 1px solid #bfdbfe;
-    }
-
-    .goal-card::before {
-      content: '\201C';
-      position: absolute;
-      top: -30px; right: 15px;
-      font-size: 8rem;
-      font-family: Georgia, serif;
-      color: rgba(59, 130, 246, 0.12);
-      line-height: 1;
-      font-weight: 700;
-    }
-
-    .goal-text {
-      position: relative;
-      z-index: 1;
-      color: var(--dark-2);
-      font-weight: 500;
-      line-height: 1.7;
-      font-size: 1rem;
-    }
-
-    .traits-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.7rem;
-    }
-
-    .trait-item {
-      background: white;
-      padding: 1rem;
-      border-radius: 14px;
-      border: 1px solid #e2e8f0;
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      font-weight: 500;
-      font-size: 0.9rem;
-      color: var(--dark-2);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .trait-item i {
-      width: 36px; height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
-      color: var(--primary);
-      border-radius: 10px;
-      font-size: 1rem;
-      flex-shrink: 0;
-      transition: all 0.3s ease;
-    }
-
-    .trait-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.12);
-      border-color: #bfdbfe;
-    }
-
-    .trait-item:hover i {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      transform: rotate(-8deg) scale(1.05);
-    }
-
-    .course-card {
-      background: white;
-      border-radius: 18px;
-      padding: 1.4rem;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .course-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
-      border-color: #bfdbfe;
-    }
-
-    .course-name {
-      font-family: 'Manrope', sans-serif;
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--dark-2);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .course-name i { color: var(--primary); font-size: 1.1rem; }
-
-    .course-desc {
-      color: var(--text-light);
-      font-size: 0.92rem;
-      line-height: 1.7;
-      padding-left: 1rem;
-      border-left: 3px solid;
-      border-image: linear-gradient(180deg, var(--primary), var(--accent)) 1;
-    }
-
-    .filmography {
-      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-      border-radius: 18px;
-      padding: 1.6rem;
-      text-align: center;
-      color: var(--text-light);
-      font-weight: 500;
-      border: 2px dashed #cbd5e1;
-      transition: all 0.3s ease;
-    }
-
-    .filmography:hover {
-      border-color: var(--primary-light);
-      color: var(--primary-dark);
-    }
-
-    .filmography i {
-      color: var(--primary);
-      font-size: 1.8rem;
-      margin-bottom: 0.6rem;
-      display: block;
-      opacity: 0.7;
-    }
-
-    .footer {
-      background: linear-gradient(135deg, #0a1628 0%, #12263f 100%);
-      padding: 1.5rem 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      color: #94a3b8;
-      font-size: 0.85rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      flex-wrap: wrap;
-    }
-
-    .footer span { color: #60a5fa; font-weight: 600; }
-
-    .social-links { display: flex; gap: 0.6rem; }
-
-    .social-btn {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .social-btn:hover {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
-      border-color: transparent;
-    }
-
-    /* Instagram social-btn — қызғылт gradient */
-    .social-btn.instagram-btn:hover {
-      background: linear-gradient(135deg, #e1306c, #fd5949, #feda75);
-      box-shadow: 0 8px 20px rgba(225, 48, 108, 0.5);
-    }
-
-    .copyright {
-      background: linear-gradient(135deg, #0a1628 0%, #071020 100%);
-      padding: 1rem 3rem 1.4rem 3rem;
-      text-align: center;
-      color: #64748b;
-      font-size: 0.82rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
-      letter-spacing: 0.02em;
-    }
-
-    .copyright i { color: #3b82f6; margin-right: 0.4rem; font-size: 0.85rem; }
-    .copyright span { color: #60a5fa; font-weight: 600; }
-
-    .toast {
-      position: fixed;
-      bottom: 2rem; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-      padding: 1rem 1.8rem;
-      border-radius: 14px;
-      font-weight: 600;
-      box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      opacity: 0;
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      z-index: 9999;
-      pointer-events: none;
-      max-width: 90vw;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .toast i { font-size: 1.2rem; flex-shrink: 0; }
-
-    .copy-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-
-    .copy-modal.show { display: flex; animation: fadeIn 0.3s ease; }
-
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .copy-modal-content {
-      background: white;
-      border-radius: 24px;
-      padding: 2rem 1.6rem;
-      max-width: 440px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-      animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes scaleIn {
-      from { transform: scale(0.85); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .copy-modal-content i.modal-icon {
-      font-size: 3rem;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      display: block;
-    }
-
-    .copy-modal-content h3 {
-      font-family: 'Manrope', sans-serif;
-      font-size: 1.3rem;
-      color: var(--dark-2);
-      margin-bottom: 0.6rem;
-    }
-
-    .copy-modal-content .modal-hint {
-      color: #64748b;
-      font-size: 0.88rem;
-      margin-bottom: 1rem;
-      line-height: 1.5;
-    }
-
-    .email-display {
-      background: linear-gradient(135deg, #eff6ff, #e0f2fe);
-      border: 2px dashed #60a5fa;
-      border-radius: 14px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      font-family: 'Space Grotesk', monospace;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--primary-dark);
-      word-break: break-all;
-      cursor: text;
-      letter-spacing: 0.5px;
-    }
-
-    .email-display:active, .email-display.selected {
-      background: linear-gradient(135deg, #dbeafe, #bae6fd);
-      border-color: var(--primary);
-    }
-
-    .copy-modal-btns { display: flex; flex-direction: column; gap: 0.6rem; }
-
-    .copy-modal-btns button {
-      padding: 0.95rem 1rem;
-      border-radius: 14px;
-      border: none;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .copy-modal-btns button.primary {
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      color: white;
-      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-    }
-
-    .copy-modal-btns button.primary:hover, .copy-modal-btns button.primary:active {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(59, 130, 246, 0.5);
-    }
-
-    .copy-modal-btns button.secondary { background: #f1f5f9; color: var(--text); }
-    .copy-modal-btns button.secondary:hover, .copy-modal-btns button.secondary:active { background: #e2e8f0; }
-
-    .copy-modal-btns button.mail-link {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-    }
-
-    .copy-modal-btns button.mail-link:hover, .copy-modal-btns button.mail-link:active {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(16, 185, 129, 0.5);
-    }
-
-    @media (max-width: 900px) {
-      .header-content { flex-direction: column; text-align: center; gap: 1.5rem; }
-      .name-title h1 { font-size: 2.4rem; }
-      .contact-row { justify-content: center; }
-      .main-content { grid-template-columns: 1fr; }
-      .left-col { padding: 2rem; border-right: none; border-bottom: 1px solid #e2e8f0; }
-      .right-col { padding: 2rem; }
-      .traits-grid { grid-template-columns: 1fr; }
-      .toolbar { top: 1rem; right: 1rem; left: 1rem; justify-content: space-between; }
-      .lang-switcher { padding: 3px; }
-      .lang-btn { padding: 0.5rem 0.9rem; font-size: 0.78rem; }
-    }
-
-    @media (max-width: 520px) {
-      body { padding: 0.8rem; }
-      .resume-card { border-radius: 24px; }
-      .header { padding: 4.5rem 1.5rem 2rem 1.5rem; }
-      .avatar { width: 110px; height: 110px; font-size: 2.5rem; }
-      .name-title h1 { font-size: 1.8rem; }
-      .contact-chip { font-size: 0.85rem; padding: 0.5rem 1rem; }
-      .left-col, .right-col { padding: 1.5rem; }
-      .footer { padding: 1.2rem 1.5rem; flex-direction: column; text-align: center; }
-      .copyright { padding: 0.9rem 1.5rem 1.2rem 1.5rem; font-size: 0.75rem; }
-      .tool-btn { width: 38px; height: 38px; font-size: 0.9rem; }
-      .lang-btn { padding: 0.45rem 0.75rem; font-size: 0.72rem; }
-      .copy-modal-content { padding: 1.5rem 1.2rem; border-radius: 20px; }
-      .email-display { font-size: 0.95rem; padding: 0.9rem; }
-      .copy-modal-btns button { padding: 0.85rem 1rem; font-size: 0.9rem; }
-    }
-
-    @media print {
-      body { background: white; padding: 0; }
-      body::before, .floating-shapes, .toolbar, .footer .social-links, .copy-modal { display: none; }
-      .resume-card { box-shadow: none; }
-      .section { opacity: 1 !important; animation: none; }
-      .footer { background: white; color: #333; }
-      .copyright { background: white; color: #333; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090914">
+    <title>Жақында іске қосылады</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #fff;
+            background: #090914;
+            overflow-x: hidden;
+        }
+
+        .background {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 20% 20%,
+                    rgba(168, 85, 247, .2), transparent 35%),
+                radial-gradient(circle at 80% 75%,
+                    rgba(236, 72, 153, .17), transparent 35%),
+                #090914;
+        }
+
+        .orb {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: .4;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+
+        .orb.one {
+            background: #7c3aed;
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb.two {
+            background: #db2777;
+            right: -100px;
+            bottom: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(70px, 50px) scale(1.2); }
+        }
+
+        .stars {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 10px white;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: .15;
+                transform: scale(.7);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+        }
+
+        .language-box {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            display: flex;
+            gap: 7px;
+            padding: 7px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 50px;
+            background: rgba(255,255,255,.06);
+            backdrop-filter: blur(15px);
+        }
+
+        .lang-btn {
+            border: none;
+            padding: 10px 13px;
+            border-radius: 30px;
+            background: transparent;
+            color: #c4c4d4;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .lang-btn:hover {
+            color: white;
+            background: rgba(255,255,255,.1);
+        }
+
+        .lang-btn.active {
+            color: white;
+            background: linear-gradient(135deg, #9333ea, #ec4899);
+            box-shadow: 0 0 20px rgba(168,85,247,.3);
+        }
+
+        main {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px 50px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            text-align: center;
+            animation: appear 1.2s ease forwards;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(35px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 28px;
+            font-size: 40px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            box-shadow: 0 0 35px rgba(168,85,247,.4);
+            animation: logoPulse 3s infinite ease-in-out;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: translateY(0) rotate(0);
+                box-shadow: 0 0 25px rgba(168,85,247,.35);
+            }
+            50% {
+                transform: translateY(-8px) rotate(3deg);
+                box-shadow: 0 0 50px rgba(236,72,153,.5);
+            }
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(250,204,21,.3);
+            border-radius: 50px;
+            background: rgba(250,204,21,.07);
+            color: #fde68a;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #facc15;
+            box-shadow: 0 0 12px #facc15;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .3; }
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 78px);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 25px;
+        }
+
+        .gradient-text {
+            display: block;
+            padding-bottom: 8px;
+            background: linear-gradient(
+                90deg, #c084fc, #f472b6, #818cf8, #c084fc
+            );
+            background-size: 300% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            to { background-position: 300% center; }
+        }
+
+        .description {
+            max-width: 580px;
+            margin: 0 auto 35px;
+            color: #aaaabe;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .instagram-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 17px 30px;
+            border-radius: 16px;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(
+                110deg, #833ab4, #fd1d1d, #fcb045
+            );
+            background-size: 200% 200%;
+            box-shadow: 0 10px 35px rgba(225,48,108,.25);
+            transition: transform .3s, box-shadow .3s;
+            animation: instagramGradient 5s ease infinite;
+        }
+
+        @keyframes instagramGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .instagram-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 45px rgba(225,48,108,.4);
+        }
+
+        .instagram-icon {
+            width: 23px;
+            height: 23px;
+            fill: white;
+        }
+
+        .username {
+            margin-top: 22px;
+            color: #b9b9ce;
+            font-size: 14px;
+        }
+
+        .username strong {
+            color: #e9d5ff;
+        }
+
+        .footer {
+            margin-top: 65px;
+            color: #77778f;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .footer span {
+            color: #c084fc;
+        }
+
+        @media (max-width: 600px) {
+            .language-box {
+                top: 18px;
+                right: 50%;
+                transform: translateX(50%);
+            }
+
+            .lang-btn {
+                padding: 9px 12px;
+            }
+
+            main {
+                padding-top: 110px;
+            }
+
+            .logo {
+                width: 75px;
+                height: 75px;
+                border-radius: 23px;
+                font-size: 33px;
+                margin-bottom: 28px;
+            }
+
+            h1 {
+                letter-spacing: -1px;
+            }
+
+            .description {
+                font-size: 15px;
+            }
+
+            .instagram-btn {
+                padding: 16px 22px;
+                font-size: 14px;
+            }
+
+            .footer {
+                margin-top: 50px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="floating-shapes">
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-  </div>
 
-  <div class="resume-wrapper">
-    <div class="resume-card">
-      <div class="toolbar">
-        <div class="lang-switcher">
-          <button class="lang-btn active" id="btnKz" data-lang="kz">ҚАЗ</button>
-          <button class="lang-btn" id="btnRu" data-lang="ru">РУС</button>
-        </div>
-        <button class="tool-btn" id="printBtn" aria-label="Print">
-          <i class="fas fa-print"></i>
-          <span class="tooltip" data-i18n="tooltip_print">Басып шығару</span>
-        </button>
-        <button class="tool-btn" id="copyBtn" aria-label="Copy">
-          <i class="fas fa-envelope-open-text"></i>
-          <span class="tooltip" data-i18n="tooltip_copy">Email көшіру</span>
-        </button>
-        <button class="tool-btn" id="themeBtn" aria-label="Theme">
-          <i class="fas fa-palette"></i>
-          <span class="tooltip" data-i18n="tooltip_theme">Түс</span>
-        </button>
-      </div>
-
-      <div class="header">
-        <div class="header-content">
-          <div class="avatar" id="avatar" title="Сәлем! 👋">АБ</div>
-          <div class="header-info">
-            <div class="name-title">
-              <h1 data-i18n="name">Базарбек Аян Жеңісұлы</h1>
-            </div>
-            <div class="role-tag">
-              <i class="fas fa-code"></i>
-              <span data-i18n="role">Бағдарламалық қамтамасыз ету</span>
-            </div>
-            <div class="contact-row">
-              <div class="contact-chip">
-                <i class="fas fa-birthday-cake"></i>
-                <span data-i18n="birthday">10.01.2006</span>
-              </div>
-              <a class="contact-chip" href="https://maps.google.com/?q=Қызылорда" target="_blank" rel="noopener">
-                <i class="fas fa-map-marker-alt"></i>
-                <span data-i18n="city">Қызылорда</span>
-              </a>
-              <a class="contact-chip" href="mailto:kzayan161@gmail.com">
-                <i class="fas fa-envelope"></i>
-                kzayan161@gmail.com
-              </a>
-              <a class="contact-chip instagram-chip" href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener">
-                <i class="fab fa-instagram"></i>
-                @aian_wtkkz_17
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="main-content">
-        <div class="left-col">
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-graduation-cap"></i>
-              <span data-i18n="education">Білімі</span>
-            </div>
-            <div class="info-card">
-              <div class="edu-institution" data-i18n="college">Халықаралық ORDA жоғары колледжі</div>
-              <div class="edu-specialty">
-                <i class="fas fa-laptop-code"></i>
-                <span data-i18n="specialty">Бағдарламалық қамтамасыз ету (IT)</span>
-              </div>
-              <div class="edu-year">
-                <i class="fas fa-calendar-check"></i>
-                <span data-i18n="grad_year">Бітіру жылы: 2026</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-briefcase"></i>
-              <span data-i18n="experience">Жұмыс тәжірибесі</span>
-            </div>
-            <div class="exp-card">
-              <div class="exp-title">
-                <i class="fas fa-building-columns"></i>
-                <span data-i18n="exp_title">ХҚКО / ЦОН</span>
-              </div>
-              <div class="exp-desc" data-i18n="exp_desc">
-                Халыққа қызмет көрсету орталығында жұмыс тәжірибесі бар. Құжаттарды рәсімдеу және азаматтарға кеңес беру.
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-tools"></i>
-              <span data-i18n="skills">Кәсіби дағдылар</span>
-            </div>
-            <div class="skills-list">
-              <div class="skill-tag"><i class="fas fa-desktop"></i> <span data-i18n="skill1">Компьютермен жұмыс</span></div>
-              <div class="skill-tag"><i class="fas fa-file-word"></i> Microsoft Word</div>
-              <div class="skill-tag"><i class="fas fa-file-excel"></i> Microsoft Excel</div>
-              <div class="skill-tag"><i class="fas fa-globe"></i> <span data-i18n="skill4">Интернетпен жұмыс</span></div>
-              <div class="skill-tag"><i class="fas fa-file-signature"></i> <span data-i18n="skill5">Құжаттарды рәсімдеу</span></div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-language"></i>
-              <span data-i18n="languages">Тілдер</span>
-            </div>
-            <div class="lang-list">
-              <div class="lang-card">
-                <div class="lang-name"><i class="fas fa-comment-dots"></i><span data-i18n="lang_kz">Қазақ тілі</span></div>
-                <div class="lang-level" data-i18n="native">Ана тілі</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="right-col">
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-bullseye"></i>
-              <span data-i18n="goal">Мақсатым</span>
-            </div>
-            <div class="goal-card">
-              <div class="goal-text" data-i18n="goal_text">
-                Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-user-check"></i>
-              <span data-i18n="traits">Жеке қасиеттер</span>
-            </div>
-            <div class="traits-grid">
-              <div class="trait-item"><i class="fas fa-shield-halved"></i> <span data-i18n="trait1">Жауапкершілік</span></div>
-              <div class="trait-item"><i class="fas fa-broom"></i> <span data-i18n="trait2">Ұқыптылық</span></div>
-              <div class="trait-item"><i class="fas fa-brain"></i> <span data-i18n="trait3">Тез меңгеру</span></div>
-              <div class="trait-item"><i class="fas fa-handshake"></i> <span data-i18n="trait4">Тіл табысу</span></div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-star"></i>
-              <span data-i18n="extra">Қосымша білім</span>
-            </div>
-            <div class="course-card">
-              <div class="course-name">
-                <i class="fas fa-masks-theater"></i>
-                <span data-i18n="course_name">Art House актерлік мектебі</span>
-              </div>
-              <div class="course-desc" data-i18n="course_desc">
-                «Актерлік шеберлік» онлайн курсын толық аяқтаған. Сахна тілі, эмоциямен жұмыс істеу және камера алдындағы актерлік шеберлік бойынша практикалық дағдыларды меңгерген.
-              </div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-title">
-              <i class="fas fa-film"></i>
-              <span data-i18n="filmography">Фильмография</span>
-            </div>
-            <div class="filmography">
-              <i class="fas fa-video"></i>
-              <span data-i18n="filmography_text">Қазіргі уақытта театрда және кинода түскен рөлдері жоқ.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer">
-        <div>© 2026 · <span data-i18n="footer_name">Базарбек Аян</span> · <span data-i18n="footer_resume">Түйіндеме</span></div>
-        <div class="social-links">
-          <a class="social-btn" href="mailto:kzayan161@gmail.com" title="Email">
-            <i class="fas fa-envelope"></i>
-          </a>
-          <a class="social-btn instagram-btn" href="https://instagram.com/aian_wtkkz_17" target="_blank" rel="noopener" title="Instagram">
-            <i class="fab fa-instagram"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="copyright">
-        <i class="fas fa-copyright"></i>
-        © 2026. <span data-i18n="copyright_text">Барлық құқықтар қорғалған.</span>
-      </div>
+    <div class="background">
+        <div class="orb one"></div>
+        <div class="orb two"></div>
     </div>
-  </div>
 
-  <div class="toast" id="toast">
-    <i class="fas fa-check-circle"></i>
-    <span id="toastText">Email көшірілді!</span>
-  </div>
+    <div class="stars" id="stars"></div>
 
-  <div class="copy-modal" id="copyModal">
-    <div class="copy-modal-content">
-      <i class="fas fa-envelope-open-text modal-icon"></i>
-      <h3 data-i18n="modal_title">Email көшіру</h3>
-      <p class="modal-hint" data-i18n="modal_hint">
-        Email-ды ұзақ басып тұрып, «Көшіру» таңдаңыз:
-      </p>
-      
-      <div class="email-display" id="emailDisplay" onclick="selectEmail()">
-        kzayan161@gmail.com
-      </div>
-      
-      <div class="copy-modal-btns">
-        <button class="primary" id="modalCopyBtn">
-          <i class="fas fa-copy"></i>
-          <span data-i18n="modal_copy">Көшіру</span>
+    <!-- Тілді таңдау -->
+    <div class="language-box" aria-label="Тілді таңдау">
+        <button class="lang-btn active" data-lang="kk"
+                aria-pressed="true" onclick="changeLanguage('kk')">
+            🇰🇿 KZ
         </button>
-        <button class="mail-link" id="modalMailBtn">
-          <i class="fas fa-paper-plane"></i>
-          <span data-i18n="modal_mail">Пошта ашу</span>
+
+        <button class="lang-btn" data-lang="ru"
+                aria-pressed="false" onclick="changeLanguage('ru')">
+            🇷🇺 RU
         </button>
-        <button class="secondary" id="modalCloseBtn" data-i18n="modal_close">Жабу</button>
-      </div>
+
+        <button class="lang-btn" data-lang="en"
+                aria-pressed="false" onclick="changeLanguage('en')">
+            🇬🇧 EN
+        </button>
     </div>
-  </div>
 
-  <script>
-    // ==========================================
-    // ЖЕКЕ ДЕРЕКТЕРДІ КӨШІРУГЕ ТЫЙЫМ САЛУ
-    // ==========================================
-    document.addEventListener('copy', (e) => {
-      const selection = window.getSelection().toString();
-      if (selection.includes('kzayan161@gmail.com') || selection.trim() === 'kzayan161@gmail.com') {
-        return;
-      }
-      e.preventDefault();
-      showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
-    });
+    <main>
+        <div class="container">
 
-    document.addEventListener('cut', (e) => {
-      e.preventDefault();
-      showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
-    });
+            <div class="logo">✦</div>
 
-    document.addEventListener('dragstart', (e) => {
-      const text = e.target.textContent || '';
-      if (text.includes('kzayan161@gmail.com')) return;
-      e.preventDefault();
-    });
+            <div class="status">
+                <span class="status-dot"></span>
+                <span data-i18n="status">ЖАҚЫНДА ІСКЕ ҚОСЫЛАДЫ</span>
+            </div>
 
-    document.addEventListener('contextmenu', (e) => {
-      const target = e.target;
-      if (target.classList.contains('email-display') || 
-          target.closest('.email-display') ||
-          (target.tagName === 'A' && target.href.startsWith('mailto:'))) {
-        return;
-      }
-      e.preventDefault();
-    });
+            <h1>
+                <span data-i18n="title1">Жаңа дәуір</span>
+                <span class="gradient-text" data-i18n="title2">
+                    басталады!
+                </span>
+            </h1>
 
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
-        e.preventDefault();
-        showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
-      }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Insert') {
-        e.preventDefault();
-        showToast(translations[currentLang].toast_copy_forbidden, 'fa-ban', '#ef4444');
-      }
-    });
+            <p class="description" data-i18n="description">
+                Біз сіздер үшін жаңа мүмкіндіктер дайындап жатырмыз.
+                Жобамыз жақында іске қосылады!
+                Жаңалықтардан хабардар болу үшін Instagram
+                парақшамызға жазылыңыз.
+            </p>
 
-    // ==========================================
-    // ТІЛДЕР СӨЗДІГІ
-    // ==========================================
-    const translations = {
-      kz: {
-        tooltip_print: 'Басып шығару',
-        tooltip_copy: 'Email көшіру',
-        tooltip_theme: 'Түс',
-        name: 'Базарбек Аян Жеңісұлы',
-        role: 'Бағдарламалық қамтамасыз ету',
-        birthday: '10.01.2006',
-        city: 'Қызылорда',
-        education: 'Білімі',
-        college: 'Халықаралық ORDA жоғары колледжі',
-        specialty: 'Бағдарламалық қамтамасыз ету (IT)',
-        grad_year: 'Бітіру жылы: 2026',
-        experience: 'Жұмыс тәжірибесі',
-        exp_title: 'ХҚКО / ЦОН',
-        exp_desc: 'Халыққа қызмет көрсету орталығында жұмыс тәжірибесі бар. Құжаттарды рәсімдеу және азаматтарға кеңес беру.',
-        skills: 'Кәсіби дағдылар',
-        skill1: 'Компьютермен жұмыс',
-        skill4: 'Интернетпен жұмыс',
-        skill5: 'Құжаттарды рәсімдеу',
-        languages: 'Тілдер',
-        lang_kz: 'Қазақ тілі',
-        native: 'Ана тілі',
-        goal: 'Мақсатым',
-        goal_text: 'Өз білімім мен дағдыларымды пайдаланып, кәсіби тұрғыдан даму, жаңа тәжірибе жинақтау және тұрақты жұмысқа орналасу.',
-        traits: 'Жеке қасиеттер',
-        trait1: 'Жауапкершілік',
-        trait2: 'Ұқыптылық',
-        trait3: 'Тез меңгеру',
-        trait4: 'Тіл табысу',
-        extra: 'Қосымша білім',
-        course_name: 'Art House актерлік мектебі',
-        course_desc: '«Актерлік шеберлік» онлайн курсын толық аяқтаған. Сахна тілі, эмоциямен жұмыс істеу және камера алдындағы актерлік шеберлік бойынша практикалық дағдыларды меңгерген.',
-        filmography: 'Фильмография',
-        filmography_text: 'Қазіргі уақытта театрда және кинода түскен рөлдері жоқ.',
-        footer_name: 'Базарбек Аян',
-        footer_resume: 'Түйіндеме',
-        copyright_text: 'Барлық құқықтар қорғалған.',
-        toast_welcome: 'Сайтқа қош келдіңіз! 🎉',
-        toast_copied: 'Email көшірілді',
-        toast_copy_error: 'Көшіру мүмкін болмады',
-        toast_copy_forbidden: '⛔ Жеке деректерді көшіруге тыйым салынған',
-        toast_selected: 'Мәтін таңдалды — ұзақ басып «Көшіру» таңдаңыз',
-        toast_theme: 'Түс',
-        toast_skill: 'Дағды',
-        toast_trait: 'Қасиет',
-        toast_greet1: 'Сәлем! 👋',
-        toast_greet2: 'Қош келдіңіз! ✨',
-        toast_greet3: 'Рахмет! 🙌',
-        toast_greet4: 'Сәттілік! 🚀',
-        toast_greet5: 'Танысқаныма қуаныштымын! 😊',
-        themes: ['Көк', 'Күлгін', 'Жасыл', 'Қызғылт', 'Қызғылт сары'],
-        modal_title: 'Email көшіру',
-        modal_hint: 'Email-ды ұзақ басып тұрып, «Көшіру» таңдаңыз:',
-        modal_copy: 'Көшіру',
-        modal_mail: 'Пошта ашу',
-        modal_close: 'Жабу'
-      },
-      ru: {
-        tooltip_print: 'Печать',
-        tooltip_copy: 'Копировать email',
-        tooltip_theme: 'Цвет',
-        name: 'Базарбек Аян Жеңісұлы',
-        role: 'Программное обеспечение',
-        birthday: '10.01.2006',
-        city: 'Кызылорда',
-        education: 'Образование',
-        college: 'Международный высший колледж ORDA',
-        specialty: 'Программное обеспечение (IT)',
-        grad_year: 'Год окончания: 2026',
-        experience: 'Опыт работы',
-        exp_title: 'ЦОН (Центр обслуживания населения)',
-        exp_desc: 'Есть опыт работы в Центре обслуживания населения. Оформление документов и консультирование граждан.',
-        skills: 'Профессиональные навыки',
-        skill1: 'Работа с компьютером',
-        skill4: 'Работа с интернетом',
-        skill5: 'Оформление документов',
-        languages: 'Языки',
-        lang_kz: 'Казахский язык',
-        native: 'Родной',
-        goal: 'Моя цель',
-        goal_text: 'Используя свои знания и навыки, профессионально развиваться, приобретать новый опыт и найти стабильную работу.',
-        traits: 'Личные качества',
-        trait1: 'Ответственность',
-        trait2: 'Аккуратность',
-        trait3: 'Быстрое обучение',
-        trait4: 'Коммуникабельность',
-        extra: 'Дополнительное образование',
-        course_name: 'Актёрская школа Art House',
-        course_desc: 'Полностью прошёл онлайн-курс «Актёрское мастерство». Освоил практические навыки по актёрскому мастерству, сценической речи, работе с эмоциями и актёрской игре перед камерой.',
-        filmography: 'Фильмография',
-        filmography_text: 'В настоящее время ролей в театре и кино нет.',
-        footer_name: 'Базарбек Аян',
-        footer_resume: 'Резюме',
-        copyright_text: 'Все права защищены.',
-        toast_welcome: 'Добро пожаловать на сайт! 🎉',
-        toast_copied: 'Email скопирован',
-        toast_copy_error: 'Не удалось скопировать',
-        toast_copy_forbidden: '⛔ Копирование личных данных запрещено',
-        toast_selected: 'Текст выделен — удержите и выберите «Копировать»',
-        toast_theme: 'Цвет',
-        toast_skill: 'Навык',
-        toast_trait: 'Качество',
-        toast_greet1: 'Привет! 👋',
-        toast_greet2: 'Добро пожаловать! ✨',
-        toast_greet3: 'Спасибо! 🙌',
-        toast_greet4: 'Удачи! 🚀',
-        toast_greet5: 'Рад знакомству! 😊',
-        themes: ['Синий', 'Фиолетовый', 'Зелёный', 'Розовый', 'Оранжевый'],
-        modal_title: 'Копировать email',
-        modal_hint: 'Удержите email и выберите «Копировать»:',
-        modal_copy: 'Копировать',
-        modal_mail: 'Открыть почту',
-        modal_close: 'Закрыть'
-      }
-    };
+            <!-- Instagram парақшасына сілтеме -->
+            <a
+                class="instagram-btn"
+                href="https://www.instagram.com/aian_wtkkz_17/"
+                target="_blank"
+                rel="noopener noreferrer">
 
-    let currentLang = 'kz';
+                <svg class="instagram-icon" viewBox="0 0 24 24"
+                     aria-hidden="true">
+                    <path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.5-3.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/>
+                </svg>
 
-    // ==========================================
-    // ТІЛ АУЫСТЫРУ
-    // ==========================================
-    function switchLang(lang) {
-      currentLang = lang;
-      const dict = translations[lang];
+                <span data-i18n="button">Instagram-ға жазылу</span>
+                <span aria-hidden="true">↗</span>
+            </a>
 
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-          el.textContent = dict[key];
+            <p class="username">
+                <span data-i18n="follow">Біздің парақша:</span>
+                <strong>@aian_wtkkz_17</strong>
+            </p>
+
+            <div class="footer">
+                © 2026
+                <span data-i18n="footer">Барлық құқықтар қорғалған</span>
+                <br><br>
+                <span data-i18n="made">Армандар шындыққа айналады ✨</span>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Үш тілдегі мәтіндер
+        const translations = {
+            kk: {
+                status: "ЖАҚЫНДА ІСКЕ ҚОСЫЛАДЫ",
+                title1: "Жаңа дәуір",
+                title2: "басталады!",
+                description:
+                    "Біз сіздер үшін жаңа мүмкіндіктер дайындап жатырмыз. " +
+                    "Жобамыз жақында іске қосылады! " +
+                    "Жаңалықтардан хабардар болу үшін Instagram " +
+                    "парақшамызға жазылыңыз.",
+                button: "Instagram-ға жазылу",
+                follow: "Біздің парақша:",
+                footer: "Барлық құқықтар қорғалған",
+                made: "Армандар шындыққа айналады ✨"
+            },
+
+            ru: {
+                status: "СКОРО ЗАПУСК",
+                title1: "Новая эра",
+                title2: "начинается!",
+                description:
+                    "Мы готовим для вас новые возможности. " +
+                    "Наш проект скоро запустится! " +
+                    "Подписывайтесь на нашу страницу в Instagram, " +
+                    "чтобы не пропустить новости.",
+                button: "Подписаться в Instagram",
+                follow: "Наша страница:",
+                footer: "Все права защищены",
+                made: "Мечты становятся реальностью ✨"
+            },
+
+            en: {
+                status: "COMING SOON",
+                title1: "A new era",
+                title2: "is coming!",
+                description:
+                    "We are preparing new opportunities for you. " +
+                    "Our project will be launching soon! " +
+                    "Follow us on Instagram to stay updated " +
+                    "with the latest news.",
+                button: "Follow on Instagram",
+                follow: "Our page:",
+                footer: "All rights reserved",
+                made: "Dreams become reality ✨"
+            }
+        };
+
+        // Тілді ауыстыру
+        function changeLanguage(lang) {
+            if (!translations[lang]) return;
+
+            document.documentElement.lang = lang;
+
+            document.querySelectorAll("[data-i18n]").forEach(element => {
+                const key = element.dataset.i18n;
+
+                if (translations[lang][key] !== undefined) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll(".lang-btn").forEach(button => {
+                const active = button.dataset.lang === lang;
+
+                button.classList.toggle("active", active);
+                button.setAttribute("aria-pressed", String(active));
+            });
+
+            try {
+                localStorage.setItem("preferredLanguage", lang);
+            } catch (error) {
+                // Тіл ауыстыру сақтау мүмкіндігінсіз де жұмыс істейді.
+            }
         }
-      });
 
-      document.documentElement.lang = lang === 'kz' ? 'kk' : 'ru';
-      document.title = lang === 'kz' 
-        ? 'Базарбек Аян · Түйіндеме' 
-        : 'Базарбек Аян · Резюме';
+        // Бұрын таңдалған тілді жүктеу
+        let savedLanguage = "kk";
 
-      document.getElementById('btnKz').classList.toggle('active', lang === 'kz');
-      document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+        try {
+            const storedLanguage =
+                localStorage.getItem("preferredLanguage");
 
-      const langName = lang === 'kz' ? 'Қазақша' : 'Русский';
-      showToast(`Тіл: ${langName}`, 'fa-language', '#3b82f6');
-
-      try { localStorage.setItem('resume_lang', lang); } catch(e) {}
-    }
-
-    document.getElementById('btnKz').addEventListener('click', () => switchLang('kz'));
-    document.getElementById('btnRu').addEventListener('click', () => switchLang('ru'));
-
-    // ==========================================
-    // TOAST
-    // ==========================================
-    const toast = document.getElementById('toast');
-    const toastText = document.getElementById('toastText');
-    let toastTimer = null;
-
-    function showToast(message, icon = 'fa-check-circle', color = '#10b981') {
-      toastText.textContent = message;
-      toast.style.background = `linear-gradient(135deg, ${color}, ${color}dd)`;
-      toast.querySelector('i').className = `fas ${icon}`;
-      toast.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove('show');
-      }, 2800);
-    }
-
-    // ==========================================
-    // EMAIL КӨШІРУ
-    // ==========================================
-    const EMAIL = 'kzayan161@gmail.com';
-
-    function fallbackCopy(text) {
-      try {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.setAttribute('readonly', '');
-        textarea.style.position = 'fixed';
-        textarea.style.top = '0';
-        textarea.style.left = '0';
-        textarea.style.width = '2em';
-        textarea.style.height = '2em';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        
-        if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
-          const range = document.createRange();
-          range.selectNodeContents(textarea);
-          const selection = window.getSelection();
-          selection.removeAllRanges();
-          selection.addRange(range);
-          textarea.setSelectionRange(0, text.length);
-        } else {
-          textarea.select();
-          textarea.setSelectionRange(0, text.length);
+            if (storedLanguage && translations[storedLanguage]) {
+                savedLanguage = storedLanguage;
+            }
+        } catch (error) {
+            // Әдепкі тіл — қазақша.
         }
-        
-        const success = document.execCommand('copy');
-        document.body.removeChild(textarea);
-        return success;
-      } catch (err) {
-        return false;
-      }
-    }
 
-    function showCopyModal() {
-      const modal = document.getElementById('copyModal');
-      modal.classList.add('show');
-      setTimeout(() => { selectEmail(); }, 200);
-    }
+        changeLanguage(savedLanguage);
 
-    function selectEmail() {
-      const emailDisplay = document.getElementById('emailDisplay');
-      const range = document.createRange();
-      const selection = window.getSelection();
-      range.selectNodeContents(emailDisplay);
-      selection.removeAllRanges();
-      selection.addRange(range);
-      
-      try {
-        const tempInput = document.createElement('input');
-        tempInput.value = EMAIL;
-        tempInput.style.position = 'fixed';
-        tempInput.style.opacity = '0';
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        tempInput.setSelectionRange(0, tempInput.value.length);
-        document.body.removeChild(tempInput);
-      } catch(e) {}
-      
-      emailDisplay.classList.add('selected');
-      showToast(translations[currentLang].toast_selected, 'fa-hand-pointer', '#3b82f6');
-    }
+        // Жарқыраған жұлдыздар жасау
+        const starsContainer = document.getElementById("stars");
 
-    async function copyEmail() {
-      if (navigator.clipboard && window.isSecureContext) {
-        try {
-          await navigator.clipboard.writeText(EMAIL);
-          showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
-          return;
-        } catch (err) {}
-      }
-      if (fallbackCopy(EMAIL)) {
-        showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
-        return;
-      }
-      showCopyModal();
-    }
+        for (let i = 0; i < 65; i++) {
+            const star = document.createElement("div");
 
-    document.getElementById('copyBtn').addEventListener('click', copyEmail);
+            star.className = "star";
+            star.style.left = Math.random() * 100 + "%";
+            star.style.top = Math.random() * 100 + "%";
 
-    document.getElementById('modalCloseBtn').addEventListener('click', () => {
-      document.getElementById('copyModal').classList.remove('show');
-      document.getElementById('emailDisplay').classList.remove('selected');
-    });
+            star.style.animationDelay = Math.random() * 4 + "s";
+            star.style.animationDuration =
+                (2 + Math.random() * 4) + "s";
 
-    document.getElementById('copyModal').addEventListener('click', (e) => {
-      if (e.target.id === 'copyModal') {
-        document.getElementById('copyModal').classList.remove('show');
-        document.getElementById('emailDisplay').classList.remove('selected');
-      }
-    });
+            const size = 1 + Math.random() * 2;
 
-    document.getElementById('modalCopyBtn').addEventListener('click', async () => {
-      let copied = false;
-      if (navigator.clipboard && window.isSecureContext) {
-        try {
-          await navigator.clipboard.writeText(EMAIL);
-          copied = true;
-        } catch (err) {}
-      }
-      if (!copied) copied = fallbackCopy(EMAIL);
-      
-      if (copied) {
-        showToast(translations[currentLang].toast_copied + ': ' + EMAIL, 'fa-check-circle', '#10b981');
-        document.getElementById('copyModal').classList.remove('show');
-        document.getElementById('emailDisplay').classList.remove('selected');
-      } else {
-        selectEmail();
-      }
-    });
+            star.style.width = size + "px";
+            star.style.height = size + "px";
 
-    document.getElementById('modalMailBtn').addEventListener('click', () => {
-      window.location.href = 'mailto:' + EMAIL;
-    });
+            starsContainer.appendChild(star);
+        }
+    </script>
 
-    window.selectEmail = function() { selectEmail(); };
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.getElementById('copyModal').classList.remove('show');
-        document.getElementById('emailDisplay').classList.remove('selected');
-      }
-    });
-
-    // ==========================================
-    // БАСЫП ШЫҒАРУ
-    // ==========================================
-    document.getElementById('printBtn').addEventListener('click', () => {
-      window.print();
-    });
-
-    // ==========================================
-    // ТҮС АУЫСТЫРУ
-    // ==========================================
-    const themeColors = [
-      { primary: '#3b82f6', accent: '#06b6d4' },
-      { primary: '#8b5cf6', accent: '#d946ef' },
-      { primary: '#10b981', accent: '#06b6d4' },
-      { primary: '#ec4899', accent: '#f43f5e' },
-      { primary: '#f97316', accent: '#eab308' }
-    ];
-    let themeIndex = 0;
-
-    document.getElementById('themeBtn').addEventListener('click', () => {
-      themeIndex = (themeIndex + 1) % themeColors.length;
-      const theme = themeColors[themeIndex];
-      const root = document.documentElement;
-      root.style.setProperty('--primary', theme.primary);
-      root.style.setProperty('--primary-dark', theme.primary);
-      root.style.setProperty('--primary-light', theme.primary + 'cc');
-      root.style.setProperty('--accent', theme.accent);
-
-      const themeName = translations[currentLang].themes[themeIndex];
-      showToast(`${translations[currentLang].toast_theme}: ${themeName}`, 'fa-palette', theme.primary);
-    });
-
-    // ==========================================
-    // АВАТАР
-    // ==========================================
-    const avatar = document.getElementById('avatar');
-
-    avatar.addEventListener('click', () => {
-      const dict = translations[currentLang];
-      const greetings = [dict.toast_greet1, dict.toast_greet2, dict.toast_greet3, dict.toast_greet4, dict.toast_greet5];
-      const idx = Math.floor(Math.random() * greetings.length);
-      showToast(greetings[idx], 'fa-hand-sparkles', '#3b82f6');
-      avatar.style.transform = 'scale(1.1) rotate(8deg)';
-      setTimeout(() => avatar.style.transform = '', 300);
-    });
-
-    // ==========================================
-    // SKILL TAG
-    // ==========================================
-    document.querySelectorAll('.skill-tag').forEach(tag => {
-      tag.addEventListener('click', () => {
-        const skill = tag.textContent.trim();
-        showToast(`${translations[currentLang].toast_skill}: ${skill}`, 'fa-star', '#8b5cf6');
-      });
-    });
-
-    // ==========================================
-    // TRAIT
-    // ==========================================
-    document.querySelectorAll('.trait-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const trait = item.textContent.trim();
-        showToast(`${translations[currentLang].toast_trait}: ${trait}`, 'fa-award', '#06b6d4');
-      });
-    });
-
-    // ==========================================
-    // БАСЫП ШЫҒАРУ АЛДЫНДА
-    // ==========================================
-    window.addEventListener('beforeprint', () => {
-      document.querySelectorAll('.section').forEach(s => s.style.opacity = '1');
-    });
-
-    // ==========================================
-    // ПЕРНЕ КОМБИНАЦИЯЛАРЫ
-    // ==========================================
-    document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); window.print(); }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'e') { e.preventDefault(); copyEmail(); }
-      if ((e.ctrlKey || e.metaKey) && e.key === 't') { e.preventDefault(); document.getElementById('themeBtn').click(); }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'l') { e.preventDefault(); switchLang(currentLang === 'kz' ? 'ru' : 'kz'); }
-    });
-
-    // ==========================================
-    // БЕТТІ АШҚАНДА
-    // ==========================================
-    window.addEventListener('load', () => {
-      let savedLang = 'kz';
-      try { savedLang = localStorage.getItem('resume_lang') || 'kz'; } catch(e) {}
-      if (savedLang === 'ru') switchLang('ru');
-
-      setTimeout(() => {
-        showToast(translations[currentLang].toast_welcome, 'fa-hand-sparkles', '#3b82f6');
-      }, 800);
-    });
-
-    console.log('%c📸 Instagram қосылды: @aian_wtkkz_17', 'color: #e1306c; font-size: 14px; font-weight: bold;');
-  </style>
 </body>
 </html>
