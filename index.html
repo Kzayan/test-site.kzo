@@ -1,811 +1,682 @@
 <!DOCTYPE html>
 <html lang="kk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#090914">
-    <meta name="description" content="Біздің жаңа жобамыз жақында іске қосылады. Жаңалықтар үшін Instagram парақшамызға жазылыңыз.">
-
-    <title>Жақында іске қосылады</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            min-height: 100%;
-            background: #090914;
-        }
-
-        body {
-            min-height: 100vh;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #ffffff;
-            background: #090914;
-            overflow-x: hidden;
-
-            /* Мәтінді белгілеуді шектеу */
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        button,
-        a {
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        /* АРТҚЫ ФОН */
-
-        .background {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-
-            background:
-                radial-gradient(
-                    circle at 20% 20%,
-                    rgba(168, 85, 247, 0.20),
-                    transparent 35%
-                ),
-                radial-gradient(
-                    circle at 80% 75%,
-                    rgba(236, 72, 153, 0.17),
-                    transparent 35%
-                ),
-                #090914;
-        }
-
-        .orb {
-            position: absolute;
-            width: 350px;
-            height: 350px;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.4;
-
-            animation: float 10s infinite alternate ease-in-out;
-        }
-
-        .orb.one {
-            background: #7c3aed;
-            top: -100px;
-            left: -100px;
-        }
-
-        .orb.two {
-            background: #db2777;
-            right: -100px;
-            bottom: -100px;
-            animation-delay: -5s;
-        }
-
-        @keyframes float {
-            from {
-                transform: translate(0, 0) scale(1);
-            }
-
-            to {
-                transform: translate(70px, 50px) scale(1.2);
-            }
-        }
-
-        /* ЖҰЛДЫЗДАР */
-
-        .stars {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .star {
-            position: absolute;
-            border-radius: 50%;
-            background: #ffffff;
-            box-shadow: 0 0 10px #ffffff;
-
-            animation: twinkle 3s infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% {
-                opacity: 0.15;
-                transform: scale(0.7);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.5);
-            }
-        }
-
-        /* ТІЛ АУЫСТЫРУ */
-
-        .language-box {
-            position: absolute;
-            z-index: 5;
-            top: 25px;
-            right: 25px;
-
-            display: flex;
-            gap: 7px;
-            padding: 7px;
-
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-        }
-
-        .lang-btn {
-            border: none;
-            outline: none;
-            padding: 10px 13px;
-            border-radius: 30px;
-
-            background: transparent;
-            color: #c4c4d4;
-
-            font-size: 13px;
-            font-weight: bold;
-
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .lang-btn:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .lang-btn.active {
-            color: #ffffff;
-
-            background: linear-gradient(
-                135deg,
-                #9333ea,
-                #ec4899
-            );
-
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
-        }
-
-        .lang-btn:focus-visible,
-        .instagram-btn:focus-visible {
-            outline: 2px solid #ffffff;
-            outline-offset: 4px;
-        }
-
-        /* НЕГІЗГІ БӨЛІМ */
-
-        main {
-            position: relative;
-            z-index: 2;
-
-            min-height: 100vh;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 110px 20px 50px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 850px;
-            text-align: center;
-
-            animation: appear 1.2s ease forwards;
-        }
-
-        @keyframes appear {
-            from {
-                opacity: 0;
-                transform: translateY(35px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ЛОГОТИП */
-
-        .logo {
-            width: 90px;
-            height: 90px;
-
-            margin: 0 auto 35px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 28px;
-            font-size: 40px;
-
-            background: linear-gradient(
-                135deg,
-                #7c3aed,
-                #db2777
-            );
-
-            box-shadow: 0 0 35px rgba(168, 85, 247, 0.4);
-
-            animation: logoPulse 3s infinite ease-in-out;
-        }
-
-        @keyframes logoPulse {
-            0%, 100% {
-                transform: translateY(0) rotate(0);
-                box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
-            }
-
-            50% {
-                transform: translateY(-8px) rotate(3deg);
-                box-shadow: 0 0 50px rgba(236, 72, 153, 0.5);
-            }
-        }
-
-        /* СТАТУС */
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-
-            padding: 12px 20px;
-            margin-bottom: 30px;
-
-            border: 1px solid rgba(250, 204, 21, 0.3);
-            border-radius: 50px;
-
-            background: rgba(250, 204, 21, 0.07);
-            color: #fde68a;
-
-            font-size: 13px;
-            letter-spacing: 1px;
-        }
-
-        .status-dot {
-            width: 9px;
-            height: 9px;
-
-            flex-shrink: 0;
-
-            border-radius: 50%;
-            background: #facc15;
-            box-shadow: 0 0 12px #facc15;
-
-            animation: blink 1.5s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        /* БАСТЫ ТАҚЫРЫП */
-
-        h1 {
-            font-size: clamp(40px, 8vw, 78px);
-            font-weight: 900;
-            line-height: 1.1;
-            letter-spacing: -2px;
-
-            margin-bottom: 25px;
-        }
-
-        .gradient-text {
-            display: block;
-            padding-bottom: 8px;
-
-            background: linear-gradient(
-                90deg,
-                #c084fc,
-                #f472b6,
-                #818cf8,
-                #c084fc
-            );
-
-            background-size: 300% auto;
-
-            color: transparent;
-
-            -webkit-background-clip: text;
-            background-clip: text;
-
-            animation: gradientMove 5s linear infinite;
-        }
-
-        @keyframes gradientMove {
-            to {
-                background-position: 300% center;
-            }
-        }
-
-        /* СИПАТТАМА */
-
-        .description {
-            max-width: 580px;
-
-            margin: 0 auto 35px;
-
-            color: #aaaabe;
-            font-size: 17px;
-            line-height: 1.8;
-        }
-
-        /* INSTAGRAM БАТЫРМАСЫ */
-
-        .instagram-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-
-            padding: 17px 30px;
-
-            border-radius: 16px;
-
-            color: #ffffff;
-            text-decoration: none;
-
-            font-size: 16px;
-            font-weight: bold;
-
-            background: linear-gradient(
-                110deg,
-                #833ab4,
-                #fd1d1d,
-                #fcb045
-            );
-
-            background-size: 200% 200%;
-
-            box-shadow: 0 10px 35px rgba(225, 48, 108, 0.25);
-
-            transition:
-                transform 0.3s,
-                box-shadow 0.3s;
-
-            animation: instagramGradient 5s ease infinite;
-        }
-
-        @keyframes instagramGradient {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        .instagram-btn:hover {
-            transform: translateY(-5px) scale(1.03);
-
-            box-shadow: 0 15px 45px rgba(225, 48, 108, 0.4);
-        }
-
-        .instagram-icon {
-            width: 23px;
-            height: 23px;
-            fill: #ffffff;
-            flex-shrink: 0;
-        }
-
-        /* INSTAGRAM АТАУЫ */
-
-        .username {
-            margin-top: 22px;
-            color: #b9b9ce;
-            font-size: 14px;
-        }
-
-        .username strong {
-            color: #e9d5ff;
-        }
-
-        /* ТӨМЕНГІ ЖАЗУ */
-
-        .footer {
-            margin-top: 65px;
-
-            color: #77778f;
-            font-size: 12px;
-            letter-spacing: 1px;
-
-            line-height: 1.8;
-        }
-
-        .footer span {
-            color: #c084fc;
-        }
-
-        /* ТЕЛЕФОНҒА БЕЙІМДЕУ */
-
-        @media (max-width: 600px) {
-            .language-box {
-                top: 18px;
-                right: 50%;
-                transform: translateX(50%);
-            }
-
-            .lang-btn {
-                padding: 9px 12px;
-            }
-
-            main {
-                padding: 110px 18px 35px;
-            }
-
-            .logo {
-                width: 75px;
-                height: 75px;
-
-                border-radius: 23px;
-                font-size: 33px;
-
-                margin-bottom: 28px;
-            }
-
-            h1 {
-                letter-spacing: -1px;
-            }
-
-            .description {
-                font-size: 15px;
-            }
-
-            .instagram-btn {
-                padding: 16px 22px;
-                font-size: 14px;
-            }
-
-            .footer {
-                margin-top: 50px;
-            }
-        }
-
-        /* ҚОЗҒАЛЫСТЫ АЗАЙТУ */
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090914">
+<meta name="description" content="Жаңа жоба жақында іске қосылады!">
+
+<title>Жақында іске қосылады</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    background: #090914;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    background: #090914;
+    overflow-x: hidden;
+
+    /* Мәтінді белгілеуді шектеу */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Артқы фон */
+.background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 20% 20%,
+            rgba(168, 85, 247, .2), transparent 35%),
+        radial-gradient(circle at 80% 75%,
+            rgba(236, 72, 153, .17), transparent 35%),
+        #090914;
+}
+
+.orb {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: .4;
+    animation: float 10s infinite alternate ease-in-out;
+}
+
+.orb.one {
+    background: #7c3aed;
+    top: -100px;
+    left: -100px;
+}
+
+.orb.two {
+    background: #db2777;
+    right: -100px;
+    bottom: -100px;
+    animation-delay: -5s;
+}
+
+@keyframes float {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+    to {
+        transform: translate(70px, 50px) scale(1.2);
+    }
+}
+
+/* Жұлдыздар */
+.stars {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 10px white;
+    animation: twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: .15;
+        transform: scale(.7);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+/* Тіл таңдау */
+.language-box {
+    position: absolute;
+    z-index: 5;
+    top: 25px;
+    right: 25px;
+
+    display: flex;
+    gap: 7px;
+    padding: 7px;
+
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 50px;
+
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+.lang-btn {
+    border: none;
+    padding: 10px 13px;
+    border-radius: 30px;
+    background: transparent;
+    color: #c4c4d4;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .3s;
+
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.lang-btn:hover {
+    color: white;
+    background: rgba(255,255,255,.1);
+}
+
+.lang-btn.active {
+    color: white;
+    background: linear-gradient(135deg, #9333ea, #ec4899);
+    box-shadow: 0 0 20px rgba(168,85,247,.3);
+}
+
+/* Негізгі бөлім */
+main {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 110px 20px 50px;
+}
+
+.container {
+    width: 100%;
+    max-width: 850px;
+    text-align: center;
+    animation: appear 1.2s ease forwards;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Логотип */
+.logo {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 28px;
+    font-size: 40px;
+
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    box-shadow: 0 0 35px rgba(168,85,247,.4);
+
+    animation: logoPulse 3s infinite ease-in-out;
+}
+
+@keyframes logoPulse {
+    0%, 100% {
+        transform: translateY(0);
+        box-shadow: 0 0 25px rgba(168,85,247,.35);
+    }
+    50% {
+        transform: translateY(-8px);
+        box-shadow: 0 0 50px rgba(236,72,153,.5);
+    }
+}
+
+/* Іске қосылу статусы */
+.status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 12px 20px;
+    margin-bottom: 30px;
+
+    border: 1px solid rgba(250,204,21,.3);
+    border-radius: 50px;
+
+    background: rgba(250,204,21,.07);
+    color: #fde68a;
+
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    background: #facc15;
+    box-shadow: 0 0 12px #facc15;
+
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .3; }
+}
+
+/* Тақырып */
+h1 {
+    font-size: clamp(40px, 8vw, 78px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 25px;
+}
+
+.gradient-text {
+    display: block;
+    padding-bottom: 8px;
+
+    background: linear-gradient(
+        90deg,
+        #c084fc,
+        #f472b6,
+        #818cf8,
+        #c084fc
+    );
+
+    background-size: 300% auto;
+    color: transparent;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    animation: gradientMove 5s linear infinite;
+}
+
+@keyframes gradientMove {
+    to {
+        background-position: 300% center;
+    }
+}
+
+/* Сипаттама */
+.description {
+    max-width: 580px;
+    margin: 0 auto 35px;
+    color: #aaaabe;
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+/* Instagram батырмасы */
+.instagram-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 17px 30px;
+    border-radius: 16px;
+
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+
+    background: linear-gradient(
+        110deg,
+        #833ab4,
+        #fd1d1d,
+        #fcb045
+    );
+
+    background-size: 200% 200%;
+    box-shadow: 0 10px 35px rgba(225,48,108,.25);
+
+    transition: transform .3s, box-shadow .3s;
+    animation: instagramGradient 5s ease infinite;
+
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+@keyframes instagramGradient {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.instagram-btn:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 15px 45px rgba(225,48,108,.4);
+}
+
+.instagram-icon {
+    width: 23px;
+    height: 23px;
+    fill: white;
+    flex-shrink: 0;
+}
+
+/* Парақша атауы */
+.username {
+    margin-top: 22px;
+    color: #b9b9ce;
+    font-size: 14px;
+}
+
+.username strong {
+    color: #e9d5ff;
+}
+
+/* Төменгі бөлім */
+.footer {
+    margin-top: 65px;
+    color: #77778f;
+    font-size: 12px;
+    letter-spacing: 1px;
+    line-height: 1.8;
+}
+
+.footer span {
+    color: #c084fc;
+}
+
+/* Телефонға бейімдеу */
+@media (max-width: 600px) {
+    .language-box {
+        top: 18px;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .lang-btn {
+        padding: 9px 12px;
+    }
+
+    main {
+        padding: 110px 18px 35px;
+    }
+
+    .logo {
+        width: 75px;
+        height: 75px;
+        border-radius: 23px;
+        font-size: 33px;
+        margin-bottom: 28px;
+    }
+
+    h1 {
+        letter-spacing: -1px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+    .instagram-btn {
+        padding: 16px 22px;
+        font-size: 14px;
+    }
+
+    .footer {
+        margin-top: 50px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <!-- Артқы фон -->
-    <div class="background">
-        <div class="orb one"></div>
-        <div class="orb two"></div>
-    </div>
+<div class="background">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+</div>
 
-    <!-- Жұлдыздар -->
-    <div class="stars" id="stars"></div>
+<div class="stars" id="stars"></div>
 
-    <!-- Тіл таңдау -->
-    <div class="language-box" aria-label="Тілді таңдау">
+<!-- Тіл ауыстыру -->
+<div class="language-box" aria-label="Тілді таңдау">
 
-        <button
-            class="lang-btn active"
+    <button class="lang-btn active"
             data-lang="kk"
             aria-pressed="true"
             onclick="changeLanguage('kk')">
-            🇰🇿 KZ
-        </button>
+        🇰🇿 KZ
+    </button>
 
-        <button
-            class="lang-btn"
+    <button class="lang-btn"
             data-lang="ru"
             aria-pressed="false"
             onclick="changeLanguage('ru')">
-            🇷🇺 RU
-        </button>
+        🇷🇺 RU
+    </button>
 
-        <button
-            class="lang-btn"
+    <button class="lang-btn"
             data-lang="en"
             aria-pressed="false"
             onclick="changeLanguage('en')">
-            🇬🇧 EN
-        </button>
+        🇬🇧 EN
+    </button>
+
+</div>
+
+<main>
+    <div class="container">
+
+        <div class="logo">✦</div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            <span data-i18n="status">ЖАҚЫНДА ІСКЕ ҚОСЫЛАДЫ</span>
+        </div>
+
+        <h1>
+            <span data-i18n="title1">Жаңа дәуір</span>
+            <span class="gradient-text" data-i18n="title2">
+                басталады!
+            </span>
+        </h1>
+
+        <p class="description" data-i18n="description">
+            Біз сіздер үшін жаңа мүмкіндіктер дайындап жатырмыз.
+            Жобамыз жақында іске қосылады!
+            Жаңалықтардан хабардар болу үшін Instagram
+            парақшамызға жазылыңыз.
+        </p>
+
+        <!-- ДҰРЫС INSTAGRAM СІЛТЕМЕСІ -->
+        <a
+            class="instagram-btn"
+            href="https://www.instagram.com/aian_wtkkz_17/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram парақшасына өту">
+
+            <svg
+                class="instagram-icon"
+                viewBox="0 0 24 24"
+                aria-hidden="true">
+
+                <path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.5-3.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/>
+
+            </svg>
+
+            <span data-i18n="button">
+                Instagram-ға жазылу
+            </span>
+
+            <span aria-hidden="true">↗</span>
+
+        </a>
+
+        <p class="username">
+            <span data-i18n="follow">Біздің парақша:</span>
+            <strong>@aian_wtkkz_17</strong>
+        </p>
+
+        <div class="footer">
+            © 2026
+            <span data-i18n="footer">
+                Барлық құқықтар қорғалған
+            </span>
+
+            <br><br>
+
+            <span data-i18n="made">
+                Армандар шындыққа айналады ✨
+            </span>
+        </div>
 
     </div>
+</main>
 
-    <!-- Негізгі бет -->
-    <main>
-        <div class="container">
+<script>
+"use strict";
 
-            <div class="logo">✦</div>
+/* Үш тілдегі мәтіндер */
+const translations = {
+    kk: {
+        status: "ЖАҚЫНДА ІСКЕ ҚОСЫЛАДЫ",
+        title1: "Жаңа дәуір",
+        title2: "басталады!",
+        description:
+            "Біз сіздер үшін жаңа мүмкіндіктер дайындап жатырмыз. " +
+            "Жобамыз жақында іске қосылады! " +
+            "Жаңалықтардан хабардар болу үшін Instagram " +
+            "парақшамызға жазылыңыз.",
+        button: "Instagram-ға жазылу",
+        follow: "Біздің парақша:",
+        footer: "Барлық құқықтар қорғалған",
+        made: "Армандар шындыққа айналады ✨"
+    },
 
-            <!-- Іске қосылу статусы -->
-            <div class="status">
-                <span class="status-dot"></span>
+    ru: {
+        status: "СКОРО ЗАПУСК",
+        title1: "Новая эра",
+        title2: "начинается!",
+        description:
+            "Мы готовим для вас новые возможности. " +
+            "Наш проект скоро запустится! " +
+            "Подписывайтесь на нашу страницу в Instagram, " +
+            "чтобы не пропустить новости.",
+        button: "Подписаться в Instagram",
+        follow: "Наша страница:",
+        footer: "Все права защищены",
+        made: "Мечты становятся реальностью ✨"
+    },
 
-                <span data-i18n="status">
-                    ЖАҚЫНДА ІСКЕ ҚОСЫЛАДЫ
-                </span>
-            </div>
+    en: {
+        status: "COMING SOON",
+        title1: "A new era",
+        title2: "is coming!",
+        description:
+            "We are preparing new opportunities for you. " +
+            "Our project will be launching soon! " +
+            "Follow us on Instagram to stay updated " +
+            "with the latest news.",
+        button: "Follow on Instagram",
+        follow: "Our page:",
+        footer: "All rights reserved",
+        made: "Dreams become reality ✨"
+    }
+};
 
-            <!-- Тақырып -->
-            <h1>
-                <span data-i18n="title1">
-                    Жаңа дәуір
-                </span>
+/* Тілді ауыстыру */
+function changeLanguage(lang) {
+    if (!translations[lang]) return;
 
-                <span class="gradient-text" data-i18n="title2">
-                    басталады!
-                </span>
-            </h1>
+    document.documentElement.lang = lang;
 
-            <!-- Сипаттама -->
-            <p class="description" data-i18n="description">
-                Біз сіздер үшін жаңа мүмкіндіктер дайындап жатырмыз.
-                Жобамыз жақында іске қосылады!
-                Жаңалықтардан хабардар болу үшін Instagram
-                парақшамызға жазылыңыз.
-            </p>
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+        const key = element.dataset.i18n;
 
-            <!-- Instagram сілтемесі -->
-            <a
-                class="instagram-btn"
-                href="https://www.instagram.com/aian_wtkkz_17/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram парақшасына өту">
-
-                <svg
-                    class="instagram-icon"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true">
-
-                    <path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm5.5-3.5a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/>
-
-                </svg>
-
-                <span data-i18n="button">
-                    Instagram-ға жазылу
-                </span>
-
-                <span aria-hidden="true">↗</span>
-
-            </a>
-
-            <!-- Парақша атауы -->
-            <p class="username">
-                <span data-i18n="follow">
-                    Біздің парақша:
-                </span>
-
-                <strong>@aian_wtkkz_17</strong>
-            </p>
-
-            <!-- Төменгі бөлім -->
-            <div class="footer">
-                © 2026
-
-                <span data-i18n="footer">
-                    Барлық құқықтар қорғалған
-                </span>
-
-                <br><br>
-
-                <span data-i18n="made">
-                    Армандар шындыққа айналады ✨
-                </span>
-            </div>
-
-        </div>
-    </main>
-
-    <script>
-        "use strict";
-
-        /* ҮШ ТІЛДЕГІ МӘТІНДЕР */
-
-        const translations = {
-            kk: {
-                status: "ЖАҚЫНДА ІСКЕ ҚОСЫЛАДЫ",
-                title1: "Жаңа дәуір",
-                title2: "басталады!",
-
-                description:
-                    "Біз сіздер үшін жаңа мүмкіндіктер дайындап жатырмыз. " +
-                    "Жобамыз жақында іске қосылады! " +
-                    "Жаңалықтардан хабардар болу үшін Instagram " +
-                    "парақшамызға жазылыңыз.",
-
-                button: "Instagram-ға жазылу",
-                follow: "Біздің парақша:",
-                footer: "Барлық құқықтар қорғалған",
-                made: "Армандар шындыққа айналады ✨"
-            },
-
-            ru: {
-                status: "СКОРО ЗАПУСК",
-                title1: "Новая эра",
-                title2: "начинается!",
-
-                description:
-                    "Мы готовим для вас новые возможности. " +
-                    "Наш проект скоро запустится! " +
-                    "Подписывайтесь на нашу страницу в Instagram, " +
-                    "чтобы не пропустить новости.",
-
-                button: "Подписаться в Instagram",
-                follow: "Наша страница:",
-                footer: "Все права защищены",
-                made: "Мечты становятся реальностью ✨"
-            },
-
-            en: {
-                status: "COMING SOON",
-                title1: "A new era",
-                title2: "is coming!",
-
-                description:
-                    "We are preparing new opportunities for you. " +
-                    "Our project will be launching soon! " +
-                    "Follow us on Instagram to stay updated " +
-                    "with the latest news.",
-
-                button: "Follow on Instagram",
-                follow: "Our page:",
-                footer: "All rights reserved",
-                made: "Dreams become reality ✨"
-            }
-        };
-
-        /* ТІЛДІ АУЫСТЫРУ */
-
-        function changeLanguage(lang) {
-            if (!translations[lang]) {
-                return;
-            }
-
-            document.documentElement.lang = lang;
-
-            document.querySelectorAll("[data-i18n]").forEach(element => {
-                const key = element.dataset.i18n;
-
-                if (translations[lang][key] !== undefined) {
-                    element.textContent = translations[lang][key];
-                }
-            });
-
-            document.querySelectorAll(".lang-btn").forEach(button => {
-                const isActive = button.dataset.lang === lang;
-
-                button.classList.toggle("active", isActive);
-
-                button.setAttribute(
-                    "aria-pressed",
-                    String(isActive)
-                );
-            });
-
-            try {
-                localStorage.setItem("preferredLanguage", lang);
-            } catch (error) {
-                // Тілді ауыстыру сақтаусыз да жұмыс істейді.
-            }
+        if (translations[lang][key] !== undefined) {
+            element.textContent = translations[lang][key];
         }
+    });
 
-        /* САҚТАЛҒАН ТІЛДІ ЖҮКТЕУ */
+    document.querySelectorAll(".lang-btn").forEach(button => {
+        const active = button.dataset.lang === lang;
 
-        let savedLanguage = "kk";
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+    });
 
-        try {
-            const storedLanguage =
-                localStorage.getItem("preferredLanguage");
+    try {
+        localStorage.setItem("preferredLanguage", lang);
+    } catch (error) {
+        // Сақтау қолжетімсіз болса да, тіл ауыстыру жұмыс істейді.
+    }
+}
 
-            if (
-                storedLanguage &&
-                Object.prototype.hasOwnProperty.call(
-                    translations,
-                    storedLanguage
-                )
-            ) {
-                savedLanguage = storedLanguage;
-            }
-        } catch (error) {
-            // Әдепкі тіл — қазақша.
-        }
+/* Сақталған тілді жүктеу */
+let savedLanguage = "kk";
 
-        changeLanguage(savedLanguage);
+try {
+    const storedLanguage = localStorage.getItem("preferredLanguage");
 
-        /* ЖҰЛДЫЗДАРДЫ ЖАСАУ */
+    if (
+        storedLanguage &&
+        Object.prototype.hasOwnProperty.call(
+            translations,
+            storedLanguage
+        )
+    ) {
+        savedLanguage = storedLanguage;
+    }
+} catch (error) {
+    // Әдепкі тіл — қазақша.
+}
 
-        const starsContainer = document.getElementById("stars");
+changeLanguage(savedLanguage);
 
-        for (let i = 0; i < 65; i++) {
-            const star = document.createElement("div");
+/* Жұлдыздар */
+const starsContainer = document.getElementById("stars");
 
-            star.className = "star";
+for (let i = 0; i < 65; i++) {
+    const star = document.createElement("div");
 
-            star.style.left = Math.random() * 100 + "%";
-            star.style.top = Math.random() * 100 + "%";
+    star.className = "star";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
 
-            star.style.animationDelay =
-                Math.random() * 4 + "s";
+    star.style.animationDelay = Math.random() * 4 + "s";
+    star.style.animationDuration = (2 + Math.random() * 4) + "s";
 
-            star.style.animationDuration =
-                (2 + Math.random() * 4) + "s";
+    const size = 1 + Math.random() * 2;
 
-            const size = 1 + Math.random() * 2;
+    star.style.width = size + "px";
+    star.style.height = size + "px";
 
-            star.style.width = size + "px";
-            star.style.height = size + "px";
+    starsContainer.appendChild(star);
+}
 
-            starsContainer.appendChild(star);
-        }
+/* Мәтінді көшіруді шектеу */
+document.addEventListener("selectstart", function(event) {
+    event.preventDefault();
+});
 
-        /* КӨШІРУДІ ШЕКТЕУ */
+document.addEventListener("copy", function(event) {
+    event.preventDefault();
+});
 
-        // Мәтінді белгілеуді шектеу
-        document.addEventListener("selectstart", function(event) {
-            event.preventDefault();
-        });
+document.addEventListener("cut", function(event) {
+    event.preventDefault();
+});
 
-        // Көшіруді шектеу
-        document.addEventListener("copy", function(event) {
-            event.preventDefault();
-        });
+document.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
+});
 
-        // Қиып алуды шектеу
-        document.addEventListener("cut", function(event) {
-            event.preventDefault();
-        });
+document.addEventListener("keydown", function(event) {
+    const key = event.key.toLowerCase();
+    const modifier = event.ctrlKey || event.metaKey;
 
-        // Оң жақ батырмамен ашылатын мәзірді шектеу
-        document.addEventListener("contextmenu", function(event) {
-            event.preventDefault();
-        });
-
-        // Көшіру, қиып алу және кейбір бастапқы код
-        // пернелер тіркесімдерін шектеу
-        document.addEventListener("keydown", function(event) {
-            const key = event.key.toLowerCase();
-            const modifier = event.ctrlKey || event.metaKey;
-
-            if (
-                modifier &&
-                ["c", "x", "u"].includes(key)
-            ) {
-                event.preventDefault();
-            }
-        });
-
-    </script>
+    if (modifier && ["c", "x", "u"].includes(key)) {
+        event.preventDefault();
+    }
+});
+</script>
 
 </body>
 </html>
